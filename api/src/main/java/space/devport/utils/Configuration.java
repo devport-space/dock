@@ -17,10 +17,17 @@ public class Configuration {
 
     @Getter
     private File file;
+
+    @Getter
     private FileConfiguration fileConfiguration;
 
     private Plugin plugin;
 
+    /**
+     * Initializes this class, creates file and loads yaml for another work
+     * @param plugin Main plugin instance
+     * @param path Path to config file
+     */
     public Configuration(Plugin plugin, String path) {
         this.plugin = plugin;
         this.path = path;
@@ -51,6 +58,9 @@ public class Configuration {
         }
     }
 
+    /**
+     * Saves configuration file
+     */
     public void save() {
         try {
             fileConfiguration.save(file);
@@ -59,35 +69,54 @@ public class Configuration {
         }
     }
 
+    /**
+     * Deletes file and reloads -> Creates new file and loads default values
+     */
     public void clear() {
-        file.delete();
-
-        reload();
+        if(file.delete()) {
+            reload();
+        }
     }
 
+    /**
+     * Returns colored string from config
+     * @param path path to string in config file
+     * @return String with minecraft understandable color characters
+     */
     public String getColored(String path) {
         return StringUtil.color(fileConfiguration.getString(path));
     }
 
+    /**
+     * Returns colored string list from config
+     * @param path path to list of strings in config file
+     * @return List of strings with minecraft understandable color characters
+     */
     public List<String> getColoredList(String path) {
         return StringUtil.color(fileConfiguration.getStringList(path));
     }
 
+    /**
+     * Returns colored message splitted over lines
+     * @param path path to list of strings in config file
+     * @return Multi row colored string
+     */
     public String getColoredMessage(String path) {
-        StringBuilder strB = new StringBuilder();
-        for (String line : getColoredList(path))
-            strB.append(line).append("\n");
-        return strB.toString();
+        return String.join("\n", getColoredList(path));
     }
 
+    /**
+     * Return array of strings from config file
+     * @param path Path to list of strings
+     * @return Array of strings
+     */
     public String[] getMatrix(String path) {
-        List<String> list = fileConfiguration.getStringList(path);
-        StringBuilder str = new StringBuilder();
-        for (String str1 : list)
-            str.append(str1).append(";");
-        return str.toString().split(";");
+        return fileConfiguration.getStringList(path).stream().toArray(String[]::new);
     }
 
+    /**
+     * Checks if file exists and loads/creates config + loads yaml
+     */
     public void reload() {
         plugin.getLogger().info("Reloading " + path + ".yml");
         file = new File(plugin.getDataFolder(), path + ".yml");
@@ -114,7 +143,16 @@ public class Configuration {
      * @param file File to save to.
      */
     public void saveToFile(File file) {
+        if(file.exists()) {
+            plugin.getLogger().severe("This file already exists");
+            return;
+        }
 
+        try {
+            this.fileConfiguration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -123,14 +161,17 @@ public class Configuration {
      * @param path Path to save to.
      */
     public void saveToFile(String path) {
+        File f = new File(plugin.getDataFolder(), path + ".yml");
+        if(f.exists()) {
+            plugin.getLogger().severe("This file already exists");
+            return;
+        }
+
+        try {
+            this.fileConfiguration.save(f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    /**
-     * Get loaded FileConfiguration.
-     *
-     * @return Loaded FileConfiguration.
-     */
-    public FileConfiguration getYaml() {
-        return fileConfiguration;
-    }
 }
