@@ -1,96 +1,73 @@
 package space.devport.utils;
 
-import org.bukkit.ChatColor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import space.devport.utils.messageutil.StringUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Slf4j
 public class ConsoleOutput {
 
-    // TODO Make Plugin reference arbitrary
-    // TODO Add format
-    // TODO Add documentation
+    @Setter @Getter private boolean debug = false;
+    @Setter @Getter @NotNull private String prefix = "";
+    @Setter @Getter @Nullable private CommandSender cmdSender;
 
-    private Plugin plugin;
-
-    private boolean debug;
-    private String prefix;
-
-    private CommandSender reloadSender;
-
-    private List<CommandSender> debuggers = new ArrayList<>();
-
-    public void switchDebug(CommandSender sender) {
-        if (debuggers.contains(sender))
-            debuggers.remove(sender);
-        else
-            debuggers.add(sender);
-    }
-
-    public void setReloadSender(CommandSender reloadSender) {
-        this.reloadSender = reloadSender;
-    }
-
-    public boolean isDebug() {
-        return debug;
-    }
-
-    public ConsoleOutput(Plugin plugin) {
-        this.plugin = plugin;
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
+    /**
+     * Sends a debug message to console and if not null to cmdSender
+     * @param msg Message to show
+     */
     public void debug(String msg) {
         if (debug) {
-            plugin.getServer().getConsoleSender().sendMessage(color(prefix + "&7DEBUG: " + msg));
+            log.debug(StringUtil.color(prefix + "&7DEBUG: " + msg));
 
-            if (reloadSender != null)
-                reloadSender.sendMessage(color("&eDEBUG: " + msg));
+            if (cmdSender != null)
+                cmdSender.sendMessage(StringUtil.color("&eDEBUG: " + msg));
         }
     }
 
+    /**
+     * Sets cmdSender and see debug(String msg)
+     * @param msg Message to show
+     * @param origin CommanderSender to show message to
+     */
     public void debug(String msg, CommandSender origin) {
+        setCmdSender(origin);
         debug(msg);
-
-        if (debuggers.contains(origin))
-            origin.sendMessage(color("&eDEBUG: " + msg));
     }
 
+    /**
+     * Sends error message to console and if not null to reload sender
+     * @param msg Message to show
+     */
     public void err(String msg) {
-        plugin.getServer().getConsoleSender().sendMessage(color(prefix + "&4" + msg));
+        log.error(StringUtil.color(prefix + "&4ERROR: " + msg));
 
-        if (reloadSender != null)
-            reloadSender.sendMessage(color("&4" + msg));
+        if (cmdSender != null)
+            cmdSender.sendMessage(StringUtil.color("&4" + msg));
     }
 
+    /**
+     * Sends error message to console and if not null to reload sender
+     * @param msg Message to show
+     */
     public void info(String msg) {
-        plugin.getServer().getConsoleSender().sendMessage(color(prefix + "&7" + msg));
+        log.info(StringUtil.color(prefix + "&7INFO: " + msg));
 
-        if (reloadSender != null)
-            reloadSender.sendMessage(color("&7" + msg));
+        if (cmdSender != null)
+            cmdSender.sendMessage(StringUtil.color("&7" + msg));
     }
 
+    /**
+     * Sends error message to console and if not null to reload sender
+     * @param msg Message to show
+     */
     public void warn(String msg) {
-        plugin.getServer().getConsoleSender().sendMessage(color(prefix + "&c" + msg));
-
-        if (reloadSender != null)
-            reloadSender.sendMessage(color("&c" + msg));
+        log.warn(StringUtil.color(prefix + "&cWARNING: " + msg));
+        if (cmdSender != null)
+            cmdSender.sendMessage(StringUtil.color("&c" + msg));
     }
 
-    private String color(String str) {
-        return ChatColor.translateAlternateColorCodes('&', str);
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
 }
