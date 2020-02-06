@@ -16,7 +16,7 @@ public class DevportUtils {
         cO = new ConsoleOutput(plugin);
     }
 
-    // Test method for console only.
+    // Test method in a console application
     public static void main(String[] args) {
         new TestItAll().doSomething();
     }

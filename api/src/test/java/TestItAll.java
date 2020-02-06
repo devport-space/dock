@@ -1,6 +1,6 @@
 import apitest.RandomMessageBuilder;
-import space.devport.utils.MessageBuilder;
-import space.devport.utils.ParseFormat;
+import space.devport.utils.messageutil.MessageBuilder;
+import space.devport.utils.messageutil.ParseFormat;
 
 public class TestItAll {
 

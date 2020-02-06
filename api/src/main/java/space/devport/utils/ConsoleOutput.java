@@ -9,6 +9,10 @@ import java.util.List;
 
 public class ConsoleOutput {
 
+    // TODO Make Plugin reference arbitrary
+    // TODO Add format
+    // TODO Add documentation
+
     private Plugin plugin;
 
     private boolean debug;

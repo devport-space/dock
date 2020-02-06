@@ -2,7 +2,7 @@ package apitest;
 
 import lombok.Getter;
 import lombok.Setter;
-import space.devport.utils.MessageBuilder;
+import space.devport.utils.messageutil.MessageBuilder;
 
 import java.util.Random;
 

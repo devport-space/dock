@@ -18,7 +18,8 @@
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/spigot-1.8.8.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
