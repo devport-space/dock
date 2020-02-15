@@ -19,8 +19,11 @@ public class DevportUtils {
 
     // Test method in a console application
     public static void main(String[] args) {
-        cO = new ConsoleOutput();
+        cO = new ConsoleOutput(false);
         cO.setDebug(true);
-        cO.info("Test");
+
+        cO.info("Starting the test..");
+        TestItAll.doSomething();
+        cO.info("Done..");
     }
 }

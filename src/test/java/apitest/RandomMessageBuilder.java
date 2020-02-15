@@ -20,8 +20,10 @@ public class RandomMessageBuilder extends MessageBuilder {
     public MessageBuilder parsePlaceholders() {
 
         // Parse random number in bound
-        parse("%random%", String.valueOf(random.nextInt(bound)));
+        parsePlaceholder("%random%", String.valueOf(random.nextInt(bound)));
 
         return super.parsePlaceholders();
     }
+
+    // TODO Add the possibility to override a parsePlaceholder(String placeholder) to enable "single-parse listening"
 }

@@ -3,12 +3,11 @@ package space.devport.utils.messageutil;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MessageBuilder {
-
-    // TODO Add documentation once done.
+public class MessageBuilder extends ParseFormat {
 
     // Holds the original message.
     @Getter
@@ -18,15 +17,6 @@ public class MessageBuilder {
     @Getter
     private List<String> workingMessage = new ArrayList<>();
 
-    // Parse format to use.
-    @Getter
-    private ParseFormat parseFormat = new ParseFormat();
-
-    public MessageBuilder setFormat(ParseFormat parseFormat) {
-        this.parseFormat = parseFormat;
-        return this;
-    }
-
     // Character to parse colors with
     @Getter
     private char colorChar = '&';
@@ -35,8 +25,8 @@ public class MessageBuilder {
     public MessageBuilder() {
     }
 
-    public MessageBuilder(ParseFormat format) {
-        this.parseFormat = format;
+    public MessageBuilder(String[] message) {
+        set(message);
     }
 
     public MessageBuilder(List<String> message) {
@@ -61,10 +51,31 @@ public class MessageBuilder {
         message.addAll(workingMessage);
     }
 
+    public MessageBuilder set(String message) {
+        workingMessage.clear();
+        this.message.clear();
+
+        this.message.add(message);
+        this.workingMessage.add(message);
+
+        return this;
+    }
+
+    public MessageBuilder set(List<String> message) {
+        workingMessage = message;
+        this.message = message;
+        return this;
+    }
+
+    public MessageBuilder set(String[] message) {
+        set(Arrays.asList(message));
+        return this;
+    }
+
     // Uses ParseFormat to parse stored placeholders
     // Can be implied to handle custom parsing when extending this class
     public MessageBuilder parsePlaceholders() {
-        workingMessage = workingMessage.stream().map(line -> parseFormat.parse(line)).collect(Collectors.toList());
+        workingMessage = workingMessage.stream().map(this::parse).collect(Collectors.toList());
         return this;
     }
 
@@ -74,7 +85,7 @@ public class MessageBuilder {
     }
 
     // Parse a single placeholder in the whole message.
-    public MessageBuilder parse(String placeholder, String value) {
+    public MessageBuilder parsePlaceholder(String placeholder, String value) {
         workingMessage = workingMessage.stream().map(line -> line.replaceAll(placeholder, value)).collect(Collectors.toList());
         return this;
     }
@@ -94,6 +105,48 @@ public class MessageBuilder {
 
     public MessageBuilder setColorChar(char colorChar) {
         this.colorChar = colorChar;
+        return this;
+    }
+
+    @Override
+    public MessageBuilder addPlaceholder(String placeholder) {
+        super.addPlaceholder(placeholder);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder fill(String placeholder, String value) {
+        super.fill(placeholder, value);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder setDefaultValue(String defaultValue) {
+        super.setDefaultValue(defaultValue);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder addPlaceholder(String placeholder, String value) {
+        super.addPlaceholder(placeholder, value);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder addPlaceholders(String[] placeholders) {
+        super.addPlaceholders(placeholders);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder fill(String[] arguments) {
+        super.fill(arguments);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder setPlaceholders(String[] placeholders) {
+        super.setPlaceholders(placeholders);
         return this;
     }
 }
