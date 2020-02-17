@@ -81,7 +81,7 @@ public class Configuration {
     }
 
     /**
-     * Deletes file and reloads -> Creates new file and loads default values
+     * Deletes file and reloads, creates new file and loads default values.
      */
     public void clear() {
         if (file.delete()) {

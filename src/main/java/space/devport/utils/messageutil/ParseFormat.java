@@ -1,6 +1,7 @@
 package space.devport.utils.messageutil;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -11,6 +12,8 @@ public class ParseFormat {
     // Everything is made with a return this to enable command chaining.
 
     // Holds custom placeholders and their current values
+    @Getter
+    @Setter
     private LinkedHashMap<String, String> placeholderCache = new LinkedHashMap<>();
 
     // Default to display when the placeholder is not filled in.

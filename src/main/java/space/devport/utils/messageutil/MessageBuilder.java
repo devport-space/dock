@@ -51,6 +51,7 @@ public class MessageBuilder extends ParseFormat {
         message.addAll(workingMessage);
     }
 
+    // Remove current message and set a new one with this as the first line.
     public MessageBuilder set(String message) {
         workingMessage.clear();
         this.message.clear();
@@ -61,15 +62,28 @@ public class MessageBuilder extends ParseFormat {
         return this;
     }
 
+    // Set message to a new one.
     public MessageBuilder set(List<String> message) {
         workingMessage = message;
         this.message = message;
         return this;
     }
 
+    // Set message to a new one from array.
     public MessageBuilder set(String[] message) {
         set(Arrays.asList(message));
         return this;
+    }
+
+    // Copy placeholders from a format
+    public MessageBuilder copyPlaceholders(ParseFormat format) {
+        setPlaceholderCache(format.getPlaceholderCache());
+        return this;
+    }
+
+    // Check if the messages are empty
+    public boolean isEmpty() {
+        return message.isEmpty() && workingMessage.isEmpty();
     }
 
     // Uses ParseFormat to parse stored placeholders
