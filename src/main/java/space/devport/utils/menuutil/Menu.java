@@ -34,7 +34,7 @@ public class Menu implements MenuListener {
         this.inventory = inventory;
         this.items = items;
 
-        DevportUtils.inst.getGuiHandler().addGUI(this);
+        DevportUtils.inst.getMenuHandler().addGUI(this);
     }
 
     // Open the gui for a player

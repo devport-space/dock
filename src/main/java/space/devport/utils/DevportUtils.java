@@ -18,7 +18,7 @@ public class DevportUtils {
     public static DevportUtils inst;
 
     @Getter
-    private MenuHandler guiHandler;
+    private MenuHandler menuHandler;
 
     public DevportUtils(JavaPlugin plugin) {
         inst = this;
@@ -28,7 +28,7 @@ public class DevportUtils {
         consoleOutput = new ConsoleOutput();
         consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
 
-        guiHandler = new MenuHandler();
+        menuHandler = new MenuHandler();
 
         registerListener();
     }
@@ -42,13 +42,13 @@ public class DevportUtils {
         consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
         consoleOutput.setDebug(debug);
 
-        guiHandler = new MenuHandler();
+        menuHandler = new MenuHandler();
 
         registerListener();
     }
 
-    // Register GUI listener
+    // Register Menu listener
     private void registerListener() {
-        plugin.getServer().getPluginManager().registerEvents(guiHandler, plugin);
+        plugin.getServer().getPluginManager().registerEvents(menuHandler, plugin);
     }
 }
