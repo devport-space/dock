@@ -2,7 +2,7 @@ import space.devport.utils.messageutil.MessageBuilder;
 
 public class TestItAll {
 
-    public static void doSomething() {
+    public static void main(String[] args) {
         // Create a MessageBuilder with placeholders
         MessageBuilder msg = new MessageBuilder("Hello %playerName%. Welcome to %worldName%!").addPlaceholders(new String[]{"%playerName%", "%worldName%"});
 

@@ -41,7 +41,7 @@ public class ItemBuilder {
     private HashMap<String, String> NBT = new HashMap<>();
 
     // ParseFormat for placeholders
-    private ParseFormat parseFormat;
+    private ParseFormat parseFormat = new ParseFormat();
 
     // Default constructor
     public ItemBuilder() {
@@ -108,8 +108,8 @@ public class ItemBuilder {
         }
     }
 
-    // TODO Implement MessageBuilder?
     // Parses lore & displayname immediately.
+    // TODO Change so it keeps the original somewhere, implementing MessageBuilder would be the best option i guess.
     public ItemBuilder parse(String key, String value) {
 
         if (displayName != null)
@@ -125,6 +125,13 @@ public class ItemBuilder {
                 lore = newLore;
             }
 
+        return this;
+    }
+
+    // Parse the item with a different ParseFormat
+    public ItemBuilder parseWith(ParseFormat format) {
+        for (String key : format.getPlaceholders())
+            parse(key, format.getPlaceholderCache().get(key));
         return this;
     }
 

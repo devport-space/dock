@@ -2,22 +2,24 @@ package space.devport.utils.simplegui.events;
 
 import lombok.Getter;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import space.devport.utils.simplegui.SimpleGUI;
+import space.devport.utils.simplegui.SimpleItem;
 
 public class SimpleItemClickEvent extends InventoryClickEvent {
 
     // This event is called when an Item in a simple gui item is clicked
 
-    // Name of the clicked gui
+    // Clicked GUI
     @Getter
-    private String guiName;
+    private SimpleGUI gui;
 
-    // Name of the item clicked, taken from NBT
+    // Clicked item
     @Getter
-    private String itemName;
+    private SimpleItem item;
 
-    public SimpleItemClickEvent(InventoryClickEvent e, String guiName, String itemName) {
+    public SimpleItemClickEvent(InventoryClickEvent e, SimpleGUI gui, SimpleItem item) {
         super(e.getView(), e.getSlotType(), e.getSlot(), e.getClick(), e.getAction());
-        this.guiName = guiName;
-        this.itemName = itemName;
+        this.gui = gui;
+        this.item = item;
     }
 }

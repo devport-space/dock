@@ -2,13 +2,17 @@ package space.devport.utils.simplegui;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import space.devport.utils.DevportUtils;
 import space.devport.utils.itemutil.ItemBuilder;
 import space.devport.utils.messageutil.ParseFormat;
+import space.devport.utils.messageutil.StringUtil;
+import space.devport.utils.simplegui.events.SimpleItemClickEvent;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,8 +20,9 @@ import java.util.HashMap;
 public class SimpleGUI implements Listener {
 
     // A simple GUI handler
+    // TODO Add filler item
 
-    // System name for the gui.
+    // System name for the gui, can be used for loading/saving.
     @Getter
     @Setter
     private String name;
@@ -25,7 +30,7 @@ public class SimpleGUI implements Listener {
     // Global parse format for all the items & the title
     @Getter
     @Setter
-    private ParseFormat globalFormat;
+    private ParseFormat globalFormat = new ParseFormat();
 
     // Items that the GUI contains, indexed by slot they occupy.
     // Is indexed from 1 instead of 0
@@ -46,6 +51,14 @@ public class SimpleGUI implements Listener {
     @Getter
     private Inventory inventory;
 
+    // For whom the inventory is open, null if closed.
+    @Getter
+    @Setter
+    private Player player;
+
+    public SimpleGUI() {
+    }
+
     public SimpleGUI(String name) {
         this.name = name;
     }
@@ -54,15 +67,46 @@ public class SimpleGUI implements Listener {
     public void open(Player player) {
         build();
         player.openInventory(inventory);
+        this.player = player;
     }
 
     // Build the gui with items, placeholders etc.
     // Is called before opening
     public void build() {
+
+        String usedTitle = title;
+
+        // Check if the inventory title isn't too long.
+        if (title.length() > 32) {
+            // Cut it to 32
+            usedTitle = usedTitle.substring(0, 31);
+
+            // Send a message to console.
+            DevportUtils.inst.getConsoleOutput().warn("Inventory title length for " + name + " is too long, cutting to 32.");
+        }
+
+        // Create the inventory
+        inventory = Bukkit.createInventory(null, slots, StringUtil.color(globalFormat.parse(usedTitle)));
+
+        for (SimpleItem item : items.values()) {
+
+            // Build the item and add to GUI
+            inventory.setItem(item.getSlot(),
+                    item.getItemBuilder()
+                            .parseFormat(globalFormat)
+                            .build());
+        }
     }
 
     // Reload inventory contents without reopening
+    // TODO
     public void reload() {
+
+    }
+
+    public void close() {
+        player.closeInventory();
+        player = null;
     }
 
     // Set item array to gui
@@ -89,7 +133,7 @@ public class SimpleGUI implements Listener {
 
         // Add only if there's a free slot
         if (slot != -1)
-            items.put(slot, new SimpleItem(item, name, slot));
+            setItem(item, name, slot);
 
         return this;
     }
@@ -110,6 +154,18 @@ public class SimpleGUI implements Listener {
     // Click listener, throws SimpleItemClickEvent
     @EventHandler
     public void onClick(InventoryClickEvent e) {
+        if (e.getCurrentItem() == null || e.getClick() == null || e.getClickedInventory() == null || e.getWhoClicked() == null)
+            return;
 
+        // Get clicked SimpleItem
+        SimpleItem clickedItem = this.items.get(e.getSlot());
+
+        // Cancel event if we should.
+        if (clickedItem.isCancelClick())
+            e.setCancelled(true);
+
+        // Throw new event
+        SimpleItemClickEvent clickEvent = new SimpleItemClickEvent(e, this, clickedItem);
+        DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(clickEvent);
     }
 }

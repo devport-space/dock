@@ -9,7 +9,7 @@ public class SimpleItem {
 
     // Holds information about an Item in a Simple GUI
 
-    // Item Name
+    // Name of the item, will be used for loading/saving later.
     @Getter
     private String name;
 
@@ -26,6 +26,11 @@ public class SimpleItem {
     @Getter
     @Setter
     private ItemStack item;
+
+    // Cancel the event?
+    @Getter
+    @Setter
+    private boolean cancelClick = true;
 
     public SimpleItem(ItemBuilder itemBuilder, String name, int slot) {
         this.name = name;
