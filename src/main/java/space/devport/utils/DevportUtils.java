@@ -3,6 +3,7 @@ package space.devport.utils;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import space.devport.utils.simplegui.SimpleGUI;
+import space.devport.utils.simplegui.SimpleGUIHandler;
 
 public class DevportUtils {
 
@@ -17,6 +18,9 @@ public class DevportUtils {
 
     public static DevportUtils inst;
 
+    @Getter
+    private SimpleGUIHandler guiHandler;
+
     public DevportUtils(JavaPlugin plugin) {
         inst = this;
 
@@ -24,6 +28,8 @@ public class DevportUtils {
 
         consoleOutput = new ConsoleOutput();
         consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
+
+        guiHandler = new SimpleGUIHandler();
 
         registerListener();
     }
@@ -37,11 +43,13 @@ public class DevportUtils {
         consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
         consoleOutput.setDebug(debug);
 
+        guiHandler = new SimpleGUIHandler();
+
         registerListener();
     }
 
     // Register GUI listener
     private void registerListener() {
-        plugin.getServer().getPluginManager().registerEvents(new SimpleGUI(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(guiHandler, plugin);
     }
 }

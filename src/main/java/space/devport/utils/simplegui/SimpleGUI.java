@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -12,7 +11,6 @@ import space.devport.utils.DevportUtils;
 import space.devport.utils.itemutil.ItemBuilder;
 import space.devport.utils.messageutil.ParseFormat;
 import space.devport.utils.messageutil.StringUtil;
-import space.devport.utils.simplegui.events.SimpleItemClickEvent;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +19,11 @@ public class SimpleGUI implements Listener {
 
     // A simple GUI handler
     // TODO Add filler item
+    // TODO Add gui loading/saving from/to yaml
+    // TODO Add chaining where missing
+    // TODO Change first item slot to 1
+    // TODO Make it possible to set an item to more slots
+    // TODO Add matrix inventory support
 
     // System name for the gui, can be used for loading/saving.
     @Getter
@@ -34,6 +37,7 @@ public class SimpleGUI implements Listener {
 
     // Items that the GUI contains, indexed by slot they occupy.
     // Is indexed from 1 instead of 0
+    @Getter
     private HashMap<Integer, SimpleItem> items = new HashMap<>();
 
     // Title of the GUI
@@ -56,11 +60,10 @@ public class SimpleGUI implements Listener {
     @Setter
     private Player player;
 
-    public SimpleGUI() {
-    }
-
     public SimpleGUI(String name) {
         this.name = name;
+
+        DevportUtils.inst.getGuiHandler().addGUI(this);
     }
 
     // Open the gui for a player
@@ -111,11 +114,12 @@ public class SimpleGUI implements Listener {
 
     // Set item array to gui
     public SimpleGUI setItems(SimpleItem[] items) {
-        Arrays.asList(items).forEach(i -> this.items.put(i.getSlot(), i));
+        Arrays.asList(items).forEach(this::setItem);
         return this;
     }
 
     // Set new SimpleItem directly to it's slot
+    // Every adding method is redirected here. Idk why, I just like it.
     public SimpleGUI setItem(SimpleItem item) {
         items.put(item.getSlot(), item);
         return this;
@@ -123,7 +127,7 @@ public class SimpleGUI implements Listener {
 
     // Set new item to GUI slot, name is always lowercase.
     public SimpleGUI setItem(ItemBuilder itemBuilder, String name, int slot) {
-        items.put(slot, new SimpleItem(itemBuilder, name, slot));
+        setItem(new SimpleItem(itemBuilder, name, slot));
         return this;
     }
 
@@ -151,21 +155,7 @@ public class SimpleGUI implements Listener {
         return -1;
     }
 
-    // Click listener, throws SimpleItemClickEvent
-    @EventHandler
-    public void onClick(InventoryClickEvent e) {
-        if (e.getCurrentItem() == null || e.getClick() == null || e.getClickedInventory() == null || e.getWhoClicked() == null)
-            return;
-
-        // Get clicked SimpleItem
-        SimpleItem clickedItem = this.items.get(e.getSlot());
-
-        // Cancel event if we should.
-        if (clickedItem.isCancelClick())
-            e.setCancelled(true);
-
-        // Throw new event
-        SimpleItemClickEvent clickEvent = new SimpleItemClickEvent(e, this, clickedItem);
-        DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(clickEvent);
+    // Method to override when using this system
+    public void onClick(InventoryClickEvent clickEvent, SimpleGUI gui, SimpleItem item) {
     }
 }
