@@ -12,12 +12,12 @@ public class ItemNBTEditor {
     // TODO Hook to ConsoleOutput
 
     /**
-     * Writes {@link @key} (key) and {@link @value} (value) to the {@link @item} (item's) NBT.
+     * Writes key and value to the item's NBT.
      *
-     * @param item  Item that NBT Data's will be changed.
-     * @param key   Key of NBT Compound.
-     * @param value Value of NBT Compound.
-     * @return Edited item. As new.
+     * @param item  Item that NBT Data's will be changed
+     * @param key   Key of NBT Compound
+     * @param value Value of NBT Compound
+     * @return Edited item.
      */
     public static ItemStack writeNBT(@NotNull ItemStack item, @NotNull String key, @NotNull String value) {
         try {
@@ -35,10 +35,10 @@ public class ItemNBTEditor {
     }
 
     /**
-     * Gets value from NBT compound that matches {@link @key} from {@link @item} NBT.
+     * Gets value from NBT compound that matches a key from item's NBT.
      *
-     * @param item Item
-     * @param key  Key
+     * @param item Item to use
+     * @param key  Key to look for
      * @return String value
      * @throws NullPointerException when did found anything in NBTCompound of item.
      */
@@ -78,9 +78,9 @@ public class ItemNBTEditor {
     }
 
     /**
-     * Checks if {@param item} has NBTCompound.
+     * Checks if item has NBT.
      *
-     * @param item Item to check.
+     * @param item Item to check
      * @return boolean
      */
 
@@ -95,10 +95,10 @@ public class ItemNBTEditor {
     }
 
     /**
-     * Checks if {@param item} has NBTTag in NBTCompound
+     * Checks if an item has a key in NBT.
      *
-     * @param item Item to check.
-     * @param key  Tag to be found.
+     * @param item Item to check
+     * @param key  Key to look for
      * @return boolean
      */
     public static boolean hasNBTKey(@NotNull ItemStack item, String key) {

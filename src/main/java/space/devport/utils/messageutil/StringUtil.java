@@ -12,7 +12,7 @@ public class StringUtil {
     /**
      * Colors a string with Bukkit color codes.
      *
-     * @param msg Default string with &([1-9a-fA-F]) codes
+     * @param msg Default string
      * @return String with Bukkit color codes
      */
     public static String color(String msg) {
@@ -22,7 +22,7 @@ public class StringUtil {
     /**
      * Colors a list of strings with Bukkit color codes.
      *
-     * @param list Default list of strings with &([1-9a-fA-F]) codes
+     * @param list Default list of strings
      * @return List of strings with Bukkit color codes
      */
     public static List<String> color(List<String> list) {
@@ -32,7 +32,7 @@ public class StringUtil {
     /**
      * Colors a string with Bukkit color codes using specified color character for parsing.
      *
-     * @param msg       Default string with &([1-9a-fA-F]) codes
+     * @param msg       Default string
      * @param colorChar Color character to parse colors with
      * @return String with Bukkit color codes
      */
@@ -43,7 +43,7 @@ public class StringUtil {
     /**
      * Colors a list of strings with Bukkit color codes.
      *
-     * @param list      Default list of strings with &([1-9a-fA-F]) codes
+     * @param list      Default list of strings
      * @param colorChar Color character to parse colors with
      * @return List of strings with Bukkit color codes
      */

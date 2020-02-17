@@ -7,6 +7,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import space.devport.utils.DevportUtils;
 import space.devport.utils.messageutil.ParseFormat;
 import space.devport.utils.messageutil.StringUtil;
 
@@ -41,7 +42,7 @@ public class ItemBuilder {
     private HashMap<String, String> NBT = new HashMap<>();
 
     // ParseFormat for placeholders
-    private ParseFormat parseFormat;
+    private ParseFormat parseFormat = new ParseFormat();
 
     // Default constructor
     public ItemBuilder() {
@@ -78,38 +79,72 @@ public class ItemBuilder {
         // TODO Add NBT load
     }
 
-    // TODO Add option to change paths to item parts
-    public static ItemBuilder loadBuilder(FileConfiguration yaml, String path) {
+    public static ItemBuilder loadBuilder(FileConfiguration yaml, String path, String[] paths) {
         try {
             ConfigurationSection section = yaml.getConfigurationSection(path);
 
-            String type = section.getString("type");
+            String type = section.getString(paths[0]);
             Material mat = Material.valueOf(type);
 
-            short data = (short) section.getInt("damage");
+            short data = (short) section.getInt(paths[1]);
 
             ItemBuilder b = new ItemBuilder(mat).damage(data);
 
-            if (section.contains("name"))
-                b.displayName(section.getString("name"));
+            if (section.contains(paths[2]))
+                b.displayName(section.getString(paths[2]));
 
-            if (section.contains("amount"))
-                b.amount(section.getInt("amount"));
+            if (section.contains(paths[3]))
+                b.amount(section.getInt(paths[3]));
 
-            if (section.contains("glow"))
-                b.glow(section.getBoolean("glow"));
+            if (section.contains(paths[4]))
+                b.glow(section.getBoolean(paths[4]));
 
-            if (section.contains("lore"))
-                b.lore(section.getStringList("lore"));
+            if (section.contains(paths[5]))
+                b.lore(section.getStringList(paths[5]));
+
+            if (section.contains(paths[6])) {
+                List<String> dataList = section.getStringList(paths[6]);
+
+                for (String dataString : dataList) {
+                    int level = 1;
+
+                    if (dataString.contains(";")) {
+                        level = Integer.parseInt(dataString.split(";")[1]);
+                        dataString = dataString.split(";")[0];
+                    }
+
+                    Enchantment enchantment = Enchantment.getByName(dataString);
+
+                    b.addEnchant(enchantment, level);
+                }
+            }
+
+            if (section.contains(paths[7]))
+                for (String flagName : section.getStringList(paths[7])) {
+                    ItemFlag flag = ItemFlag.valueOf(flagName);
+
+                    b.addFlag(flag);
+                }
+
+            if (section.contains(paths[8]))
+                for (String nbtString : section.getStringList(paths[8]))
+                    b.addNBT(nbtString.split(";")[0], nbtString.split(";")[1]);
 
             return b;
         } catch (NullPointerException | IllegalArgumentException e) {
+            if (DevportUtils.inst.getConsoleOutput().isDebug())
+                e.printStackTrace();
             return new ItemBuilder(Material.STONE).displayName("&cCould not load item").addLine("&7Reason: &c" + e.getMessage());
         }
     }
 
-    // TODO Implement MessageBuilder?
+    public static ItemBuilder loadBuilder(FileConfiguration yaml, String path) {
+        String[] paths = new String[]{"type", "damage", "name", "amount", "glow", "lore", "enchants", "flags", "nbt"};
+        return loadBuilder(yaml, path, paths);
+    }
+
     // Parses lore & displayname immediately.
+    // TODO Change so it keeps the original somewhere, implementing MessageBuilder would be the best option i guess.
     public ItemBuilder parse(String key, String value) {
 
         if (displayName != null)
@@ -125,6 +160,13 @@ public class ItemBuilder {
                 lore = newLore;
             }
 
+        return this;
+    }
+
+    // Parse the item with a different ParseFormat
+    public ItemBuilder parseWith(ParseFormat format) {
+        for (String key : format.getPlaceholders())
+            parse(key, format.getPlaceholderCache().get(key));
         return this;
     }
 
@@ -218,7 +260,10 @@ public class ItemBuilder {
         return this;
     }
 
-    // TODO remove enchant
+    public ItemBuilder removeEnchant(Enchantment enchantment) {
+        enchants.remove(enchantment);
+        return this;
+    }
 
     public ItemBuilder clearEnchants() {
         this.enchants = new HashMap<>();
@@ -230,7 +275,15 @@ public class ItemBuilder {
         return this;
     }
 
-    // TODO removeFlag
+    public ItemBuilder addFlags(List<ItemFlag> flags) {
+        this.flags.addAll(flags);
+        return this;
+    }
+
+    public ItemBuilder removeFlag(ItemFlag flag) {
+        flags.remove(flag);
+        return this;
+    }
 
     public ItemBuilder clearFlags() {
         this.flags = new ArrayList<>();
@@ -247,7 +300,10 @@ public class ItemBuilder {
         return this;
     }
 
-    // TODO clear NBT
+    public ItemBuilder clearNBT() {
+        NBT.clear();
+        return this;
+    }
 
     public ItemBuilder glow(boolean glow) {
         this.glow = glow;
@@ -292,6 +348,10 @@ public class ItemBuilder {
 
     public List<ItemFlag> flags() {
         return flags;
+    }
+
+    public HashMap<String, String> nbt() {
+        return NBT;
     }
 
     public ParseFormat parseFormat() {

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>space.devport.utils</groupId>
     <artifactId>DevportUtils</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -44,7 +44,7 @@
             <artifactId>spigot-api</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${basedir}/libs/spigot-1.8.8.jar</systemPath>
+            <systemPath>E:/VAULT/Projects/devportutils/libs/spigot-1.8.8.jar</systemPath>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
