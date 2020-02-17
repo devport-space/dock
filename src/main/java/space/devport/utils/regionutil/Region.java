@@ -1,4 +1,4 @@
-package space.devport.utils.regions;
+package space.devport.utils.regionutil;
 
 import lombok.Getter;
 import lombok.Setter;

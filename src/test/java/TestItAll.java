@@ -23,8 +23,5 @@ public class TestItAll {
 
         // Print
         System.out.println(msg.parsePlaceholders().toString());
-
-        // TODO
-        msg.set("A set of random numbers: %random1%, %random2%, %random3%");
     }
 }

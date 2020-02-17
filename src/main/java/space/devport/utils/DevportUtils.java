@@ -2,8 +2,7 @@ package space.devport.utils;
 
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
-import space.devport.utils.simplegui.SimpleGUI;
-import space.devport.utils.simplegui.SimpleGUIHandler;
+import space.devport.utils.menuutil.MenuHandler;
 
 public class DevportUtils {
 
@@ -19,7 +18,7 @@ public class DevportUtils {
     public static DevportUtils inst;
 
     @Getter
-    private SimpleGUIHandler guiHandler;
+    private MenuHandler guiHandler;
 
     public DevportUtils(JavaPlugin plugin) {
         inst = this;
@@ -29,7 +28,7 @@ public class DevportUtils {
         consoleOutput = new ConsoleOutput();
         consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
 
-        guiHandler = new SimpleGUIHandler();
+        guiHandler = new MenuHandler();
 
         registerListener();
     }
@@ -43,7 +42,7 @@ public class DevportUtils {
         consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
         consoleOutput.setDebug(debug);
 
-        guiHandler = new SimpleGUIHandler();
+        guiHandler = new MenuHandler();
 
         registerListener();
     }

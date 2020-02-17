@@ -1,11 +1,10 @@
-package space.devport.utils.simplegui;
+package space.devport.utils.menuutil;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.inventory.ItemStack;
 import space.devport.utils.itemutil.ItemBuilder;
 
-public class SimpleItem {
+public class MenuItem {
 
     // Holds information about an Item in a Simple GUI
 
@@ -15,6 +14,7 @@ public class SimpleItem {
 
     // Just to have the info here
     @Getter
+    @Setter
     private int slot;
 
     // Item Builder for the item
@@ -22,17 +22,12 @@ public class SimpleItem {
     @Setter
     private ItemBuilder itemBuilder;
 
-    // ItemStack currently built and in the GUI
-    @Getter
-    @Setter
-    private ItemStack item;
-
     // Cancel the event?
     @Getter
     @Setter
     private boolean cancelClick = true;
 
-    public SimpleItem(ItemBuilder itemBuilder, String name, int slot) {
+    public MenuItem(ItemBuilder itemBuilder, String name, int slot) {
         this.name = name;
         this.slot = slot;
         this.itemBuilder = itemBuilder;

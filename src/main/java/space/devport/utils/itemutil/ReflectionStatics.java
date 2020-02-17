@@ -42,5 +42,4 @@ public class ReflectionStatics {
         Class<?> craftItemStack = Class.forName("org.bukkit.craftbukkit." + getNMSVersion() + ".inventory.CraftItemStack");
         return (ItemStack) craftItemStack.getMethod("asBukkitCopy", object.getClass()).invoke(null, object);
     }
-
 }
