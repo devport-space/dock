@@ -16,17 +16,21 @@ public class MenuHandler implements Listener {
 
     // Holding currently created GUIs
     @Getter
-    private HashMap<String, Menu> guiCache = new HashMap<>();
+    private HashMap<String, Menu> menuCache = new HashMap<>();
 
     // Add a gui to the cache
-    public void addGUI(Menu menu) {
-        guiCache.put(menu.getName(), menu);
+    public void addMenu(Menu menu) {
+        menuCache.put(menu.getName(), menu);
+    }
+
+    public void removeMenu(Menu menu) {
+        menuCache.remove(menu.getName());
     }
 
     // Close all the menus
     public void closeAll() {
-        guiCache.values().forEach(Menu::close);
-        guiCache.clear();
+        menuCache.values().forEach(Menu::close);
+        menuCache.clear();
     }
 
     // Click listener, throws SimpleItemClickEvent
@@ -41,7 +45,7 @@ public class MenuHandler implements Listener {
 
         Menu menu = null;
 
-        for (Menu menuLoop : guiCache.values())
+        for (Menu menuLoop : menuCache.values())
             if (inventory.equals(menuLoop.getInventory()) && menuLoop.getPlayer().equals(player))
                 menu = menuLoop;
 
@@ -70,14 +74,14 @@ public class MenuHandler implements Listener {
             e.setCancelled(true);
 
         // Call method
-        menu.onClick(e, menu, clickedItem);
+        menu.onClick(e, clickedItem);
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         Menu menu = null;
 
-        for (Menu menuLoop : guiCache.values())
+        for (Menu menuLoop : menuCache.values())
             if (menuLoop.getInventory().equals(e.getInventory()))
                 menu = menuLoop;
 

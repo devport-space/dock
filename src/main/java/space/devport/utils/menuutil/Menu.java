@@ -1,6 +1,7 @@
 package space.devport.utils.menuutil;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -13,20 +14,26 @@ import java.util.HashMap;
 public class Menu implements MenuListener {
 
     @Getter
-    private String name;
+    public String name;
 
     // For whom the inventory is open, null if closed.
     @Getter
-    private Player player;
+    public Player player;
 
     @Getter
-    private HashMap<Integer, MenuItem> items;
+    public HashMap<Integer, MenuItem> items;
 
     @Getter
-    private Inventory inventory;
+    public Inventory inventory;
+
+    @Getter
+    @Setter
+    public MenuBuilder menuBuilder;
 
     public Menu(MenuBuilder builder) {
         this(builder.getName(), builder.getInventory(), builder.getItems());
+
+        this.menuBuilder = builder;
     }
 
     public Menu(String name, Inventory inventory, HashMap<Integer, MenuItem> items) {
@@ -34,7 +41,7 @@ public class Menu implements MenuListener {
         this.inventory = inventory;
         this.items = items;
 
-        DevportUtils.inst.getMenuHandler().addGUI(this);
+        DevportUtils.inst.getMenuHandler().addMenu(this);
     }
 
     // Open the gui for a player
@@ -53,21 +60,29 @@ public class Menu implements MenuListener {
     }
 
     // Reload inventory contents without reopening
-    public void reload(MenuBuilder menuBuilder) {
-        inventory.setContents(menuBuilder.build().getInventory().getContents());
+    // TODO Fix.. doesn't replace with new GlobalFormat, idk why.
+    // TODO Create an original X a created thing, like in a MessageBuilder to allow replacing placeholders over again. That would fix the problem.
+    public void reload() {
+        menuBuilder.clear().build();
+        inventory.setContents(menuBuilder.getInventory().getContents());
     }
 
     // Close the menu
     public void close() {
-        player.closeInventory();
+        if (player == null)
+            return;
 
         MenuCloseEvent closeEvent = new MenuCloseEvent(player, this);
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(closeEvent);
 
-        player = null;
+        if (!closeEvent.isCancelled()) {
+            DevportUtils.inst.getMenuHandler().removeMenu(this);
+            player.closeInventory();
+            player = null;
+        }
     }
 
     @Override
-    public void onClick(InventoryClickEvent clickEvent, Menu menu, MenuItem clickedItem) {
+    public void onClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
     }
 }

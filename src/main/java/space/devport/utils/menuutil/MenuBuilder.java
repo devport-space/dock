@@ -127,6 +127,27 @@ public class MenuBuilder {
         this.name = name;
     }
 
+    // Basically copy another MenuBuilder.
+    public MenuBuilder(MenuBuilder builder) {
+        this.name = builder.getName();
+        this.items = builder.getItems();
+        this.fillAll = builder.isFillAll();
+        this.buildMatrix = builder.getBuildMatrix();
+        this.filler = builder.getFiller();
+        this.fillerSlots = builder.getFillerSlots();
+        this.itemMatrix = builder.getItemMatrix();
+        this.slots = builder.getSlots();
+        this.title = builder.getTitle();
+        this.globalFormat = builder.getGlobalFormat();
+        this.inventory = builder.getInventory();
+    }
+
+    public MenuBuilder clear() {
+        inventory.clear();
+        inventory = null;
+        return this;
+    }
+
     // Build the gui with items, placeholders etc.
     // Is called before opening
     public MenuBuilder build() {
