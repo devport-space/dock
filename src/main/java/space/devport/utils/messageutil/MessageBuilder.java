@@ -1,6 +1,7 @@
 package space.devport.utils.messageutil;
 
 import lombok.Getter;
+import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +38,12 @@ public class MessageBuilder extends ParseFormat {
     public MessageBuilder(String str) {
         message.add(str);
         workingMessage.add(str);
+    }
+
+    // Send a parsed, colored message to sender
+    public void send(CommandSender sender) {
+        if (!isEmpty())
+            sender.sendMessage(parsePlaceholders().color().toString());
     }
 
     // Pull the original message again

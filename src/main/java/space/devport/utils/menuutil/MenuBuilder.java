@@ -2,16 +2,13 @@ package space.devport.utils.menuutil;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
-import space.devport.utils.Configuration;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.itemutil.ItemBuilder;
 import space.devport.utils.messageutil.ParseFormat;
 import space.devport.utils.messageutil.StringUtil;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MenuBuilder {
 
@@ -38,9 +35,14 @@ public class MenuBuilder {
     @Getter
     private HashMap<Integer, MenuItem> items = new HashMap<>();
 
+    // Get an item from the Menu by name
     public MenuItem getItem(String name) {
         Optional<MenuItem> opt = items.values().stream().filter(i -> i.getName().equalsIgnoreCase(name)).findFirst();
         return opt.orElse(null);
+    }
+
+    public MenuItem getItem(int slot) {
+        return items.getOrDefault(slot, null);
     }
 
     // Title of the GUI
@@ -125,51 +127,6 @@ public class MenuBuilder {
         this.name = name;
     }
 
-    // Load a whole GUI from a yaml, with items and everything
-    public static MenuBuilder loadGUI(Configuration cfg, String path) {
-        String name = path.contains(".") ? path.split(".")[path.split(".").length] : path;
-
-        MenuBuilder menuBuilder = new MenuBuilder(name);
-
-        ConfigurationSection section = cfg.getFileConfiguration().getConfigurationSection(path);
-
-        if (section.contains("matrix"))
-            menuBuilder.setBuildMatrix(cfg.getArray(path + ".matrix"));
-
-        menuBuilder.setFillAll(section.getBoolean("fill-all", false));
-        menuBuilder.setSlots(section.getInt("slots", 9));
-        menuBuilder.setTitle(section.getString("title", "My Simple GUI"));
-
-        // Get fill slots
-        if (section.contains("fill-slots")) {
-            List<Integer> ints = Arrays.stream(section.getString("fill-slots").split(";")).map(Integer::parseInt).collect(Collectors.toList());
-            menuBuilder.setFillSlots(ints);
-        }
-
-        // Load items
-        if (section.contains("items")) {
-            for (String itemName : section.getConfigurationSection("items").getKeys(false)) {
-                ConfigurationSection itemSection = section.getConfigurationSection("items." + itemName);
-
-                ItemBuilder itemBuilder = ItemBuilder.loadBuilder(cfg.getFileConfiguration(), path + ".items." + itemName);
-
-                if (itemName.equalsIgnoreCase("filler"))
-                    menuBuilder.setFiller(itemBuilder);
-
-                MenuItem item = new MenuItem(itemBuilder, itemName, itemSection.getInt("slot"));
-
-                item.setCancelClick(itemSection.getBoolean("cancel-click", true));
-
-                if (itemSection.contains("matrix-char"))
-                    menuBuilder.setMatrixItem(itemSection.getString("matrix-char").charAt(0), item);
-                else
-                    menuBuilder.setItem(item);
-            }
-        }
-
-        return menuBuilder;
-    }
-
     // Build the gui with items, placeholders etc.
     // Is called before opening
     public MenuBuilder build() {
@@ -224,12 +181,6 @@ public class MenuBuilder {
         }
 
         return this;
-    }
-
-    // Reload inventory contents without reopening
-    // TODO Do this later, too tired rn.
-    protected void reload() {
-
     }
 
     // Set item array to gui

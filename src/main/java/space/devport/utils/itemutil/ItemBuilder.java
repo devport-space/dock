@@ -1,13 +1,10 @@
 package space.devport.utils.itemutil;
 
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import space.devport.utils.DevportUtils;
 import space.devport.utils.messageutil.ParseFormat;
 import space.devport.utils.messageutil.StringUtil;
 
@@ -77,70 +74,6 @@ public class ItemBuilder {
         }
 
         // TODO Add NBT load
-    }
-
-    public static ItemBuilder loadBuilder(FileConfiguration yaml, String path, String[] paths) {
-        try {
-            ConfigurationSection section = yaml.getConfigurationSection(path);
-
-            String type = section.getString(paths[0]);
-            Material mat = Material.valueOf(type);
-
-            short data = (short) section.getInt(paths[1]);
-
-            ItemBuilder b = new ItemBuilder(mat).damage(data);
-
-            if (section.contains(paths[2]))
-                b.displayName(section.getString(paths[2]));
-
-            if (section.contains(paths[3]))
-                b.amount(section.getInt(paths[3]));
-
-            if (section.contains(paths[4]))
-                b.glow(section.getBoolean(paths[4]));
-
-            if (section.contains(paths[5]))
-                b.lore(section.getStringList(paths[5]));
-
-            if (section.contains(paths[6])) {
-                List<String> dataList = section.getStringList(paths[6]);
-
-                for (String dataString : dataList) {
-                    int level = 1;
-
-                    if (dataString.contains(";")) {
-                        level = Integer.parseInt(dataString.split(";")[1]);
-                        dataString = dataString.split(";")[0];
-                    }
-
-                    Enchantment enchantment = Enchantment.getByName(dataString);
-
-                    b.addEnchant(enchantment, level);
-                }
-            }
-
-            if (section.contains(paths[7]))
-                for (String flagName : section.getStringList(paths[7])) {
-                    ItemFlag flag = ItemFlag.valueOf(flagName);
-
-                    b.addFlag(flag);
-                }
-
-            if (section.contains(paths[8]))
-                for (String nbtString : section.getStringList(paths[8]))
-                    b.addNBT(nbtString.split(";")[0], nbtString.split(";")[1]);
-
-            return b;
-        } catch (NullPointerException | IllegalArgumentException e) {
-            if (DevportUtils.inst.getConsoleOutput().isDebug())
-                e.printStackTrace();
-            return new ItemBuilder(Material.STONE).displayName("&cCould not load item").addLine("&7Reason: &c" + e.getMessage());
-        }
-    }
-
-    public static ItemBuilder loadBuilder(FileConfiguration yaml, String path) {
-        String[] paths = new String[]{"type", "damage", "name", "amount", "glow", "lore", "enchants", "flags", "nbt"};
-        return loadBuilder(yaml, path, paths);
     }
 
     // Parses lore & displayname immediately.

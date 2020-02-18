@@ -1,6 +1,7 @@
 package space.devport.utils.menuutil;
 
 import lombok.Getter;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -22,6 +23,12 @@ public class MenuHandler implements Listener {
         guiCache.put(menu.getName(), menu);
     }
 
+    // Close all the menus
+    public void closeAll() {
+        guiCache.values().forEach(Menu::close);
+        guiCache.clear();
+    }
+
     // Click listener, throws SimpleItemClickEvent
     @EventHandler
     public void onClick(InventoryClickEvent e) {
@@ -30,11 +37,12 @@ public class MenuHandler implements Listener {
 
         // Get which gui the player clicked
         Inventory inventory = e.getClickedInventory();
+        Player player = (Player) e.getWhoClicked();
 
         Menu menu = null;
 
         for (Menu menuLoop : guiCache.values())
-            if (inventory.equals(menuLoop.getInventory()))
+            if (inventory.equals(menuLoop.getInventory()) && menuLoop.getPlayer().equals(player))
                 menu = menuLoop;
 
         if (menu == null)
@@ -46,13 +54,20 @@ public class MenuHandler implements Listener {
         // Get clicked SimpleItem
         MenuItem clickedItem = menu.getItems().get(e.getSlot());
 
-        // Cancel event if we should.
-        if (clickedItem.isCancelClick())
-            e.setCancelled(true);
-
         // Throw new event
         MenuItemClickEvent clickEvent = new MenuItemClickEvent(e, menu, clickedItem);
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(clickEvent);
+
+        // Return if the event was cancelled
+        if (clickEvent.isCancelled())
+            return;
+
+        // Update the item from the event
+        clickedItem = clickEvent.getClickItem();
+
+        // Cancel event if we should.
+        if (clickedItem.isCancelClick())
+            e.setCancelled(true);
 
         // Call method
         menu.onClick(e, menu, clickedItem);

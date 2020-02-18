@@ -1,3 +1,4 @@
+import space.devport.utils.Configuration;
 import space.devport.utils.messageutil.MessageBuilder;
 
 public class TestItAll {

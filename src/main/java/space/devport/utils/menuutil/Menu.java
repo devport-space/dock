@@ -52,6 +52,11 @@ public class Menu implements MenuListener {
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(openEvent);
     }
 
+    // Reload inventory contents without reopening
+    public void reload(MenuBuilder menuBuilder) {
+        inventory.setContents(menuBuilder.build().getInventory().getContents());
+    }
+
     // Close the menu
     public void close() {
         player.closeInventory();
