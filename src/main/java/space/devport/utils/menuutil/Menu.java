@@ -100,9 +100,9 @@ public class Menu implements MenuListener {
 
             DevportUtils.inst.getMenuHandler().removeMenu(this);
 
-            player = null;
-
             onClose();
+
+            player = null;
         }
     }
 
@@ -112,11 +112,9 @@ public class Menu implements MenuListener {
 
     @Override
     public void onClose() {
-
     }
 
     @Override
     public void onOpen() {
-
     }
 }
