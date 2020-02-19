@@ -5,14 +5,13 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import space.devport.utils.messageutil.MessageBuilder;
 import space.devport.utils.messageutil.ParseFormat;
-import space.devport.utils.messageutil.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ItemBuilder {
 
@@ -22,11 +21,11 @@ public class ItemBuilder {
     private Material type = Material.STONE;
     private short damage = 0;
 
-    private String displayName;
+    private MessageBuilder displayName;
 
     private int amount = 1;
 
-    private List<String> lore = new ArrayList<>();
+    private MessageBuilder lore = new MessageBuilder();
 
     // Apply luck & hide enchants flag?
     private boolean glow = false;
@@ -62,10 +61,10 @@ public class ItemBuilder {
             ItemMeta itemMeta = item.getItemMeta();
 
             if (itemMeta.hasDisplayName())
-                this.displayName = itemMeta.getDisplayName();
+                this.displayName = new MessageBuilder(itemMeta.getDisplayName());
 
             if (itemMeta.hasLore())
-                this.lore = itemMeta.getLore();
+                this.lore = new MessageBuilder(itemMeta.getLore());
 
             if (itemMeta.hasEnchants())
                 this.enchants = new HashMap<>(itemMeta.getEnchants());
@@ -77,21 +76,14 @@ public class ItemBuilder {
     }
 
     // Parses lore & displayname immediately.
-    // TODO Change so it keeps the original somewhere, implementing MessageBuilder would be the best option i guess.
     public ItemBuilder parse(String key, String value) {
 
         if (displayName != null)
-            displayName = displayName.replace(key, value);
+            if (!displayName.isEmpty())
+                displayName.parsePlaceholder(key, value);
 
-        if (lore != null)
-            if (!lore.isEmpty()) {
-                List<String> newLore = new ArrayList<>();
-
-                for (String line : lore)
-                    newLore.add(line.replace(key, value));
-
-                lore = newLore;
-            }
+        if (!lore.isEmpty())
+            lore.parsePlaceholder(key, value);
 
         return this;
     }
@@ -114,15 +106,20 @@ public class ItemBuilder {
         // Parse ParseFormat placeholders
         // Color
         if (!lore.isEmpty()) {
-            List<String> list = lore.stream().map(line -> StringUtil.color(parseFormat.parse(line))).collect(Collectors.toList());
-            meta.setLore(list);
+            lore.parsePlaceholders().color();
+            meta.setLore(lore.getWorkingMessage());
+
+            lore.pull();
         }
 
         // Apply display name
         // Parse ParseFormat placeholders
         // Color
-        if (displayName != null)
-            meta.setDisplayName(StringUtil.color(parseFormat.parse(displayName)));
+        if (displayName != null) {
+            meta.setDisplayName(displayName.parsePlaceholders().color().toString());
+
+            displayName.pull();
+        }
 
         // Apply enchants
         if (!enchants.isEmpty())
@@ -169,22 +166,32 @@ public class ItemBuilder {
     }
 
     public ItemBuilder displayName(String displayName) {
+        this.displayName = new MessageBuilder(displayName);
+        return this;
+    }
+
+    public ItemBuilder displayName(MessageBuilder displayName) {
         this.displayName = displayName;
         return this;
     }
 
     public ItemBuilder lore(List<String> lore) {
+        this.lore = new MessageBuilder(lore);
+        return this;
+    }
+
+    public ItemBuilder lore(MessageBuilder lore) {
         this.lore = lore;
         return this;
     }
 
     public ItemBuilder lore(String[] lore) {
-        this.lore.addAll(Arrays.asList(lore));
+        this.lore = new MessageBuilder(Arrays.asList(lore));
         return this;
     }
 
     public ItemBuilder addLine(String str) {
-        lore.add(str);
+        lore.addLine(str);
         return this;
     }
 
@@ -259,7 +266,7 @@ public class ItemBuilder {
         return damage;
     }
 
-    public String displayName() {
+    public MessageBuilder displayName() {
         return displayName;
     }
 
@@ -267,7 +274,7 @@ public class ItemBuilder {
         return amount;
     }
 
-    public List<String> lore() {
+    public MessageBuilder lore() {
         return lore;
     }
 

@@ -88,6 +88,9 @@ public class MenuHandler implements Listener {
         if (menu == null)
             return;
 
+        if (!menu.isOpen())
+            return;
+
         menu.close();
     }
 }

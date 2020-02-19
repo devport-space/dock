@@ -5,8 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.itemutil.ItemBuilder;
+import space.devport.utils.messageutil.MessageBuilder;
 import space.devport.utils.messageutil.ParseFormat;
-import space.devport.utils.messageutil.StringUtil;
 
 import java.util.*;
 
@@ -48,11 +48,11 @@ public class MenuBuilder {
     // Title of the GUI
     // Is colored and parsed when built
     @Getter
-    private String title = "My Simple GUI";
+    private MessageBuilder title = new MessageBuilder("My Simple GUI");
 
     // Set the title
     public MenuBuilder setTitle(String title) {
-        this.title = title;
+        this.title = new MessageBuilder(title);
         return this;
     }
 
@@ -152,10 +152,11 @@ public class MenuBuilder {
     // Is called before opening
     public MenuBuilder build() {
 
-        String usedTitle = title;
+        String usedTitle = globalFormat.parse(title.color().toString());
+        title.pull();
 
         // Check if the inventory title isn't too long.
-        if (title.length() > 32) {
+        if (usedTitle.length() > 32) {
             // Cut it to 32
             usedTitle = usedTitle.substring(0, 31);
 
@@ -164,7 +165,7 @@ public class MenuBuilder {
         }
 
         // Create the inventory
-        inventory = Bukkit.createInventory(null, slots, StringUtil.color(globalFormat.parse(usedTitle)));
+        inventory = Bukkit.createInventory(null, slots, usedTitle);
 
         // buildMatrix will be empty if we're not supposed to use it.
 
@@ -190,15 +191,14 @@ public class MenuBuilder {
                         items.get(slot).getItemBuilder()
                                 .parseWith(globalFormat)
                                 .build());
-            }
-
-            // Fill if we should
-            if ((fillerSlots.contains(slot) || fillAll) && !items.containsKey(slot) && filler != null) {
-                inventory.setItem(slot,
-                        filler
-                                .parseWith(globalFormat)
-                                .build());
-            }
+            } else
+                // Fill if we should
+                if ((fillerSlots.contains(slot) || fillAll) && filler != null) {
+                    inventory.setItem(slot,
+                            filler
+                                    .parseWith(globalFormat)
+                                    .build());
+                }
         }
 
         return this;

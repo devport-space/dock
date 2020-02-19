@@ -30,6 +30,10 @@ public class Menu implements MenuListener {
     @Setter
     public MenuBuilder menuBuilder;
 
+    @Getter
+    @Setter
+    private boolean open;
+
     public Menu(MenuBuilder builder) {
         this(builder.getName(), builder.getInventory(), builder.getItems());
 
@@ -40,8 +44,6 @@ public class Menu implements MenuListener {
         this.name = name;
         this.inventory = inventory;
         this.items = items;
-
-        DevportUtils.inst.getMenuHandler().addMenu(this);
     }
 
     // Open the gui for a player
@@ -52,19 +54,34 @@ public class Menu implements MenuListener {
             return;
         }
 
-        this.player = player;
-        player.openInventory(inventory);
-
+        // Throw event
         MenuOpenEvent openEvent = new MenuOpenEvent(player, this);
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(openEvent);
+
+        if (!openEvent.isCancelled()) {
+            this.player = player;
+
+            DevportUtils.inst.getMenuHandler().addMenu(this);
+
+            open = true;
+            player.openInventory(inventory);
+
+            onOpen();
+        }
     }
 
-    // Reload inventory contents without reopening
-    // TODO Fix.. doesn't replace with new GlobalFormat, idk why.
-    // TODO Create an original X a created thing, like in a MessageBuilder to allow replacing placeholders over again. That would fix the problem.
-    public void reload() {
-        menuBuilder.clear().build();
-        inventory.setContents(menuBuilder.getInventory().getContents());
+    // Reload inventory
+    public void reload(boolean... reopen) {
+        if (reopen.length > 0)
+            if (reopen[0]) {
+                Player p = player;
+                close();
+                inventory = menuBuilder.clear().build().getInventory();
+                open(p);
+                return;
+            }
+
+        inventory.setContents(menuBuilder.clear().build().getInventory().getContents());
     }
 
     // Close the menu
@@ -72,17 +89,34 @@ public class Menu implements MenuListener {
         if (player == null)
             return;
 
+        // Throw close event
         MenuCloseEvent closeEvent = new MenuCloseEvent(player, this);
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(closeEvent);
 
         if (!closeEvent.isCancelled()) {
-            DevportUtils.inst.getMenuHandler().removeMenu(this);
+
+            open = false;
             player.closeInventory();
+
+            DevportUtils.inst.getMenuHandler().removeMenu(this);
+
             player = null;
+
+            onClose();
         }
     }
 
     @Override
     public void onClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
+    }
+
+    @Override
+    public void onClose() {
+
+    }
+
+    @Override
+    public void onOpen() {
+
     }
 }
