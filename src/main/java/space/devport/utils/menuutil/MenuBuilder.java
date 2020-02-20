@@ -41,6 +41,15 @@ public class MenuBuilder {
     @Getter
     private HashMap<Integer, MenuItem> builtItems = new HashMap<>();
 
+    // Spam prevention click delay in ticks
+    @Getter
+    private int clickDelay = 10;
+
+    public MenuBuilder setClickDelay(int clickDelay) {
+        this.clickDelay = clickDelay;
+        return this;
+    }
+
     // Get an item from the Menu by name
     public MenuItem getItem(String name) {
         Optional<MenuItem> opt = items.values().stream().filter(i -> i.getName().equalsIgnoreCase(name)).findFirst();

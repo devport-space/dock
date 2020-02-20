@@ -29,6 +29,12 @@ public class MenuItem {
     @Setter
     private boolean cancelClick = true;
 
+    // Whether or not is the item clickable.
+    // Spam prevention
+    @Getter
+    @Setter
+    private boolean clickable = true;
+
     // Default constructor
     public MenuItem(@NotNull ItemBuilder itemBuilder, @NotNull String name, int slot) {
         this.name = name;
