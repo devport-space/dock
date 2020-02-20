@@ -314,6 +314,12 @@ public class Configuration {
             ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
             String type = section.getString(paths[0]);
+
+            if (type == null) {
+                type = "STONE";
+                DevportUtils.inst.getConsoleOutput().warn("Missing Item material on " + path + "." + paths[0] + ", using stone.");
+            }
+
             Material mat = Material.valueOf(type);
 
             short data = (short) section.getInt(paths[1]);
