@@ -17,7 +17,7 @@ public class MenuEvent extends PlayerEvent {
         this.menu = menu;
     }
 
-    public static HandlerList handlerList = new HandlerList();
+    public static final HandlerList handlerList = new HandlerList();
 
     @Override
     public HandlerList getHandlers() {

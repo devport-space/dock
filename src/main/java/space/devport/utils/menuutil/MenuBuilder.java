@@ -113,13 +113,22 @@ public class MenuBuilder {
 
     // Matrix of items
     @Getter
-    private HashMap<Character, MenuItem> itemMatrix = new HashMap<>();
+    private HashMap<Character, MatrixItem> itemMatrix = new HashMap<>();
 
-    // Set an item to a corresponding character from the matrix.
+    // Add an item to a corresponding character from the matrix.
     // AKA "Welcome to the matrix, Neo."
-    public MenuBuilder setMatrixItem(char character, MenuItem item) {
-        itemMatrix.put(character, item);
+    public MenuBuilder addMatrixItem(char character, MenuItem item) {
+
+        MatrixItem matrixItem = itemMatrix.getOrDefault(character, new MatrixItem(character));
+        matrixItem.addItem(item);
+        itemMatrix.put(character, matrixItem);
+
         return this;
+    }
+
+    // Get matrix items assigned to a character
+    public MatrixItem getMenuItems(char character) {
+        return itemMatrix.getOrDefault(character, null);
     }
 
     // Default constructor
@@ -181,14 +190,17 @@ public class MenuBuilder {
             if (buildMatrix.length != 0) {
                 char matrixKey = matrix[slot];
 
-                if (itemMatrix.containsKey(matrixKey) && !items.containsKey(slots))
-                    items.put(slot, itemMatrix.get(matrixKey));
+                if (itemMatrix.containsKey(matrixKey) && !items.containsKey(slot)) {
+
+                    items.put(slot, itemMatrix.get(itemMatrix.get(matrixKey)));
+                }
             }
 
             // Set the item if present
             if (items.containsKey(slot)) {
                 inventory.setItem(slot,
-                        items.get(slot).getItemBuilder()
+                        items.get(slot)
+                                .getItemBuilder()
                                 .parseWith(globalFormat)
                                 .build());
             } else

@@ -292,8 +292,9 @@ public class Configuration {
 
                 item.setCancelClick(itemSection.getBoolean(paths[8], true));
 
+                // If it contains matrix-char
                 if (itemSection.contains(paths[9]))
-                    menuBuilder.setMatrixItem(itemSection.getString(paths[9]).charAt(0), item);
+                    menuBuilder.addMatrixItem(itemSection.getString(paths[9]).charAt(0), item);
                 else
                     menuBuilder.setItem(item);
             }
