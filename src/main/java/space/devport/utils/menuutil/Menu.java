@@ -35,24 +35,25 @@ public class Menu implements MenuListener {
     private boolean open;
 
     public Menu(MenuBuilder builder) {
-        this(builder.getName(), builder.getInventory(), builder.getItems());
 
         this.menuBuilder = builder;
-    }
+        this.name = builder.getName();
 
-    public Menu(String name, Inventory inventory, HashMap<Integer, MenuItem> items) {
-        this.name = name;
-        this.inventory = inventory;
-        this.items = items;
+        this.items = builder.getItems();
+        this.inventory = builder.getInventory();
     }
 
     // Open the gui for a player
-    public void open(Player player) {
+    public void open(Player player, boolean... rebuild) {
 
-        if (inventory == null) {
-            DevportUtils.inst.getConsoleOutput().err("Inventory is not built.");
-            return;
-        }
+        // Remove the inventory if we should rebuild when opening.
+        if (rebuild.length > 0)
+            if (rebuild[0])
+                menuBuilder.clear();
+
+        // Build the inventory if it's not there yet.
+        if (inventory == null)
+            menuBuilder.build();
 
         // Throw event
         MenuOpenEvent openEvent = new MenuOpenEvent(player, this);

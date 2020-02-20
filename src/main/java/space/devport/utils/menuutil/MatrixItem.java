@@ -31,17 +31,25 @@ public class MatrixItem {
         menuItems.add(item);
     }
 
-    public MatrixItem addItem(MenuItem item) {
+    public void addItem(MenuItem item) {
         menuItems.add(item);
-        return this;
     }
 
     public MenuItem getNext() {
-        // Up the index if there are more items.if (menuItems.size() > 1)index++;return menuItems.get(index);}
-        if (menuItems.size() > 1)
-            index++;
 
-        return menuItems.get(index);
+        MenuItem item = menuItems.get(index);
+
+        // Up the index if there are more items stored.
+        if (menuItems.size() > 1) {
+
+            // Overflow to first.
+            if (index == menuItems.size())
+                index = 0;
+            else
+                index++;
+        }
+
+        return item;
     }
 
     public boolean isEmpty() {
