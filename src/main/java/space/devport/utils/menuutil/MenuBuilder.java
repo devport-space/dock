@@ -121,9 +121,13 @@ public class MenuBuilder {
 
         MatrixItem matrixItem = itemMatrix.getOrDefault(character, new MatrixItem(character));
         matrixItem.addItem(item);
-        itemMatrix.put(character, matrixItem);
 
+        itemMatrix.put(character, matrixItem);
         return this;
+    }
+
+    public MatrixItem getMatrixItem(char character) {
+        return itemMatrix.getOrDefault(character, new MatrixItem(character));
     }
 
     // Get matrix items assigned to a character
@@ -190,10 +194,8 @@ public class MenuBuilder {
             if (buildMatrix.length != 0) {
                 char matrixKey = matrix[slot];
 
-                if (itemMatrix.containsKey(matrixKey) && !items.containsKey(slot)) {
-
-                    items.put(slot, itemMatrix.get(itemMatrix.get(matrixKey)));
-                }
+                if (itemMatrix.containsKey(matrixKey) && !items.containsKey(slot))
+                    items.put(slot, itemMatrix.get(matrixKey).getNext());
             }
 
             // Set the item if present

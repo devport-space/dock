@@ -8,14 +8,14 @@ import java.util.List;
 
 public class MatrixItem {
 
+    // Character to fill in.
+    @Getter
+    private final char character;
+
     // Menu items.
     @Getter
     @Setter
     private List<MenuItem> menuItems = new ArrayList<>();
-
-    // Character to fill in.
-    @Getter
-    private char character;
 
     // Actual fill index, used when building a menu.
     @Getter
@@ -26,8 +26,25 @@ public class MatrixItem {
         this.character = character;
     }
 
+    public MatrixItem(char character, MenuItem item) {
+        this.character = character;
+        menuItems.add(item);
+    }
+
     public MatrixItem addItem(MenuItem item) {
         menuItems.add(item);
         return this;
+    }
+
+    public MenuItem getNext() {
+        // Up the index if there are more items.if (menuItems.size() > 1)index++;return menuItems.get(index);}
+        if (menuItems.size() > 1)
+            index++;
+
+        return menuItems.get(index);
+    }
+
+    public boolean isEmpty() {
+        return menuItems.isEmpty();
     }
 }
