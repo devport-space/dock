@@ -16,7 +16,7 @@ public class MenuHandler implements Listener {
 
     // Holding currently created GUIs
     @Getter
-    private HashMap<String, Menu> menuCache = new HashMap<>();
+    private final HashMap<String, Menu> menuCache = new HashMap<>();
 
     // Add a gui to the cache
     public void addMenu(Menu menu) {
@@ -49,11 +49,15 @@ public class MenuHandler implements Listener {
             if (inventory.equals(menuLoop.getInventory()) && menuLoop.getPlayer().equals(player))
                 menu = menuLoop;
 
-        if (menu == null)
+        if (menu == null) {
+            DevportUtils.inst.getConsoleOutput().debug("Found no menu.");
             return;
+        }
 
-        if (!menu.getItems().containsKey(e.getSlot()))
+        if (!menu.getItems().containsKey(e.getSlot())) {
+            DevportUtils.inst.getConsoleOutput().debug("Invalid item.");
             return;
+        }
 
         // Get clicked SimpleItem
         MenuItem clickedItem = menu.getItems().get(e.getSlot());
@@ -63,8 +67,10 @@ public class MenuHandler implements Listener {
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(clickEvent);
 
         // Return if the event was cancelled
-        if (clickEvent.isCancelled())
+        if (clickEvent.isCancelled()) {
+            DevportUtils.inst.getConsoleOutput().debug("Event got cancelled.");
             return;
+        }
 
         // Update the item from the event
         clickedItem = clickEvent.getClickItem();

@@ -1,6 +1,7 @@
 package space.devport.utils.menuutil;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportUtils;
@@ -16,6 +17,7 @@ public class MenuBuilder {
 
     // System name for the gui, can be used for loading/saving.
     @Getter
+    @Setter
     private String name;
 
     // Global parse format for all the items & the title
@@ -31,9 +33,13 @@ public class MenuBuilder {
     @Getter
     private Inventory inventory;
 
-    // Items that the GUI contains, indexed by slot they occupy.
+    // Items that should be filled in.
     @Getter
     private HashMap<Integer, MenuItem> items = new HashMap<>();
+
+    // Items that are built in the menu.
+    @Getter
+    private HashMap<Integer, MenuItem> builtItems = new HashMap<>();
 
     // Get an item from the Menu by name
     public MenuItem getItem(String name) {
@@ -140,19 +146,25 @@ public class MenuBuilder {
         this.name = name;
     }
 
-    // Basically copy another MenuBuilder.
+    // Copy constructor
     public MenuBuilder(MenuBuilder builder) {
         this.name = builder.getName();
-        this.items = builder.getItems();
-        this.fillAll = builder.isFillAll();
-        this.buildMatrix = builder.getBuildMatrix();
-        this.filler = builder.getFiller();
-        this.fillerSlots = builder.getFillerSlots();
-        this.itemMatrix = builder.getItemMatrix();
+
         this.slots = builder.getSlots();
         this.title = builder.getTitle();
-        this.globalFormat = builder.getGlobalFormat();
-        this.inventory = builder.getInventory();
+
+        this.items = builder.getItems();
+
+        this.fillAll = builder.isFillAll();
+        this.filler = builder.getFiller();
+        this.fillerSlots = builder.getFillerSlots();
+
+        this.buildMatrix = builder.getBuildMatrix();
+
+        for (MatrixItem matrixItem : builder.getItemMatrix().values())
+            itemMatrix.put(matrixItem.getCharacter(), new MatrixItem(matrixItem));
+
+        this.globalFormat = new ParseFormat(builder.getGlobalFormat());
     }
 
     public MenuBuilder clear() {
@@ -187,6 +199,8 @@ public class MenuBuilder {
         if (buildMatrix.length != 0)
             matrix = String.join("", buildMatrix).toCharArray();
 
+        HashMap<Integer, MenuItem> inventoryItems = new HashMap<>(items);
+
         // Fill the items.
         for (int slot = 0; slot < slots; slot++) {
 
@@ -194,14 +208,18 @@ public class MenuBuilder {
             if (buildMatrix.length != 0) {
                 char matrixKey = matrix[slot];
 
-                if (itemMatrix.containsKey(matrixKey) && !items.containsKey(slot))
-                    items.put(slot, itemMatrix.get(matrixKey).getNext());
+                if (itemMatrix.containsKey(matrixKey) && !inventoryItems.containsKey(slot)) {
+                    MenuItem item = itemMatrix.get(matrixKey).getNext();
+
+                    if (item != null)
+                        inventoryItems.put(slot, item);
+                }
             }
 
             // Set the item if present
-            if (items.containsKey(slot)) {
+            if (inventoryItems.containsKey(slot)) {
                 inventory.setItem(slot,
-                        items.get(slot)
+                        inventoryItems.get(slot)
                                 .getItemBuilder()
                                 .parseWith(globalFormat)
                                 .build());
@@ -214,6 +232,13 @@ public class MenuBuilder {
                                     .build());
                 }
         }
+
+        // Reset matrix indexes
+        for (MatrixItem matrixItem : itemMatrix.values())
+            matrixItem.setIndex(0);
+
+        // Copy to builtItems
+        this.builtItems = new HashMap<>(inventoryItems);
 
         return this;
     }

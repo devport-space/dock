@@ -26,6 +26,14 @@ public class MessageBuilder extends ParseFormat {
     public MessageBuilder() {
     }
 
+    public MessageBuilder(MessageBuilder builder) {
+        super(builder);
+
+        this.message = new ArrayList<>(builder.getMessage());
+        this.workingMessage = new ArrayList<>(builder.getWorkingMessage());
+        this.colorChar = builder.getColorChar();
+    }
+
     public MessageBuilder(String[] message) {
         set(message);
     }
@@ -79,12 +87,6 @@ public class MessageBuilder extends ParseFormat {
     // Set message to a new one from array.
     public MessageBuilder set(String[] message) {
         set(Arrays.asList(message));
-        return this;
-    }
-
-    // Copy placeholders from a format
-    public MessageBuilder copyPlaceholders(ParseFormat format) {
-        setPlaceholderCache(format.getPlaceholderCache());
         return this;
     }
 
@@ -168,6 +170,12 @@ public class MessageBuilder extends ParseFormat {
     @Override
     public MessageBuilder setPlaceholders(String[] placeholders) {
         super.setPlaceholders(placeholders);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder copyPlaceholders(ParseFormat format) {
+        super.copyPlaceholders(format);
         return this;
     }
 }

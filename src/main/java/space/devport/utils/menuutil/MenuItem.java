@@ -2,15 +2,17 @@ package space.devport.utils.menuutil;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import space.devport.utils.itemutil.ItemBuilder;
 
 public class MenuItem {
 
     // Holds information about an Item in a Simple GUI
 
-    // Name of the item, will be used for loading/saving later.
+    // Name of the item
     @Getter
-    private String name;
+    @NotNull
+    private final String name;
 
     // Just to have the info here
     @Getter
@@ -27,9 +29,20 @@ public class MenuItem {
     @Setter
     private boolean cancelClick = true;
 
-    public MenuItem(ItemBuilder itemBuilder, String name, int slot) {
+    // Default constructor
+    public MenuItem(@NotNull ItemBuilder itemBuilder, @NotNull String name, int slot) {
         this.name = name;
+
         this.slot = slot;
         this.itemBuilder = itemBuilder;
+    }
+
+    public MenuItem(@NotNull MenuItem item) {
+        this.name = item.getName();
+        this.slot = item.getSlot();
+
+        this.itemBuilder = new ItemBuilder(item.getItemBuilder());
+
+        this.cancelClick = item.isCancelClick();
     }
 }

@@ -24,6 +24,11 @@ public class ParseFormat {
     public ParseFormat() {
     }
 
+    public ParseFormat(ParseFormat format) {
+        copyPlaceholders(format);
+        this.defaultValue = format.getDefaultValue();
+    }
+
     // Class constructor with placeholders.
     public ParseFormat(String[] placeholders) {
         for (String placeholder : placeholders)
@@ -58,6 +63,12 @@ public class ParseFormat {
     public ParseFormat setPlaceholders(String[] placeholders) {
         clearPlaceholders();
         addPlaceholders(placeholders);
+        return this;
+    }
+
+    // Copy placeholders from a format
+    public ParseFormat copyPlaceholders(ParseFormat format) {
+        setPlaceholderCache(format.getPlaceholderCache());
         return this;
     }
 

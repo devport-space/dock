@@ -12,12 +12,12 @@ public class MenuEvent extends PlayerEvent implements Cancellable {
 
     // Interacted Menu
     @Getter
-    private Menu menu;
+    private final Menu menu;
 
     // Cancelled?
     @Getter
     @Setter
-    private boolean cancelled;
+    private boolean cancelled = false;
 
     public MenuEvent(Player who, Menu menu) {
         super(who);

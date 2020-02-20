@@ -36,10 +36,10 @@ public class Menu implements MenuListener {
 
     public Menu(MenuBuilder builder) {
 
-        this.menuBuilder = builder;
         this.name = builder.getName();
+        this.menuBuilder = builder;
 
-        this.items = builder.getItems();
+        this.items = builder.getBuiltItems();
         this.inventory = builder.getInventory();
     }
 
@@ -52,8 +52,11 @@ public class Menu implements MenuListener {
                 menuBuilder.clear();
 
         // Build the inventory if it's not there yet.
-        if (inventory == null)
+        if (inventory == null) {
             menuBuilder.build();
+            inventory = menuBuilder.getInventory();
+            items = menuBuilder.getBuiltItems();
+        }
 
         // Throw event
         MenuOpenEvent openEvent = new MenuOpenEvent(player, this);
@@ -82,7 +85,9 @@ public class Menu implements MenuListener {
                 return;
             }
 
-        inventory.setContents(menuBuilder.clear().build().getInventory().getContents());
+        menuBuilder.clear().build();
+        items = menuBuilder.getBuiltItems();
+        inventory.setContents(menuBuilder.getInventory().getContents());
     }
 
     // Close the menu

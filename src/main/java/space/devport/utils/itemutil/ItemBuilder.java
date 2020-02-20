@@ -49,6 +49,19 @@ public class ItemBuilder {
         this.type = type;
     }
 
+    public ItemBuilder(ItemBuilder builder) {
+        this.displayName = new MessageBuilder(builder.displayName());
+        this.type = builder.type();
+        this.amount = builder.amount();
+        this.damage = builder.damage();
+        this.glow = builder.glow();
+        this.flags = new ArrayList<>(builder.flags());
+        this.enchants = new HashMap<>(builder.enchants());
+        this.parseFormat = new ParseFormat(builder.parseFormat());
+        this.NBT = new HashMap<>(builder.nbt());
+        this.lore = new MessageBuilder(builder.lore());
+    }
+
     // Load ItemStack int o ItemBuilder
     public ItemBuilder(ItemStack item) {
         this.type = item.getType();
