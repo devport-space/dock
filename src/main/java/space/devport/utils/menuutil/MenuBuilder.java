@@ -15,6 +15,8 @@ public class MenuBuilder {
 
     // A simple GUI handler
 
+    // TODO Count slots from matrix when present
+
     // System name for the gui, can be used for loading/saving.
     @Getter
     @Setter
@@ -138,6 +140,12 @@ public class MenuBuilder {
         matrixItem.addItem(item);
 
         itemMatrix.put(character, matrixItem);
+        return this;
+    }
+
+    // Add a matrix item to the matrix.
+    public MenuBuilder addMatrixItem(MatrixItem matrixItem) {
+        itemMatrix.put(matrixItem.getCharacter(), matrixItem);
         return this;
     }
 

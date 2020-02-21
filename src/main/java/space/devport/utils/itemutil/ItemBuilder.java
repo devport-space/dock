@@ -18,6 +18,8 @@ public class ItemBuilder {
     // TODO Add documentation once redone
     // TODO Hook to ConsoleOutput
 
+    // TODO Implement Mutli-version material support. XSeries: https://github.com/CryptoMorin/XSeries
+
     private Material type = Material.STONE;
     private short damage = 0;
 

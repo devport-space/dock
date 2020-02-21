@@ -11,8 +11,8 @@ public class MenuItem {
 
     // Name of the item
     @Getter
-    @NotNull
-    private final String name;
+    @Setter
+    private String name;
 
     // Just to have the info here
     @Getter

@@ -1,6 +1,7 @@
 package space.devport.utils;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -142,6 +143,12 @@ public class Configuration {
         return fileConfiguration.getStringList(path).toArray(new String[0]);
     }
 
+    // Get a character, if not found, returns default value.
+    public char getChar(String path, char defaultValue) {
+        String str = fileConfiguration.getString(path);
+        return str != null ? str.toCharArray()[0] : defaultValue;
+    }
+
     /**
      * Reloads the yaml, checks if file exists and loads/creates it to yaml again.
      */
@@ -222,6 +229,11 @@ public class Configuration {
         return new MessageBuilder();
     }
 
+    // Paths to region data
+    @Getter
+    @Setter
+    private String[] regionPaths = new String[]{"min", "max"};
+
     // Load region from yaml with given paths
     public Region loadRegion(String path, String[] paths) {
         Location min = LocationUtil.locationFromString(fileConfiguration.getString(path + "." + paths[0]));
@@ -240,22 +252,27 @@ public class Configuration {
         return new Region(min, max, false);
     }
 
-    // Load region from yaml with default min, max paths
+    // Load region from yaml
     public Region loadRegion(String path) {
-        String[] paths = new String[]{"min", "max"};
-        return loadRegion(path, paths);
+        return loadRegion(path, regionPaths);
     }
 
     public void saveRegion(String path, Region region) {
         ConfigurationSection section = fileConfiguration.createSection(path);
 
-        section.set("min", LocationUtil.locationToString(region.getMin()));
-        section.set("max", LocationUtil.locationToString(region.getMax()));
+        section.set(regionPaths[0], LocationUtil.locationToString(region.getMin()));
+        section.set(regionPaths[1], LocationUtil.locationToString(region.getMax()));
 
         save();
     }
 
+    // Paths to menu data
+    @Getter
+    @Setter
+    private String[] menuPaths = new String[]{"title", "slots", "fill-all", "fill-slots", "matrix", "items", "filler", "slot", "cancel-click", "matrix-char"};
+
     // Load a whole Menu from yaml on a given path
+    // paths = "title", "slots", "fill-all", "fill-slots", "matrix", "items", "filler", "slot", "cancel-click", "matrix-char"
     public MenuBuilder loadMenuBuilder(String path, String[] paths) {
         String name = path.contains(".") ? path.split(".")[path.split(".").length] : path;
 
@@ -283,14 +300,10 @@ public class Configuration {
             for (String itemName : section.getConfigurationSection(paths[5]).getKeys(false)) {
                 ConfigurationSection itemSection = section.getConfigurationSection(paths[5] + "." + itemName);
 
-                ItemBuilder itemBuilder = loadItemBuilder(path + "." + paths[5] + "." + itemName);
+                MenuItem item = loadMenuItem(path + "." + paths[5] + "." + itemName, new String[]{paths[7], paths[8]});
 
                 if (itemName.equalsIgnoreCase(paths[6]))
-                    menuBuilder.setFiller(itemBuilder);
-
-                MenuItem item = new MenuItem(itemBuilder, itemName, itemSection.getInt(paths[7], -1));
-
-                item.setCancelClick(itemSection.getBoolean(paths[8], true));
+                    menuBuilder.setFiller(item.getItemBuilder());
 
                 // If it contains matrix-char
                 if (itemSection.contains(paths[9]))
@@ -304,9 +317,36 @@ public class Configuration {
     }
 
     public MenuBuilder loadMenuBuilder(String path) {
-        String[] paths = new String[]{"title", "slots", "fill-all", "fill-slots", "matrix", "items", "filler", "slot", "cancel-click", "matrix-char"};
-        return loadMenuBuilder(path, paths);
+        return loadMenuBuilder(path, menuPaths);
     }
+
+    // Paths to menu item data
+    @Getter
+    @Setter
+    private String[] menuItemPaths = new String[]{"slot", "cancel-click"};
+
+    public MenuItem loadMenuItem(String path, String[] paths) {
+        ItemBuilder itemBuilder = loadItemBuilder(path);
+
+        String itemName = path.contains(".") ? path.split(".")[path.split(".").length] : path;
+
+        int slot = fileConfiguration.getInt(path + "." + paths[0], -1);
+
+        MenuItem item = new MenuItem(itemBuilder, itemName, slot);
+
+        item.setCancelClick(fileConfiguration.getBoolean(path + "." + paths[1], true));
+
+        return item;
+    }
+
+    public MenuItem loadMenuItem(String path) {
+        return loadMenuItem(path, menuItemPaths);
+    }
+
+    // ItemBuilder data paths
+    @Getter
+    @Setter
+    private String[] itemPaths = new String[]{"type", "damage", "name", "amount", "glow", "lore", "enchants", "flags", "nbt"};
 
     // Load an ItemBuilder from given path, with given sub-paths for separate parts.
     public ItemBuilder loadItemBuilder(String path, String[] paths) {
@@ -375,7 +415,6 @@ public class Configuration {
     }
 
     public ItemBuilder loadItemBuilder(String path) {
-        String[] paths = new String[]{"type", "damage", "name", "amount", "glow", "lore", "enchants", "flags", "nbt"};
-        return loadItemBuilder(path, paths);
+        return loadItemBuilder(path, itemPaths);
     }
 }
