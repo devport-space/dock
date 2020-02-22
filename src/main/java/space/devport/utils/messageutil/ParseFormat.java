@@ -68,7 +68,7 @@ public class ParseFormat {
 
     // Copy placeholders from a format
     public ParseFormat copyPlaceholders(ParseFormat format) {
-        setPlaceholderCache(format.getPlaceholderCache());
+        format.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
         return this;
     }
 

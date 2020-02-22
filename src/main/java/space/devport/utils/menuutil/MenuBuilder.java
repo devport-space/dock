@@ -130,7 +130,7 @@ public class MenuBuilder {
 
     // Matrix of items
     @Getter
-    private HashMap<Character, MatrixItem> itemMatrix = new HashMap<>();
+    private final HashMap<Character, MatrixItem> itemMatrix = new HashMap<>();
 
     // Add an item to a corresponding character from the matrix.
     // AKA "Welcome to the matrix, Neo."
@@ -178,6 +178,8 @@ public class MenuBuilder {
 
         this.buildMatrix = builder.getBuildMatrix();
 
+        this.clickDelay = builder.getClickDelay();
+
         for (MatrixItem matrixItem : builder.getItemMatrix().values())
             itemMatrix.put(matrixItem.getCharacter(), new MatrixItem(matrixItem));
 
@@ -185,8 +187,12 @@ public class MenuBuilder {
     }
 
     public MenuBuilder clear() {
-        inventory.clear();
-        inventory = null;
+        if (inventory != null) {
+            inventory.clear();
+            inventory = null;
+        }
+
+        builtItems.clear();
         return this;
     }
 

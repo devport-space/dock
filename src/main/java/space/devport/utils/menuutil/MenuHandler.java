@@ -50,15 +50,11 @@ public class MenuHandler implements Listener {
             if (inventory.equals(menuLoop.getInventory()) && menuLoop.getPlayer().equals(player))
                 menu = menuLoop;
 
-        if (menu == null) {
-            DevportUtils.inst.getConsoleOutput().debug("Found no menu.");
+        if (menu == null)
             return;
-        }
 
-        if (!menu.getItems().containsKey(e.getSlot())) {
-            DevportUtils.inst.getConsoleOutput().debug("Invalid item.");
+        if (!menu.getItems().containsKey(e.getSlot()))
             return;
-        }
 
         // Get clicked SimpleItem
         MenuItem clickedItem = menu.getItems().get(e.getSlot());
@@ -68,10 +64,8 @@ public class MenuHandler implements Listener {
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(clickEvent);
 
         // Return if the event was cancelled
-        if (clickEvent.isCancelled()) {
-            DevportUtils.inst.getConsoleOutput().debug("Event got cancelled.");
+        if (clickEvent.isCancelled())
             return;
-        }
 
         // Update the item from the event
         clickedItem = clickEvent.getClickItem();

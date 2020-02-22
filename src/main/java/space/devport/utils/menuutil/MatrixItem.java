@@ -57,7 +57,7 @@ public class MatrixItem {
     }
 
     public void addItem(MenuItem item) {
-        menuItems.add(item);
+        menuItems.add(new MenuItem(item));
     }
 
     public MenuItem getItem(String name) {
