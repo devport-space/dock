@@ -121,7 +121,7 @@ public class ItemBuilder {
         // Parse ParseFormat placeholders
         // Color
         if (!lore.isEmpty()) {
-            lore.parsePlaceholders().color();
+            lore.copyPlaceholders(parseFormat).parsePlaceholders().color();
             meta.setLore(lore.getWorkingMessage());
 
             lore.pull();
@@ -131,7 +131,7 @@ public class ItemBuilder {
         // Parse ParseFormat placeholders
         // Color
         if (displayName != null) {
-            meta.setDisplayName(displayName.parsePlaceholders().color().toString());
+            meta.setDisplayName(displayName.copyPlaceholders(parseFormat).parsePlaceholders().color().toString());
 
             displayName.pull();
         }
@@ -267,7 +267,7 @@ public class ItemBuilder {
 
     // ParseFormat
     public ItemBuilder parseFormat(ParseFormat format) {
-        this.parseFormat = format;
+        this.parseFormat = new ParseFormat(format);
         return this;
     }
 

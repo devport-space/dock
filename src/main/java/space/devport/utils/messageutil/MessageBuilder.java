@@ -109,7 +109,7 @@ public class MessageBuilder extends ParseFormat {
 
     // Parse a single placeholder in the whole message.
     public MessageBuilder parsePlaceholder(String placeholder, String value) {
-        workingMessage = workingMessage.stream().map(line -> line.replaceAll(placeholder, value)).collect(Collectors.toList());
+        workingMessage = workingMessage.stream().map(line -> line.replace(placeholder, value)).collect(Collectors.toList());
         return this;
     }
 

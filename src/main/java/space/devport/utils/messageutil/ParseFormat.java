@@ -91,7 +91,7 @@ public class ParseFormat {
     // Parse a string with current placeholders
     public String parse(String str) {
         for (String placeholder : placeholderCache.keySet())
-            str = str.replaceAll(placeholder, placeholderCache.get(placeholder));
+            str = str.replace(placeholder, placeholderCache.get(placeholder));
         return str;
     }
 

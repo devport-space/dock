@@ -274,7 +274,7 @@ public class Configuration {
     // Load a whole Menu from yaml on a given path
     // paths = "title", "slots", "fill-all", "fill-slots", "matrix", "items", "filler", "slot", "cancel-click", "matrix-char"
     public MenuBuilder loadMenuBuilder(String path, String[] paths) {
-        String name = path.contains(".") ? path.split(".")[path.split(".").length] : path;
+        String name = path.contains(".") ? path.split("\\.")[path.split("\\.").length - 1] : path;
 
         MenuBuilder menuBuilder = new MenuBuilder(name);
 
@@ -328,7 +328,7 @@ public class Configuration {
     public MenuItem loadMenuItem(String path, String[] paths) {
         ItemBuilder itemBuilder = loadItemBuilder(path);
 
-        String itemName = path.contains(".") ? path.split(".")[path.split(".").length] : path;
+        String itemName = path.contains(".") ? path.split("\\.")[path.split("\\.").length - 1] : path;
 
         int slot = fileConfiguration.getInt(path + "." + paths[0], -1);
 
