@@ -1,4 +1,4 @@
-package space.devport.utils;
+package space.devport.utils.configutil;
 
 import jdk.internal.joptsimple.internal.Strings;
 import lombok.Getter;
@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.Plugin;
+import space.devport.utils.DevportUtils;
 import space.devport.utils.itemutil.ItemBuilder;
 import space.devport.utils.menuutil.MenuBuilder;
 import space.devport.utils.menuutil.MenuItem;
@@ -213,89 +214,6 @@ public class Configuration {
     }
 
     // --------------------------------- Advanced Load/Save Methods -----------------------------------
-
-    // Sub paths to different parts of an Object
-    public enum SubPath {
-        /**
-         * REGIONS
-         */
-        REGION_MIN("min"),
-        REGION_MAX("max"),
-
-        /**
-         * MENU
-         */
-
-        MENU_TITLE("title"),
-        MENU_SLOTS("slots"),
-        MENU_FILL_ALL("fill-all"),
-        MENU_FILL_SLOTS("fill-slots"),
-        MENU_MATRIX("matrix"),
-        MENU_ITEMS("items"),
-        MENU_FILLER("filler"),
-        MENU_MATRIX_CHAR("matrix-char"),
-
-        /**
-         * MENU ITEM
-         */
-
-        MENU_ITEM_CANCEL_CLICK("cancel-click"),
-        MENU_ITEM_SLOT("slot"),
-
-        /**
-         * ITEM BUILDER
-         */
-
-        ITEM_TYPE("type"),
-        ITEM_DATA("data"),
-        ITEM_NAME("name"),
-        ITEM_AMOUNT("amount"),
-        ITEM_LORE("lore"),
-        ITEM_ENCHANTS("enchants"),
-        ITEM_FLAGS("flags"),
-        ITEM_NBT("nbt"),
-        ITEM_GLOW("glow");
-
-        @Setter
-        private String subPath;
-
-        SubPath(String subPath) {
-            this.subPath = subPath;
-        }
-
-        @Override
-        public String toString() {
-            return subPath;
-        }
-    }
-
-    // Some default values for object loading
-    public enum DefaultValue {
-
-        /**
-         * MENU
-         * */
-        MENU_TITLE("My Simple GUI"),
-
-        /**
-         * ITEM BUILDER
-         */
-        ITEM_TYPE("STONE"),
-        ITEM_NAME("&cCould not load item"),
-        ITEM_LINE("&cReason: &7{message}");
-
-        @Setter
-        private String defaultValue;
-
-        DefaultValue(String defaultValue) {
-            this.defaultValue = defaultValue;
-        }
-
-        @Override
-        public String toString() {
-            return defaultValue;
-        }
-    }
 
     // Load a message builder either from String or from a StringList
     public MessageBuilder loadMessageBuilder(String path) {
