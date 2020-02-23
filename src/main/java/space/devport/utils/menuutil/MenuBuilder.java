@@ -1,7 +1,6 @@
 package space.devport.utils.menuutil;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportUtils;
@@ -13,23 +12,13 @@ import java.util.*;
 
 public class MenuBuilder {
 
-    // A simple GUI handler
+    // A simple GUI Builder
 
-    // TODO Count slots from matrix when present
-
-    // System name for the gui, can be used for loading/saving.
-    @Getter
-    @Setter
-    private String name;
+    // TODO Move Matrix & stable items to different builders
 
     // Global parse format for all the items & the title
     @Getter
     private ParseFormat globalFormat = new ParseFormat();
-
-    public MenuBuilder setGlobalFormat(ParseFormat format) {
-        this.globalFormat = format;
-        return this;
-    }
 
     // Inventory for the GUI
     @Getter
@@ -47,126 +36,41 @@ public class MenuBuilder {
     @Getter
     private int clickDelay = 10;
 
-    public MenuBuilder setClickDelay(int clickDelay) {
-        this.clickDelay = clickDelay;
-        return this;
-    }
-
-    // Get an item from the Menu by name
-    public MenuItem getItem(String name) {
-        Optional<MenuItem> opt = items.values().stream().filter(i -> i.getName().equalsIgnoreCase(name)).findFirst();
-        return opt.orElse(null);
-    }
-
-    public MenuItem getItem(int slot) {
-        return items.getOrDefault(slot, null);
-    }
-
     // Title of the GUI
     // Is colored and parsed when built
     @Getter
     private MessageBuilder title = new MessageBuilder("My Simple GUI");
 
-    // Set the title
-    public MenuBuilder setTitle(String title) {
-        this.title = new MessageBuilder(title);
-        return this;
-    }
-
     // Slots
     @Getter
     private int slots = 9;
-
-    // Set slots
-    public MenuBuilder setSlots(int slots) {
-        this.slots = slots;
-        return this;
-    }
 
     // Slots to fill
     @Getter
     private List<Integer> fillerSlots = new ArrayList<>();
 
-    // Set slots to fill
-    public MenuBuilder setFillSlots(int[] slots) {
-        Arrays.stream(slots).forEach(slot -> fillerSlots.add(slot));
-        return this;
-    }
-
-    public MenuBuilder setFillSlots(List<Integer> slots) {
-        this.fillerSlots = slots;
-        return this;
-    }
-
     // Fill all free slots on build?
     @Getter
     private boolean fillAll = false;
-
-    // Fill all slots that are empty
-    // Other items should be set before this action
-    public MenuBuilder setFillAll(boolean fillAll) {
-        this.fillAll = fillAll;
-        return this;
-    }
 
     // Filler item
     @Getter
     private ItemBuilder filler;
 
-    // Set the filler ItemBuilder
-    public MenuBuilder setFiller(ItemBuilder filler) {
-        this.filler = filler;
-        return this;
-    }
-
     // The inventory matrix
     @Getter
     private String[] buildMatrix = new String[]{};
-
-    public MenuBuilder setBuildMatrix(String[] buildMatrix) {
-        this.buildMatrix = buildMatrix;
-        return this;
-    }
 
     // Matrix of items
     @Getter
     private final HashMap<Character, MatrixItem> itemMatrix = new HashMap<>();
 
-    // Add an item to a corresponding character from the matrix.
-    // AKA "Welcome to the matrix, Neo."
-    public MenuBuilder addMatrixItem(char character, MenuItem item) {
-
-        MatrixItem matrixItem = itemMatrix.getOrDefault(character, new MatrixItem(character));
-        matrixItem.addItem(item);
-
-        itemMatrix.put(character, matrixItem);
-        return this;
-    }
-
-    // Add a matrix item to the matrix.
-    public MenuBuilder addMatrixItem(MatrixItem matrixItem) {
-        itemMatrix.put(matrixItem.getCharacter(), matrixItem);
-        return this;
-    }
-
-    public MatrixItem getMatrixItem(char character) {
-        return itemMatrix.getOrDefault(character, new MatrixItem(character));
-    }
-
-    // Get matrix items assigned to a character
-    public MatrixItem getMenuItems(char character) {
-        return itemMatrix.getOrDefault(character, null);
-    }
-
     // Default constructor
-    public MenuBuilder(String name) {
-        this.name = name;
+    public MenuBuilder() {
     }
 
     // Copy constructor
     public MenuBuilder(MenuBuilder builder) {
-        this.name = builder.getName();
-
         this.slots = builder.getSlots();
         this.title = builder.getTitle();
 
@@ -186,6 +90,7 @@ public class MenuBuilder {
         this.globalFormat = new ParseFormat(builder.getGlobalFormat());
     }
 
+    // Clear the builder
     public MenuBuilder clear() {
         if (inventory != null) {
             inventory.clear();
@@ -198,6 +103,7 @@ public class MenuBuilder {
 
     // Build the gui with items, placeholders etc.
     // Is called before opening
+    // TODO Output inventory
     public MenuBuilder build() {
 
         String usedTitle = globalFormat.parse(title.color().toString());
@@ -209,7 +115,7 @@ public class MenuBuilder {
             usedTitle = usedTitle.substring(0, 31);
 
             // Send a message to console.
-            DevportUtils.inst.getConsoleOutput().warn("Inventory title length for " + name + " is too long, cutting to 32.");
+            DevportUtils.inst.getConsoleOutput().warn("Inventory title " + title + " is too long, cutting to 32.");
         }
 
         // Create the inventory
@@ -266,33 +172,83 @@ public class MenuBuilder {
         return this;
     }
 
-    // Set item array to gui
-    public MenuBuilder setItems(MenuItem[] items) {
-        Arrays.asList(items).forEach(this::setItem);
+    // Return next free slot in the menu
+    public int nextFree() {
+        int n = 1;
+
+        for (int slot : items.keySet()) {
+            if (n != slot)
+                return n;
+            n++;
+        }
+
+        return -1;
+    }
+
+    // ----------------- Chain Setters -----------------
+
+    // Set the title
+    public MenuBuilder setTitle(String title) {
+        this.title = new MessageBuilder(title);
+        return this;
+    }
+
+    public MenuBuilder setGlobalFormat(ParseFormat format) {
+        this.globalFormat = new ParseFormat(format);
+        return this;
+    }
+
+    public MenuBuilder setClickDelay(int clickDelay) {
+        this.clickDelay = clickDelay;
+        return this;
+    }
+
+    // Set slots
+    public MenuBuilder setSlots(int slots) {
+        this.slots = slots;
+        return this;
+    }
+
+    public MenuBuilder setBuildMatrix(String[] buildMatrix) {
+        this.buildMatrix = buildMatrix;
+        return this;
+    }
+
+    // Fill all slots that are empty
+    // Other items should be set before this action
+    public MenuBuilder setFillAll(boolean fillAll) {
+        this.fillAll = fillAll;
+        return this;
+    }
+
+    // Set slots to fill
+    public MenuBuilder setFillSlots(int[] slots) {
+        Arrays.stream(slots).forEach(slot -> fillerSlots.add(slot));
+        return this;
+    }
+
+    public MenuBuilder setFillSlots(List<Integer> slots) {
+        this.fillerSlots = slots;
+        return this;
+    }
+
+    // Set the filler ItemBuilder
+    public MenuBuilder setFiller(ItemBuilder filler) {
+        this.filler = filler;
         return this;
     }
 
     // Set new SimpleItem directly to it's slot
     // Every adding method is redirected here. Idk why, I just like it.
     public MenuBuilder setItem(MenuItem item) {
+        item = new MenuItem(item);
         items.put(item.getSlot(), item);
-        return this;
-    }
-
-    // Set Item to multiple slots
-    public MenuBuilder setItem(MenuItem item, int[] slots) {
-        for (int slot : slots) {
-            item.setSlot(slot);
-            setItem(item);
-        }
-
         return this;
     }
 
     // Set new item to GUI slot, name is always lowercase.
     public MenuBuilder setItem(ItemBuilder itemBuilder, String name, int slot) {
-        setItem(new MenuItem(itemBuilder, name, slot));
-        return this;
+        return setItem(new MenuItem(itemBuilder, name, slot));
     }
 
     // Add new item to the next free slot
@@ -306,16 +262,58 @@ public class MenuBuilder {
         return this;
     }
 
-    // Return next free slot
-    public int nextFree() {
-        int n = 1;
+    // Add item to the next free slot
+    public MenuBuilder addItem(MenuItem item) {
+        item = new MenuItem(item);
+        item.setSlot(nextFree());
+        setItem(item);
+        return this;
+    }
 
-        for (int slot : items.keySet()) {
-            if (n != slot)
-                return n;
-            n++;
-        }
+    // Add an item to a corresponding character from the matrix.
+    public MenuBuilder addMatrixItem(char character, MenuItem item) {
+        return addMatrixItem(new MatrixItem(character, item));
+    }
 
-        return -1;
+    // Add a matrix item to the matrix, if it's already there, merge them
+    public MenuBuilder addMatrixItem(MatrixItem matrixItem) {
+        if (itemMatrix.containsKey(matrixItem.getCharacter())) {
+
+            // Merge them
+            MatrixItem newItem = new MatrixItem(matrixItem);
+            matrixItem.getMenuItems().forEach(i -> newItem.addItem(new MenuItem(i)));
+
+            setMatrixItem(newItem);
+        } else setMatrixItem(matrixItem);
+        return this;
+    }
+
+    // Set a Matrix item to the menu
+    public MenuBuilder setMatrixItem(MatrixItem matrixItem) {
+        itemMatrix.put(matrixItem.getCharacter(), matrixItem);
+        return this;
+    }
+
+    // Remove a matrix item from the menu
+    public MenuBuilder removeMatrixItem(char character) {
+        itemMatrix.remove(character);
+        return this;
+    }
+
+    // Get item from the matrix
+    public MatrixItem getMatrixItem(char character) {
+        return itemMatrix.getOrDefault(character, new MatrixItem(character));
+    }
+
+    // --------------- Getters --------------------
+
+    // Get an item from the Menu by name
+    public MenuItem getItem(String name) {
+        Optional<MenuItem> opt = items.values().stream().filter(i -> i.getName().equalsIgnoreCase(name)).findFirst();
+        return opt.orElse(null);
+    }
+
+    public MenuItem getItem(int slot) {
+        return items.getOrDefault(slot, null);
     }
 }

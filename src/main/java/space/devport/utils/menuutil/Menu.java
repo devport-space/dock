@@ -13,30 +13,31 @@ import java.util.HashMap;
 
 public class Menu implements MenuListener {
 
+    // System name of the menu
     @Getter
     public String name;
+
+    // Current items in the Menu indexed by slot.
+    @Getter
+    public HashMap<Integer, MenuItem> items;
+
+    // Menu builder to build the Menu by.
+    @Getter
+    @Setter
+    public MenuBuilder menuBuilder;
 
     // For whom the inventory is open, null if closed.
     @Getter
     public Player player;
 
+    // Inventory
     @Getter
-    public HashMap<Integer, MenuItem> items;
-
-    @Getter
+    @Setter
     public Inventory inventory;
 
-    @Getter
-    @Setter
-    public MenuBuilder menuBuilder;
+    public Menu(String name, MenuBuilder builder) {
+        this.name = name;
 
-    @Getter
-    @Setter
-    private boolean open;
-
-    public Menu(MenuBuilder builder) {
-
-        this.name = builder.getName();
         this.menuBuilder = builder;
 
         this.items = builder.getBuiltItems();
@@ -67,7 +68,6 @@ public class Menu implements MenuListener {
 
             DevportUtils.inst.getMenuHandler().addMenu(this);
 
-            open = true;
             player.openInventory(inventory);
 
             onOpen();
@@ -101,7 +101,6 @@ public class Menu implements MenuListener {
 
         if (!closeEvent.isCancelled()) {
 
-            open = false;
             player.closeInventory();
 
             DevportUtils.inst.getMenuHandler().removeMenu(this);
