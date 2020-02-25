@@ -18,6 +18,8 @@ public class ItemBuilder {
     // TODO Add documentation once redone
     // TODO Hook to ConsoleOutput
 
+    // TODO Implement Mutli-version material support. XSeries: https://github.com/CryptoMorin/XSeries
+
     private Material type = Material.STONE;
     private short damage = 0;
 
@@ -47,6 +49,19 @@ public class ItemBuilder {
     // Constructor with a type.
     public ItemBuilder(Material type) {
         this.type = type;
+    }
+
+    public ItemBuilder(ItemBuilder builder) {
+        this.displayName = new MessageBuilder(builder.displayName());
+        this.type = builder.type();
+        this.amount = builder.amount();
+        this.damage = builder.damage();
+        this.glow = builder.glow();
+        this.flags = new ArrayList<>(builder.flags());
+        this.enchants = new HashMap<>(builder.enchants());
+        this.parseFormat = new ParseFormat(builder.parseFormat());
+        this.NBT = new HashMap<>(builder.nbt());
+        this.lore = new MessageBuilder(builder.lore());
     }
 
     // Load ItemStack int o ItemBuilder
@@ -106,7 +121,7 @@ public class ItemBuilder {
         // Parse ParseFormat placeholders
         // Color
         if (!lore.isEmpty()) {
-            lore.parsePlaceholders().color();
+            lore.copyPlaceholders(parseFormat).parsePlaceholders().color();
             meta.setLore(lore.getWorkingMessage());
 
             lore.pull();
@@ -116,7 +131,7 @@ public class ItemBuilder {
         // Parse ParseFormat placeholders
         // Color
         if (displayName != null) {
-            meta.setDisplayName(displayName.parsePlaceholders().color().toString());
+            meta.setDisplayName(displayName.copyPlaceholders(parseFormat).parsePlaceholders().color().toString());
 
             displayName.pull();
         }
@@ -252,7 +267,7 @@ public class ItemBuilder {
 
     // ParseFormat
     public ItemBuilder parseFormat(ParseFormat format) {
-        this.parseFormat = format;
+        this.parseFormat = new ParseFormat(format);
         return this;
     }
 

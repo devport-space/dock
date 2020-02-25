@@ -26,6 +26,14 @@ public class MessageBuilder extends ParseFormat {
     public MessageBuilder() {
     }
 
+    public MessageBuilder(MessageBuilder builder) {
+        super(builder);
+
+        this.message = new ArrayList<>(builder.getMessage());
+        this.workingMessage = new ArrayList<>(builder.getWorkingMessage());
+        this.colorChar = builder.getColorChar();
+    }
+
     public MessageBuilder(String[] message) {
         set(message);
     }
@@ -82,12 +90,6 @@ public class MessageBuilder extends ParseFormat {
         return this;
     }
 
-    // Copy placeholders from a format
-    public MessageBuilder copyPlaceholders(ParseFormat format) {
-        setPlaceholderCache(format.getPlaceholderCache());
-        return this;
-    }
-
     // Check if the messages are empty
     public boolean isEmpty() {
         return message.isEmpty() && workingMessage.isEmpty();
@@ -107,7 +109,7 @@ public class MessageBuilder extends ParseFormat {
 
     // Parse a single placeholder in the whole message.
     public MessageBuilder parsePlaceholder(String placeholder, String value) {
-        workingMessage = workingMessage.stream().map(line -> line.replaceAll(placeholder, value)).collect(Collectors.toList());
+        workingMessage = workingMessage.stream().map(line -> line.replace(placeholder, value)).collect(Collectors.toList());
         return this;
     }
 
@@ -168,6 +170,12 @@ public class MessageBuilder extends ParseFormat {
     @Override
     public MessageBuilder setPlaceholders(String[] placeholders) {
         super.setPlaceholders(placeholders);
+        return this;
+    }
+
+    @Override
+    public MessageBuilder copyPlaceholders(ParseFormat format) {
+        super.copyPlaceholders(format);
         return this;
     }
 }

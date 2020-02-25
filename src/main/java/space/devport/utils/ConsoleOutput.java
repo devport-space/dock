@@ -15,10 +15,12 @@ public class ConsoleOutput {
     @Setter
     @Getter
     private boolean debug = false;
+
     @Setter
     @Getter
     @NotNull
     private String prefix = "";
+
     @Setter
     @Getter
     @Nullable

@@ -13,45 +13,50 @@ import java.util.HashMap;
 
 public class Menu implements MenuListener {
 
+    // System name of the menu
     @Getter
     public String name;
+
+    // Current items in the Menu indexed by slot.
+    @Getter
+    public HashMap<Integer, MenuItem> items;
+
+    // Menu builder to build the Menu by.
+    @Getter
+    @Setter
+    public MenuBuilder menuBuilder;
 
     // For whom the inventory is open, null if closed.
     @Getter
     public Player player;
 
+    // Inventory
     @Getter
-    public HashMap<Integer, MenuItem> items;
-
-    @Getter
+    @Setter
     public Inventory inventory;
 
-    @Getter
-    @Setter
-    public MenuBuilder menuBuilder;
-
-    @Getter
-    @Setter
-    private boolean open;
-
-    public Menu(MenuBuilder builder) {
-        this(builder.getName(), builder.getInventory(), builder.getItems());
+    public Menu(String name, MenuBuilder builder) {
+        this.name = name;
 
         this.menuBuilder = builder;
-    }
 
-    public Menu(String name, Inventory inventory, HashMap<Integer, MenuItem> items) {
-        this.name = name;
-        this.inventory = inventory;
-        this.items = items;
+        this.items = builder.getBuiltItems();
+        this.inventory = builder.getInventory();
     }
 
     // Open the gui for a player
-    public void open(Player player) {
+    public void open(Player player, boolean... rebuild) {
 
+        // Remove the inventory if we should rebuild when opening.
+        if (rebuild.length > 0)
+            if (rebuild[0])
+                menuBuilder.clear();
+
+        // Build the inventory if it's not there yet.
         if (inventory == null) {
-            DevportUtils.inst.getConsoleOutput().err("Inventory is not built.");
-            return;
+            menuBuilder.build();
+            inventory = menuBuilder.getInventory();
+            items = menuBuilder.getBuiltItems();
         }
 
         // Throw event
@@ -63,7 +68,6 @@ public class Menu implements MenuListener {
 
             DevportUtils.inst.getMenuHandler().addMenu(this);
 
-            open = true;
             player.openInventory(inventory);
 
             onOpen();
@@ -81,7 +85,9 @@ public class Menu implements MenuListener {
                 return;
             }
 
-        inventory.setContents(menuBuilder.clear().build().getInventory().getContents());
+        menuBuilder.clear().build();
+        items = menuBuilder.getBuiltItems();
+        inventory.setContents(menuBuilder.getInventory().getContents());
     }
 
     // Close the menu
@@ -95,7 +101,6 @@ public class Menu implements MenuListener {
 
         if (!closeEvent.isCancelled()) {
 
-            open = false;
             player.closeInventory();
 
             DevportUtils.inst.getMenuHandler().removeMenu(this);

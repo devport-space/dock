@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.scheduler.BukkitRunnable;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.menuutil.events.MenuItemClickEvent;
 
@@ -16,7 +17,7 @@ public class MenuHandler implements Listener {
 
     // Holding currently created GUIs
     @Getter
-    private HashMap<String, Menu> menuCache = new HashMap<>();
+    private final HashMap<String, Menu> menuCache = new HashMap<>();
 
     // Add a gui to the cache
     public void addMenu(Menu menu) {
@@ -70,8 +71,27 @@ public class MenuHandler implements Listener {
         clickedItem = clickEvent.getClickItem();
 
         // Cancel event if we should.
-        if (clickedItem.isCancelClick())
+        if (clickedItem.isCancelClick()) {
             e.setCancelled(true);
+
+            // Spam prevention
+            if (menu.getMenuBuilder().getClickDelay() != 0) {
+
+                if (!clickedItem.isClickable())
+                    return;
+
+                clickedItem.setClickable(false);
+
+                final MenuItem finalItem = clickedItem;
+
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        finalItem.setClickable(true);
+                    }
+                }.runTaskLaterAsynchronously(DevportUtils.inst.getPlugin(), menu.getMenuBuilder().getClickDelay());
+            }
+        }
 
         // Call method
         menu.onClick(e, clickedItem);
