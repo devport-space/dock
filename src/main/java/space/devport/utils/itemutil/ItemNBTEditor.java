@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.utils.SpigotHelper;
 import space.devport.utils.utilities.Reflection;
 
-import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +31,6 @@ public class ItemNBTEditor {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
-
         return meta;
     }
 
@@ -129,9 +126,9 @@ public class ItemNBTEditor {
     public static boolean hasNBTKey(@NotNull ItemStack item, String key) {
         try {
             Object nativeItemStack = ReflectionStatics.getAsNMSItemStack(item);
-            Object tag = nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
-            return (Boolean) tag.getClass().getDeclaredMethod("hasKey", String.class).invoke(tag, key);
+            Object tag = getTag(nativeItemStack);
 
+            return (boolean) tag.getClass().getDeclaredMethod("hasKey", String.class).invoke(tag, key);
         } catch (Exception x) {
             x.printStackTrace();
         }
