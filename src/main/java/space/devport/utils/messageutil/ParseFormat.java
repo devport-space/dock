@@ -25,7 +25,7 @@ public class ParseFormat {
     }
 
     public ParseFormat(ParseFormat format) {
-        copyPlaceholders(format);
+        this.copyPlaceholders(format);
         this.defaultValue = format.getDefaultValue();
     }
 

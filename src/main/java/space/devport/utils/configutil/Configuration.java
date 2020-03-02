@@ -1,8 +1,7 @@
 package space.devport.utils.configutil;
 
-import jdk.internal.joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -261,9 +260,7 @@ public class Configuration {
 
     // Load a whole Menu from yaml on a given path
     public MenuBuilder loadMenuBuilder(String path) {
-        String name = path.contains(".") ? path.split("\\.")[path.split("\\.").length - 1] : path;
-
-        MenuBuilder menuBuilder = new MenuBuilder(name);
+        MenuBuilder menuBuilder = new MenuBuilder();
 
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
