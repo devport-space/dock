@@ -261,9 +261,7 @@ public class Configuration {
 
     // Load a whole Menu from yaml on a given path
     public MenuBuilder loadMenuBuilder(String path) {
-        String name = path.contains(".") ? path.split("\\.")[path.split("\\.").length - 1] : path;
-
-        MenuBuilder menuBuilder = new MenuBuilder(name);
+        MenuBuilder menuBuilder = new MenuBuilder();
 
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
