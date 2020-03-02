@@ -145,14 +145,12 @@ public class ItemNBTEditor {
      *
      * @param nativeItemStack ItemStack to retrieve tag from.
      * @return NBTTag
-     * */
+     */
     private static Object getTag(Object nativeItemStack) {
         try {
             if (SpigotHelper.getVersion().contains("v1.7") || SpigotHelper.getVersion().contains("v1.8")) {
-                boolean hasTag = (boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack);
-                if(!hasTag) {
-                    nativeItemStack.getClass().getMethod("makeTag").invoke(nativeItemStack);
-                }
+                if (!(boolean) nativeItemStack.getClass().getMethod("makeTag").invoke(nativeItemStack))
+                    return null;
                 return nativeItemStack.getClass().getMethod("getTag").invoke(nativeItemStack);
             } else {
                 return nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
