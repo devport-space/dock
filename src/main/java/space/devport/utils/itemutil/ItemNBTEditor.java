@@ -1,8 +1,6 @@
 package space.devport.utils.itemutil;
 
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftItem;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.SpigotHelper;
@@ -16,17 +14,16 @@ import java.util.Map;
  */
 public class ItemNBTEditor {
 
-    // TODO Add method to get all NBT keys on an item
     // TODO Hook to ConsoleOutput
-
 
     public static Map<String, String> getNBTTagMap(@NotNull ItemStack item) {
         Map<String, String> meta = new HashMap<>();
         try {
             Object nmsItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
-            boolean hasTag = (boolean)nmsItemStack.getClass().getMethod("hasTag").invoke(nmsItemStack);
-            if(hasTag) {
-                NBTTagCompound tags = (NBTTagCompound)nmsItemStack.getClass().getMethod("getTag").invoke(nmsItemStack);
+            boolean hasTag = (boolean) nmsItemStack.getClass().getMethod("hasTag").invoke(nmsItemStack);
+
+            if (hasTag) {
+                NBTTagCompound tags = (NBTTagCompound) nmsItemStack.getClass().getMethod("getTag").invoke(nmsItemStack);
                 for (String fieldName : tags.c()) {
                     meta.put(fieldName, tags.get(fieldName).toString());
                 }
@@ -51,13 +48,7 @@ public class ItemNBTEditor {
     public static ItemStack writeNBT(@NotNull ItemStack item, @NotNull String key, @NotNull String value) {
         try {
             Object nativeItemStack = ReflectionStatics.getAsNMSItemStack(item);
-            Object tag;
-            if(SpigotHelper.getVersion().contains("v1.7") || SpigotHelper.getVersion().contains("v1.8")) {
-                boolean hasTag = (boolean)nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack);
-                tag = hasTag ? nativeItemStack.getClass().getMethod("getTag").invoke(nativeItemStack) : nativeItemStack.getClass().getMethod("makeTag").invoke(nativeItemStack);
-            } else {
-                tag = nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
-            }
+            Object tag = getTag(nativeItemStack);
 
             tag.getClass().getDeclaredMethod("setString", String.class, String.class).invoke(tag, key, value);
             nativeItemStack.getClass().getDeclaredMethod("setTag", tag.getClass()).invoke(nativeItemStack, tag);
@@ -81,7 +72,7 @@ public class ItemNBTEditor {
     public static String getNBT(@NotNull ItemStack item, @NotNull String key) {
         try {
             Object nativeItemStack = ReflectionStatics.getAsNMSItemStack(item);
-            Object tag = nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
+            Object tag = getTag(nativeItemStack);
             return (String) tag.getClass().getDeclaredMethod("getString", String.class).invoke(tag, key);
         } catch (Exception x) {
             x.printStackTrace();
@@ -99,7 +90,8 @@ public class ItemNBTEditor {
     public static ItemStack removeNBT(@NotNull ItemStack item, @NotNull String key) {
         try {
             Object nativeItemStack = ReflectionStatics.getAsNMSItemStack(item);
-            Object tag = nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
+            Object tag = getTag(nativeItemStack);
+
             // remove tag
             tag.getClass().getDeclaredMethod("remove", String.class).invoke(tag, key);
 
@@ -146,5 +138,29 @@ public class ItemNBTEditor {
             x.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * Retrieves a NBTTag from an item, if there's none, creates a new one.
+     *
+     * @param nativeItemStack ItemStack to retrieve tag from.
+     * @return NBTTag
+     * */
+    private static Object getTag(Object nativeItemStack) {
+        try {
+            Object tag;
+
+            if (SpigotHelper.getVersion().contains("v1.7") || SpigotHelper.getVersion().contains("v1.8")) {
+                boolean hasTag = (boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack);
+                tag = hasTag ? nativeItemStack.getClass().getMethod("getTag").invoke(nativeItemStack) : nativeItemStack.getClass().getMethod("makeTag").invoke(nativeItemStack);
+            } else
+                tag = nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
+
+            return tag;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
     }
 }
