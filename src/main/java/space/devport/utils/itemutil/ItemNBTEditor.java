@@ -1,7 +1,12 @@
 package space.devport.utils.itemutil;
 
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.utilities.Reflection;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Item NBT Editor
@@ -10,6 +15,27 @@ public class ItemNBTEditor {
 
     // TODO Add method to get all NBT keys on an item
     // TODO Hook to ConsoleOutput
+
+
+    public static Map<String, String> getItemMeta(@NotNull ItemStack item) {
+        Map<String, String> meta = new HashMap<>();
+        try {
+            Object nmsItemStack = Reflection.getMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy").invoke(null, item);
+            boolean hasTag = (boolean)nmsItemStack.getClass().getMethod("hasTag").invoke(nmsItemStack);
+            if(hasTag) {
+                NBTTagCompound tags = (NBTTagCompound)nmsItemStack.getClass().getMethod("getTag").invoke(nmsItemStack);
+                for (String fieldName : tags.c()) {
+                    meta.put(fieldName, tags.get(fieldName).toString());
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
+        return meta;
+    }
+
 
     /**
      * Writes key and value to the item's NBT.
