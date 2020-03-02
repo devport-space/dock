@@ -148,18 +148,18 @@ public class ItemNBTEditor {
      * */
     private static Object getTag(Object nativeItemStack) {
         try {
-            Object tag;
-
             if (SpigotHelper.getVersion().contains("v1.7") || SpigotHelper.getVersion().contains("v1.8")) {
                 boolean hasTag = (boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack);
-                tag = hasTag ? nativeItemStack.getClass().getMethod("getTag").invoke(nativeItemStack) : nativeItemStack.getClass().getMethod("makeTag").invoke(nativeItemStack);
-            } else
-                tag = nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
+                if(!hasTag) {
+                    nativeItemStack.getClass().getMethod("makeTag").invoke(nativeItemStack);
+                }
+                return nativeItemStack.getClass().getMethod("getTag").invoke(nativeItemStack);
+            } else {
+                return nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
+            }
 
-            return tag;
         } catch (Exception e) {
             e.printStackTrace();
-
             return null;
         }
     }

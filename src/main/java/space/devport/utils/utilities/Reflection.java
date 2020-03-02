@@ -28,6 +28,7 @@ public class Reflection {
         }
     }
 
+    // Can see only PUBLIC methods of the class, no statics
     public static Method getMethod(Class<?> className, String methodName, Class<?>... args) {
         try {
             Method m = className.getMethod(methodName, args);
@@ -39,6 +40,7 @@ public class Reflection {
         }
     }
 
+    // Can see all the methods of the class
     public static Method getDeclaredMethod(Class<?> className, String methodName, Class<?>... args) {
         try {
             Method m = className.getDeclaredMethod(methodName, args);
