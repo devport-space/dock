@@ -9,16 +9,16 @@ public class DevportUtils {
     // To enable some features that require a ConsoleOutput instance or a JavaPlugin reference.
 
     @Getter
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
 
     // ConsoleOutput used internally and the plugin should obtain here
     @Getter
-    private ConsoleOutput consoleOutput;
+    private final ConsoleOutput consoleOutput;
 
     public static DevportUtils inst;
 
     @Getter
-    private MenuHandler menuHandler;
+    private final MenuHandler menuHandler;
 
     public DevportUtils(JavaPlugin plugin) {
         inst = this;
@@ -27,6 +27,8 @@ public class DevportUtils {
 
         consoleOutput = new ConsoleOutput();
         consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
+
+        consoleOutput.info("Running on version " + SpigotHelper.getVersion());
 
         menuHandler = new MenuHandler();
 
@@ -41,6 +43,8 @@ public class DevportUtils {
         consoleOutput = new ConsoleOutput();
         consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
         consoleOutput.setDebug(debug);
+
+        consoleOutput.info("Running on version " + SpigotHelper.getVersion());
 
         menuHandler = new MenuHandler();
 

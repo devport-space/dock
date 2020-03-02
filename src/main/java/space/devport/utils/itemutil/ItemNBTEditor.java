@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.utils.SpigotHelper;
 import space.devport.utils.utilities.Reflection;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,12 +92,9 @@ public class ItemNBTEditor {
         try {
             Object nativeItemStack = ReflectionStatics.getAsNMSItemStack(item);
             Object tag = getTag(nativeItemStack);
-
             // remove tag
             tag.getClass().getDeclaredMethod("remove", String.class).invoke(tag, key);
-
             nativeItemStack.getClass().getDeclaredMethod("setTag", tag.getClass()).invoke(nativeItemStack, tag);
-
             return ReflectionStatics.getAsItemStack(nativeItemStack);
         } catch (Exception x) {
             x.printStackTrace();
@@ -148,9 +146,13 @@ public class ItemNBTEditor {
      */
     private static Object getTag(Object nativeItemStack) {
         try {
-            if (SpigotHelper.getVersion().contains("v1.7") || SpigotHelper.getVersion().contains("v1.8")) {
-                if (!(boolean) nativeItemStack.getClass().getMethod("makeTag").invoke(nativeItemStack))
-                    return null;
+            if (SpigotHelper.getVersion().contains("v1_8_R3") || SpigotHelper.getVersion().contains("v1_7_R1")) {
+
+                if (!(boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack)) {
+                    Object compound = Reflection.getNMSClass(".NBTTagCompound").getConstructor().newInstance();
+                    nativeItemStack.getClass().getMethod("setTag", compound.getClass()).invoke(nativeItemStack, compound);
+                }
+
                 return nativeItemStack.getClass().getMethod("getTag").invoke(nativeItemStack);
             } else {
                 return nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
