@@ -12,7 +12,7 @@ public class Reflection {
 
     public Class<?> getNMSClass(String name) {
         try {
-            return Class.forName("net.minecraft.server." + SpigotHelper.getVersion() + name);
+            return Class.forName("net.minecraft.server." + SpigotHelper.extractNMSVersion() + name);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -21,7 +21,7 @@ public class Reflection {
 
     public Class<?> getCBClass(String name) {
         try {
-            return Class.forName("org.bukkit.craftbukkit." + SpigotHelper.getVersion() + name);
+            return Class.forName("org.bukkit.craftbukkit." + SpigotHelper.extractNMSVersion() + name);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -30,7 +30,18 @@ public class Reflection {
 
     public static Method getMethod(Class<?> className, String methodName, Class<?>... args) {
         try {
-            Method m = className.getMethod(methodName);
+            Method m = className.getMethod(methodName, args);
+            m.setAccessible(true);
+            return m;
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Method getDeclaredMethod(Class<?> className, String methodName, Class<?>... args) {
+        try {
+            Method m = className.getDeclaredMethod(methodName, args);
             m.setAccessible(true);
             return m;
         } catch (NoSuchMethodException e) {
