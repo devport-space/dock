@@ -280,10 +280,11 @@ public class MenuBuilder {
         if (itemMatrix.containsKey(matrixItem.getCharacter())) {
 
             // Merge them
-            MatrixItem newItem = new MatrixItem(matrixItem);
-            matrixItem.getMenuItems().forEach(i -> newItem.addItem(new MenuItem(i)));
+            MatrixItem item = itemMatrix.get(matrixItem.getCharacter());
 
-            setMatrixItem(newItem);
+            matrixItem.getMenuItems().forEach(item::addItem);
+
+            setMatrixItem(item);
         } else setMatrixItem(matrixItem);
         return this;
     }

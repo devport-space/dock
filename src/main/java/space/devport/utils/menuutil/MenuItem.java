@@ -51,4 +51,9 @@ public class MenuItem {
 
         this.cancelClick = item.isCancelClick();
     }
+
+    @Override
+    public String toString() {
+        return "[" + name + ", " + slot + ", " + itemBuilder + ", " + cancelClick + ", " + clickable + "]";
+    }
 }

@@ -271,6 +271,11 @@ public class ItemBuilder {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "(" + type + ":" + damage + ", " + displayName + ")";
+    }
+
     // ------------------------------ Custom Getters ------------------------------
 
     public Material type() {
