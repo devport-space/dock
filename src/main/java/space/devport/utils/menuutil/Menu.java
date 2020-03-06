@@ -35,6 +35,11 @@ public class Menu implements MenuListener {
     @Setter
     public Inventory inventory;
 
+    // Is the menu open or not?
+    @Getter
+    @Setter
+    public boolean open = false;
+
     public Menu(String name, MenuBuilder builder) {
         this.name = name;
 
@@ -63,15 +68,18 @@ public class Menu implements MenuListener {
         MenuOpenEvent openEvent = new MenuOpenEvent(player, this);
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(openEvent);
 
-        if (!openEvent.isCancelled()) {
-            this.player = player;
+        if (openEvent.isCancelled())
+            return;
 
-            DevportUtils.inst.getMenuHandler().addMenu(this);
+        open = true;
 
-            player.openInventory(inventory);
+        this.player = player;
 
-            onOpen();
-        }
+        DevportUtils.inst.getMenuHandler().addMenu(this);
+
+        player.openInventory(inventory);
+
+        onOpen();
     }
 
     // Reload inventory
@@ -92,23 +100,22 @@ public class Menu implements MenuListener {
 
     // Close the menu
     public void close() {
-        if (player == null)
-            return;
-
         // Throw close event
         MenuCloseEvent closeEvent = new MenuCloseEvent(player, this);
         DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(closeEvent);
 
-        if (!closeEvent.isCancelled()) {
+        if (closeEvent.isCancelled())
+            return;
 
-            player.closeInventory();
+        open = false;
 
-            DevportUtils.inst.getMenuHandler().removeMenu(this);
+        player.closeInventory();
 
-            onClose();
+        DevportUtils.inst.getMenuHandler().removeMenu(this);
 
-            player = null;
-        }
+        onClose();
+
+        player = null;
     }
 
     @Override

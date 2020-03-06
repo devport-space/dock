@@ -53,6 +53,10 @@ public class MenuHandler implements Listener {
         if (menu == null)
             return;
 
+        // Should never be possible, but just in case.
+        if (!menu.isOpen())
+            return;
+
         if (!menu.getItems().containsKey(e.getSlot()))
             return;
 
@@ -109,7 +113,7 @@ public class MenuHandler implements Listener {
             return;
 
         // Player is null when the menu is not open
-        if (menu.getPlayer() == null)
+        if (!menu.isOpen())
             return;
 
         menu.close();
