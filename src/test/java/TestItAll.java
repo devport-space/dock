@@ -1,10 +1,20 @@
+import space.devport.utils.DevportUtils;
+import space.devport.utils.configutil.DefaultValue;
 import space.devport.utils.messageutil.MessageBuilder;
+import space.devport.utils.packutil.Amount;
+import space.devport.utils.packutil.RewardPack;
 
 public class TestItAll {
 
     public static void main(String[] args) {
+
+        new DevportUtils(null);
+
+        // -------- MessageBuilding, Formatting & Parsing --------
+
         // Create a MessageBuilder with placeholders
-        MessageBuilder msg = new MessageBuilder("Hello %playerName%. Welcome to %worldName%!").addPlaceholders(new String[]{"%playerName%", "%worldName%"});
+        MessageBuilder msg = new MessageBuilder("Hello %playerName%. Welcome to %worldName%!")
+                .addPlaceholders(new String[]{"%playerName%", "%worldName%"});
 
         // Fill the placeholders
         msg.fill(new String[]{"Wertik1206", "world"});
@@ -23,5 +33,21 @@ public class TestItAll {
 
         // Print
         System.out.println(msg.parsePlaceholders().toString());
+
+        // ---------- Lombok Builder & Amount Random Value --------
+
+        RewardPack pack = RewardPack.Builder().money(new Amount(1, 10)).build();
+
+        System.out.println("-----------");
+
+        System.out.println(pack.getMoney().toString() + " " + pack.getMoney().getInt());
+        System.out.println(pack.getTokens().toString() + " " + pack.getTokens().getInt());
+
+        pack = pack.toBuilder().tokens(new Amount(1, 20)).build();
+
+        System.out.println("-----------");
+
+        System.out.println(pack.getMoney().toString() + " " + pack.getMoney().getInt());
+        System.out.println(pack.getTokens().toString() + " " + pack.getTokens().getInt());
     }
 }

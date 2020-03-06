@@ -2,7 +2,10 @@ package space.devport.utils;
 
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.menuutil.MenuHandler;
+
+import java.util.Random;
 
 public class DevportUtils {
 
@@ -20,19 +23,22 @@ public class DevportUtils {
     @Getter
     private final MenuHandler menuHandler;
 
-    public DevportUtils(JavaPlugin plugin) {
+    public DevportUtils(@Nullable JavaPlugin plugin) {
         inst = this;
 
         this.plugin = plugin;
 
         consoleOutput = new ConsoleOutput();
-        consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
 
-        consoleOutput.info("Running on version " + SpigotHelper.getVersion());
+        if (plugin != null) {
+            consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
+            consoleOutput.info("Running on version " + SpigotHelper.getVersion());
+        }
 
         menuHandler = new MenuHandler();
 
-        registerListener();
+        if (plugin != null)
+            registerListener();
     }
 
     public DevportUtils(JavaPlugin plugin, boolean debug) {
