@@ -19,7 +19,7 @@ public class LocationUtil {
             return null;
         }
 
-        return location.getX() + delimiter + location.getY() + delimiter + location.getZ();
+        return location.getWorld().getName() + delimiter + location.getX() + delimiter + location.getY() + delimiter + location.getZ();
     }
 
     // Parse a location from string, uses ; as a delimiter
