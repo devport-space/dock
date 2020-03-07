@@ -1,5 +1,6 @@
 package space.devport.utils.itemutil;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+@NoArgsConstructor
 public class ItemBuilder {
 
     // TODO Add documentation once redone
@@ -41,10 +43,6 @@ public class ItemBuilder {
 
     // ParseFormat for placeholders
     private ParseFormat parseFormat = new ParseFormat();
-
-    // Default constructor
-    public ItemBuilder() {
-    }
 
     // Constructor with a type.
     public ItemBuilder(Material type) {
