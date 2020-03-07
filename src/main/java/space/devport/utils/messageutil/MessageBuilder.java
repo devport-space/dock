@@ -86,8 +86,7 @@ public class MessageBuilder extends ParseFormat {
 
     // Set message to a new one from array.
     public MessageBuilder set(String[] message) {
-        set(Arrays.asList(message));
-        return this;
+        return set(Arrays.asList(message));
     }
 
     // Check if the messages are empty
