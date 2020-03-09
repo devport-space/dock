@@ -2,7 +2,11 @@ package space.devport.utils.configutil;
 
 import lombok.Setter;
 
-// Sub paths to different parts of an Object
+/**
+ * Holds Configuration sub-paths to different paths to custom objects.
+ *
+ * @author Devport Team
+ * */
 public enum SubPath {
     /**
      * REGIONS
@@ -18,6 +22,7 @@ public enum SubPath {
     MENU_SLOTS("slots"),
     MENU_FILL_ALL("fill-all"),
     MENU_FILL_SLOTS("fill-slots"),
+    MENU_FILL_SLOTS_DELIMITER(";"),
     MENU_MATRIX("matrix"),
     MENU_ITEMS("items"),
     MENU_FILLER("filler"),
@@ -40,8 +45,10 @@ public enum SubPath {
     ITEM_AMOUNT("amount"),
     ITEM_LORE("lore"),
     ITEM_ENCHANTS("enchants"),
+    ITEM_ENCHANT_DELIMITER(";"),
     ITEM_FLAGS("flags"),
     ITEM_NBT("nbt"),
+    ITEM_NBT_DELIMITER(";"),
     ITEM_GLOW("glow");
 
     @Setter

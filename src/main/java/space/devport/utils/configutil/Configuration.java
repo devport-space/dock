@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
  */
 public class Configuration {
 
-    // TODO Make fool proof - null checks & sh*t
-
     // Path to the file
     @Getter
     private final String path;
@@ -246,11 +244,11 @@ public class Configuration {
      * @return MessageBuilder object
      */
     @NotNull
-    public MessageBuilder loadMessageBuilder(String path) {
+    public MessageBuilder loadMessageBuilder(@Nullable String path) {
 
         // Check the path
         if (Strings.isNullOrEmpty(path))
-            return new MessageBuilder();
+            return (MessageBuilder) DefaultValue.MESSAGE_BUILDER.getValue();
 
         if (fileConfiguration.isString(path)) {
             // Load as a string
@@ -263,7 +261,7 @@ public class Configuration {
         }
 
         // Couldn't find anything, return a blank one.
-        return new MessageBuilder();
+        return (MessageBuilder) DefaultValue.MESSAGE_BUILDER.getValue();
     }
 
     /**
@@ -287,10 +285,29 @@ public class Configuration {
             return null;
         }
 
-        return new Region(min, max, false);
+        return new Region(min, max, (boolean) DefaultValue.REGION_IGNORE_HEIGHT.getValue());
     }
 
-    public void saveRegion(String path, Region region) {
+    /**
+     * Saves a region to given path.
+     *
+     * @param path   String path to save to
+     * @param region Region to sabe
+     */
+    public void saveRegion(@Nullable String path, @Nullable Region region) {
+
+        // Check path
+        if (Strings.isNullOrEmpty(path)) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save region to path " + path + ", path is invalid.");
+            return;
+        }
+
+        // Check region
+        if (region == null) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save region to path " + path + ", region is null.");
+            return;
+        }
+
         ConfigurationSection section = fileConfiguration.createSection(path);
 
         section.set(SubPath.REGION_MIN.toString(), LocationUtil.locationToString(region.getMin()));
@@ -299,21 +316,43 @@ public class Configuration {
         save();
     }
 
-    // Load a whole Menu from yaml on a given path
-    public MenuBuilder loadMenuBuilder(String path) {
+    /**
+     * Loads a MenuBuilder from given path.
+     *
+     * @param path String path to load from
+     * @return MenuBuilder object
+     */
+    @Nullable
+    public MenuBuilder loadMenuBuilder(@Nullable String path) {
+
+        // Check path
+        if (Strings.isNullOrEmpty(path)) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not load MenuBuilder at path " + path + ", path is invalid.");
+            return null;
+        }
+
         MenuBuilder menuBuilder = new MenuBuilder();
 
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
-        menuBuilder.setTitle(section.getString(SubPath.MENU_TITLE.toString(), DefaultValue.MENU_TITLE.toString()));
-        menuBuilder.setSlots(section.getInt(SubPath.MENU_SLOTS.toString(), 9));
+        menuBuilder.setTitle(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(DefaultValue.MENU_TITLE.getValue())));
+        menuBuilder.setSlots(section.getInt(SubPath.MENU_SLOTS.toString(), (int) DefaultValue.MENU_SLOTS.getValue()));
 
-        menuBuilder.setFillAll(section.getBoolean(SubPath.MENU_FILL_ALL.toString(), false));
+        menuBuilder.setFillAll(section.getBoolean(SubPath.MENU_FILL_ALL.toString(), (boolean) DefaultValue.MENU_FILL_ALL.getValue()));
 
         // Get fill slots
         if (section.contains(SubPath.MENU_FILL_SLOTS.toString())) {
-            List<Integer> ints = Arrays.stream(section.getString(SubPath.MENU_FILL_SLOTS.toString()).split(";")).map(Integer::parseInt).collect(Collectors.toList());
-            menuBuilder.setFillSlots(ints);
+            if (section.isString(SubPath.MENU_FILL_SLOTS.toString())) {
+
+                List<Integer> ints =
+                        Arrays.stream(section.getString(SubPath.MENU_FILL_SLOTS.toString())
+                                .split(String.valueOf(SubPath.MENU_FILL_SLOTS_DELIMITER.toString())))
+                                .map(Integer::parseInt)
+                                .collect(Collectors.toList());
+
+                menuBuilder.setFillSlots(ints);
+            } else
+                DevportUtils.getInstance().getConsoleOutput().warn("Could not load fill slots at path " + path + SubPath.MENU_FILL_SLOTS + " is not a string.");
         }
 
         // Load inventory matrix
@@ -332,7 +371,7 @@ public class Configuration {
 
                 // If it contains matrix-char
                 if (itemSection.contains(SubPath.MENU_MATRIX_CHAR.toString()))
-                    menuBuilder.addMatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, ' '), item);
+                    menuBuilder.addMatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, (char) DefaultValue.MENU_ITEM_MATRIX_CHAR.getValue()), item);
                 else
                     menuBuilder.setItem(item);
             }
@@ -341,7 +380,22 @@ public class Configuration {
         return menuBuilder;
     }
 
-    public MenuItem loadMenuItem(String path) {
+    /**
+     * Loads a MenuItem from given path.
+     *
+     * @param path String path to the item
+     * @return MenuItem object
+     */
+    @Nullable
+    public MenuItem loadMenuItem(@Nullable String path) {
+
+        // Check path
+        if (Strings.isNullOrEmpty(path)) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not load MenuItem at path " + path + ", path is invalid.");
+            return null;
+        }
+
+        // Load ItemBuilder
         ItemBuilder itemBuilder = loadItemBuilder(path);
 
         String itemName = path.contains(".") ? path.split("\\.")[path.split("\\.").length - 1] : path;
@@ -355,76 +409,103 @@ public class Configuration {
         return item;
     }
 
-    // Load an ItemBuilder from given path, with given sub-paths for separate parts.
-    public ItemBuilder loadItemBuilder(String path) {
-        try {
-            ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
+    /**
+     * Loads an ItemBuilder from given path.
+     *
+     * @param path String path to ItemBuilder
+     * @return ItemBuilder object
+     */
+    @NotNull
+    public ItemBuilder loadItemBuilder(@Nullable String path) {
 
-            String type = section.getString(SubPath.ITEM_TYPE.toString());
+        // Parse format for the default
+        ParseFormat format = new ParseFormat()
+                .fill("{message}", "Invalid path");
 
-            Material mat;
-
+        // Check path
+        if (!Strings.isNullOrEmpty(path))
+            // Try to load
             try {
-                mat = Strings.isNullOrEmpty(type) ? Material.valueOf(DefaultValue.ITEM_TYPE.toString().toUpperCase()) : Material.valueOf(type.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                DevportUtils.getInstance().getConsoleOutput().err("Invalid item type in default & on path " + path);
-                e.printStackTrace();
-                return null;
-            }
+                ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
-            short data = (short) (section.contains(SubPath.ITEM_DATA.toString()) ? section.getInt(SubPath.ITEM_DATA.toString()) : 0);
+                // Material
+                String type = section.getString(SubPath.ITEM_TYPE.toString());
 
-            ItemBuilder b = new ItemBuilder(mat).damage(data);
+                Material mat;
 
-            if (section.contains(SubPath.ITEM_NAME.toString()))
-                b.displayName(section.getString(SubPath.ITEM_NAME.toString()));
+                try {
+                    mat = Strings.isNullOrEmpty(type) ? Material.valueOf(DefaultValue.ITEM_TYPE.toString().toUpperCase()) : Material.valueOf(type.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    DevportUtils.getInstance().getConsoleOutput().err("Invalid item type in default & on path " + path + ", returning a blank ItemBuilder.");
+                    e.printStackTrace();
+                    return new ItemBuilder();
+                }
 
-            if (section.contains(SubPath.ITEM_AMOUNT.toString()))
-                b.amount(section.getInt(SubPath.ITEM_AMOUNT.toString()));
+                // Data
+                short data = (short) (section.contains(SubPath.ITEM_DATA.toString()) ? section.getInt(SubPath.ITEM_DATA.toString()) : 0);
 
-            if (section.contains(SubPath.ITEM_GLOW.toString()))
-                b.glow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
+                ItemBuilder b = new ItemBuilder(mat).damage(data);
 
-            if (section.contains(SubPath.ITEM_LORE.toString()))
-                b.lore(section.getStringList(SubPath.ITEM_LORE.toString()));
+                // Display name
+                if (section.contains(SubPath.ITEM_NAME.toString()))
+                    b.displayName(section.getString(SubPath.ITEM_NAME.toString()));
 
-            if (section.contains(SubPath.ITEM_ENCHANTS.toString())) {
-                List<String> dataList = section.getStringList(SubPath.ITEM_ENCHANTS.toString());
+                // Amount
+                if (section.contains(SubPath.ITEM_AMOUNT.toString()))
+                    b.amount(section.getInt(SubPath.ITEM_AMOUNT.toString()));
 
-                for (String dataString : dataList) {
-                    int level = 1;
+                // Glow
+                if (section.contains(SubPath.ITEM_GLOW.toString()))
+                    b.glow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
 
-                    if (dataString.contains(";")) {
-                        level = Integer.parseInt(dataString.split(";")[1]);
-                        dataString = dataString.split(";")[0];
+                // Lore
+                if (section.contains(SubPath.ITEM_LORE.toString()))
+                    b.lore(section.getStringList(SubPath.ITEM_LORE.toString()));
+
+                // Enchants
+                if (section.contains(SubPath.ITEM_ENCHANTS.toString())) {
+                    List<String> dataList = section.getStringList(SubPath.ITEM_ENCHANTS.toString());
+
+                    for (String dataString : dataList) {
+                        int level = 1;
+
+                        if (dataString.contains(SubPath.ITEM_ENCHANT_DELIMITER.toString())) {
+                            level = Integer.parseInt(dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[1]);
+                            dataString = dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
+                        }
+
+                        Enchantment enchantment = Enchantment.getByName(dataString);
+
+                        b.addEnchant(enchantment, level);
+                    }
+                }
+
+                // Item Flags
+                if (section.contains(SubPath.ITEM_FLAGS.toString()))
+                    for (String flagName : section.getStringList(SubPath.ITEM_FLAGS.toString())) {
+                        ItemFlag flag = ItemFlag.valueOf(flagName);
+
+                        b.addFlag(flag);
                     }
 
-                    Enchantment enchantment = Enchantment.getByName(dataString);
+                // NBT
+                if (section.contains(SubPath.ITEM_NBT.toString()))
+                    for (String nbtString : section.getStringList(SubPath.ITEM_NBT.toString()))
+                        if (nbtString.contains(SubPath.ITEM_NBT_DELIMITER.toString()))
+                            b.addNBT(nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString())[0],
+                                    nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString())[1]);
 
-                    b.addEnchant(enchantment, level);
-                }
+                return b;
+            } catch (NullPointerException | IllegalArgumentException e) {
+                if (DevportUtils.getInstance().getConsoleOutput().isDebug())
+                    e.printStackTrace();
+                format.fill("{message}", e.getMessage());
             }
 
-            if (section.contains(SubPath.ITEM_FLAGS.toString()))
-                for (String flagName : section.getStringList(SubPath.ITEM_FLAGS.toString())) {
-                    ItemFlag flag = ItemFlag.valueOf(flagName);
-
-                    b.addFlag(flag);
-                }
-
-            if (section.contains(SubPath.ITEM_NBT.toString()))
-                for (String nbtString : section.getStringList(SubPath.ITEM_NBT.toString()))
-                    b.addNBT(nbtString.split(";")[0], nbtString.split(";")[1]);
-
-            return b;
-        } catch (NullPointerException | IllegalArgumentException e) {
-            if (DevportUtils.getInstance().getConsoleOutput().isDebug())
-                e.printStackTrace();
-
-            DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
-
-            ParseFormat format = new ParseFormat().fill("{message}", e.getMessage());
-            return new ItemBuilder(Material.valueOf(DefaultValue.ITEM_TYPE.toString())).parseFormat(format).displayName(DefaultValue.ITEM_NAME.toString()).addLine(DefaultValue.ITEM_LINE.toString());
-        }
+        DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
+        return new ItemBuilder(Material.valueOf(DefaultValue.ITEM_TYPE.toString()))
+                .parseFormat(format)
+                .displayName(DefaultValue.ITEM_NAME.toString())
+                .addLine(DefaultValue.ITEM_LINE.toString());
     }
 }
