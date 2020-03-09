@@ -4,36 +4,46 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 
+/**
+ * Custom region handling.
+ */
 public class Region {
 
     // Min location of the region
     @Getter
+    @Setter
     private Location min;
 
     // Max location of the region
     @Getter
+    @Setter
     private Location max;
 
     // Should we ignore Y coordinates?
     @Getter
     @Setter
-    private boolean ignoreHeight = false;
+    private boolean ignoreHeight;
 
-    // Default two location region constructor
-    public Region(Location min, Location max) {
+    /**
+     * Default constructor with a minimal and maximal location.
+     *
+     * @param min          Minimal region location
+     * @param max          Maximal region location
+     * @param ignoreHeight Optional boolean, whether or not should the region ignore Y axis
+     */
+    public Region(Location min, Location max, boolean... ignoreHeight) {
         this.min = min;
         this.max = max;
+
+        this.ignoreHeight = ignoreHeight.length != 0 && ignoreHeight[0];
     }
 
-    // Constructor with ignoreHeight parameter
-    public Region(Location min, Location max, boolean ignoreHeight) {
-        this.min = min;
-        this.max = max;
-
-        this.ignoreHeight = ignoreHeight;
-    }
-
-    // Does this region contain given location?
+    /**
+     * Returns whether or not does the region contain a location.
+     *
+     * @param location Location to try
+     * @return boolean whether or not does this region contain given location
+     */
     public boolean contains(Location location) {
         if (ignoreHeight)
             return location.getX() <= max.getX() && location.getX() >= min.getX()

@@ -1,6 +1,7 @@
 package space.devport.utils;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
@@ -9,7 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.messageutil.StringUtil;
 
+/**
+ * Class to handle logging & plugin console output.
+ *
+ * @author Devport Team
+ */
 @Log
+@NoArgsConstructor
 public class ConsoleOutput {
 
     @Setter
@@ -24,28 +31,32 @@ public class ConsoleOutput {
     @Setter
     @Getter
     @Nullable
+    // Will be replaced with a list of player who have debug turned on.
+    @Deprecated
     private CommandSender cmdSender;
 
     // Whether or not are we using Bukkit Logging
     @Getter
     @Setter
-    private boolean bukkit = false;
+    private boolean useBukkit = false;
 
-    public ConsoleOutput() {
-    }
-
-    public ConsoleOutput(boolean bukkit) {
-        this.bukkit = bukkit;
+    /**
+     * Constructor with a useBukkit parameter.
+     *
+     * @param useBukkit Whether to use bukkit logger or not.
+     * */
+    public ConsoleOutput(boolean useBukkit) {
+        this.useBukkit = useBukkit;
     }
 
     /**
-     * Sends a debug message to console and if not null to cmdSender
+     * Sends a debug message to console, also to cmdSender if not null.
      *
-     * @param msg Message to show
+     * @param msg Message to send, can contain color codes.
      */
     public void debug(String msg) {
         if (debug) {
-            if (bukkit)
+            if (useBukkit)
                 Bukkit.getLogger().info(StringUtil.color(prefix + "&7DEBUG: " + msg));
             else log.info(prefix + " DEBUG: " + msg);
 
@@ -55,26 +66,26 @@ public class ConsoleOutput {
     }
 
     /**
-     * Sets cmdSender and see debug(String msg)
+     * Sends a message to debug & command sender.
      *
      * @param msg    Message to show
-     * @param origin CommanderSender to show message to
+     * @param origin CommanderSender who caused the message
      */
     public void debug(String msg, CommandSender origin) {
         if (debug) {
             setCmdSender(origin);
             debug(msg);
+            setCmdSender(null);
         }
     }
 
     /**
-     * Sends error message to console and if not null to reload sender
+     * Sends error message to console and if not null to reload sender.
      *
      * @param msg Message to show
      */
     public void err(String msg) {
-
-        if (bukkit)
+        if (useBukkit)
             Bukkit.getLogger().severe(StringUtil.color(prefix + "&4ERROR: " + msg));
         else log.severe(prefix + msg);
 
@@ -88,7 +99,7 @@ public class ConsoleOutput {
      * @param msg Message to show
      */
     public void info(String msg) {
-        if (bukkit)
+        if (useBukkit)
             Bukkit.getLogger().info(StringUtil.color(prefix + "&7INFO: " + msg));
         else log.info(prefix + msg);
 
@@ -97,12 +108,13 @@ public class ConsoleOutput {
     }
 
     /**
-     * Sends error message to console and if not null to reload sender
+     * Sends a warning message to console.
+     * Warnings are sent when an error occurs, but does not affect the functionality - a default is used.
      *
      * @param msg Message to show
      */
     public void warn(String msg) {
-        if (bukkit)
+        if (useBukkit)
             Bukkit.getLogger().warning(StringUtil.color(prefix + "&cWARNING: " + msg));
         else log.warning(prefix + msg);
 

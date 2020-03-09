@@ -15,9 +15,21 @@ import java.util.HashMap;
 
 public class MenuHandler implements Listener {
 
+    // API reference
+    private final DevportUtils devportUtils;
+
     // Holding currently created GUIs
     @Getter
     private final HashMap<String, Menu> menuCache = new HashMap<>();
+
+    /**
+     * Default constructor, requires DevportUtils instanced with a JavaPlugin reference.
+     * Registers it's Bukkit Event Listener.
+     */
+    public MenuHandler() {
+        this.devportUtils = DevportUtils.getInstance();
+        devportUtils.getPlugin().getServer().getPluginManager().registerEvents(this, devportUtils.getPlugin());
+    }
 
     // Add a gui to the cache
     public void addMenu(Menu menu) {
@@ -61,7 +73,7 @@ public class MenuHandler implements Listener {
 
         // Throw new event
         MenuItemClickEvent clickEvent = new MenuItemClickEvent(e, menu, clickedItem);
-        DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(clickEvent);
+        devportUtils.getPlugin().getServer().getPluginManager().callEvent(clickEvent);
 
         // Return if the event was cancelled
         if (clickEvent.isCancelled())
@@ -89,7 +101,7 @@ public class MenuHandler implements Listener {
                     public void run() {
                         finalItem.setClickable(true);
                     }
-                }.runTaskLaterAsynchronously(DevportUtils.inst.getPlugin(), menu.getMenuBuilder().getClickDelay());
+                }.runTaskLaterAsynchronously(devportUtils.getPlugin(), menu.getMenuBuilder().getClickDelay());
             }
         }
 

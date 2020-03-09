@@ -10,6 +10,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.itemutil.ItemBuilder;
 import space.devport.utils.menuutil.MenuBuilder;
@@ -26,13 +28,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Class to handle Configuration files and custom object loading.
+ * Requires DevportUtils to be instanced.
+ *
+ * @author Devport Team
+ */
 public class Configuration {
 
-    // TODO Hook to ConsoleOutput
-    // TODO Add null checks and annotations?
+    // TODO Make fool proof - null checks & sh*t
 
+    // Path to the file
     @Getter
-    private String path;
+    private final String path;
 
     @Getter
     private File file;
@@ -40,32 +48,127 @@ public class Configuration {
     @Getter
     private FileConfiguration fileConfiguration;
 
-    private Plugin plugin;
+    @Getter
+    private final Plugin plugin;
 
     /**
      * Initializes this class, creates file and loads yaml from path.
+     * Yml is assigned automatically at the end.
      *
      * @param plugin Main plugin instance
      * @param path   Path to config file
      */
-    public Configuration(Plugin plugin, String path) {
+    public Configuration(@NotNull Plugin plugin, @NotNull String path) {
         this.plugin = plugin;
-        this.path = path;
+        this.path = path.contains(".yml") || path.contains(".yaml") ? path : path + ".yaml";
 
-        file = new File(plugin.getDataFolder(), path + ".yml");
+        if (DevportUtils.getInstance() == null) {
+            plugin.getLogger().severe("There's not DevportUtils instance, cannot load.");
+            return;
+        }
+
+        load();
+    }
+
+    /**
+     * Loads the Yaml configuration from a file.
+     */
+    public void load() {
+        DevportUtils.getInstance().getConsoleOutput().info("Loading " + path);
+        file = new File(plugin.getDataFolder(), path);
 
         if (!file.exists())
             try {
-                plugin.saveResource(path + ".yml", false);
+                plugin.saveResource(path, false);
             } catch (Exception e) {
                 try {
-                    file.createNewFile();
+                    if (!file.createNewFile())
+                        DevportUtils.getInstance().getConsoleOutput().err("Could not create " + path);
                 } catch (IOException e1) {
-                    plugin.getLogger().severe("Could not save " + path + ".yml");
+                    DevportUtils.getInstance().getConsoleOutput().err("Could not create " + path);
                 }
             }
 
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
+    }
+
+    /**
+     * Reloads the yaml, checks if file exists and loads/creates it again.
+     */
+    // Replaced with load function, dunno whether to keep it bcs of messages or not
+    @Deprecated
+    public void reload() {
+        DevportUtils.getInstance().getConsoleOutput().info("Reloading " + path);
+        load();
+    }
+
+    /**
+     * Saves the configuration to file.
+     *
+     * @return boolean Whether we were successful or not
+     */
+    public boolean save() {
+        try {
+            fileConfiguration.save(file);
+            return true;
+        } catch (IOException e) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save " + path);
+            return false;
+        }
+    }
+
+    /**
+     * Saves current FileConfiguration to a different file.
+     *
+     * @param file File to save to
+     * @param set  Whether to set the file as default or not
+     */
+    public void saveToFile(File file, boolean... set) {
+        if (set.length > 0)
+            if (set[0]) {
+                this.file = file;
+                save();
+                return;
+            }
+
+        try {
+            this.fileConfiguration.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Saves current FileConfiguration to a different file by path.
+     *
+     * @param path Path to save to
+     * @param set  Whether to set the file as default or not
+     */
+    public void saveToFile(String path, boolean... set) {
+        File file = new File(path.contains(".yml") || path.contains(".yaml") ? path : path + ".yaml");
+        saveToFile(file, set);
+    }
+
+    /**
+     * Deletes the file.
+     *
+     * @return boolean Whether we were successful or not
+     */
+    public boolean delete() {
+        if (file.delete())
+            return true;
+        else {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not delete file " + path);
+            return false;
+        }
+    }
+
+    /**
+     * Deletes file and loads it again.
+     */
+    public void clear() {
+        if (file.delete())
+            load();
     }
 
     /**
@@ -75,6 +178,8 @@ public class Configuration {
      * @param defaultValue Default value
      * @return Fetched value or default, if null
      */
+    // Seems redundant, might remove later.
+    @Deprecated
     public Object fetchDefault(String path, Object defaultValue) {
         if (fileConfiguration.contains(path))
             return fileConfiguration.get(path);
@@ -82,26 +187,6 @@ public class Configuration {
             fileConfiguration.set(path, defaultValue);
             save();
             return defaultValue;
-        }
-    }
-
-    /**
-     * Saves configuration file
-     */
-    public void save() {
-        try {
-            fileConfiguration.save(file);
-        } catch (IOException e) {
-            plugin.getLogger().severe("Could not save " + file.getName());
-        }
-    }
-
-    /**
-     * Deletes file and reloads, creates new file and loads default values.
-     */
-    public void clear() {
-        if (file.delete()) {
-            reload();
         }
     }
 
@@ -151,71 +236,21 @@ public class Configuration {
         return str != null ? str.toCharArray()[0] : defaultValue;
     }
 
-    /**
-     * Reloads the yaml, checks if file exists and loads/creates it to yaml again.
-     */
-    public void reload() {
-        plugin.getLogger().info("Reloading " + path + ".yml");
-        file = new File(plugin.getDataFolder(), path + ".yml");
-
-        if (!file.exists()) {
-            plugin.getLogger().info("Creating new " + path + ".yml");
-
-            try {
-                plugin.saveResource(path + ".yml", false);
-            } catch (Exception e) {
-                try {
-                    file.createNewFile();
-                } catch (IOException e1) {
-                    plugin.getLogger().severe("Could not create " + path + ".yml");
-                }
-            }
-        }
-
-        fileConfiguration = YamlConfiguration.loadConfiguration(file);
-    }
-
-    /**
-     * Saves current FileConfiguration to a different file.
-     *
-     * @param file File to save to
-     */
-    public void saveToFile(File file) {
-        if (file.exists()) {
-            plugin.getLogger().severe("This file already exists");
-            return;
-        }
-
-        try {
-            this.fileConfiguration.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Saves current FileConfiguration to a different file by path.
-     *
-     * @param path Path to save to
-     */
-    public void saveToFile(String path) {
-        File f = new File(plugin.getDataFolder(), path + ".yml");
-        if (f.exists()) {
-            plugin.getLogger().severe("This file already exists");
-            return;
-        }
-
-        try {
-            this.fileConfiguration.save(f);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     // --------------------------------- Advanced Load/Save Methods -----------------------------------
 
-    // Load a message builder either from String or from a StringList
+    /**
+     * Loads a message builder either from String or from a list of strings.
+     * Returns an empty MessageBuilder when not present.
+     *
+     * @param path Path to the MessageBuilder
+     * @return MessageBuilder object
+     */
+    @NotNull
     public MessageBuilder loadMessageBuilder(String path) {
+
+        // Check the path
+        if (Strings.isNullOrEmpty(path))
+            return new MessageBuilder();
 
         if (fileConfiguration.isString(path)) {
             // Load as a string
@@ -231,18 +266,24 @@ public class Configuration {
         return new MessageBuilder();
     }
 
-    // Load region from yaml with given paths
-    public Region loadRegion(String path) {
+    /**
+     * Loads a region from given path.
+     *
+     * @param path Path to the Region
+     * @return Region object
+     */
+    @Nullable
+    public Region loadRegion(@Nullable String path) {
         Location min = LocationUtil.locationFromString(fileConfiguration.getString(path + "." + SubPath.REGION_MIN));
         Location max = LocationUtil.locationFromString(fileConfiguration.getString(path + "." + SubPath.REGION_MAX));
 
         if (min == null) {
-            DevportUtils.inst.getConsoleOutput().err("Could not load a region at path " + path + ", minimum location didn't load.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not load a region at path " + path + ", minimum location didn't load.");
             return null;
         }
 
         if (max == null) {
-            DevportUtils.inst.getConsoleOutput().err("Could not load a region at path " + path + ", maximum location didn't load.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not load a region at path " + path + ", maximum location didn't load.");
             return null;
         }
 
@@ -326,7 +367,7 @@ public class Configuration {
             try {
                 mat = Strings.isNullOrEmpty(type) ? Material.valueOf(DefaultValue.ITEM_TYPE.toString().toUpperCase()) : Material.valueOf(type.toUpperCase());
             } catch (IllegalArgumentException e) {
-                DevportUtils.inst.getConsoleOutput().err("Invalid item type in default & on path " + path);
+                DevportUtils.getInstance().getConsoleOutput().err("Invalid item type in default & on path " + path);
                 e.printStackTrace();
                 return null;
             }
@@ -377,10 +418,10 @@ public class Configuration {
 
             return b;
         } catch (NullPointerException | IllegalArgumentException e) {
-            if (DevportUtils.inst.getConsoleOutput().isDebug())
+            if (DevportUtils.getInstance().getConsoleOutput().isDebug())
                 e.printStackTrace();
 
-            DevportUtils.inst.getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
+            DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
 
             ParseFormat format = new ParseFormat().fill("{message}", e.getMessage());
             return new ItemBuilder(Material.valueOf(DefaultValue.ITEM_TYPE.toString())).parseFormat(format).displayName(DefaultValue.ITEM_NAME.toString()).addLine(DefaultValue.ITEM_LINE.toString());

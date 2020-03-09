@@ -115,7 +115,7 @@ public class MenuBuilder {
             usedTitle = usedTitle.substring(0, 31);
 
             // Send a message to console.
-            DevportUtils.inst.getConsoleOutput().warn("Inventory title " + title + " is too long, cutting to 32.");
+            DevportUtils.getInstance().getConsoleOutput().warn("Inventory title " + title + " is too long, cutting to 32.");
         }
 
         // Create the inventory

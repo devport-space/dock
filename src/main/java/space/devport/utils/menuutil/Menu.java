@@ -61,12 +61,12 @@ public class Menu implements MenuListener {
 
         // Throw event
         MenuOpenEvent openEvent = new MenuOpenEvent(player, this);
-        DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(openEvent);
+        DevportUtils.getInstance().getPlugin().getServer().getPluginManager().callEvent(openEvent);
 
         if (!openEvent.isCancelled()) {
             this.player = player;
 
-            DevportUtils.inst.getMenuHandler().addMenu(this);
+            DevportUtils.getInstance().getMenuHandler().addMenu(this);
 
             player.openInventory(inventory);
 
@@ -97,13 +97,13 @@ public class Menu implements MenuListener {
 
         // Throw close event
         MenuCloseEvent closeEvent = new MenuCloseEvent(player, this);
-        DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(closeEvent);
+        DevportUtils.getInstance().getPlugin().getServer().getPluginManager().callEvent(closeEvent);
 
         if (!closeEvent.isCancelled()) {
 
             player.closeInventory();
 
-            DevportUtils.inst.getMenuHandler().removeMenu(this);
+            DevportUtils.getInstance().getMenuHandler().removeMenu(this);
 
             onClose();
 
