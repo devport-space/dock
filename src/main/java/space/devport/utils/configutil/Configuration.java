@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
  */
 public class Configuration {
 
+    // TODO Make fool proof - null checks & sh*t
+
     // Path to the file
     @Getter
     private final String path;
@@ -244,7 +246,7 @@ public class Configuration {
      * @return MessageBuilder object
      */
     @NotNull
-    public MessageBuilder loadMessageBuilder(@Nullable String path) {
+    public MessageBuilder loadMessageBuilder(String path) {
 
         // Check the path
         if (Strings.isNullOrEmpty(path))
