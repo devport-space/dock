@@ -1,7 +1,7 @@
 package space.devport.utils.configutil;
 
-import lombok.Getter;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.Setter;
 import space.devport.utils.messageutil.MessageBuilder;
 
