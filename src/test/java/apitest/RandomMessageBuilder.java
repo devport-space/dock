@@ -2,7 +2,6 @@ package apitest;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import space.devport.utils.messageutil.MessageBuilder;
 
 import java.util.Random;
@@ -10,7 +9,7 @@ import java.util.Random;
 public class RandomMessageBuilder extends MessageBuilder {
 
     // Holding out own variables etc. inheritance, you know how that works.
-    private Random random = new Random();
+    private final Random random = new Random();
 
     @Getter
     @Setter
