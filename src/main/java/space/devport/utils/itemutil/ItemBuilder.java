@@ -23,7 +23,7 @@ import java.util.*;
 @NoArgsConstructor
 public class ItemBuilder {
 
-    // TODO Implement Mutliversion material support. XSeries: https://github.com/CryptoMorin/XSeries
+    // TODO Implement Multi-version material support. XSeries: https://github.com/CryptoMorin/XSeries
 
     // Item Data information
     @Getter
