@@ -1,5 +1,6 @@
 package space.devport.utils.configutil;
 
+import lombok.AllArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -7,10 +8,13 @@ import lombok.Setter;
  *
  * @author Devport Team
  * */
+@AllArgsConstructor
 public enum SubPath {
+
     /**
      * REGIONS
      */
+
     REGION_MIN("min"),
     REGION_MAX("max"),
 
@@ -53,10 +57,6 @@ public enum SubPath {
 
     @Setter
     private String subPath;
-
-    SubPath(String subPath) {
-        this.subPath = subPath;
-    }
 
     @Override
     public String toString() {

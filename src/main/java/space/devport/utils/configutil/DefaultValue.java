@@ -1,5 +1,6 @@
 package space.devport.utils.configutil;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import space.devport.utils.messageutil.MessageBuilder;
@@ -8,7 +9,8 @@ import space.devport.utils.messageutil.MessageBuilder;
  * Enum that holds default values for custom object loading.
  *
  * @author Devport Team
- * */
+ */
+@AllArgsConstructor
 public enum DefaultValue {
 
     /**
@@ -21,7 +23,7 @@ public enum DefaultValue {
 
     /**
      * MENU ITEMS
-     * */
+     */
 
     MENU_ITEM_MATRIX_CHAR(' '),
 
@@ -33,7 +35,7 @@ public enum DefaultValue {
 
     /**
      * REGION
-     * */
+     */
 
     REGION_IGNORE_HEIGHT(false),
 
@@ -43,13 +45,15 @@ public enum DefaultValue {
 
     ITEM_TYPE("STONE"),
     ITEM_NAME("&cCould not load item"),
-    ITEM_LINE("&cReason: &7{message}");
+    ITEM_LINE("&cReason: &7{message}"),
+
+    /**
+     * STRING UTIL
+     */
+
+    LINE_DELIMITER("\n");
 
     @Getter
     @Setter
     private Object value;
-
-    DefaultValue(Object defaultValue) {
-        this.value = defaultValue;
-    }
 }

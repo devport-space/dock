@@ -1,15 +1,20 @@
 package space.devport.utils.messageutil;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+/**
+ * Class that holds placeholders.
+ *
+ * @author Devport Team
+ */
+@NoArgsConstructor
 public class ParseFormat {
-    // Instanced class that holds custom placeholders
-    // Everything is made with a return this to enable command chaining.
 
     // Holds custom placeholders and their current values
     @Getter
@@ -19,10 +24,6 @@ public class ParseFormat {
     // Default to display when the placeholder is not filled in.
     @Getter
     private String defaultValue = "null";
-
-    // Default class constructor.
-    public ParseFormat() {
-    }
 
     public ParseFormat(ParseFormat format) {
         this.copyPlaceholders(format);
