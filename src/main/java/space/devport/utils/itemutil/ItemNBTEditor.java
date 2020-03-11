@@ -79,7 +79,7 @@ public class ItemNBTEditor {
     }
 
     /**
-     * Removes {@link @key} from {@link @item} NBT.
+     * Removes key from item NBT.
      *
      * @param item Item that NBT Data's will be changed.
      * @param key  Key of NBT Compound.

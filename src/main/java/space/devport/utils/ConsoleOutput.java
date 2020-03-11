@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.utils.messageutil.StringUtil;
 
 /**
- * Class to handle logging & plugin console output.
+ * Class to handle logging and plugin console output.
  *
  * @author Devport Team
  */
@@ -66,7 +66,7 @@ public class ConsoleOutput {
     }
 
     /**
-     * Sends a message to debug & command sender.
+     * Sends a message to debug and command sender.
      *
      * @param msg    Message to show
      * @param origin CommanderSender who caused the message

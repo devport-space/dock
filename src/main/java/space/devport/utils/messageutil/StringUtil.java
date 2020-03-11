@@ -53,7 +53,7 @@ public class StringUtil {
     }
 
     /**
-     * Joins a list of strings in a single, mutli-line parsed string.
+     * Joins a list of strings in a single, multi-line parsed string.
      * Uses default line delimiter stored in DefaultValue.java
      *
      * @param list List of strings to join together
@@ -64,7 +64,7 @@ public class StringUtil {
     }
 
     /**
-     * Joins a list of strings in a single, mutli-line parsed string.
+     * Joins a list of strings in a single, multi-line parsed string.
      *
      * @param list      List of strings to join together
      * @param delimiter Line delimiter to use

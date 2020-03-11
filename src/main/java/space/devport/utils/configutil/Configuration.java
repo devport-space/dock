@@ -292,7 +292,7 @@ public class Configuration {
      * Saves a region to given path.
      *
      * @param path   String path to save to
-     * @param region Region to sabe
+     * @param region Region to save
      */
     public void saveRegion(@Nullable String path, @Nullable Region region) {
 

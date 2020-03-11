@@ -33,6 +33,8 @@ public class MessageBuilder extends ParseFormat {
 
     /**
      * Copy constructor.
+     *
+     * @param builder MessageBuilder to copy
      */
     public MessageBuilder(@NotNull MessageBuilder builder) {
         // Call parse format copy constructor
@@ -45,6 +47,8 @@ public class MessageBuilder extends ParseFormat {
 
     /**
      * Array constructor.
+     *
+     * @param message Array to construct with
      */
     public MessageBuilder(@Nullable String[] message) {
         set(message);
@@ -52,6 +56,8 @@ public class MessageBuilder extends ParseFormat {
 
     /**
      * List constructor.
+     *
+     * @param message List to construct with
      */
     public MessageBuilder(@Nullable List<String> message) {
         set(message);
@@ -59,9 +65,11 @@ public class MessageBuilder extends ParseFormat {
 
     /**
      * Single line constructor.
+     *
+     * @param line Line in string
      */
-    public MessageBuilder(@Nullable String str) {
-        set(str);
+    public MessageBuilder(@Nullable String line) {
+        set(line);
     }
 
     /**
@@ -154,7 +162,7 @@ public class MessageBuilder extends ParseFormat {
     }
 
     /**
-     * Parse placeholders & their values stored in cache.
+     * Parse placeholders and their values stored in cache.
      *
      * @return MessageBuilder object
      */
@@ -179,7 +187,7 @@ public class MessageBuilder extends ParseFormat {
     }
 
     /**
-     * Parse a single placeholder & value in the working message.
+     * Parse a single placeholder and value in the working message.
      *
      * @param placeholder Key to look for
      * @param value       Value to replace with

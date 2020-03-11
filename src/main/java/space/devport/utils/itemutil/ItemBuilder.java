@@ -23,7 +23,7 @@ import java.util.*;
 @NoArgsConstructor
 public class ItemBuilder {
 
-    // TODO Implement Mutli-version material support. XSeries: https://github.com/CryptoMorin/XSeries
+    // TODO Implement Mutliversion material support. XSeries: https://github.com/CryptoMorin/XSeries
 
     // Item Data information
     @Getter
@@ -59,6 +59,8 @@ public class ItemBuilder {
 
     /**
      * Constructor with a material.
+     *
+     * @param material Material to use
      */
     public ItemBuilder(@NotNull Material material) {
         this.material = material;
@@ -66,6 +68,8 @@ public class ItemBuilder {
 
     /**
      * Copy constructor.
+     *
+     * @param builder ItemBuilder to copy
      */
     public ItemBuilder(@NotNull ItemBuilder builder) {
         this.displayName = new MessageBuilder(builder.getDisplayName());
@@ -82,6 +86,8 @@ public class ItemBuilder {
 
     /**
      * To-builder constructor.
+     *
+     * @param item Item to convert
      */
     public ItemBuilder(@NotNull ItemStack item) {
         this.material = item.getType();
@@ -440,7 +446,7 @@ public class ItemBuilder {
     }
 
     /**
-     * Add NBT key & value.
+     * Add NBT key and value.
      *
      * @param key   Key to add
      * @param value Value to add
