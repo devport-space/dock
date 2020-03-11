@@ -35,11 +35,6 @@ public class Menu implements MenuListener {
     @Setter
     public Inventory inventory;
 
-    // Is the menu open or not?
-    @Getter
-    @Setter
-    public boolean open = false;
-
     public Menu(String name, MenuBuilder builder) {
         this.name = name;
 
@@ -66,20 +61,17 @@ public class Menu implements MenuListener {
 
         // Throw event
         MenuOpenEvent openEvent = new MenuOpenEvent(player, this);
-        DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(openEvent);
+        DevportUtils.getInstance().getPlugin().getServer().getPluginManager().callEvent(openEvent);
 
-        if (openEvent.isCancelled())
-            return;
+        if (!openEvent.isCancelled()) {
+            this.player = player;
 
-        open = true;
+            DevportUtils.getInstance().getMenuHandler().addMenu(this);
 
-        this.player = player;
+            player.openInventory(inventory);
 
-        DevportUtils.inst.getMenuHandler().addMenu(this);
-
-        player.openInventory(inventory);
-
-        onOpen();
+            onOpen();
+        }
     }
 
     // Reload inventory
@@ -100,22 +92,23 @@ public class Menu implements MenuListener {
 
     // Close the menu
     public void close() {
-        // Throw close event
-        MenuCloseEvent closeEvent = new MenuCloseEvent(player, this);
-        DevportUtils.inst.getPlugin().getServer().getPluginManager().callEvent(closeEvent);
-
-        if (closeEvent.isCancelled())
+        if (player == null)
             return;
 
-        open = false;
+        // Throw close event
+        MenuCloseEvent closeEvent = new MenuCloseEvent(player, this);
+        DevportUtils.getInstance().getPlugin().getServer().getPluginManager().callEvent(closeEvent);
 
-        player.closeInventory();
+        if (!closeEvent.isCancelled()) {
 
-        DevportUtils.inst.getMenuHandler().removeMenu(this);
+            player.closeInventory();
 
-        onClose();
+            DevportUtils.getInstance().getMenuHandler().removeMenu(this);
 
-        player = null;
+            onClose();
+
+            player = null;
+        }
     }
 
     @Override

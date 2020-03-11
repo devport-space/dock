@@ -79,7 +79,7 @@ public class ItemNBTEditor {
     }
 
     /**
-     * Removes {@link @key} from {@link @item} NBT.
+     * Removes key from item NBT.
      *
      * @param item Item that NBT Data's will be changed.
      * @param key  Key of NBT Compound.
@@ -127,7 +127,6 @@ public class ItemNBTEditor {
         try {
             Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
             Object tag = getTag(nativeItemStack);
-
             return (boolean) tag.getClass().getDeclaredMethod("hasKey", String.class).invoke(tag, key);
         } catch (Exception x) {
             x.printStackTrace();
@@ -144,7 +143,6 @@ public class ItemNBTEditor {
     private static Object getTag(Object nativeItemStack) {
         try {
             if (SpigotHelper.getVersion().contains("1.8") || SpigotHelper.getVersion().contains("1.7")) {
-
                 if (!(boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack)) {
                     Object compound = Reflection.getNMSClass(".NBTTagCompound").getConstructor().newInstance();
                     nativeItemStack.getClass().getMethod("setTag", compound.getClass()).invoke(nativeItemStack, compound);

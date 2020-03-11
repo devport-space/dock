@@ -109,9 +109,4 @@ public class MatrixItem {
     public boolean isEmpty() {
         return menuItems.isEmpty();
     }
-
-    @Override
-    public String toString() {
-        return "{" + character + menuItems.toString() + "}";
-    }
 }

@@ -115,7 +115,7 @@ public class MenuBuilder {
             usedTitle = usedTitle.substring(0, 31);
 
             // Send a message to console.
-            DevportUtils.inst.getConsoleOutput().warn("Inventory title " + title + " is too long, cutting to 32.");
+            DevportUtils.getInstance().getConsoleOutput().warn("Inventory title " + title + " is too long, cutting to 32.");
         }
 
         // Create the inventory
@@ -280,11 +280,10 @@ public class MenuBuilder {
         if (itemMatrix.containsKey(matrixItem.getCharacter())) {
 
             // Merge them
-            MatrixItem item = itemMatrix.get(matrixItem.getCharacter());
+            MatrixItem newItem = new MatrixItem(matrixItem);
+            matrixItem.getMenuItems().forEach(i -> newItem.addItem(new MenuItem(i)));
 
-            matrixItem.getMenuItems().forEach(item::addItem);
-
-            setMatrixItem(item);
+            setMatrixItem(newItem);
         } else setMatrixItem(matrixItem);
         return this;
     }
