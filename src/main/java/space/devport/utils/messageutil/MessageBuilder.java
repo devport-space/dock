@@ -50,7 +50,7 @@ public class MessageBuilder extends ParseFormat {
      *
      * @param message Array to construct with
      */
-    public MessageBuilder(@Nullable String[] message) {
+    public MessageBuilder(@Nullable String... message) {
         set(message);
     }
 
@@ -140,14 +140,13 @@ public class MessageBuilder extends ParseFormat {
         return this;
     }
 
-
     /**
      * Set the message.
      *
      * @param message Message to set, in an Array
      * @return MessageBuilder object
      */
-    public MessageBuilder set(@Nullable String[] message) {
+    public MessageBuilder set(@Nullable String... message) {
         set(Arrays.asList(message));
         return this;
     }
@@ -181,9 +180,9 @@ public class MessageBuilder extends ParseFormat {
     @NotNull
     public String toString(@NotNull String... delimiter) {
         if (delimiter.length > 0)
-            return StringUtil.toMultilineString(workingMessage, delimiter[0]);
+            return StringUtil.listToString(workingMessage, delimiter[0]);
         else
-            return StringUtil.toMultilineString(workingMessage);
+            return StringUtil.listToString(workingMessage);
     }
 
     /**
@@ -236,49 +235,43 @@ public class MessageBuilder extends ParseFormat {
     // --------------- Methods overridden from ParseFormat ---------------------
 
     @Override
-    public MessageBuilder addPlaceholder(String placeholder) {
+    public MessageBuilder addPlaceholder(@NotNull String placeholder) {
         super.addPlaceholder(placeholder);
         return this;
     }
 
     @Override
-    public MessageBuilder fill(String placeholder, String value) {
+    public MessageBuilder fill(@NotNull String placeholder, @NotNull String value) {
         super.fill(placeholder, value);
         return this;
     }
 
     @Override
-    public MessageBuilder setDefaultValue(String defaultValue) {
+    public MessageBuilder setDefaultValue(@NotNull String defaultValue) {
         super.setDefaultValue(defaultValue);
         return this;
     }
 
     @Override
-    public MessageBuilder addPlaceholder(String placeholder, String value) {
-        super.addPlaceholder(placeholder, value);
-        return this;
-    }
-
-    @Override
-    public MessageBuilder addPlaceholders(String[] placeholders) {
+    public MessageBuilder addPlaceholders(@NotNull String... placeholders) {
         super.addPlaceholders(placeholders);
         return this;
     }
 
     @Override
-    public MessageBuilder fill(String[] arguments) {
+    public MessageBuilder fill(@NotNull String... arguments) {
         super.fill(arguments);
         return this;
     }
 
     @Override
-    public MessageBuilder setPlaceholders(String[] placeholders) {
+    public MessageBuilder setPlaceholders(@NotNull String... placeholders) {
         super.setPlaceholders(placeholders);
         return this;
     }
 
     @Override
-    public MessageBuilder copyPlaceholders(ParseFormat format) {
+    public MessageBuilder copyPlaceholders(@NotNull ParseFormat format) {
         super.copyPlaceholders(format);
         return this;
     }

@@ -51,7 +51,7 @@ public enum DefaultValue {
      * STRING UTIL
      */
 
-    LINE_DELIMITER("\n");
+    LIST_DELIMITER("\n");
 
     @Getter
     @Setter

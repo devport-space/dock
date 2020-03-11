@@ -3,9 +3,12 @@ package space.devport.utils.regionutil;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Custom region handling.
+ *
+ * @author Devport Team
  */
 public class Region {
 
@@ -44,7 +47,14 @@ public class Region {
      * @param location Location to try
      * @return boolean whether or not does this region contain given location
      */
-    public boolean contains(Location location) {
+    public boolean contains(@NotNull Location location) {
+
+        // Check world
+        if (max.getWorld() != null)
+            if (!max.getWorld().equals(location.getWorld()))
+                return false;
+
+        // Check coordinates
         if (ignoreHeight)
             return location.getX() <= max.getX() && location.getX() >= min.getX()
                     && location.getZ() <= max.getZ() && location.getZ() >= min.getZ();

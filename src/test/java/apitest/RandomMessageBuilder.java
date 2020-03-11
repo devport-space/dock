@@ -2,6 +2,7 @@ package apitest;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import space.devport.utils.messageutil.MessageBuilder;
 
 import java.util.Random;
@@ -24,6 +25,4 @@ public class RandomMessageBuilder extends MessageBuilder {
 
         return super.parsePlaceholders();
     }
-
-    // TODO Add the possibility to override a parsePlaceholder(String placeholder) to enable "single-parse listening"
 }

@@ -215,7 +215,7 @@ public class Configuration {
      * @return Multi-line colored string
      */
     public String getColoredMessage(String path) {
-        return StringUtil.toMultilineString(getColoredList(path));
+        return StringUtil.listToString(getColoredList(path));
     }
 
     /**

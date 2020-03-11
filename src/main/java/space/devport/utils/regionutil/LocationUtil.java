@@ -69,7 +69,7 @@ public class LocationUtil {
         String[] arr = locationString.split(delimiter);
 
         if (arr.length < 4) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load a location from " + locationString + ", too few parameters.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", too few parameters.");
             return null;
         }
 
@@ -79,9 +79,9 @@ public class LocationUtil {
             else
                 return new Location(null, Double.parseDouble(arr[1]), Double.parseDouble(arr[2]), Double.parseDouble(arr[3]));
         } catch (NumberFormatException e) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load a location from " + locationString + ", parameter not a number.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", parameter not a number.");
         } catch (NullPointerException e1) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load a location from " + locationString + ", parameter(s) missing.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", parameter(s) missing.");
         }
 
         return null;

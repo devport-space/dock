@@ -3,12 +3,17 @@ package space.devport.utils.messageutil;
 import org.bukkit.ChatColor;
 import space.devport.utils.configutil.DefaultValue;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class for String operations.
+ *
+ * @author Devport Team
+ */
 public class StringUtil {
-
-    // TODO Make strings and lists nullable to prevent errs., hook to ConsoleOutput
 
     /**
      * Colors a string with Bukkit color codes.
@@ -17,7 +22,7 @@ public class StringUtil {
      * @return String with Bukkit color codes
      */
     public static String color(String msg) {
-        return ChatColor.translateAlternateColorCodes('&', msg);
+        return color(msg, '&');
     }
 
     /**
@@ -38,7 +43,7 @@ public class StringUtil {
      * @return List of strings with Bukkit color codes
      */
     public static List<String> color(List<String> list) {
-        return list.stream().map(StringUtil::color).collect(Collectors.toList());
+        return color(list, '&');
     }
 
     /**
@@ -59,8 +64,8 @@ public class StringUtil {
      * @param list List of strings to join together
      * @return String with line separators.
      */
-    public static String toMultilineString(List<String> list) {
-        return toMultilineString(list, DefaultValue.LINE_DELIMITER.toString());
+    public static String listToString(List<String> list) {
+        return listToString(list, DefaultValue.LIST_DELIMITER.toString());
     }
 
     /**
@@ -70,7 +75,31 @@ public class StringUtil {
      * @param delimiter Line delimiter to use
      * @return String with line separators.
      */
-    public static String toMultilineString(List<String> list, String delimiter) {
+    public static String listToString(List<String> list, String delimiter) {
         return String.join(delimiter, list);
+    }
+
+    /**
+     * Parses a list from string.
+     *
+     * @param string    String to parse from
+     * @param delimiter Delimiter to use
+     * @return Parsed list
+     */
+    public static List<String> listFromString(String string, String delimiter) {
+        List<String> list = new ArrayList<>();
+        if (string.contains(delimiter))
+            Collections.addAll(list, string.split(delimiter));
+        return list;
+    }
+
+    /**
+     * Parses a list from string using default delimiter.
+     *
+     * @param string String to parse from
+     * @return Parsed list
+     */
+    public static List<String> listFromString(String string) {
+        return listFromString(string, DefaultValue.LIST_DELIMITER.toString());
     }
 }
