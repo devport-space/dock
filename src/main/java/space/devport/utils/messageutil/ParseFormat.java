@@ -1,7 +1,6 @@
 package space.devport.utils.messageutil;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +13,6 @@ import java.util.Set;
  *
  * @author Devport Team
  */
-@NoArgsConstructor
 public class ParseFormat {
 
     // Holds custom placeholders and their current values
