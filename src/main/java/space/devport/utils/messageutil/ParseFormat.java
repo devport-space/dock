@@ -2,16 +2,21 @@ package space.devport.utils.messageutil;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+/**
+ * Class that holds placeholders.
+ *
+ * @author Devport Team
+ */
 public class ParseFormat {
-    // Instanced class that holds custom placeholders
-    // Everything is made with a return this to enable command chaining.
 
     // Holds custom placeholders and their current values
+    // In order
     @Getter
     @Setter
     private LinkedHashMap<String, String> placeholderCache = new LinkedHashMap<>();
@@ -20,67 +25,97 @@ public class ParseFormat {
     @Getter
     private String defaultValue = "null";
 
-    // Default class constructor.
-    public ParseFormat() {
-    }
-
-    public ParseFormat(ParseFormat format) {
+    /**
+     * Copy constructor.
+     *
+     * @param format Parse format to copy
+     */
+    public ParseFormat(@NotNull ParseFormat format) {
         this.copyPlaceholders(format);
         this.defaultValue = format.getDefaultValue();
     }
 
-    // Class constructor with placeholders.
-    public ParseFormat(String[] placeholders) {
+    /**
+     * Constructor with placeholder array.
+     *
+     * @param placeholders Placeholder array
+     */
+    public ParseFormat(@NotNull String... placeholders) {
         for (String placeholder : placeholders)
             placeholderCache.put(placeholder, defaultValue);
     }
 
-    // Class constructor with placeholders & values.
-    public ParseFormat(String[] placeholders, String[] values) {
+    /**
+     * Constructor with placeholders and values.
+     *
+     * @param placeholders Placeholder array
+     * @param values       Value array
+     */
+    public ParseFormat(@NotNull String[] placeholders, @NotNull String[] values) {
         for (int i = 0; i < placeholders.length; i++)
             placeholderCache.put(placeholders[i], values[i]);
     }
 
-    // Add a single placeholder with no value.
-    public ParseFormat addPlaceholder(String placeholder) {
+    /**
+     * Adds a single placeholder to the cache.
+     * Fills it with default value.
+     *
+     * @param placeholder String placeholder
+     * @return ParseFormat object
+     */
+    public ParseFormat addPlaceholder(@NotNull String placeholder) {
         placeholderCache.put(placeholder, defaultValue);
         return this;
     }
 
-    // Add a single placeholder with value.
-    public ParseFormat addPlaceholder(String placeholder, String value) {
-        placeholderCache.put(placeholder, value);
-        return this;
-    }
-
-    // Add multiple placeholders to the cache.
-    public ParseFormat addPlaceholders(String[] placeholders) {
+    /**
+     * Add multiple placeholders to the cache.
+     *
+     * @param placeholders Placeholders to add in an array
+     * @return ParseFormat object
+     */
+    public ParseFormat addPlaceholders(@NotNull String... placeholders) {
         for (String placeholder : placeholders)
             addPlaceholder(placeholder);
         return this;
     }
 
-    public ParseFormat setPlaceholders(String[] placeholders) {
+    /**
+     * Set placeholder cache.
+     *
+     * @param placeholders Placeholders to be set
+     * @return ParseFormat object
+     */
+    public ParseFormat setPlaceholders(@NotNull String... placeholders) {
         clearPlaceholders();
         addPlaceholders(placeholders);
         return this;
     }
 
-    // Copy placeholders from a format
-    public ParseFormat copyPlaceholders(ParseFormat format) {
+    /**
+     * Copy placeholders and values from a format.
+     *
+     * @param format Parse format to copy placeholders from
+     * @return ParseFormat object
+     */
+    public ParseFormat copyPlaceholders(@NotNull ParseFormat format) {
         format.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
         return this;
     }
 
-    // Uses passed arguments to fill values for placeholders first to last.
-    public ParseFormat fill(String[] arguments) {
+    /**
+     * Fill placeholders with values, in order.
+     *
+     * @param arguments Values to fill in
+     * @return ParseFormat object
+     */
+    public ParseFormat fill(@NotNull String... arguments) {
         int n = 0;
 
         for (String placeholder : placeholderCache.keySet()) {
             placeholderCache.put(placeholder, arguments[n]);
 
             n++;
-
             if (n == arguments.length)
                 break;
         }
@@ -88,34 +123,65 @@ public class ParseFormat {
         return this;
     }
 
-    // Parse a string with current placeholders
-    public String parse(String str) {
+    /**
+     * Parse a string using this format.
+     *
+     * @param string String to parse
+     * @return Parsed string
+     */
+    public String parse(@NotNull String string) {
         for (String placeholder : placeholderCache.keySet())
-            str = str.replace(placeholder, placeholderCache.get(placeholder));
-        return str;
+            string = string.replace(placeholder, placeholderCache.get(placeholder));
+        return string;
     }
 
-    // Fill in a single placeholder with a value
-    public ParseFormat fill(String placeholder, String value) {
+    /**
+     * Fill a single placeholder value.
+     *
+     * @param placeholder Placeholder to replace
+     * @param value       Value to fill in
+     * @return ParseFormat object
+     */
+    public ParseFormat fill(@NotNull String placeholder, @NotNull String value) {
         placeholderCache.put(placeholder, value);
         return this;
     }
 
-    // Set the default placeholder value.
-    public ParseFormat setDefaultValue(String defaultValue) {
+    /**
+     * Set default placeholder value.
+     *
+     * @param defaultValue Default value
+     * @return ParseFormat object
+     */
+    public ParseFormat setDefaultValue(@NotNull String defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }
 
+    /**
+     * Clear the placeholder cache.
+     *
+     * @return ParseFormat object
+     */
     public ParseFormat clearPlaceholders() {
         placeholderCache.clear();
         return this;
     }
 
+    /**
+     * Get keys of placeholder cache.
+     *
+     * @return Set of Strings
+     */
     public Set<String> getPlaceholders() {
         return placeholderCache.keySet();
     }
 
+    /**
+     * Get values of placeholder cache.
+     *
+     * @return Collection of Strings
+     */
     public Collection<String> getValues() {
         return placeholderCache.values();
     }

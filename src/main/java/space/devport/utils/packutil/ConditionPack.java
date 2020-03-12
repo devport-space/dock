@@ -28,6 +28,7 @@ public class ConditionPack {
     @Setter
     @Builder.Default
     private double minHealth = 0;
+
     @Getter
     @Setter
     @Builder.Default

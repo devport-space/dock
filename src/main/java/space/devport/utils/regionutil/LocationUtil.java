@@ -1,47 +1,88 @@
 package space.devport.utils.regionutil;
 
+import com.google.common.base.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.utilities.Default;
 
+/**
+ * Static util class to assist location related operations.
+ */
 public class LocationUtil {
 
-    // Parse a location to string, uses ; as a delimiter.
+    /**
+     * Parses a location to string using the default location delimiter.
+     *
+     * @param location Location to parse
+     * @return parsed location String
+     */
     public static String locationToString(Location location) {
-        return locationToString(location, ";");
+        return locationToString(location, Default.LOCATION_DELIMITER.toString());
     }
 
-    // Parse a location to string, uses given delimiter
+    /**
+     * Parses a location to string using given delimiter.
+     *
+     * @param location  Location to parse
+     * @param delimiter String delimiter to use
+     * @return parse location String
+     */
     public static String locationToString(Location location, String delimiter) {
-
         if (location == null) {
-            DevportUtils.inst.getConsoleOutput().err("Could not parse location to string, location is null.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not parse location to string, location is null.");
             return null;
         }
 
-        return location.getX() + delimiter + location.getY() + delimiter + location.getZ();
+        return location.getWorld().getName() + delimiter +
+                location.getX() + delimiter +
+                location.getY() + delimiter +
+                location.getZ();
     }
 
-    // Parse a location from string, uses ; as a delimiter
-    public static Location locationFromString(String dataString) {
-        return locationFromString(dataString, ";");
+    /**
+     * Parses a location from string.
+     *
+     * @param locationString String to parse location from
+     * @return parsed Location
+     */
+    @Nullable
+    public static Location locationFromString(@Nullable String locationString) {
+        return locationFromString(locationString, Default.LOCATION_DELIMITER.toString());
     }
 
-    // Parse a location from string, uses given delimiter
-    public static Location locationFromString(String dataString, String delimiter) {
-        String[] arr = dataString.split(delimiter);
+    /**
+     * Parses a location from String using given String delimiter.
+     *
+     * @param locationString String to parse location from
+     * @param delimiter      String delimiter to use
+     * @param useWorld       Optional boolean, whether to parse a world or not
+     * @return parsed Location
+     */
+    @Nullable
+    public static Location locationFromString(@Nullable String locationString, @Nullable String delimiter, boolean... useWorld) {
+        if (Strings.isNullOrEmpty(locationString) || Strings.isNullOrEmpty(delimiter))
+            return null;
+
+        boolean world = useWorld.length == 0 || useWorld[0];
+
+        String[] arr = locationString.split(delimiter);
 
         if (arr.length < 4) {
-            DevportUtils.inst.getConsoleOutput().err("Could not load a location from " + dataString + ", too few parameters.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", too few parameters.");
             return null;
         }
 
         try {
-            return new Location(Bukkit.getWorld(arr[0]), Double.parseDouble(arr[1]), Double.parseDouble(arr[2]), Double.parseDouble(arr[3]));
+            if (world)
+                return new Location(Bukkit.getWorld(arr[0]), Double.parseDouble(arr[1]), Double.parseDouble(arr[2]), Double.parseDouble(arr[3]));
+            else
+                return new Location(null, Double.parseDouble(arr[1]), Double.parseDouble(arr[2]), Double.parseDouble(arr[3]));
         } catch (NumberFormatException e) {
-            DevportUtils.inst.getConsoleOutput().err("Could not load a location from " + dataString + ", parameter not a number.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", parameter not a number.");
         } catch (NullPointerException e1) {
-            DevportUtils.inst.getConsoleOutput().err("Could not load a location from " + dataString + ", parameter(s) missing.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", parameter(s) missing.");
         }
 
         return null;

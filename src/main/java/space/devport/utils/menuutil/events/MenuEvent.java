@@ -8,6 +8,11 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import space.devport.utils.menuutil.Menu;
 
+/**
+ * Base for all Menu events.
+ *
+ * @author Devport Team
+ */
 public class MenuEvent extends PlayerEvent implements Cancellable {
 
     // Interacted Menu

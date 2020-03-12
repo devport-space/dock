@@ -6,20 +6,24 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import space.devport.utils.menuutil.Menu;
 import space.devport.utils.menuutil.MenuItem;
 
+/**
+ * Event called when an Item in the Menu is clicked.
+ *
+ * @author Devport Team
+ */
 public class MenuItemClickEvent extends MenuEvent {
-
-    // This event is called when an Item in a simple gui item is clicked
 
     // Clicked item
     @Getter
-    private MenuItem clickItem;
+    private final MenuItem clickItem;
 
     // Event that fired this one
     @Getter
-    private InventoryClickEvent inventoryClickEvent;
+    private final InventoryClickEvent inventoryClickEvent;
 
     public MenuItemClickEvent(InventoryClickEvent inventoryClickEvent, Menu menu, MenuItem clickedItem) {
         super((Player) inventoryClickEvent.getWhoClicked(), menu);
+
         this.inventoryClickEvent = inventoryClickEvent;
         this.clickItem = clickedItem;
     }

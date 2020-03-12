@@ -2,15 +2,20 @@ package space.devport.utils;
 
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.Nullable;
 import space.devport.utils.menuutil.MenuHandler;
 
-import java.util.Random;
-
+/**
+ * Main API class, needs to be instanced in order for some features to work.
+ *
+ * @author Devport Team
+ */
 public class DevportUtils {
 
-    // To enable some features that require a ConsoleOutput instance or a JavaPlugin reference.
+    // API instance
+    @Getter
+    private static DevportUtils instance;
 
+    // JavaPlugin reference
     @Getter
     private final JavaPlugin plugin;
 
@@ -18,47 +23,38 @@ public class DevportUtils {
     @Getter
     private final ConsoleOutput consoleOutput;
 
-    public static DevportUtils inst;
-
+    // Menu handler with a listener
     @Getter
     private final MenuHandler menuHandler;
 
-    public DevportUtils(@Nullable JavaPlugin plugin) {
-        inst = this;
-
-        this.plugin = plugin;
-
+    /**
+     * Construct without a plugin reference.
+     */
+    public DevportUtils() {
+        instance = this;
         consoleOutput = new ConsoleOutput();
 
-        if (plugin != null) {
-            consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
-            consoleOutput.info("Running on version " + SpigotHelper.getVersion());
-        }
-
-        menuHandler = new MenuHandler();
-
-        if (plugin != null)
-            registerListener();
+        // Cannot instance, as they use the plugin instance.
+        this.plugin = null;
+        menuHandler = null;
     }
 
-    public DevportUtils(JavaPlugin plugin, boolean debug) {
-        inst = this;
-
+    /**
+     * Construct with a plugin reference.
+     *
+     * @param plugin JavaPlugin reference
+     */
+    public DevportUtils(JavaPlugin plugin) {
+        instance = this;
         this.plugin = plugin;
 
+        // Instance a console output.
         consoleOutput = new ConsoleOutput();
-        consoleOutput.setPrefix(plugin.getDescription().getName() + " >> ");
-        consoleOutput.setDebug(debug);
 
+        // Print current version.
         consoleOutput.info("Running on version " + SpigotHelper.getVersion());
 
+        // Instance Menu handler and register it's listener.
         menuHandler = new MenuHandler();
-
-        registerListener();
-    }
-
-    // Register Menu listener
-    private void registerListener() {
-        plugin.getServer().getPluginManager().registerEvents(menuHandler, plugin);
     }
 }

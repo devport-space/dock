@@ -19,10 +19,7 @@ public class SpigotHelper {
         return matcher.find() ? matcher.group() : null;
     }
 
-    // TODO Doesn't work, returns v1_8_R3
     public static String getVersion() {
-        String name = Bukkit.getServer().getClass().getPackage().getName();
-        String version = name.substring(name.lastIndexOf('.') + 1) + ".";
-        return version;
+        return Bukkit.getVersion();
     }
 }

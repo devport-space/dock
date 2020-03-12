@@ -9,7 +9,7 @@ import java.util.Random;
 public class RandomMessageBuilder extends MessageBuilder {
 
     // Holding out own variables etc. inheritance, you know how that works.
-    private Random random = new Random();
+    private final Random random = new Random();
 
     @Getter
     @Setter
@@ -24,6 +24,4 @@ public class RandomMessageBuilder extends MessageBuilder {
 
         return super.parsePlaceholders();
     }
-
-    // TODO Add the possibility to override a parsePlaceholder(String placeholder) to enable "single-parse listening"
 }
