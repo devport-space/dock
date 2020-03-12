@@ -19,6 +19,7 @@ import space.devport.utils.menuutil.MenuItem;
 import space.devport.utils.messageutil.MessageBuilder;
 import space.devport.utils.messageutil.ParseFormat;
 import space.devport.utils.messageutil.StringUtil;
+import space.devport.utils.itemutil.Amount;
 import space.devport.utils.regionutil.LocationUtil;
 import space.devport.utils.regionutil.Region;
 import space.devport.utils.utilities.Default;
@@ -524,5 +525,42 @@ public class Configuration {
                 .parseFormat(format)
                 .displayName(Default.ITEM_NAME.toString())
                 .addLine(Default.ITEM_LINE.toString());
+    }
+
+    /**
+     * Load an Amount from given amount.
+     *
+     * @param path String path to Amount
+     * @return Amount object
+     */
+    public Amount loadAmount(String path) {
+
+        // Check path
+        if (Strings.isNullOrEmpty(path)) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not load Amount at path " + path + ", path is invalid.");
+            return null;
+        }
+
+        String dataStr = fileConfiguration.getString(path);
+
+        if (Strings.isNullOrEmpty(dataStr))
+            return (Amount) Default.AMOUNT.get();
+
+        try {
+            if (dataStr.contains("-")) {
+                String[] arr = dataStr.split("-");
+
+                double low = Double.parseDouble(arr[0]);
+                double high = Double.parseDouble(arr[1]);
+
+                return new Amount(low, high);
+            } else {
+                int n = Integer.parseInt(dataStr);
+
+                return new Amount(n);
+            }
+        } catch (IllegalArgumentException e) {
+            return (Amount) Default.AMOUNT.get();
+        }
     }
 }

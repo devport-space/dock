@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import space.devport.utils.messageutil.MessageBuilder;
+import space.devport.utils.itemutil.Amount;
 
 /**
  * Enum that holds default values for custom object loading and manipulation.
@@ -57,7 +58,13 @@ public enum Default {
      * LOCATION UTIL
      */
 
-    LOCATION_DELIMITER(";");
+    LOCATION_DELIMITER(";"),
+
+    /**
+     * AMOUNT
+     */
+
+    AMOUNT(new Amount(1));
 
     @Getter
     @Setter

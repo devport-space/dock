@@ -32,10 +32,11 @@ public class ItemBuilder {
     private short damage = 0;
 
     @Getter
-    private int amount = 1;
+    private Amount amount = new Amount(1);
 
     @Getter
     private MessageBuilder displayName;
+
     @Getter
     private MessageBuilder lore = new MessageBuilder();
 
@@ -93,7 +94,7 @@ public class ItemBuilder {
         this.material = item.getType();
         this.damage = (byte) item.getDurability();
 
-        this.amount = item.getAmount();
+        this.amount = new Amount(item.getAmount());
 
         if (item.hasItemMeta()) {
             ItemMeta itemMeta = item.getItemMeta();
@@ -121,6 +122,11 @@ public class ItemBuilder {
             // Filter here
             this.NBT.put(key, map.get(key));
         }
+    }
+
+    // Compare two builders
+    public boolean compare(ItemBuilder builder) {
+        return true;
     }
 
     /**
@@ -162,7 +168,7 @@ public class ItemBuilder {
      */
     @NotNull
     public ItemStack build() {
-        ItemStack item = new ItemStack(material, amount, damage);
+        ItemStack item = new ItemStack(material, amount.getInt(), damage);
         ItemMeta meta = item.getItemMeta();
 
         // Apply lore
@@ -239,12 +245,33 @@ public class ItemBuilder {
     /**
      * Set the amount.
      *
-     * @param amount Material to set
+     * @param amount Amount to set
+     * @return ItemBuilder object
+     */
+    public ItemBuilder amount(@NotNull Amount amount) {
+        this.amount = amount;
+        return this;
+    }
+
+    /**
+     * Set the amount.
+     *
+     * @param amount Amount to set
      * @return ItemBuilder object
      */
     public ItemBuilder amount(int amount) {
-        this.amount = amount;
-        return this;
+        return amount(new Amount(amount));
+    }
+
+    /**
+     * Set the random amount range.
+     *
+     * @param low  Low amount to set
+     * @param high High amount to set
+     * @return ItemBuilder object
+     */
+    public ItemBuilder amount(int low, int high) {
+        return amount(new Amount(low, high));
     }
 
     /**

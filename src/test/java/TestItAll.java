@@ -1,6 +1,6 @@
 import space.devport.utils.DevportUtils;
 import space.devport.utils.messageutil.MessageBuilder;
-import space.devport.utils.packutil.Amount;
+import space.devport.utils.itemutil.Amount;
 import space.devport.utils.packutil.RewardPack;
 
 public class TestItAll {
