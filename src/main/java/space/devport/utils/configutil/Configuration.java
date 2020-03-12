@@ -13,19 +13,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.itemutil.Amount;
 import space.devport.utils.itemutil.ItemBuilder;
 import space.devport.utils.menuutil.MenuBuilder;
 import space.devport.utils.menuutil.MenuItem;
 import space.devport.utils.messageutil.MessageBuilder;
 import space.devport.utils.messageutil.ParseFormat;
 import space.devport.utils.messageutil.StringUtil;
-import space.devport.utils.itemutil.Amount;
+import space.devport.utils.packutil.ConditionPack;
+import space.devport.utils.packutil.RewardPack;
 import space.devport.utils.regionutil.LocationUtil;
 import space.devport.utils.regionutil.Region;
 import space.devport.utils.utilities.Default;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -244,6 +247,14 @@ public class Configuration {
      */
     public String[] getArray(String path) {
         return fileConfiguration.getStringList(path).toArray(new String[0]);
+    }
+
+    // Get a List, or return default
+    public final List<String> getStringList(String path, List<String> defaultList) {
+        if (fileConfiguration.contains(path))
+            if (fileConfiguration.isList(path))
+                return fileConfiguration.getStringList(path);
+        return defaultList;
     }
 
     // Get a character, if not found, returns default value.
@@ -530,10 +541,11 @@ public class Configuration {
     /**
      * Load an Amount from given amount.
      *
-     * @param path String path to Amount
+     * @param path         String path to Amount
+     * @param defaultValue Optional Amount, default to return
      * @return Amount object
      */
-    public Amount loadAmount(String path) {
+    public Amount loadAmount(String path, Amount... defaultValue) {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
@@ -544,7 +556,7 @@ public class Configuration {
         String dataStr = fileConfiguration.getString(path);
 
         if (Strings.isNullOrEmpty(dataStr))
-            return (Amount) Default.AMOUNT.get();
+            return defaultValue.length > 0 ? defaultValue[0] : (Amount) Default.AMOUNT.get();
 
         try {
             if (dataStr.contains("-")) {
@@ -560,7 +572,38 @@ public class Configuration {
                 return new Amount(n);
             }
         } catch (IllegalArgumentException e) {
-            return (Amount) Default.AMOUNT.get();
+            return defaultValue.length > 0 ? defaultValue[0] : (Amount) Default.AMOUNT.get();
         }
+    }
+
+    // Load a ConditionPack
+    public ConditionPack loadConditionPack(String path) {
+        ConditionPack.ConditionPackBuilder pack = ConditionPack.Builder();
+
+        pack.operator(fileConfiguration.getBoolean(path + ".operator", false));
+        pack.permissions(getStringList(path + ".permissions", new ArrayList<>()));
+
+        pack.worlds(getStringList(path + ".worlds", new ArrayList<>()));
+
+        pack.health(loadAmount(path + ".health", new Amount(0)));
+
+        return pack.build();
+    }
+
+    // Load a RewardPack
+    public RewardPack loadRewardPack(String path) {
+        RewardPack.RewardPackBuilder pack = RewardPack.Builder();
+
+        pack.broadcast(loadMessageBuilder(path + ".broadcast"));
+        pack.inform(loadMessageBuilder(path + ".inform"));
+
+        pack.commands(getStringList(path + ".commands", new ArrayList<>()));
+
+        pack.money(loadAmount(path + ".money", new Amount(0)));
+        pack.tokens(loadAmount(path + ".tokens", new Amount(0)));
+
+        // TODO Load items
+
+        return pack.build();
     }
 }
