@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.utilities.Default;
 
 /**
  * Static util class to assist location related operations.
@@ -18,7 +19,7 @@ public class LocationUtil {
      * @return parsed location String
      */
     public static String locationToString(Location location) {
-        return locationToString(location, LocationDefault.LOCATION_DELIMITER.get());
+        return locationToString(location, Default.LOCATION_DELIMITER.toString());
     }
 
     /**
@@ -48,7 +49,7 @@ public class LocationUtil {
      */
     @Nullable
     public static Location locationFromString(@Nullable String locationString) {
-        return locationFromString(locationString, LocationDefault.LOCATION_DELIMITER.get());
+        return locationFromString(locationString, Default.LOCATION_DELIMITER.toString());
     }
 
     /**

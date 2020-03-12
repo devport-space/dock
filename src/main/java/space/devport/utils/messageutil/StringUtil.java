@@ -1,7 +1,7 @@
 package space.devport.utils.messageutil;
 
 import org.bukkit.ChatColor;
-import space.devport.utils.configutil.DefaultValue;
+import space.devport.utils.utilities.Default;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -65,7 +65,7 @@ public class StringUtil {
      * @return String with line separators.
      */
     public static String listToString(List<String> list) {
-        return listToString(list, DefaultValue.LIST_DELIMITER.toString());
+        return listToString(list, Default.LIST_DELIMITER.toString());
     }
 
     /**
@@ -100,6 +100,6 @@ public class StringUtil {
      * @return Parsed list
      */
     public static List<String> listFromString(String string) {
-        return listFromString(string, DefaultValue.LIST_DELIMITER.toString());
+        return listFromString(string, Default.LIST_DELIMITER.toString());
     }
 }

@@ -9,7 +9,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportUtils;
@@ -21,6 +21,7 @@ import space.devport.utils.messageutil.ParseFormat;
 import space.devport.utils.messageutil.StringUtil;
 import space.devport.utils.regionutil.LocationUtil;
 import space.devport.utils.regionutil.Region;
+import space.devport.utils.utilities.Default;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,8 +37,6 @@ import java.util.stream.Collectors;
  */
 public class Configuration {
 
-    // TODO Make fool proof - null checks & sh*t
-
     // Path to the file
     @Getter
     private final String path;
@@ -49,18 +48,31 @@ public class Configuration {
     private FileConfiguration fileConfiguration;
 
     @Getter
-    private final Plugin plugin;
+    private final JavaPlugin plugin;
 
     /**
      * Initializes this class, creates file and loads yaml from path.
      * Yml is assigned automatically at the end.
+     * Requires a DevportUtils instance.
      *
      * @param plugin Main plugin instance
      * @param path   Path to config file
      */
-    public Configuration(@NotNull Plugin plugin, @NotNull String path) {
+    public Configuration(@NotNull JavaPlugin plugin, @NotNull String path) {
+        this(plugin, new File(path.contains(".yml") || path.contains(".yaml") ? path : path + ".yaml"));
+    }
+
+    /**
+     * Initializes this class from file and loads yaml.
+     * Requires a DevportUtils instance.
+     *
+     * @param plugin Java plugin instance
+     * @param file   File to load from
+     */
+    public Configuration(@NotNull JavaPlugin plugin, @NotNull File file) {
         this.plugin = plugin;
-        this.path = path.contains(".yml") || path.contains(".yaml") ? path : path + ".yaml";
+        this.file = file;
+        this.path = file.getPath();
 
         if (DevportUtils.getInstance() == null) {
             plugin.getLogger().severe("There's not DevportUtils instance, cannot load.");
@@ -74,7 +86,7 @@ public class Configuration {
      * Loads the Yaml configuration from a file.
      */
     public void load() {
-        DevportUtils.getInstance().getConsoleOutput().info("Loading " + path);
+        DevportUtils.getInstance().getConsoleOutput().debug("Loading " + path);
         file = new File(plugin.getDataFolder(), path);
 
         if (!file.exists())
@@ -82,10 +94,13 @@ public class Configuration {
                 plugin.saveResource(path, false);
             } catch (Exception e) {
                 try {
-                    if (!file.createNewFile())
+                    if (!file.createNewFile()) {
                         DevportUtils.getInstance().getConsoleOutput().err("Could not create " + path);
+                        return;
+                    }
                 } catch (IOException e1) {
                     DevportUtils.getInstance().getConsoleOutput().err("Could not create " + path);
+                    return;
                 }
             }
 
@@ -95,10 +110,8 @@ public class Configuration {
     /**
      * Reloads the yaml, checks if file exists and loads/creates it again.
      */
-    // Replaced with load function, dunno whether to keep it bcs of messages or not
-    @Deprecated
     public void reload() {
-        DevportUtils.getInstance().getConsoleOutput().info("Reloading " + path);
+        DevportUtils.getInstance().getConsoleOutput().debug("Reloading " + path);
         load();
     }
 
@@ -134,7 +147,9 @@ public class Configuration {
         try {
             this.fileConfiguration.save(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save " + path);
+            if (DevportUtils.getInstance().getConsoleOutput().isDebug())
+                e.printStackTrace();
         }
     }
 
@@ -250,7 +265,7 @@ public class Configuration {
 
         // Check the path
         if (Strings.isNullOrEmpty(path))
-            return (MessageBuilder) DefaultValue.MESSAGE_BUILDER.getValue();
+            return (MessageBuilder) Default.MESSAGE_BUILDER.getValue();
 
         if (fileConfiguration.isString(path)) {
             // Load as a string
@@ -263,7 +278,7 @@ public class Configuration {
         }
 
         // Couldn't find anything, return a blank one.
-        return (MessageBuilder) DefaultValue.MESSAGE_BUILDER.getValue();
+        return (MessageBuilder) Default.MESSAGE_BUILDER.getValue();
     }
 
     /**
@@ -287,7 +302,7 @@ public class Configuration {
             return null;
         }
 
-        return new Region(min, max, (boolean) DefaultValue.REGION_IGNORE_HEIGHT.getValue());
+        return new Region(min, max, (boolean) Default.REGION_IGNORE_HEIGHT.getValue());
     }
 
     /**
@@ -337,10 +352,10 @@ public class Configuration {
 
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
-        menuBuilder.setTitle(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(DefaultValue.MENU_TITLE.getValue())));
-        menuBuilder.setSlots(section.getInt(SubPath.MENU_SLOTS.toString(), (int) DefaultValue.MENU_SLOTS.getValue()));
+        menuBuilder.setTitle(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(Default.MENU_TITLE.getValue())));
+        menuBuilder.setSlots(section.getInt(SubPath.MENU_SLOTS.toString(), (int) Default.MENU_SLOTS.getValue()));
 
-        menuBuilder.setFillAll(section.getBoolean(SubPath.MENU_FILL_ALL.toString(), (boolean) DefaultValue.MENU_FILL_ALL.getValue()));
+        menuBuilder.setFillAll(section.getBoolean(SubPath.MENU_FILL_ALL.toString(), (boolean) Default.MENU_FILL_ALL.getValue()));
 
         // Get fill slots
         if (section.contains(SubPath.MENU_FILL_SLOTS.toString())) {
@@ -373,7 +388,7 @@ public class Configuration {
 
                 // If it contains matrix-char
                 if (itemSection.contains(SubPath.MENU_MATRIX_CHAR.toString()))
-                    menuBuilder.addMatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, (char) DefaultValue.MENU_ITEM_MATRIX_CHAR.getValue()), item);
+                    menuBuilder.addMatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, (char) Default.MENU_ITEM_MATRIX_CHAR.getValue()), item);
                 else
                     menuBuilder.setItem(item);
             }
@@ -436,7 +451,7 @@ public class Configuration {
                 Material mat;
 
                 try {
-                    mat = Strings.isNullOrEmpty(type) ? Material.valueOf(DefaultValue.ITEM_TYPE.toString().toUpperCase()) : Material.valueOf(type.toUpperCase());
+                    mat = Strings.isNullOrEmpty(type) ? Material.valueOf(Default.ITEM_TYPE.toString().toUpperCase()) : Material.valueOf(type.toUpperCase());
                 } catch (IllegalArgumentException e) {
                     DevportUtils.getInstance().getConsoleOutput().err("Invalid item type in default & on path " + path + ", returning a blank ItemBuilder.");
                     e.printStackTrace();
@@ -505,9 +520,9 @@ public class Configuration {
             }
 
         DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
-        return new ItemBuilder(Material.valueOf(DefaultValue.ITEM_TYPE.toString()))
+        return new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
                 .parseFormat(format)
-                .displayName(DefaultValue.ITEM_NAME.toString())
-                .addLine(DefaultValue.ITEM_LINE.toString());
+                .displayName(Default.ITEM_NAME.toString())
+                .addLine(Default.ITEM_LINE.toString());
     }
 }
