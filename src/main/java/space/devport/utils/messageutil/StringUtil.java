@@ -1,6 +1,7 @@
 package space.devport.utils.messageutil;
 
 import jdk.internal.joptsimple.internal.Strings;
+import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
  *
  * @author Devport Team
  */
+@UtilityClass
 public class StringUtil {
 
     /**
@@ -25,7 +27,7 @@ public class StringUtil {
      * @return String with Bukkit color codes
      */
     @Nullable
-    public static String color(@Nullable String msg) {
+    public String color(@Nullable String msg) {
         return color(msg, '&');
     }
 
@@ -37,7 +39,7 @@ public class StringUtil {
      * @return String with Bukkit color codes
      */
     @Nullable
-    public static String color(@Nullable String msg, char colorChar) {
+    public String color(@Nullable String msg, char colorChar) {
         return msg == null ? null : ChatColor.translateAlternateColorCodes(colorChar, msg);
     }
 
@@ -48,7 +50,7 @@ public class StringUtil {
      * @return List of strings with Bukkit color codes
      */
     @Nullable
-    public static List<String> color(@Nullable List<String> list) {
+    public List<String> color(@Nullable List<String> list) {
         return color(list, '&');
     }
 
@@ -60,7 +62,7 @@ public class StringUtil {
      * @return List of strings with Bukkit color codes
      */
     @Nullable
-    public static List<String> color(@Nullable List<String> list, char colorChar) {
+    public List<String> color(@Nullable List<String> list, char colorChar) {
         return list == null ? null : list.stream().map(line -> color(line, colorChar)).collect(Collectors.toList());
     }
 
@@ -72,7 +74,7 @@ public class StringUtil {
      * @return String with line separators.
      */
     @Nullable
-    public static String listToString(@Nullable List<String> list) {
+    public String listToString(@Nullable List<String> list) {
         return listToString(list, Default.LIST_DELIMITER.toString());
     }
 
@@ -84,7 +86,7 @@ public class StringUtil {
      * @return String with line separators.
      */
     @Nullable
-    public static String listToString(@Nullable List<String> list, @NotNull String delimiter) {
+    public String listToString(@Nullable List<String> list, @NotNull String delimiter) {
         return list == null ? null : String.join(delimiter, list);
     }
 
@@ -96,7 +98,7 @@ public class StringUtil {
      * @return Parsed list
      */
     @NotNull
-    public static List<String> listFromString(@Nullable String string, @NotNull String delimiter) {
+    public List<String> listFromString(@Nullable String string, @NotNull String delimiter) {
         List<String> list = new ArrayList<>();
         if (!Strings.isNullOrEmpty(string) && string.contains(delimiter))
             Collections.addAll(list, string.split(delimiter));
@@ -110,7 +112,7 @@ public class StringUtil {
      * @return Parsed list
      */
     @NotNull
-    public static List<String> listFromString(@Nullable String string) {
+    public List<String> listFromString(@Nullable String string) {
         return listFromString(string, Default.LIST_DELIMITER.toString());
     }
 }
