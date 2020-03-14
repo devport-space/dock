@@ -59,7 +59,7 @@ public class Configuration {
      * @param path   Path to config file
      */
     public Configuration(@NotNull JavaPlugin plugin, @NotNull String path) {
-        this(plugin, new File(path.contains(".yml") || path.contains(".yaml") ? path : path + ".yaml"));
+        this(plugin, new File(path.contains(".yml") ? path : path + ".yml"));
     }
 
     /**
@@ -75,7 +75,7 @@ public class Configuration {
         this.path = file.getPath();
 
         if (DevportUtils.getInstance() == null) {
-            plugin.getLogger().severe("There's not DevportUtils instance, cannot load.");
+            plugin.getLogger().severe("There's no DevportUtils instance, cannot load.");
             return;
         }
 
@@ -160,7 +160,7 @@ public class Configuration {
      * @param set  Whether to set the file as default or not
      */
     public void saveToFile(String path, boolean... set) {
-        File file = new File(path.contains(".yml") || path.contains(".yaml") ? path : path + ".yaml");
+        File file = new File(path.contains(".yml") ? path : path + ".yml");
         saveToFile(file, set);
     }
 
