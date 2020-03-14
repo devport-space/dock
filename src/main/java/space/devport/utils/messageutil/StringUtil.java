@@ -1,6 +1,9 @@
 package space.devport.utils.messageutil;
 
+import jdk.internal.joptsimple.internal.Strings;
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.utilities.Default;
 
 import java.util.ArrayList;
@@ -21,7 +24,8 @@ public class StringUtil {
      * @param msg Default string
      * @return String with Bukkit color codes
      */
-    public static String color(String msg) {
+    @Nullable
+    public static String color(@Nullable String msg) {
         return color(msg, '&');
     }
 
@@ -32,8 +36,9 @@ public class StringUtil {
      * @param colorChar Color character to parse colors with
      * @return String with Bukkit color codes
      */
-    public static String color(String msg, char colorChar) {
-        return ChatColor.translateAlternateColorCodes(colorChar, msg);
+    @Nullable
+    public static String color(@Nullable String msg, char colorChar) {
+        return msg == null ? null : ChatColor.translateAlternateColorCodes(colorChar, msg);
     }
 
     /**
@@ -42,7 +47,8 @@ public class StringUtil {
      * @param list Default list of strings
      * @return List of strings with Bukkit color codes
      */
-    public static List<String> color(List<String> list) {
+    @Nullable
+    public static List<String> color(@Nullable List<String> list) {
         return color(list, '&');
     }
 
@@ -53,8 +59,9 @@ public class StringUtil {
      * @param colorChar Color character to parse colors with
      * @return List of strings with Bukkit color codes
      */
-    public static List<String> color(List<String> list, char colorChar) {
-        return list.stream().map(line -> color(line, colorChar)).collect(Collectors.toList());
+    @Nullable
+    public static List<String> color(@Nullable List<String> list, char colorChar) {
+        return list == null ? null : list.stream().map(line -> color(line, colorChar)).collect(Collectors.toList());
     }
 
     /**
@@ -64,7 +71,8 @@ public class StringUtil {
      * @param list List of strings to join together
      * @return String with line separators.
      */
-    public static String listToString(List<String> list) {
+    @Nullable
+    public static String listToString(@Nullable List<String> list) {
         return listToString(list, Default.LIST_DELIMITER.toString());
     }
 
@@ -75,8 +83,9 @@ public class StringUtil {
      * @param delimiter Line delimiter to use
      * @return String with line separators.
      */
-    public static String listToString(List<String> list, String delimiter) {
-        return String.join(delimiter, list);
+    @Nullable
+    public static String listToString(@Nullable List<String> list, @NotNull String delimiter) {
+        return list == null ? null : String.join(delimiter, list);
     }
 
     /**
@@ -86,9 +95,10 @@ public class StringUtil {
      * @param delimiter Delimiter to use
      * @return Parsed list
      */
-    public static List<String> listFromString(String string, String delimiter) {
+    @NotNull
+    public static List<String> listFromString(@Nullable String string, @NotNull String delimiter) {
         List<String> list = new ArrayList<>();
-        if (string.contains(delimiter))
+        if (!Strings.isNullOrEmpty(string) && string.contains(delimiter))
             Collections.addAll(list, string.split(delimiter));
         return list;
     }
@@ -99,7 +109,8 @@ public class StringUtil {
      * @param string String to parse from
      * @return Parsed list
      */
-    public static List<String> listFromString(String string) {
+    @NotNull
+    public static List<String> listFromString(@Nullable String string) {
         return listFromString(string, Default.LIST_DELIMITER.toString());
     }
 }
