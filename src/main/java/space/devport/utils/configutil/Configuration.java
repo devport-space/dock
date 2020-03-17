@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -210,7 +211,7 @@ public class Configuration {
      * @param defaultValue Optional String, default value to return
      * @return String with Bukkit color codes
      */
-    @Nullable
+    @NotNull
     public String getColoredString(@NotNull String path, @NotNull String defaultValue) {
         return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ?
                 defaultValue : fileConfiguration.getString(path));
@@ -234,9 +235,9 @@ public class Configuration {
      * @param defaultList Default list to return when there's nothing on path
      * @return List of strings with Bukkit color codes
      */
-    @Nullable
-    public final List<String> getColoredList(@NotNull String path, @Nullable List<String> defaultList) {
-        return StringUtil.color(fileConfiguration.getStringList(path) == null ? defaultList : fileConfiguration.getStringList(path));
+    @NotNull
+    public final List<String> getColoredList(@NotNull String path, @NotNull List<String> defaultList) {
+        return Objects.requireNonNull(StringUtil.color(fileConfiguration.getStringList(path) == null ? defaultList : fileConfiguration.getStringList(path)));
     }
 
     /**

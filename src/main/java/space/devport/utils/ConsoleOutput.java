@@ -7,8 +7,10 @@ import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import space.devport.utils.messageutil.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to handle logging and plugin console output.
@@ -28,14 +30,9 @@ public class ConsoleOutput {
     @NotNull
     private String prefix = "";
 
-    @Setter
     @Getter
-    @Nullable
-    // Will be replaced with a list of player who have debug turned on.
-    @Deprecated
-    private CommandSender cmdSender;
+    private final List<CommandSender> listeners = new ArrayList<>();
 
-    // Whether or not are we using Bukkit Logging
     @Getter
     @Setter
     private boolean useBukkit = false;
@@ -44,7 +41,7 @@ public class ConsoleOutput {
      * Constructor with a useBukkit parameter.
      *
      * @param useBukkit Whether to use bukkit logger or not.
-     * */
+     */
     public ConsoleOutput(boolean useBukkit) {
         this.useBukkit = useBukkit;
     }
@@ -56,12 +53,10 @@ public class ConsoleOutput {
      */
     public void debug(String msg) {
         if (debug) {
-            if (useBukkit)
+            if (useBukkit) {
                 Bukkit.getLogger().info(StringUtil.color(prefix + "&7DEBUG: " + msg));
-            else log.info(prefix + " DEBUG: " + msg);
-
-            if (cmdSender != null)
-                cmdSender.sendMessage(StringUtil.color("&eDEBUG: " + msg));
+                listeners.forEach(c -> c.sendMessage(StringUtil.color("&eDEBUG: " + msg)));
+            } else log.info(prefix + " DEBUG: " + msg);
         }
     }
 
@@ -73,9 +68,9 @@ public class ConsoleOutput {
      */
     public void debug(String msg, CommandSender origin) {
         if (debug) {
-            setCmdSender(origin);
+            addListener(origin);
             debug(msg);
-            setCmdSender(null);
+            removeListener(origin);
         }
     }
 
@@ -85,12 +80,10 @@ public class ConsoleOutput {
      * @param msg Message to show
      */
     public void err(String msg) {
-        if (useBukkit)
+        if (useBukkit) {
+            listeners.forEach(c -> c.sendMessage(StringUtil.color("&4" + msg)));
             Bukkit.getLogger().severe(StringUtil.color(prefix + "&4ERROR: " + msg));
-        else log.severe(prefix + msg);
-
-        if (cmdSender != null)
-            cmdSender.sendMessage(StringUtil.color("&4" + msg));
+        } else log.severe(prefix + msg);
     }
 
     /**
@@ -99,12 +92,10 @@ public class ConsoleOutput {
      * @param msg Message to show
      */
     public void info(String msg) {
-        if (useBukkit)
+        if (useBukkit) {
+            listeners.forEach(c -> c.sendMessage(StringUtil.color("&7" + msg)));
             Bukkit.getLogger().info(StringUtil.color(prefix + "&7INFO: " + msg));
-        else log.info(prefix + msg);
-
-        if (cmdSender != null)
-            cmdSender.sendMessage(StringUtil.color("&7" + msg));
+        } else log.info(prefix + msg);
     }
 
     /**
@@ -114,11 +105,29 @@ public class ConsoleOutput {
      * @param msg Message to show
      */
     public void warn(String msg) {
-        if (useBukkit)
+        if (useBukkit) {
+            listeners.forEach(c -> c.sendMessage(StringUtil.color("&c" + msg)));
             Bukkit.getLogger().warning(StringUtil.color(prefix + "&cWARNING: " + msg));
-        else log.warning(prefix + msg);
+        } else log.warning(prefix + msg);
+    }
 
-        if (cmdSender != null)
-            cmdSender.sendMessage(StringUtil.color("&c" + msg));
+    /**
+     * Add a listener.
+     * CommandSender will receive console output.
+     *
+     * @param listener CommandSender to add
+     */
+    public void addListener(@NotNull CommandSender listener) {
+        listeners.add(listener);
+    }
+
+    /**
+     * Remove a listener.
+     * CommandSender will not receive console output anymore.
+     *
+     * @param listener CommandSender to remove
+     */
+    public void removeListener(@NotNull CommandSender listener) {
+        listeners.remove(listener);
     }
 }
