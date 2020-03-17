@@ -30,7 +30,6 @@ public class ConditionPack {
     private Amount health = new Amount(0);
 
     // Permission conditions the player has to meet
-    // TODO Logic operators AND/OR
     @Getter
     @Builder.Default
     private final List<String> permissions = new ArrayList<>();
@@ -47,7 +46,8 @@ public class ConditionPack {
         if (!player.isOp() && operator)
             return false;
 
-        // TODO Permissions
+        if (!checkPermissions(player))
+            return false;
 
         // Worlds
         if (!worlds.isEmpty() && !worlds.contains(player.getWorld().getName()))
@@ -59,5 +59,31 @@ public class ConditionPack {
                 return false;
 
         return true;
+    }
+
+    private boolean checkPermissions(Player p) {
+        List<String> permissions = this.permissions;
+
+        boolean pass = p.hasPermission(permissions.get(0));
+
+        for (int i = 1; i < permissions.size(); i++) {
+            String perm = permissions.get(i);
+
+            if (perm.startsWith("AND ")) {
+                pass = pass && p.hasPermission(perm.replace("AND ", ""));
+            } else {
+                // OR, perms with no prefix are taken as OR as well.
+                if (p.hasPermission(perm.replace("OR ", ""))) {
+                    return true;
+                }
+            }
+        }
+
+        return pass;
+    }
+
+    @Override
+    public String toString() {
+        return operator + " - " + health + " - " + permissions.toString() + " - " + worlds.toString();
     }
 }

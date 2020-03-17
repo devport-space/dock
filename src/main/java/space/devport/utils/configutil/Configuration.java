@@ -21,6 +21,7 @@ import space.devport.utils.messageutil.MessageBuilder;
 import space.devport.utils.messageutil.ParseFormat;
 import space.devport.utils.messageutil.StringUtil;
 import space.devport.utils.packutil.ConditionPack;
+import space.devport.utils.packutil.ConditionedRewardPack;
 import space.devport.utils.packutil.RewardPack;
 import space.devport.utils.regionutil.LocationUtil;
 import space.devport.utils.regionutil.Region;
@@ -609,7 +610,7 @@ public class Configuration {
         }
     }
 
-    // Load a ConditionPack
+    @NotNull
     public ConditionPack loadConditionPack(String path) {
         ConditionPack.ConditionPackBuilder pack = ConditionPack.Builder();
 
@@ -623,7 +624,7 @@ public class Configuration {
         return pack.build();
     }
 
-    // Load a RewardPack
+    @NotNull
     public RewardPack loadRewardPack(String path) {
         RewardPack.RewardPackBuilder pack = RewardPack.Builder();
 
@@ -635,8 +636,21 @@ public class Configuration {
         pack.money(loadAmount(path + ".money", new Amount(0)));
         pack.tokens(loadAmount(path + ".tokens", new Amount(0)));
 
-        // TODO Load items
+        List<ItemBuilder> items = new ArrayList<>();
+
+        if (fileConfiguration.contains(path + ".items")) {
+            for (String name : fileConfiguration.getConfigurationSection(path + ".items").getKeys(false)) {
+                items.add(loadItemBuilder(path + ".items." + name));
+            }
+        }
+
+        pack.items(items);
 
         return pack.build();
+    }
+
+    @NotNull
+    public ConditionedRewardPack loadConditionedRewardPack(String path) {
+        return new ConditionedRewardPack(loadConditionPack(path + "." + SubPath.CONDITION_PACK), loadRewardPack(path + "." + SubPath.REWARD_PACK));
     }
 }

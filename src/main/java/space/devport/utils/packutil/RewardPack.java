@@ -56,7 +56,7 @@ public class RewardPack {
     private ParseFormat format = new ParseFormat();
 
     // Reward a player
-    public void reward(Player player) {
+    public void give(Player player) {
 
         // Tokens - TokenManager
         int tokens = this.tokens.getInt();
@@ -76,9 +76,10 @@ public class RewardPack {
         }
 
         // Inform - to player
-        inform.send(player);
+        inform.copyPlaceholders(format).send(player);
 
         // Broadcast - to all players
+        broadcast.copyPlaceholders(format);
         DevportUtils.getInstance().getPlugin().getServer().getOnlinePlayers().forEach(broadcast::send);
 
         // Commands - with prefixes
@@ -141,5 +142,10 @@ public class RewardPack {
         player.setOp(true);
         player.performCommand(cmd.trim());
         player.setOp(false);
+    }
+
+    @Override
+    public String toString() {
+        return tokens.toString() + " - " + money.toString() + " - " + items.toString() + " - " + inform.toString() + " - " + broadcast.toString() + " - " + commands.toString();
     }
 }
