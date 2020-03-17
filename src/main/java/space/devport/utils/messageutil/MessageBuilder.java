@@ -178,11 +178,18 @@ public class MessageBuilder extends ParseFormat {
      * @return Parsed String
      */
     @NotNull
-    public String toString(@NotNull String... delimiter) {
-        if (delimiter.length > 0)
-            return StringUtil.listToString(workingMessage, delimiter[0]);
-        else
-            return StringUtil.listToString(workingMessage);
+    public String toString(@NotNull String delimiter) {
+        return StringUtil.listToString(workingMessage, delimiter);
+    }
+
+    /**
+     * Parse message to string.
+     *
+     * @return Parsed String
+     */
+    @Override
+    public String toString() {
+        return StringUtil.listToString(workingMessage);
     }
 
     /**
