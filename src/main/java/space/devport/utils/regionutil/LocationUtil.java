@@ -1,6 +1,7 @@
 package space.devport.utils.regionutil;
 
 import com.google.common.base.Strings;
+import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,7 @@ import space.devport.utils.utilities.Default;
 /**
  * Static util class to assist location related operations.
  */
+@UtilityClass
 public class LocationUtil {
 
     /**
@@ -18,7 +20,8 @@ public class LocationUtil {
      * @param location Location to parse
      * @return parsed location String
      */
-    public static String locationToString(Location location) {
+    @Nullable
+    public String locationToString(@Nullable Location location) {
         return locationToString(location, Default.LOCATION_DELIMITER.toString());
     }
 
@@ -29,7 +32,8 @@ public class LocationUtil {
      * @param delimiter String delimiter to use
      * @return parse location String
      */
-    public static String locationToString(Location location, String delimiter) {
+    @Nullable
+    public String locationToString(@Nullable Location location, @Nullable String delimiter) {
         if (location == null) {
             DevportUtils.getInstance().getConsoleOutput().err("Could not parse location to string, location is null.");
             return null;
@@ -48,7 +52,7 @@ public class LocationUtil {
      * @return parsed Location
      */
     @Nullable
-    public static Location locationFromString(@Nullable String locationString) {
+    public Location locationFromString(@Nullable String locationString) {
         return locationFromString(locationString, Default.LOCATION_DELIMITER.toString());
     }
 
@@ -61,7 +65,7 @@ public class LocationUtil {
      * @return parsed Location
      */
     @Nullable
-    public static Location locationFromString(@Nullable String locationString, @Nullable String delimiter, boolean... useWorld) {
+    public Location locationFromString(@Nullable String locationString, @Nullable String delimiter, boolean... useWorld) {
         if (Strings.isNullOrEmpty(locationString) || Strings.isNullOrEmpty(delimiter))
             return null;
 

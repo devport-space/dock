@@ -34,7 +34,7 @@ public class Region {
      * @param max          Maximal region location
      * @param ignoreHeight Optional boolean, whether or not should the region ignore Y axis
      */
-    public Region(Location min, Location max, boolean... ignoreHeight) {
+    public Region(@NotNull Location min, @NotNull Location max, boolean... ignoreHeight) {
         this.min = min;
         this.max = max;
 

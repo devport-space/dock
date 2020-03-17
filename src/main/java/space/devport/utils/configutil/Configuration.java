@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
  */
 public class Configuration {
 
-    // Path to the file
     @Getter
     private final String path;
 
@@ -63,7 +62,7 @@ public class Configuration {
      * @param path   Path to config file
      */
     public Configuration(@NotNull JavaPlugin plugin, @NotNull String path) {
-        this(plugin, new File(path.contains(".yml") || path.contains(".yaml") ? path : path + ".yaml"));
+        this(plugin, new File(path.contains(".yml") ? path : path + ".yml"));
     }
 
     /**
@@ -79,7 +78,7 @@ public class Configuration {
         this.path = file.getPath();
 
         if (DevportUtils.getInstance() == null) {
-            plugin.getLogger().severe("There's not DevportUtils instance, cannot load.");
+            plugin.getLogger().severe("There's no DevportUtils instance, cannot load.");
             return;
         }
 
@@ -140,7 +139,7 @@ public class Configuration {
      * @param file File to save to
      * @param set  Whether to set the file as default or not
      */
-    public void saveToFile(File file, boolean... set) {
+    public void saveToFile(@NotNull File file, boolean... set) {
         if (set.length > 0)
             if (set[0]) {
                 this.file = file;
@@ -163,8 +162,8 @@ public class Configuration {
      * @param path Path to save to
      * @param set  Whether to set the file as default or not
      */
-    public void saveToFile(String path, boolean... set) {
-        File file = new File(path.contains(".yml") || path.contains(".yaml") ? path : path + ".yaml");
+    public void saveToFile(@NotNull String path, boolean... set) {
+        File file = new File(path.contains(".yml") ? path : path + ".yml");
         saveToFile(file, set);
     }
 
@@ -191,32 +190,30 @@ public class Configuration {
     }
 
     /**
-     * Attempts to retrieve data from yaml, saves and returns default to file if null.
-     *
-     * @param path         Path to object in config file
-     * @param defaultValue Default value
-     * @return Fetched value or default, if null
-     */
-    // Seems redundant, might remove later.
-    @Deprecated
-    public Object fetchDefault(String path, Object defaultValue) {
-        if (fileConfiguration.contains(path))
-            return fileConfiguration.get(path);
-        else {
-            fileConfiguration.set(path, defaultValue);
-            save();
-            return defaultValue;
-        }
-    }
-
-    /**
      * Returns colored string retrieved from config.
+     * Returns null if string is null or empty.
      *
      * @param path Path to string in config file
      * @return String with Bukkit color codes
      */
-    public String getColored(String path) {
-        return StringUtil.color(fileConfiguration.getString(path));
+    @Nullable
+    public String getColoredString(@NotNull String path) {
+        return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ?
+                null : fileConfiguration.getString(path));
+    }
+
+    /**
+     * Returns colored string retrieved from config.
+     * If there's nothing on the path and default is not set, returns null.
+     *
+     * @param path         Path to string in config file
+     * @param defaultValue Optional String, default value to return
+     * @return String with Bukkit color codes
+     */
+    @Nullable
+    public String getColoredString(@NotNull String path, @NotNull String defaultValue) {
+        return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ?
+                defaultValue : fileConfiguration.getString(path));
     }
 
     /**
@@ -225,28 +222,68 @@ public class Configuration {
      * @param path Path to list of strings in config file
      * @return List of strings with Bukkit color codes
      */
-    public List<String> getColoredList(String path) {
+    @Nullable
+    public final List<String> getColoredList(@NotNull String path) {
         return StringUtil.color(fileConfiguration.getStringList(path));
     }
 
     /**
-     * Returns a colored list of strings joined in a multi-line string.
+     * Returns colored string list retrieved from config.
+     *
+     * @param path        Path to list of strings in config file
+     * @param defaultList Default list to return when there's nothing on path
+     * @return List of strings with Bukkit color codes
+     */
+    @Nullable
+    public final List<String> getColoredList(@NotNull String path, @Nullable List<String> defaultList) {
+        return StringUtil.color(fileConfiguration.getStringList(path) == null ? defaultList : fileConfiguration.getStringList(path));
+    }
+
+    /**
+     * Returns a colored message from either a String of a List.
      *
      * @param path Path to list of strings in config file
      * @return Multi-line colored string
      */
-    public String getColoredMessage(String path) {
-        return StringUtil.listToString(getColoredList(path));
+    @NotNull
+    public String getColoredMessage(@NotNull String path) {
+        return loadMessageBuilder(path).color().toString();
     }
 
     /**
-     * Returns an array of strings from config file.
+     * Returns an array from yaml parsed form a String List.
      *
      * @param path Path to list of strings
      * @return Array of strings
      */
-    public String[] getArray(String path) {
+    @NotNull
+    public String[] getArrayList(@NotNull String path) {
         return fileConfiguration.getStringList(path).toArray(new String[0]);
+    }
+
+    /**
+     * Returns an array from yaml parsed from String using given delimiter.
+     *
+     * @param path      Path to look at
+     * @param delimiter Delimiter to use
+     * @return String array
+     */
+    @NotNull
+    public String[] getArray(@NotNull String path, @NotNull String delimiter) {
+        return fileConfiguration.getString(path).split(delimiter);
+    }
+
+    /**
+     * Returns a character from the yaml.
+     * Returns given default when null.
+     *
+     * @param path         Path to look at
+     * @param defaultValue Default to use
+     * @return char
+     */
+    public char getChar(@NotNull String path, char defaultValue) {
+        String str = fileConfiguration.getString(path);
+        return str != null ? str.toCharArray()[0] : defaultValue;
     }
 
     // Get a List, or return default
@@ -257,27 +294,21 @@ public class Configuration {
         return defaultList;
     }
 
-    // Get a character, if not found, returns default value.
-    public char getChar(String path, char defaultValue) {
-        String str = fileConfiguration.getString(path);
-        return str != null ? str.toCharArray()[0] : defaultValue;
-    }
-
     // --------------------------------- Advanced Load/Save Methods -----------------------------------
 
     /**
      * Loads a message builder either from String or from a list of strings.
-     * Returns an empty MessageBuilder when not present.
+     * Returns a default from Default.java when missing.
      *
      * @param path Path to the MessageBuilder
      * @return MessageBuilder object
      */
     @NotNull
-    public MessageBuilder loadMessageBuilder(String path) {
+    public MessageBuilder loadMessageBuilder(@Nullable String path, @NotNull MessageBuilder... defaultValue) {
 
         // Check the path
         if (Strings.isNullOrEmpty(path))
-            return (MessageBuilder) Default.MESSAGE_BUILDER.getValue();
+            return defaultValue.length > 0 ? defaultValue[0] : (MessageBuilder) Default.MESSAGE_BUILDER.getValue();
 
         if (fileConfiguration.isString(path)) {
             // Load as a string
@@ -289,8 +320,8 @@ public class Configuration {
             return new MessageBuilder(msg);
         }
 
-        // Couldn't find anything, return a blank one.
-        return (MessageBuilder) Default.MESSAGE_BUILDER.getValue();
+        // Couldn't find anything
+        return defaultValue.length > 0 ? defaultValue[0] : (MessageBuilder) Default.MESSAGE_BUILDER.getValue();
     }
 
     /**
@@ -386,7 +417,7 @@ public class Configuration {
 
         // Load inventory matrix
         if (section.contains(SubPath.MENU_MATRIX.toString()))
-            menuBuilder.setBuildMatrix(getArray(path + "." + SubPath.MENU_MATRIX));
+            menuBuilder.setBuildMatrix(getArrayList(path + "." + SubPath.MENU_MATRIX));
 
         // Load items
         if (section.contains(SubPath.MENU_ITEMS.toString())) {
@@ -445,7 +476,7 @@ public class Configuration {
      * @return ItemBuilder object
      */
     @NotNull
-    public ItemBuilder loadItemBuilder(@Nullable String path) {
+    public ItemBuilder loadItemBuilder(@Nullable String path, @NotNull ItemBuilder... defaultValue) {
 
         // Parse format for the default
         ParseFormat format = new ParseFormat()
@@ -532,7 +563,8 @@ public class Configuration {
             }
 
         DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
-        return new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
+
+        return defaultValue.length > 0 ? defaultValue[0] : new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
                 .parseFormat(format)
                 .displayName(Default.ITEM_NAME.toString())
                 .addLine(Default.ITEM_LINE.toString());
