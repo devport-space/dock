@@ -3,11 +3,10 @@ package space.devport.utils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.messageutil.StringUtil;
+import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.List;
  *
  * @author Devport Team
  */
-@Log
 @NoArgsConstructor
 public class ConsoleOutput {
 
@@ -33,19 +31,6 @@ public class ConsoleOutput {
     @Getter
     private final List<CommandSender> listeners = new ArrayList<>();
 
-    @Getter
-    @Setter
-    private boolean useBukkit = false;
-
-    /**
-     * Constructor with a useBukkit parameter.
-     *
-     * @param useBukkit Whether to use bukkit logger or not.
-     */
-    public ConsoleOutput(boolean useBukkit) {
-        this.useBukkit = useBukkit;
-    }
-
     /**
      * Sends a debug message to console, also to cmdSender if not null.
      *
@@ -53,10 +38,8 @@ public class ConsoleOutput {
      */
     public void debug(String msg) {
         if (debug) {
-            if (useBukkit) {
-                Bukkit.getLogger().info(StringUtil.color(prefix + "&7DEBUG: " + msg));
-                listeners.forEach(c -> c.sendMessage(StringUtil.color("&eDEBUG: " + msg)));
-            } else log.info(prefix + " DEBUG: " + msg);
+            Bukkit.getLogger().info(StringUtil.color(prefix + "&7DEBUG: " + msg));
+            listeners.forEach(c -> c.sendMessage(StringUtil.color("&eDEBUG: " + msg)));
         }
     }
 
@@ -80,10 +63,8 @@ public class ConsoleOutput {
      * @param msg Message to show
      */
     public void err(String msg) {
-        if (useBukkit) {
-            listeners.forEach(c -> c.sendMessage(StringUtil.color("&4" + msg)));
-            Bukkit.getLogger().severe(StringUtil.color(prefix + "&4ERROR: " + msg));
-        } else log.severe(prefix + msg);
+        listeners.forEach(c -> c.sendMessage(StringUtil.color("&4" + msg)));
+        Bukkit.getLogger().severe(StringUtil.color(prefix + "&4ERROR: " + msg));
     }
 
     /**
@@ -92,10 +73,8 @@ public class ConsoleOutput {
      * @param msg Message to show
      */
     public void info(String msg) {
-        if (useBukkit) {
-            listeners.forEach(c -> c.sendMessage(StringUtil.color("&7" + msg)));
-            Bukkit.getLogger().info(StringUtil.color(prefix + "&7INFO: " + msg));
-        } else log.info(prefix + msg);
+        listeners.forEach(c -> c.sendMessage(StringUtil.color("&7" + msg)));
+        Bukkit.getLogger().info(StringUtil.color(prefix + "&7INFO: " + msg));
     }
 
     /**
@@ -105,10 +84,8 @@ public class ConsoleOutput {
      * @param msg Message to show
      */
     public void warn(String msg) {
-        if (useBukkit) {
-            listeners.forEach(c -> c.sendMessage(StringUtil.color("&c" + msg)));
-            Bukkit.getLogger().warning(StringUtil.color(prefix + "&cWARNING: " + msg));
-        } else log.warning(prefix + msg);
+        listeners.forEach(c -> c.sendMessage(StringUtil.color("&c" + msg)));
+        Bukkit.getLogger().warning(StringUtil.color(prefix + "&cWARNING: " + msg));
     }
 
     /**

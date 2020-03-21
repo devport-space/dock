@@ -1,7 +1,6 @@
-import space.devport.utils.DevportUtils;
-import space.devport.utils.messageutil.MessageBuilder;
-import space.devport.utils.itemutil.Amount;
-import space.devport.utils.packutil.RewardPack;
+import space.devport.utils.text.Message;
+import space.devport.utils.item.Amount;
+import space.devport.utils.struct.Rewards;
 
 public class TestItAll {
 
@@ -12,7 +11,7 @@ public class TestItAll {
         // -------- MessageBuilding, Formatting & Parsing --------
 
         // Create a MessageBuilder with placeholders
-        MessageBuilder msg = new MessageBuilder("Hello %playerName%.", "Welcome to %worldName%!")
+        Message msg = new Message("Hello %playerName%.", "Welcome to %worldName%!")
                 .addPlaceholders("%playerName%", "%worldName%");
 
         // Fill the placeholders
@@ -35,7 +34,7 @@ public class TestItAll {
 
         // ---------- Lombok Builder & Amount Random Value --------
 
-        RewardPack pack = RewardPack.Builder().money(new Amount(1, 10)).build();
+        Rewards pack = Rewards.Builder().money(new Amount(1, 10)).build();
 
         System.out.println("-----------");
 
