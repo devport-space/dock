@@ -11,7 +11,10 @@ public class DevportUtils {
     private static DevportUtils instance;
 
     @Getter
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
+
+    @Getter
+    private final ConsoleOutput consoleOutput;
 
     @Getter
     private Economy economy;
@@ -24,6 +27,8 @@ public class DevportUtils {
     public DevportUtils(JavaPlugin plugin) {
         instance = this;
         this.plugin = plugin;
+
+        this.consoleOutput = new ConsoleOutput();
 
         // Optional Dependencies
         setupEconomy();

@@ -1,11 +1,11 @@
-package space.devport.utils.region;
+package space.devport.utils.utility;
 
 import com.google.common.base.Strings;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.utility.Default;
+import space.devport.utils.DevportUtils;
 
 /**
  * Static util class to assist location related operations.

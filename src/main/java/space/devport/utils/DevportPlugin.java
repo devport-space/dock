@@ -11,6 +11,8 @@ import space.devport.utils.text.Message;
 
 public abstract class DevportPlugin extends JavaPlugin {
 
+    private static DevportPlugin instance;
+
     @Getter
     private PluginManager pluginManager;
 
@@ -23,9 +25,11 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Getter
     private CommandManager commandManager;
 
-    // Just a shortcut
-    public void registerListener(Listener listener) {
-        pluginManager.registerEvents(listener, this);
+    @Getter
+    private String prefix = "";
+
+    public static DevportPlugin getInstance() {
+        return instance;
     }
 
     public abstract void onPluginEnable();
@@ -36,6 +40,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        instance = this;
+
         pluginManager = getServer().getPluginManager();
 
         configuration = new Configuration(this, "config");
@@ -45,7 +51,11 @@ public abstract class DevportPlugin extends JavaPlugin {
         consoleOutput.setPrefix(getDescription().getPrefix());
         consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug"));
 
+        prefix = getDescription().getPrefix();
+
         // TODO: Print some fancy intro
+
+        commandManager = new CommandManager();
 
         onPluginEnable();
     }
@@ -77,5 +87,9 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public void saveConfig() {
         configuration.save();
+    }
+
+    public void registerListener(Listener listener) {
+        pluginManager.registerEvents(listener, this);
     }
 }

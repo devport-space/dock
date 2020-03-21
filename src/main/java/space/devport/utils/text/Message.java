@@ -5,7 +5,9 @@ import lombok.NoArgsConstructor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportPlugin;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +39,7 @@ public class Message {
      */
     public Message(@NotNull Message message) {
         this.message = new ArrayList<>(message.getMessage());
+        this.placeholders = message.getPlaceholders();
     }
 
     /**
@@ -74,6 +77,11 @@ public class Message {
     public void send(@NotNull CommandSender sender) {
         if (!isEmpty())
             sender.sendMessage(parse().color().toString());
+    }
+
+    public void sendPrefixed(CommandSender sender) {
+        if (!isEmpty())
+            sender.sendMessage(DevportPlugin.getInstance().getPrefix() + color().toString());
     }
 
     // Parse placeholders
@@ -154,6 +162,23 @@ public class Message {
 
     public Message append(Message message) {
         return append(message.getMessage());
+    }
+
+    // Add something to the front
+    public Message insert(String... toAdd) {
+        return insert(Arrays.asList(toAdd));
+    }
+
+    public Message insert(List<String> toAdd) {
+        ArrayDeque<String> deque = new ArrayDeque<>(message);
+        for (String str : toAdd) deque.push(str);
+        message = new ArrayList<>(deque);
+        return this;
+    }
+
+    // Add something to the front
+    public Message insert(Message toAdd) {
+        return insert(toAdd.getMessage());
     }
 
     /**

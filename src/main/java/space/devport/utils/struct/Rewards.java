@@ -13,6 +13,7 @@ import space.devport.utils.text.Placeholders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Class to handle various player & server rewards.
@@ -55,6 +56,8 @@ public class Rewards {
     @Builder.Default
     private Placeholders format = new Placeholders();
 
+    private final Random random = new Random();
+
     // Reward a player
     public void give(Player player) {
 
@@ -76,10 +79,10 @@ public class Rewards {
         }
 
         // Inform - to player
-        inform.copyPlaceholders(format).send(player);
+        inform.setPlaceholders(format).send(player);
 
         // Broadcast - to all players
-        broadcast.copyPlaceholders(format);
+        broadcast.setPlaceholders(format);
         DevportUtils.getInstance().getPlugin().getServer().getOnlinePlayers().forEach(broadcast::send);
 
         // Commands - with prefixes
@@ -96,7 +99,7 @@ public class Rewards {
 
             // Pick one command
             if (!randomCommands.isEmpty()) {
-                int random = DevportUtils.getInstance().getRandom().nextInt(randomCommands.size());
+                int random = this.random.nextInt(randomCommands.size());
                 parseCommand(player, randomCommands.get(random));
             }
         }

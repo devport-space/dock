@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportUtils;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.menu.MenuBuilder;
@@ -21,7 +22,7 @@ import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.struct.Conditions;
 import space.devport.utils.struct.Rewards;
-import space.devport.utils.region.LocationUtil;
+import space.devport.utils.utility.LocationUtil;
 import space.devport.utils.region.Region;
 import space.devport.utils.utility.Default;
 
@@ -247,7 +248,7 @@ public class Configuration {
      */
     @NotNull
     public String getColoredMessage(@NotNull String path) {
-        return loadMessageBuilder(path).color().toString();
+        return getMessage(path).color().toString();
     }
 
     /**
@@ -288,10 +289,7 @@ public class Configuration {
 
     // Get a List, or return default
     public final List<String> getStringList(String path, List<String> defaultList) {
-        if (fileConfiguration.contains(path))
-            if (fileConfiguration.isList(path))
-                return fileConfiguration.getStringList(path);
-        return defaultList;
+        return fileConfiguration.getStringList(path) != null ? fileConfiguration.getStringList(path) : defaultList;
     }
 
     // --------------------------------- Advanced Load/Save Methods -----------------------------------
@@ -304,7 +302,7 @@ public class Configuration {
      * @return MessageBuilder object
      */
     @NotNull
-    public Message loadMessageBuilder(@Nullable String path, @NotNull Message... defaultValue) {
+    public Message getMessage(@Nullable String path, @NotNull Message... defaultValue) {
 
         // Check the path
         if (Strings.isNullOrEmpty(path))
@@ -331,7 +329,7 @@ public class Configuration {
      * @return Region object
      */
     @Nullable
-    public Region loadRegion(@Nullable String path) {
+    public Region getRegion(@Nullable String path) {
         Location min = LocationUtil.locationFromString(fileConfiguration.getString(path + "." + SubPath.REGION_MIN));
         Location max = LocationUtil.locationFromString(fileConfiguration.getString(path + "." + SubPath.REGION_MAX));
 
@@ -383,7 +381,7 @@ public class Configuration {
      * @return MenuBuilder object
      */
     @Nullable
-    public MenuBuilder loadMenuBuilder(@Nullable String path) {
+    public MenuBuilder getMenuBuilder(@Nullable String path) {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
@@ -424,7 +422,7 @@ public class Configuration {
             for (String itemName : section.getConfigurationSection(SubPath.MENU_ITEMS.toString()).getKeys(false)) {
                 ConfigurationSection itemSection = section.getConfigurationSection(SubPath.MENU_ITEMS + "." + itemName);
 
-                MenuItem item = loadMenuItem(path + "." + SubPath.MENU_ITEMS + "." + itemName);
+                MenuItem item = getMenuItem(path + "." + SubPath.MENU_ITEMS + "." + itemName);
 
                 if (itemName.equalsIgnoreCase(SubPath.MENU_FILLER.toString()))
                     menuBuilder.setFiller(item.getItemBuilder());
@@ -447,7 +445,7 @@ public class Configuration {
      * @return MenuItem object
      */
     @Nullable
-    public MenuItem loadMenuItem(@Nullable String path) {
+    public MenuItem getMenuItem(@Nullable String path) {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
@@ -456,7 +454,7 @@ public class Configuration {
         }
 
         // Load ItemBuilder
-        ItemBuilder itemBuilder = loadItemBuilder(path);
+        ItemBuilder itemBuilder = getItemBuilder(path);
 
         String itemName = path.contains(".") ? path.split("\\.")[path.split("\\.").length - 1] : path;
 
@@ -476,7 +474,7 @@ public class Configuration {
      * @return ItemBuilder object
      */
     @NotNull
-    public ItemBuilder loadItemBuilder(@Nullable String path, @NotNull ItemBuilder... defaultValue) {
+    public ItemBuilder getItemBuilder(@Nullable String path, @NotNull ItemBuilder... defaultValue) {
 
         // Parse format for the default
         Placeholders format = new Placeholders()
@@ -570,6 +568,10 @@ public class Configuration {
                 .addLine(Default.ITEM_LINE.toString());
     }
 
+    public void setItemBuilder(ItemBuilder itemBuilder) {
+        // TODO
+    }
+
     /**
      * Load an Amount from given amount.
      *
@@ -609,7 +611,7 @@ public class Configuration {
     }
 
     @NotNull
-    public Conditions loadConditionPack(String path) {
+    public Conditions getConditions(String path) {
         Conditions.ConditionPackBuilder pack = Conditions.Builder();
 
         pack.operator(fileConfiguration.getBoolean(path + ".operator", false));
@@ -623,11 +625,11 @@ public class Configuration {
     }
 
     @NotNull
-    public Rewards loadRewardPack(String path) {
+    public Rewards getRewards(String path) {
         Rewards.RewardPackBuilder pack = Rewards.Builder();
 
-        pack.broadcast(loadMessageBuilder(path + ".broadcast"));
-        pack.inform(loadMessageBuilder(path + ".inform"));
+        pack.broadcast(getMessage(path + ".broadcast"));
+        pack.inform(getMessage(path + ".inform"));
 
         pack.commands(getStringList(path + ".commands", new ArrayList<>()));
 
@@ -638,17 +640,12 @@ public class Configuration {
 
         if (fileConfiguration.contains(path + ".items")) {
             for (String name : fileConfiguration.getConfigurationSection(path + ".items").getKeys(false)) {
-                items.add(loadItemBuilder(path + ".items." + name));
+                items.add(getItemBuilder(path + ".items." + name));
             }
         }
 
         pack.items(items);
 
         return pack.build();
-    }
-
-    @NotNull
-    public ConditionedRewardPack loadConditionedRewardPack(String path) {
-        return new ConditionedRewardPack(loadConditionPack(path + "." + SubPath.CONDITION_PACK), loadRewardPack(path + "." + SubPath.REWARD_PACK));
     }
 }
