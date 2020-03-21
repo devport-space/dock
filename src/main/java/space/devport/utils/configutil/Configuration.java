@@ -214,6 +214,18 @@ public class Configuration {
     }
 
     /**
+     * Returns a list of strings.
+     *
+     * @param path        Path to list of strings in config file
+     * @param defaultList Default value
+     * @return List of strings
+     */
+    @NotNull
+    public List<String> getStringList(@NotNull String path, @NotNull List<String> defaultList) {
+        return fileConfiguration.getStringList(path) != null ? fileConfiguration.getStringList(path) : defaultList;
+    }
+
+    /**
      * Returns colored string list retrieved from config.
      *
      * @param path Path to list of strings in config file
@@ -233,7 +245,7 @@ public class Configuration {
      */
     @NotNull
     public final List<String> getColoredList(@NotNull String path, @NotNull List<String> defaultList) {
-        return Objects.requireNonNull(StringUtil.color(fileConfiguration.getStringList(path) == null ? defaultList : fileConfiguration.getStringList(path)));
+        return Objects.requireNonNull(StringUtil.color(getStringList(path, defaultList)));
     }
 
     /**
