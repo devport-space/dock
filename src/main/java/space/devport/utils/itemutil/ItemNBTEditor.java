@@ -51,7 +51,7 @@ public class ItemNBTEditor {
             tag.getClass().getDeclaredMethod("setString", String.class, String.class).invoke(tag, key, value);
             nativeItemStack.getClass().getDeclaredMethod("setTag", tag.getClass()).invoke(nativeItemStack, tag);
 
-            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asBukkitCopy", ItemStack.class).invoke(null, nativeItemStack);
+            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asBukkitCopy", Reflection.getNMSClass(".ItemStack")).invoke(null, nativeItemStack);
         } catch (Exception x) {
             x.printStackTrace();
         }
@@ -92,7 +92,7 @@ public class ItemNBTEditor {
             // remove tag
             tag.getClass().getDeclaredMethod("remove", String.class).invoke(tag, key);
             nativeItemStack.getClass().getDeclaredMethod("setTag", tag.getClass()).invoke(nativeItemStack, tag);
-            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asBukkitCopy", ItemStack.class).invoke(null, nativeItemStack);
+            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asBukkitCopy", Reflection.getNMSClass(".ItemStack")).invoke(null, nativeItemStack);
         } catch (Exception x) {
             x.printStackTrace();
         }
