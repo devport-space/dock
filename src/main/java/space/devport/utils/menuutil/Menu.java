@@ -35,6 +35,9 @@ public class Menu implements MenuListener {
     @Setter
     public Inventory inventory;
 
+    @Getter
+    private boolean open = false;
+
     public Menu(String name, MenuBuilder builder) {
         this.name = name;
 
@@ -70,6 +73,8 @@ public class Menu implements MenuListener {
 
             player.openInventory(inventory);
 
+            open = true;
+
             onOpen();
         }
     }
@@ -104,6 +109,8 @@ public class Menu implements MenuListener {
             player.closeInventory();
 
             DevportUtils.getInstance().getMenuHandler().removeMenu(this);
+
+            open = false;
 
             onClose();
 

@@ -62,11 +62,7 @@ public class MenuHandler implements Listener {
             if (inventory.equals(menuLoop.getInventory()) && menuLoop.getPlayer().equals(player))
                 menu = menuLoop;
 
-        if (menu == null)
-            return;
-
-        if (!menu.getItems().containsKey(e.getSlot()))
-            return;
+        if (menu == null || !menu.getItems().containsKey(e.getSlot()) || !menu.isOpen()) return;
 
         // Get clicked SimpleItem
         MenuItem clickedItem = menu.getItems().get(e.getSlot());
