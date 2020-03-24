@@ -2,6 +2,7 @@ package space.devport.utils.configutil;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,6 +26,7 @@ import space.devport.utils.utilities.Default;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -49,6 +51,10 @@ public class Configuration {
 
     @Getter
     private final JavaPlugin plugin;
+
+    @Getter
+    @Setter
+    private boolean autoSave = false;
 
     /**
      * Initializes this class, creates file and loads yaml from path.
@@ -569,5 +575,30 @@ public class Configuration {
                 .parseFormat(format)
                 .displayName(Default.ITEM_NAME.toString())
                 .addLine(Default.ITEM_LINE.toString());
+    }
+
+    public void setItemBuilder(String path, ItemBuilder item) {
+        ConfigurationSection section = fileConfiguration.contains(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
+
+        section.set(SubPath.ITEM_TYPE.toString(), item.getMaterial());
+        section.set(SubPath.ITEM_DATA.toString(), item.getDamage());
+        section.set(SubPath.ITEM_AMOUNT.toString(), item.getAmount());
+        section.set(SubPath.ITEM_NAME.toString(), item.getDisplayName().toString());
+        section.set(SubPath.ITEM_LORE.toString(), item.getLore().getMessage());
+
+        List<String> enchants = new ArrayList<>();
+        item.getEnchants().forEach((e, l) -> enchants.add(e.toString() + SubPath.ITEM_ENCHANT_DELIMITER + l));
+        section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
+
+        section.set(SubPath.ITEM_FLAGS.toString(), item.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
+
+        List<String> nbt = new ArrayList<>();
+        item.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v));
+        section.set(SubPath.ITEM_NBT.toString(), nbt);
+
+        section.set(SubPath.ITEM_GLOW.toString(), item.isGlow());
+
+        if (autoSave)
+            save();
     }
 }
