@@ -14,12 +14,10 @@ import java.util.Map;
  */
 public class ItemNBTEditor {
 
-    // TODO Hook to ConsoleOutput
-
     public static Map<String, String> getNBTTagMap(@NotNull ItemStack item) {
         Map<String, String> meta = new HashMap<>();
         try {
-            Object nmsItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
+            Object nmsItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
             boolean hasTag = (boolean) nmsItemStack.getClass().getMethod("hasTag").invoke(nmsItemStack);
 
             if (hasTag) {
@@ -45,13 +43,13 @@ public class ItemNBTEditor {
      */
     public static ItemStack writeNBT(@NotNull ItemStack item, @NotNull String key, @NotNull String value) {
         try {
-            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
+            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
             Object tag = getTag(nativeItemStack);
 
             tag.getClass().getDeclaredMethod("setString", String.class, String.class).invoke(tag, key, value);
             nativeItemStack.getClass().getDeclaredMethod("setTag", tag.getClass()).invoke(nativeItemStack, tag);
 
-            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asBukkitCopy", ItemStack.class).invoke(null, nativeItemStack);
+            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asBukkitCopy", Reflection.getNMSClass("ItemStack")).invoke(null, nativeItemStack);
         } catch (Exception x) {
             x.printStackTrace();
         }
@@ -69,7 +67,7 @@ public class ItemNBTEditor {
 
     public static String getNBT(@NotNull ItemStack item, @NotNull String key) {
         try {
-            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
+            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
             Object tag = getTag(nativeItemStack);
             return (String) tag.getClass().getDeclaredMethod("getString", String.class).invoke(tag, key);
         } catch (Exception x) {
@@ -87,12 +85,12 @@ public class ItemNBTEditor {
      */
     public static ItemStack removeNBT(@NotNull ItemStack item, @NotNull String key) {
         try {
-            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
+            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
             Object tag = getTag(nativeItemStack);
             // remove tag
             tag.getClass().getDeclaredMethod("remove", String.class).invoke(tag, key);
             nativeItemStack.getClass().getDeclaredMethod("setTag", tag.getClass()).invoke(nativeItemStack, tag);
-            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asBukkitCopy", ItemStack.class).invoke(null, nativeItemStack);
+            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asBukkitCopy", Reflection.getNMSClass("ItemStack")).invoke(null, nativeItemStack);
         } catch (Exception x) {
             x.printStackTrace();
         }
@@ -108,7 +106,7 @@ public class ItemNBTEditor {
 
     public static boolean hasNBT(@NotNull ItemStack item) {
         try {
-            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
+            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
             return (boolean) nativeItemStack.getClass().getDeclaredMethod("hasTag").invoke(nativeItemStack);
         } catch (Exception x) {
             x.printStackTrace();
@@ -125,7 +123,7 @@ public class ItemNBTEditor {
      */
     public static boolean hasNBTKey(@NotNull ItemStack item, String key) {
         try {
-            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
+            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
             Object tag = getTag(nativeItemStack);
             return (boolean) tag.getClass().getDeclaredMethod("hasKey", String.class).invoke(tag, key);
         } catch (Exception x) {
@@ -144,7 +142,7 @@ public class ItemNBTEditor {
         try {
             if (SpigotHelper.getVersion().contains("1.8") || SpigotHelper.getVersion().contains("1.7")) {
                 if (!(boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack)) {
-                    Object compound = Reflection.getNMSClass(".NBTTagCompound").getConstructor().newInstance();
+                    Object compound = Reflection.getNMSClass("NBTTagCompound").getConstructor().newInstance();
                     nativeItemStack.getClass().getMethod("setTag", compound.getClass()).invoke(nativeItemStack, compound);
                 }
 

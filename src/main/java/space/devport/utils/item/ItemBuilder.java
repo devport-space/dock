@@ -9,6 +9,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportUtils;
+import space.devport.utils.text.CacheMessage;
 import space.devport.utils.text.Message;
 import space.devport.utils.text.Placeholders;
 
@@ -32,14 +34,10 @@ public class ItemBuilder {
     private Amount amount = new Amount(1);
 
     @Getter
-    private String displayName;
+    private CacheMessage displayName = new CacheMessage();
 
     @Getter
-    private List<String> lore = new ArrayList<>();
-
-    // Apply luck & hide enchants flag?
-    @Getter
-    private boolean glow = false;
+    private CacheMessage lore = new CacheMessage();
 
     @Getter
     private HashMap<Enchantment, Integer> enchants = new HashMap<>();
@@ -50,6 +48,10 @@ public class ItemBuilder {
     // Holds item nbt keys & values
     @Getter
     private HashMap<String, String> NBT = new HashMap<>();
+
+    // Apply luck & hide enchants flag?
+    @Getter
+    private boolean glow = false;
 
     // ParseFormat for placeholders
     @Getter
@@ -70,7 +72,7 @@ public class ItemBuilder {
      * @param builder ItemBuilder to copy
      */
     public ItemBuilder(@NotNull ItemBuilder builder) {
-        this.displayName = new Message(builder.getDisplayName());
+        this.displayName = builder.getDisplayName();
         this.material = builder.getMaterial();
         this.amount = builder.getAmount();
         this.damage = builder.getDamage();
@@ -79,7 +81,7 @@ public class ItemBuilder {
         this.enchants = new HashMap<>(builder.getEnchants());
         this.placeholders = new Placeholders(builder.getPlaceholders());
         this.NBT = new HashMap<>(builder.getNBT());
-        this.lore = new Message(builder.getLore());
+        this.lore = builder.getLore();
     }
 
     /**
@@ -98,11 +100,11 @@ public class ItemBuilder {
 
             // Display name
             if (itemMeta.hasDisplayName())
-                this.displayName = new Message(itemMeta.getDisplayName());
+                this.displayName = new CacheMessage(itemMeta.getDisplayName());
 
             // Lore
             if (itemMeta.hasLore())
-                this.lore = new Message(itemMeta.getLore());
+                this.lore = new CacheMessage(itemMeta.getLore());
 
             // Enchants
             if (itemMeta.hasEnchants())
@@ -119,11 +121,6 @@ public class ItemBuilder {
             // Filter here
             this.NBT.put(key, map.get(key));
         }
-    }
-
-    // Compare two builders
-    public boolean compare(ItemBuilder builder) {
-        return true;
     }
 
     /**
@@ -170,9 +167,9 @@ public class ItemBuilder {
 
         // Apply lore
         if (!lore.isEmpty()) {
-            lore.copyPlaceholders(placeholders)
-                    .parsePlaceholders()
+            lore.parseWith(placeholders)
                     .color();
+
             meta.setLore(lore.getMessage());
 
             lore.pull();
@@ -180,10 +177,11 @@ public class ItemBuilder {
 
         // Apply display name
         if (displayName != null) {
-            meta.setDisplayName(displayName.copyPlaceholders(placeholders)
-                    .parsePlaceholders()
-                    .color()
-                    .toString());
+            displayName.parseWith(placeholders)
+                    .color();
+
+            meta.setDisplayName(displayName.toString());
+
             displayName.pull();
         }
 
@@ -278,7 +276,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder displayName(@Nullable Message displayName) {
-        this.displayName = displayName;
+        this.displayName = displayName != null ? new CacheMessage(displayName) : new CacheMessage();
         return this;
     }
 
@@ -299,7 +297,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder lore(@Nullable Message lore) {
-        this.lore = lore;
+        this.lore = lore != null ? new CacheMessage(lore) : new CacheMessage();
         return this;
     }
 
@@ -331,8 +329,8 @@ public class ItemBuilder {
      */
     public ItemBuilder addLine(@NotNull String line) {
         if (lore == null)
-            this.lore = new Message();
-        lore.addLine(line);
+            this.lore = new CacheMessage();
+        lore.append(line);
         return this;
     }
 
@@ -511,7 +509,7 @@ public class ItemBuilder {
      * Set the glow.
      * Applies Luck 1 enchantment with a HIDE_ENCHANTS flag on build.
      *
-     * @param glow Optional boolean, uses true as default
+     * @param glow Optional boolean, true default
      * @return ItemBuilder object
      */
     public ItemBuilder glow(boolean... glow) {
@@ -520,13 +518,13 @@ public class ItemBuilder {
     }
 
     /**
-     * Set the parse format.
+     * Set the placeholders.
      *
-     * @param format Parse format to set
+     * @param placeholders Parse format to set
      * @return ItemBuilder object
      */
-    public ItemBuilder parseFormat(@NotNull Placeholders format) {
-        this.placeholders = new Placeholders(format);
+    public ItemBuilder setPlaceholders(@NotNull Placeholders placeholders) {
+        this.placeholders = new Placeholders(placeholders);
         return this;
     }
 }

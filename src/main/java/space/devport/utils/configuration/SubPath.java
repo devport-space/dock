@@ -7,7 +7,7 @@ import lombok.Setter;
  * Holds Configuration sub-paths to different paths to custom objects.
  *
  * @author Devport Team
- * */
+ */
 @AllArgsConstructor
 public enum SubPath {
 
@@ -55,12 +55,6 @@ public enum SubPath {
     ITEM_NBT_DELIMITER(";"),
     ITEM_GLOW("glow"),
 
-    /**
-     * CONDITIONED REWARD PACK
-     * */
-
-    CONDITION_PACK("condition"),
-    REWARD_PACK("reward")
     ;
 
     @Setter

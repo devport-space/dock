@@ -115,4 +115,8 @@ public class StringUtil {
     public List<String> listFromString(@Nullable String string) {
         return listFromString(string, Default.LIST_DELIMITER.toString());
     }
+
+    public List<String> replace(List<String> list, String key, Object value) {
+        return list.stream().map(l -> l.replace(key, value.toString())).collect(Collectors.toList());
+    }
 }

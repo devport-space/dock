@@ -7,14 +7,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Object to handle Message building.
+ * Class to handle Messages.
  *
  * @author Devport Team
  **/
@@ -22,15 +21,10 @@ import java.util.stream.Collectors;
 public class Message {
 
     @Getter
-    private List<String> message = new ArrayList<>();
+    protected List<String> message = new ArrayList<>();
 
     @Getter
-    private Placeholders placeholders = new Placeholders();
-
-    public Message setPlaceholders(Placeholders placeholders) {
-        this.placeholders = placeholders;
-        return this;
-    }
+    protected Placeholders placeholders = new Placeholders();
 
     /**
      * Copy constructor.
@@ -38,7 +32,8 @@ public class Message {
      * @param message Message to copy
      */
     public Message(@NotNull Message message) {
-        this.message = new ArrayList<>(message.getMessage());
+        set(message);
+
         this.placeholders = message.getPlaceholders();
     }
 
@@ -69,24 +64,34 @@ public class Message {
         set(line);
     }
 
-    /**
-     * Parse placeholders, color the message and send.
-     *
-     * @param sender CommandSender to send to
-     */
-    public void send(@NotNull CommandSender sender) {
-        if (!isEmpty())
-            sender.sendMessage(parse().color().toString());
-    }
-
-    public void sendPrefixed(CommandSender sender) {
-        if (!isEmpty())
-            sender.sendMessage(DevportPlugin.getInstance().getPrefix() + color().toString());
+    public Message setPlaceholders(Placeholders placeholders) {
+        this.placeholders = placeholders;
+        return this;
     }
 
     // Parse placeholders
     public Message parse() {
+        return this.placeholders.parse(this);
+    }
+
+    public Message parseWith(Placeholders placeholders) {
         return placeholders.parse(this);
+    }
+
+    /**
+     * Set the message.
+     * If the input is null, sets message to a blank one.
+     *
+     * @param message Message to set to in a List
+     * @return MessageBuilder object
+     */
+    public Message set(@Nullable List<String> message) {
+        this.message = message != null ? message : new ArrayList<>();
+        return this;
+    }
+
+    public Message set(Message message) {
+        return set(message.getMessage());
     }
 
     /**
@@ -101,33 +106,16 @@ public class Message {
 
     /**
      * Set the message.
-     * If the input is null, sets message to a blank one.
-     *
-     * @param message Message to set to in a List
-     * @return MessageBuilder object
-     */
-    public Message set(@Nullable List<String> message) {
-        // If the input is null, set to blank
-        if (message == null)
-            message = new ArrayList<>();
-
-        this.message = message;
-        return this;
-    }
-
-    /**
-     * Set the message.
      *
      * @param message Message to set, in an Array
      * @return MessageBuilder object
      */
     public Message set(@Nullable String... message) {
-        set(Arrays.asList(message));
-        return this;
+        return set(Arrays.asList(message));
     }
 
     /**
-     * Check if the messages are empty.
+     * Check if the message is empty.
      *
      * @return boolean
      */
@@ -151,17 +139,9 @@ public class Message {
 
     // ---- Add a line / lines ----
 
-    public Message append(String... toAdd) {
-        return append(Arrays.asList(toAdd));
-    }
-
-    public Message append(List<String> toAdd) {
-        message.addAll(toAdd);
-        return this;
-    }
-
-    public Message append(Message message) {
-        return append(message.getMessage());
+    public Message insert(List<String> toAdd) {
+        toAdd.addAll(message);
+        return set(toAdd);
     }
 
     // Add something to the front
@@ -169,16 +149,21 @@ public class Message {
         return insert(Arrays.asList(toAdd));
     }
 
-    public Message insert(List<String> toAdd) {
-        ArrayDeque<String> deque = new ArrayDeque<>(message);
-        for (String str : toAdd) deque.push(str);
-        message = new ArrayList<>(deque);
+    public Message insert(Message toAdd) {
+        return insert(toAdd.getMessage());
+    }
+
+    public Message append(List<String> toAdd) {
+        message.addAll(toAdd);
         return this;
     }
 
-    // Add something to the front
-    public Message insert(Message toAdd) {
-        return insert(toAdd.getMessage());
+    public Message append(String... toAdd) {
+        return append(Arrays.asList(toAdd));
+    }
+
+    public Message append(Message message) {
+        return append(message.getMessage());
     }
 
     /**
@@ -215,6 +200,22 @@ public class Message {
      */
     @Override
     public String toString() {
-        return StringUtil.listToString(message);
+        return StringUtil.listToString(message, "\n");
+    }
+
+    /**
+     * Parse placeholders, color the message and send.
+     *
+     * @param sender CommandSender to send to
+     */
+    public void send(@NotNull CommandSender sender) {
+        if (!isEmpty()) {
+            sender.sendMessage(parse().color().toString());
+        }
+    }
+
+    public void sendPrefixed(CommandSender sender) {
+        if (!isEmpty())
+            sender.sendMessage(DevportPlugin.getInstance().getPrefix() + color().toString());
     }
 }

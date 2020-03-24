@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 
 /**
  * Class to handle Configuration files and custom object loading.
- * Requires DevportUtils to be instanced.
  *
  * @author Devport Team
  */
@@ -57,7 +56,6 @@ public class Configuration {
     /**
      * Initializes this class, creates file and loads yaml from path.
      * Yml is assigned automatically at the end.
-     * Requires a DevportUtils instance.
      *
      * @param plugin Main plugin instance
      * @param path   Path to config file
@@ -68,7 +66,6 @@ public class Configuration {
 
     /**
      * Initializes this class from file and loads yaml.
-     * Requires a DevportUtils instance.
      *
      * @param plugin Java plugin instance
      * @param file   File to load from
@@ -79,7 +76,7 @@ public class Configuration {
         this.path = file.getPath();
 
         if (DevportUtils.getInstance() == null) {
-            plugin.getLogger().severe("There's no DevportUtils instance, cannot load.");
+            new DevportUtils(plugin);
             return;
         }
 
@@ -563,12 +560,12 @@ public class Configuration {
         DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
 
         return defaultValue.length > 0 ? defaultValue[0] : new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
-                .parseFormat(format)
+                .setPlaceholders(format)
                 .displayName(Default.ITEM_NAME.toString())
                 .addLine(Default.ITEM_LINE.toString());
     }
 
-    public void setItemBuilder(ItemBuilder itemBuilder) {
+    public void setItemBuilder(String path, ItemBuilder itemBuilder) {
         // TODO
     }
 

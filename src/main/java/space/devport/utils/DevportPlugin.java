@@ -14,10 +14,10 @@ public abstract class DevportPlugin extends JavaPlugin {
     private static DevportPlugin instance;
 
     @Getter
-    private PluginManager pluginManager;
+    protected PluginManager pluginManager;
 
     @Getter
-    private Configuration configuration;
+    protected Configuration configuration;
 
     @Getter
     private ConsoleOutput consoleOutput;

@@ -11,7 +11,7 @@ public class Reflection {
 
     public Class<?> getNMSClass(String name) {
         try {
-            return Class.forName("net.minecraft.server." + SpigotHelper.extractNMSVersion() + name);
+            return Class.forName("net.minecraft.server." + SpigotHelper.extractNMSVersion() + "." + name);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -20,7 +20,7 @@ public class Reflection {
 
     public Class<?> getCBClass(String name) {
         try {
-            return Class.forName("org.bukkit.craftbukkit." + SpigotHelper.extractNMSVersion() + name);
+            return Class.forName("org.bukkit.craftbukkit." + SpigotHelper.extractNMSVersion() + "." + name);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
