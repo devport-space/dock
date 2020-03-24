@@ -23,7 +23,7 @@ public abstract class AbstractCommand {
     public void runCommand(CommandSender sender, String... args) {
         if (!preconditions.check(sender)) return;
 
-        perform(sender, args).sendMessage(sender);
+        perform(sender, args).getMessage().replace("%usage%", getUsage()).send(sender);
     }
 
     protected abstract CommandResult perform(CommandSender sender, String... args);
@@ -34,6 +34,7 @@ public abstract class AbstractCommand {
         TOO_MANY_ARGS("&cToo many arguments!", "%usage%"),
         NO_CONSOLE("&cOnly for players!"),
         NO_PLAYER("&cOnly for console!"),
+        FAILURE(new Message()),
         SUCCESS(new Message());
 
         @Setter
@@ -52,7 +53,7 @@ public abstract class AbstractCommand {
         }
 
         public Message getMessage() {
-            return message;
+            return new Message(message);
         }
     }
 
