@@ -14,9 +14,6 @@ public class DevportUtils {
     private final JavaPlugin plugin;
 
     @Getter
-    private final ConsoleOutput consoleOutput;
-
-    @Getter
     private Economy economy;
 
     /**
@@ -27,8 +24,6 @@ public class DevportUtils {
     public DevportUtils(JavaPlugin plugin) {
         instance = this;
         this.plugin = plugin;
-
-        this.consoleOutput = new ConsoleOutput();
 
         // Optional Dependencies
         setupEconomy();
@@ -51,5 +46,11 @@ public class DevportUtils {
         if (rsp == null) return;
 
         this.economy = rsp.getProvider();
+    }
+
+    public ConsoleOutput getConsoleOutput() {
+        if (plugin instanceof DevportPlugin) {
+            return ((DevportPlugin) plugin).getConsoleOutput();
+        } else return null;
     }
 }

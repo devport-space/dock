@@ -17,14 +17,14 @@ import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.menu.MenuBuilder;
 import space.devport.utils.menu.MenuItem;
+import space.devport.utils.region.Region;
+import space.devport.utils.struct.Conditions;
+import space.devport.utils.struct.Rewards;
 import space.devport.utils.text.Message;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
-import space.devport.utils.struct.Conditions;
-import space.devport.utils.struct.Rewards;
-import space.devport.utils.utility.LocationUtil;
-import space.devport.utils.region.Region;
 import space.devport.utils.utility.Default;
+import space.devport.utils.utility.LocationUtil;
 
 import java.io.File;
 import java.io.IOException;

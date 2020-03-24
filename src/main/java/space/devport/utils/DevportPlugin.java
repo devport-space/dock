@@ -1,6 +1,7 @@
 package space.devport.utils;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -18,10 +19,12 @@ public abstract class DevportPlugin extends JavaPlugin {
     protected PluginManager pluginManager;
 
     @Getter
+    @Setter
     protected Configuration configuration;
 
     @Getter
-    private ConsoleOutput consoleOutput;
+    @Setter
+    protected ConsoleOutput consoleOutput;
 
     @Getter
     private CommandManager commandManager;
@@ -48,6 +51,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         pluginManager = getServer().getPluginManager();
 
+        new DevportUtils(this);
+
         configuration = new Configuration(this, "config");
 
         // Setup Console Output
@@ -57,7 +62,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         prefix = getDescription().getPrefix();
 
-        // TODO: Print some fancy intro
+        // Fancy intro
 
         commandManager = new CommandManager(this);
         menuHandler = new MenuHandler();
