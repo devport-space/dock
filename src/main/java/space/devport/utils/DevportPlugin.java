@@ -7,6 +7,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import space.devport.utils.commands.CommandManager;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.menu.MenuHandler;
 import space.devport.utils.text.Message;
 
 public abstract class DevportPlugin extends JavaPlugin {
@@ -24,6 +25,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
     private CommandManager commandManager;
+
+    @Getter
+    private MenuHandler menuHandler;
 
     @Getter
     private String prefix = "";
@@ -55,7 +59,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         // TODO: Print some fancy intro
 
-        commandManager = new CommandManager();
+        commandManager = new CommandManager(this);
+        menuHandler = new MenuHandler();
 
         onPluginEnable();
     }

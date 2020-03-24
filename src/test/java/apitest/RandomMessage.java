@@ -17,11 +17,11 @@ public class RandomMessage extends Message {
 
     // Override parsePlaceholders method which is run when parsed.
     @Override
-    public Message parsePlaceholders() {
+    public Message parse() {
 
         // Parse random number in bound
         replace("%random%", String.valueOf(random.nextInt(bound)));
 
-        return super.parsePlaceholders();
+        return super.parse();
     }
 }
