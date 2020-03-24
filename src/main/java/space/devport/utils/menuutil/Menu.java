@@ -97,7 +97,7 @@ public class Menu implements MenuListener {
 
     // Close the menu
     public void close() {
-        if (player == null)
+        if (player == null || !open)
             return;
 
         // Throw close event
@@ -106,11 +106,11 @@ public class Menu implements MenuListener {
 
         if (!closeEvent.isCancelled()) {
 
+            open = false;
+
             player.closeInventory();
 
             DevportUtils.getInstance().getMenuHandler().removeMenu(this);
-
-            open = false;
 
             onClose();
 

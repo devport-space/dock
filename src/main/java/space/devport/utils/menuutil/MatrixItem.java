@@ -2,6 +2,7 @@ package space.devport.utils.menuutil;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,13 +73,6 @@ public class MatrixItem {
             menuItems.remove(item);
     }
 
-    public void replaceItem(String name, MenuItem item) {
-        MenuItem oldItem = getItem(name);
-
-        if (oldItem != null)
-            menuItems.set(menuItems.indexOf(oldItem), item);
-    }
-
     public void clear() {
         menuItems.clear();
     }
@@ -101,9 +95,7 @@ public class MatrixItem {
             index++;
 
             return item;
-        }
-
-        return menuItems.isEmpty() ? null : menuItems.get(index);
+        } else return null;
     }
 
     public boolean isEmpty() {

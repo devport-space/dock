@@ -117,7 +117,7 @@ public class MenuHandler implements Listener {
             return;
 
         // Player is null when the menu is not open
-        if (menu.getPlayer() == null)
+        if (menu.getPlayer() == null || !menu.isOpen())
             return;
 
         menu.close();
