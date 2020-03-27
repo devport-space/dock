@@ -612,4 +612,15 @@ public class Configuration {
         if (autoSave)
             save();
     }
+
+    public void setMessageBuilder(String path, MessageBuilder message) {
+        if (message.getMessage().isEmpty())
+            fileConfiguration.set(path, "");
+        else {
+            if (message.getMessage().size() > 1) {
+                fileConfiguration.set(path, message.getMessage());
+            } else
+                fileConfiguration.set(path, message.getMessage().get(0));
+        }
+    }
 }
