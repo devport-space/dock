@@ -28,7 +28,7 @@ public class ItemNBTEditor {
                 if (SpigotHelper.getVersion().contains("1.15"))
                     keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("getKeys").invoke(tag));
                 else
-                    keys = (List<String>) tag.getClass().getDeclaredMethod("c").invoke(tag);
+                    keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("c").invoke(tag));
 
                 for (String fieldName : keys) {
                     meta.put(fieldName, (String) tag.getClass().getDeclaredMethod("getString", String.class).invoke(tag, fieldName));
