@@ -1,5 +1,6 @@
 package space.devport.utils.messageutil;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.command.CommandSender;
@@ -158,6 +159,18 @@ public class MessageBuilder extends ParseFormat {
      */
     public boolean isEmpty() {
         return message.isEmpty() && workingMessage.isEmpty();
+    }
+
+    public boolean isEmptyAbsolute() {
+        if (!message.isEmpty())
+            for (String line : message)
+                if (!Strings.isNullOrEmpty(line)) return false;
+
+        if (!workingMessage.isEmpty())
+            for (String line : workingMessage)
+                if (!Strings.isNullOrEmpty(line)) return false;
+
+        return true;
     }
 
     /**
