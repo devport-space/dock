@@ -14,12 +14,6 @@ import java.util.*;
  */
 public class ItemNBTEditor {
 
-    public void random() {
-        World world;
-
-        CraftWorld
-    }
-
     public static Map<String, String> getNBTTagMap(@NotNull ItemStack item) {
         Map<String, String> meta = new HashMap<>();
         try {
