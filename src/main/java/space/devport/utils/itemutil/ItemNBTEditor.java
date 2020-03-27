@@ -1,20 +1,24 @@
 package space.devport.utils.itemutil;
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.SpigotHelper;
 import space.devport.utils.utilities.Reflection;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Item NBT Editor
  */
 public class ItemNBTEditor {
 
-    // TODO Hook to ConsoleOutput
+    public void random() {
+        World world;
+
+        CraftWorld
+    }
 
     public static Map<String, String> getNBTTagMap(@NotNull ItemStack item) {
         Map<String, String> meta = new HashMap<>();
@@ -23,9 +27,17 @@ public class ItemNBTEditor {
             boolean hasTag = (boolean) nmsItemStack.getClass().getMethod("hasTag").invoke(nmsItemStack);
 
             if (hasTag) {
-                NBTTagCompound tags = (NBTTagCompound) nmsItemStack.getClass().getMethod("getTag").invoke(nmsItemStack);
-                for (String fieldName : tags.c()) {
-                    meta.put(fieldName, tags.get(fieldName).toString());
+                Object tag = getTag(nmsItemStack);
+
+                List<String> keys;
+
+                if (SpigotHelper.getVersion().contains("1.15"))
+                    keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("getKeys").invoke(tag));
+                else
+                    keys = (List<String>) tag.getClass().getDeclaredMethod("c").invoke(tag);
+
+                for (String fieldName : keys) {
+                    meta.put(fieldName, (String) tag.getClass().getDeclaredMethod("getString", String.class).invoke(tag, fieldName));
                 }
             }
         } catch (Exception ex) {

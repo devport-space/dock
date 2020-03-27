@@ -23,8 +23,6 @@ import java.util.*;
 @NoArgsConstructor
 public class ItemBuilder {
 
-    // TODO Implement Multi-version material support. XSeries: https://github.com/CryptoMorin/XSeries
-
     // Item Data information
     @Getter
     private Material material = Material.STONE;
@@ -35,7 +33,7 @@ public class ItemBuilder {
     private int amount = 1;
 
     @Getter
-    private MessageBuilder displayName;
+    private MessageBuilder displayName = new MessageBuilder();
     @Getter
     private MessageBuilder lore = new MessageBuilder();
 
@@ -73,6 +71,7 @@ public class ItemBuilder {
      */
     public ItemBuilder(@NotNull ItemBuilder builder) {
         this.displayName = new MessageBuilder(builder.getDisplayName());
+        this.lore = new MessageBuilder(builder.getLore());
         this.material = builder.getMaterial();
         this.amount = builder.getAmount();
         this.damage = builder.getDamage();
@@ -81,8 +80,10 @@ public class ItemBuilder {
         this.enchants = new HashMap<>(builder.getEnchants());
         this.parseFormat = new ParseFormat(builder.getParseFormat());
         this.NBT = new HashMap<>(builder.getNBT());
-        this.lore = new MessageBuilder(builder.getLore());
     }
+
+    @Getter
+    private static final List<String> filteredNBT = new ArrayList<>(Arrays.asList("Damage", "Enchantments", "display"));
 
     /**
      * To-builder constructor.
@@ -114,12 +115,11 @@ public class ItemBuilder {
             this.flags = new ArrayList<>(itemMeta.getItemFlags());
         }
 
-        // TODO Find out what is saved into NBT by vanilla, then filter them out.
         Map<String, String> map = ItemNBTEditor.getNBTTagMap(item);
 
         for (String key : map.keySet()) {
-            // Filter here
-            this.NBT.put(key, map.get(key));
+            if (!filteredNBT.contains(key))
+                this.NBT.put(key, map.get(key));
         }
     }
 
@@ -133,9 +133,8 @@ public class ItemBuilder {
     // Move to parse format
     @Deprecated
     public ItemBuilder parse(@NotNull String key, @NotNull String value) {
-        if (displayName != null)
-            if (!displayName.isEmpty())
-                displayName.parsePlaceholder(key, value);
+        if (!displayName.isEmpty())
+            displayName.parsePlaceholder(key, value);
 
         if (!lore.isEmpty())
             lore.parsePlaceholder(key, value);
@@ -162,7 +161,9 @@ public class ItemBuilder {
      */
     @NotNull
     public ItemStack build() {
-        ItemStack item = new ItemStack(material, amount, damage);
+        ItemStack item = new ItemStack(material, amount);
+        item.setDurability(damage);
+
         ItemMeta meta = item.getItemMeta();
 
         // Apply lore
@@ -170,17 +171,19 @@ public class ItemBuilder {
             lore.copyPlaceholders(parseFormat)
                     .parsePlaceholders()
                     .color();
+
             meta.setLore(lore.getWorkingMessage());
 
             lore.pull();
         }
 
         // Apply display name
-        if (displayName != null) {
+        if (!displayName.isEmpty()) {
             meta.setDisplayName(displayName.copyPlaceholders(parseFormat)
                     .parsePlaceholders()
                     .color()
                     .toString());
+
             displayName.pull();
         }
 
@@ -202,7 +205,10 @@ public class ItemBuilder {
         // NBT
         if (!NBT.isEmpty())
             for (String key : NBT.keySet()) {
+                if (filteredNBT.contains(key)) continue;
+
                 ItemStack i = ItemNBTEditor.writeNBT(item, key, NBT.get(key));
+
                 if (i == null)
                     DevportUtils.getInstance().getConsoleOutput().warn("Couldn't write NBT to item.");
                 else

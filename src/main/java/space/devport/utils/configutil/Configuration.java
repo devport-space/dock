@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -541,7 +542,12 @@ public class Configuration {
                             dataString = dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
                         }
 
-                        Enchantment enchantment = Enchantment.getByName(dataString);
+                        Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(dataString));
+
+                        if (enchantment == null) {
+                            DevportUtils.getInstance().getConsoleOutput().warn("Could not parse enchantment " + dataString);
+                            continue;
+                        }
 
                         b.addEnchant(enchantment, level);
                     }
@@ -580,14 +586,19 @@ public class Configuration {
     public void setItemBuilder(String path, ItemBuilder item) {
         ConfigurationSection section = fileConfiguration.contains(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
 
-        section.set(SubPath.ITEM_TYPE.toString(), item.getMaterial());
+        if (section == null) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save ItemBuilder to path " + path);
+            return;
+        }
+
+        section.set(SubPath.ITEM_TYPE.toString(), item.getMaterial().toString());
         section.set(SubPath.ITEM_DATA.toString(), item.getDamage());
         section.set(SubPath.ITEM_AMOUNT.toString(), item.getAmount());
         section.set(SubPath.ITEM_NAME.toString(), item.getDisplayName().toString());
         section.set(SubPath.ITEM_LORE.toString(), item.getLore().getMessage());
 
         List<String> enchants = new ArrayList<>();
-        item.getEnchants().forEach((e, l) -> enchants.add(e.toString() + SubPath.ITEM_ENCHANT_DELIMITER + l));
+        item.getEnchants().forEach((e, l) -> enchants.add(e.getKey().getKey() + SubPath.ITEM_ENCHANT_DELIMITER + l));
         section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
 
         section.set(SubPath.ITEM_FLAGS.toString(), item.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
