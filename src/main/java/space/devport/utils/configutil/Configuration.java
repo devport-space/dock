@@ -496,6 +496,11 @@ public class Configuration {
             try {
                 ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
+                if (section == null) {
+                    DevportUtils.getInstance().getConsoleOutput().warn("Could not find section for item on path " + path + ", using default.");
+                    return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
+                }
+
                 // Material
                 String type = section.getString(SubPath.ITEM_TYPE.toString());
 
@@ -577,8 +582,12 @@ public class Configuration {
 
         DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
 
-        return defaultValue.length > 0 ? defaultValue[0] : new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
-                .parseFormat(format)
+        return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
+    }
+
+    private ItemBuilder defaultBuilder(ParseFormat format) {
+        return new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
+                .parseWith(format)
                 .displayName(Default.ITEM_NAME.toString())
                 .addLine(Default.ITEM_LINE.toString());
     }
