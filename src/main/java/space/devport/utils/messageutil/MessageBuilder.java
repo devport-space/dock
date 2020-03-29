@@ -3,6 +3,7 @@ package space.devport.utils.messageutil;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,10 +23,12 @@ public class MessageBuilder extends ParseFormat {
 
     // Holds the original message.
     @Getter
+    @Setter
     private List<String> message = new ArrayList<>();
 
     // Holds the current message being edited.
     @Getter
+    @Setter
     private List<String> workingMessage = new ArrayList<>();
 
     // Character to parse colors with.
