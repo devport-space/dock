@@ -569,12 +569,13 @@ public class Configuration {
                 // NBT
                 if (section.contains(SubPath.ITEM_NBT.toString()))
                     for (String nbtString : section.getStringList(SubPath.ITEM_NBT.toString()))
-                        if (nbtString.contains(SubPath.ITEM_NBT_DELIMITER.toString()))
-                            b.addNBT(nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString())[0],
-                                    nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString())[1]);
+                        if (nbtString.contains(SubPath.ITEM_NBT_DELIMITER.toString())) {
+                            String[] arr = nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString());
+                            b.addNBT(arr[0], arr.length > 1 ? arr[1] : "");
+                        }
 
                 return b;
-            } catch (NullPointerException | IllegalArgumentException e) {
+            } catch (Exception e) {
                 if (DevportUtils.getInstance().getConsoleOutput().isDebug())
                     e.printStackTrace();
                 format.fill("{message}", e.getMessage());
