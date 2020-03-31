@@ -1,7 +1,5 @@
 package space.devport.utils.itemutil;
 
-import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.SpigotHelper;
@@ -25,7 +23,7 @@ public class ItemNBTEditor {
 
                 List<String> keys;
 
-                if (SpigotHelper.getVersion().contains("1.15"))
+                if (SpigotHelper.getVersion().contains("1.15") || SpigotHelper.getVersion().contains("1.14") || SpigotHelper.getVersion().contains("1.13"))
                     keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("getKeys").invoke(tag));
                 else
                     keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("c").invoke(tag));
