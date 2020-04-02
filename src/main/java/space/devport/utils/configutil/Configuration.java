@@ -509,9 +509,15 @@ public class Configuration {
                 try {
                     mat = Strings.isNullOrEmpty(type) ? Material.valueOf(Default.ITEM_TYPE.toString().toUpperCase()) : Material.valueOf(type.toUpperCase());
                 } catch (IllegalArgumentException e) {
-                    DevportUtils.getInstance().getConsoleOutput().err("Invalid item type in default & on path " + path + ", returning a blank ItemBuilder.");
-                    e.printStackTrace();
-                    return new ItemBuilder();
+
+                    DevportUtils.getInstance().getConsoleOutput().err("Invalid item type on path " + path + ", returning default.");
+
+                    format.fill("{message}", e.getMessage());
+
+                    if (DevportUtils.getInstance().getConsoleOutput().isDebug())
+                        e.printStackTrace();
+
+                    return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
                 }
 
                 // Data
