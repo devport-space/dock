@@ -111,7 +111,7 @@ public class Message {
      * @return MessageBuilder object
      */
     public Message set(@Nullable String... message) {
-        return set(Arrays.asList(message));
+        return set(new ArrayList<>(Arrays.asList(message)));
     }
 
     /**
@@ -130,9 +130,10 @@ public class Message {
      * @param value       Value to replace with
      * @return MessageBuilder object
      */
-    public Message replace(@NotNull String placeholder, @NotNull Object value) {
+    public Message replace(@Nullable String placeholder, @Nullable Object value) {
+        if (placeholder == null || value == null) return this;
         message = message.stream()
-                .map(line -> line.replace(placeholder, value.toString()))
+                .map(line -> line.replaceAll("(?i)" + placeholder, value.toString()))
                 .collect(Collectors.toList());
         return this;
     }
@@ -140,13 +141,14 @@ public class Message {
     // ---- Add a line / lines ----
 
     public Message insert(List<String> toAdd) {
+        toAdd = new ArrayList<>(toAdd);
         toAdd.addAll(message);
         return set(toAdd);
     }
 
     // Add something to the front
     public Message insert(String... toAdd) {
-        return insert(Arrays.asList(toAdd));
+        return insert(new ArrayList<>(Arrays.asList(toAdd)));
     }
 
     public Message insert(Message toAdd) {
@@ -154,12 +156,12 @@ public class Message {
     }
 
     public Message append(List<String> toAdd) {
-        message.addAll(toAdd);
+        message.addAll(new ArrayList<>(toAdd));
         return this;
     }
 
     public Message append(String... toAdd) {
-        return append(Arrays.asList(toAdd));
+        return append(new ArrayList<>(Arrays.asList(toAdd)));
     }
 
     public Message append(Message message) {

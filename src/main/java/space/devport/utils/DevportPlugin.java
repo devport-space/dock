@@ -2,6 +2,7 @@ package space.devport.utils;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
@@ -13,14 +14,17 @@ import space.devport.utils.text.Message;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 
+import java.util.Random;
+
 public abstract class DevportPlugin extends JavaPlugin {
 
+    @Setter
     private static DevportPlugin instance;
 
     // TODO: Modules
 
     @Getter
-    private DevportUtils utils;
+    protected DevportUtils utils;
 
     @Getter
     protected PluginManager pluginManager;
@@ -30,17 +34,20 @@ public abstract class DevportPlugin extends JavaPlugin {
     protected ConsoleOutput consoleOutput;
 
     @Getter
-    private CommandManager commandManager;
+    protected CommandManager commandManager;
 
     @Getter
-    private MenuHandler menuHandler;
+    protected MenuHandler menuHandler;
 
     @Getter
     @Setter
     protected Configuration configuration;
 
     @Getter
-    private String prefix = "";
+    protected String prefix = "";
+
+    @Getter
+    private ChatColor color = ChatColor.WHITE;
 
     public static DevportPlugin getInstance() {
         return instance;
@@ -56,6 +63,12 @@ public abstract class DevportPlugin extends JavaPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
 
+        Random random = new Random();
+        ChatColor[] colors = new ChatColor[]{ChatColor.AQUA, ChatColor.YELLOW, ChatColor.RED, ChatColor.GREEN,
+                ChatColor.DARK_GREEN, ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.GOLD, ChatColor.LIGHT_PURPLE,
+                ChatColor.WHITE, ChatColor.DARK_PURPLE};
+        this.color = colors[random.nextInt(colors.length)];
+
         instance = this;
 
         ServerVersion.loadServerVersion();
@@ -65,12 +78,13 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         utils = new DevportUtils(this);
 
+        // Setup Console Output
+        consoleOutput = utils.getConsoleOutput();
+        consoleOutput.setColors(true);
+
         configuration = new Configuration(this, "config");
 
-        // Setup Console Output
-        consoleOutput = new ConsoleOutput(this);
-        consoleOutput.setColors(true);
-        consoleOutput.setPrefix(getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
+        consoleOutput.setPrefix(configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : ""));
         consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled"));
 
         prefix = getDescription().getPrefix();

@@ -9,8 +9,15 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class SpigotHelper {
 
-    public String extractNMSVersion() {
-        Matcher matcher = Pattern.compile("v\\d+_\\d+_R\\d+").matcher(Bukkit.getServer().getClass().getPackage().getName());
+    public String extractNMSVersion(boolean... shortVersion) {
+
+        Pattern pattern;
+        if (shortVersion.length > 0 && shortVersion[0])
+            pattern = Pattern.compile("v\\d+_\\d+");
+        else
+            pattern = Pattern.compile("v\\d+_\\d+_R\\d+");
+
+        Matcher matcher = pattern.matcher(Bukkit.getServer().getClass().getPackage().getName());
         return matcher.find() ? matcher.group() : null;
     }
 

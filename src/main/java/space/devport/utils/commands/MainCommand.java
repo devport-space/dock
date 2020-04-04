@@ -2,29 +2,28 @@ package space.devport.utils.commands;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
+import space.devport.utils.DevportPlugin;
+import space.devport.utils.text.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainCommand extends AbstractCommand {
+public abstract class MainCommand extends AbstractCommand {
+
+    @Getter
+    private final List<SubCommand> subCommands = new ArrayList<>();
 
     public MainCommand(String name) {
         super(name);
     }
 
-    public MainCommand(String name, String usage, String description) {
-        super(name, usage, description);
-    }
-
-    @Getter
-    private final List<SubCommand> subCommands = new ArrayList<>();
-
     @Override
     protected CommandResult perform(CommandSender sender, String... args) {
 
         if (args.length == 0) {
-            return CommandResult.FAILURE;
+            constructHelp().send(sender);
+            return CommandResult.SUCCESS;
         }
 
         for (SubCommand subCommand : subCommands) {
@@ -38,4 +37,23 @@ public class MainCommand extends AbstractCommand {
 
         return CommandResult.SUCCESS;
     }
+
+    private Message constructHelp() {
+        Message help = new Message("&8&m        &r " + DevportPlugin.getInstance().getColor() + DevportPlugin.getInstance().getName() +
+                " &7v&f" + DevportPlugin.getInstance().getDescription().getVersion() + "&8&m        ");
+
+        help.append(DevportPlugin.getInstance().getColor() + getUsage() + " &8- &7" + getDescription());
+        for (SubCommand subCommand : this.subCommands) {
+            help.append(DevportPlugin.getInstance().getColor() + subCommand.getUsage() + " &8- &7" + subCommand.getDescription());
+        }
+        return help;
+    }
+
+    // TODO: Hook to locale
+
+    @Override
+    public abstract String getUsage();
+
+    @Override
+    public abstract String getDescription();
 }

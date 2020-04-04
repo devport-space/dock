@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
  *
  * @author Devport Team
  */
+@SuppressWarnings("DuplicatedCode")
 public class Configuration {
 
     @Getter
@@ -93,7 +94,7 @@ public class Configuration {
      * Loads the Yaml configuration from a file.
      */
     public void load() {
-        DevportUtils.getInstance().getConsoleOutput().debug("Loading " + path);
+        DevportUtils.getInstance().getConsoleOutput().info("Loading " + path);
         file = new File(plugin.getDataFolder(), path);
 
         if (!file.exists())
@@ -118,7 +119,6 @@ public class Configuration {
      * Reloads the yaml, checks if file exists and loads/creates it again.
      */
     public void reload() {
-        DevportUtils.getInstance().getConsoleOutput().debug("Reloading " + path);
         load();
     }
 
@@ -216,8 +216,7 @@ public class Configuration {
      */
     @NotNull
     public String getColoredString(@NotNull String path, @NotNull String defaultValue) {
-        return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ?
-                defaultValue : fileConfiguration.getString(path));
+        return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ? defaultValue : fileConfiguration.getString(path));
     }
 
     /**
@@ -304,6 +303,21 @@ public class Configuration {
 
     // --------------------------------- Advanced Load/Save Methods -----------------------------------
 
+    @Nullable
+    public Message getMessage(@Nullable String path) {
+        if (Strings.isNullOrEmpty(path)) return null;
+
+        if (fileConfiguration.isString(path)) {
+            String msg = fileConfiguration.getString(path);
+            return new Message(msg);
+        } else if (fileConfiguration.isList(path)) {
+            List<String> msg = fileConfiguration.getStringList(path);
+            return new Message(msg);
+        }
+
+        return null;
+    }
+
     /**
      * Loads a message builder either from String or from a list of strings.
      * Returns a default from Default.java when missing.
@@ -312,24 +326,19 @@ public class Configuration {
      * @return MessageBuilder object
      */
     @NotNull
-    public Message getMessage(@Nullable String path, @NotNull Message... defaultValue) {
+    public Message getMessage(@Nullable String path, @NotNull Message defaultValue) {
 
-        // Check the path
-        if (Strings.isNullOrEmpty(path))
-            return defaultValue.length > 0 ? defaultValue[0] : (Message) Default.MESSAGE_BUILDER.getValue();
+        if (Strings.isNullOrEmpty(path)) return defaultValue;
 
         if (fileConfiguration.isString(path)) {
-            // Load as a string
             String msg = fileConfiguration.getString(path);
             return new Message(msg);
         } else if (fileConfiguration.isList(path)) {
-            // Load as a list
             List<String> msg = fileConfiguration.getStringList(path);
             return new Message(msg);
         }
 
-        // Couldn't find anything
-        return defaultValue.length > 0 ? defaultValue[0] : (Message) Default.MESSAGE_BUILDER.getValue();
+        return defaultValue;
     }
 
     /**

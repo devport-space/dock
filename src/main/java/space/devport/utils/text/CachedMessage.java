@@ -55,8 +55,8 @@ public class CachedMessage extends Message {
 
     @Override
     public CachedMessage append(List<String> toAdd) {
-        this.original.addAll(toAdd);
-        this.message.addAll(toAdd);
+        this.original.addAll(new ArrayList<>(toAdd));
+        this.message.addAll(new ArrayList<>(toAdd));
         return this;
     }
 

@@ -2,18 +2,22 @@ package space.devport.utils.commands;
 
 import org.bukkit.command.CommandSender;
 
-public class SubCommand extends AbstractCommand {
+public abstract class SubCommand extends AbstractCommand {
 
     public SubCommand(String name) {
         super(name);
     }
 
-    public SubCommand(String name, String usage, String description) {
-        super(name, usage, description);
-    }
-
     @Override
     protected CommandResult perform(CommandSender sender, String... args) {
-        return CommandResult.SUCCESS;
+        return CommandResult.FAILURE;
     }
+
+    // TODO: Hook to locale
+
+    @Override
+    public abstract String getUsage();
+
+    @Override
+    public abstract String getDescription();
 }

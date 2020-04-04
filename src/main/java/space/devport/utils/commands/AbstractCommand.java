@@ -3,9 +3,12 @@ package space.devport.utils.commands;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
+import space.devport.utils.DevportPlugin;
+import space.devport.utils.DevportUtils;
 import space.devport.utils.commands.struct.Preconditions;
 import space.devport.utils.text.Message;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,31 +24,26 @@ public abstract class AbstractCommand {
 
     protected String[] aliases = new String[]{};
 
-    @Getter
-    private String usage;
+    public abstract String getUsage();
 
-    @Getter
-    private String description;
+    public abstract String getDescription();
 
     public AbstractCommand(String name) {
         this.name = name;
     }
 
-    public AbstractCommand(String name, String usage, String description) {
-        this.name = name;
-        this.usage = usage;
-        this.description = description;
-    }
-
     public List<String> getAliases() {
-        return Arrays.asList(aliases);
+        return new ArrayList<>(Arrays.asList(aliases));
     }
 
     // This is called from outside and sends the message automatically once it gets a response.
     public void runCommand(CommandSender sender, String... args) {
         if (!preconditions.check(sender)) return;
 
-        perform(sender, args).getMessage().replace("%usage%", getUsage()).send(sender);
+        perform(sender, args).getMessage()
+                .replace("%prefix%", DevportUtils.getInstance().getConsoleOutput().getPrefix())
+                .replace("%usage%", getUsage())
+                .send(sender);
     }
 
     // This should be overriden by commands and performs the wanted action itself.
@@ -54,10 +52,10 @@ public abstract class AbstractCommand {
     // TODO: Hook messages to locale
     public enum CommandResult {
 
-        NOT_ENOUGH_ARGS("&cNot enough arguments!", "%usage%"),
-        TOO_MANY_ARGS("&cToo many arguments!", "%usage%"),
-        NO_CONSOLE("&cOnly for players!"),
-        NO_PLAYER("&cOnly for console!"),
+        NOT_ENOUGH_ARGS("%prefix%&cNot enough arguments!", "%usage%"),
+        TOO_MANY_ARGS("%prefix%&cToo many arguments!", "%usage%"),
+        NO_CONSOLE("%prefix%&cOnly for players!"),
+        NO_PLAYER("%prefix%&cOnly for console!"),
         FAILURE(new Message()),
         SUCCESS(new Message());
 

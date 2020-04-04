@@ -2,6 +2,7 @@ package space.devport.utils;
 
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,6 +17,9 @@ public class DevportUtils {
     @Getter
     private Economy economy;
 
+    @Getter
+    private final ConsoleOutput consoleOutput;
+
     /**
      * Construct with a plugin reference.
      *
@@ -24,6 +28,8 @@ public class DevportUtils {
     public DevportUtils(JavaPlugin plugin) {
         instance = this;
         this.plugin = plugin;
+
+        this.consoleOutput = new ConsoleOutput(plugin);
 
         // Optional Dependencies
         setupEconomy();
@@ -46,11 +52,5 @@ public class DevportUtils {
         if (rsp == null) return;
 
         this.economy = rsp.getProvider();
-    }
-
-    public ConsoleOutput getConsoleOutput() {
-        if (plugin instanceof DevportPlugin) {
-            return ((DevportPlugin) plugin).getConsoleOutput();
-        } else return null;
     }
 }
