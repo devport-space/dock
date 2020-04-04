@@ -2,8 +2,8 @@ package space.devport.utils.item;
 
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.utility.SpigotHelper;
-import space.devport.utils.utility.Reflection;
+import space.devport.utils.utility.reflection.SpigotHelper;
+import space.devport.utils.utility.reflection.Reflection;
 
 import java.util.*;
 

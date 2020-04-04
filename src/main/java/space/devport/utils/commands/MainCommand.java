@@ -9,24 +9,12 @@ import java.util.List;
 
 public class MainCommand extends AbstractCommand {
 
-    private final String name;
-
-    private String usage;
-
-    private String description;
-
     public MainCommand(String name) {
-        this.name = name;
+        super(name);
     }
 
-    public MainCommand usage(String usage) {
-        this.usage = usage;
-        return this;
-    }
-
-    public MainCommand description(String description) {
-        this.description = description;
-        return this;
+    public MainCommand(String name, String usage, String description) {
+        super(name, usage, description);
     }
 
     @Getter
@@ -49,20 +37,5 @@ public class MainCommand extends AbstractCommand {
         }
 
         return CommandResult.SUCCESS;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String getUsage() {
-        return usage;
     }
 }

@@ -1,26 +1,35 @@
 package space.devport.utils.commands.struct;
 
-import lombok.Builder;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Preconditions {
 
     @Getter
-    @Builder.Default
     private boolean operator = false;
 
     @Getter
-    @Builder.Default
-    private final List<String> permissions = new ArrayList<>();
+    private List<String> permissions = new ArrayList<>();
 
     public Preconditions() {
     }
 
     public boolean check(CommandSender sender) {
-        return true;
+        if (!sender.isOp() && operator) return false;
+        return permissions.stream().allMatch(sender::hasPermission);
+    }
+
+    public Preconditions operator(boolean b) {
+        this.operator = b;
+        return this;
+    }
+
+    public Preconditions permissions(String... permissions) {
+        this.permissions = Arrays.asList(permissions);
+        return this;
     }
 }

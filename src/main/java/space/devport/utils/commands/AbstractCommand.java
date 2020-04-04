@@ -11,23 +11,47 @@ import java.util.List;
 
 public abstract class AbstractCommand {
 
+    // TODO: Hook all of the options to a commands.yml file for maximum customisation.
+
+    @Getter
+    private final String name;
+
     @Getter
     protected Preconditions preconditions = new Preconditions();
 
     protected String[] aliases = new String[]{};
 
+    @Getter
+    private String usage;
+
+    @Getter
+    private String description;
+
+    public AbstractCommand(String name) {
+        this.name = name;
+    }
+
+    public AbstractCommand(String name, String usage, String description) {
+        this.name = name;
+        this.usage = usage;
+        this.description = description;
+    }
+
     public List<String> getAliases() {
         return Arrays.asList(aliases);
     }
 
+    // This is called from outside and sends the message automatically once it gets a response.
     public void runCommand(CommandSender sender, String... args) {
         if (!preconditions.check(sender)) return;
 
         perform(sender, args).getMessage().replace("%usage%", getUsage()).send(sender);
     }
 
+    // This should be overriden by commands and performs the wanted action itself.
     protected abstract CommandResult perform(CommandSender sender, String... args);
 
+    // TODO: Hook messages to locale
     public enum CommandResult {
 
         NOT_ENOUGH_ARGS("&cNot enough arguments!", "%usage%"),
@@ -56,10 +80,4 @@ public abstract class AbstractCommand {
             return new Message(message);
         }
     }
-
-    public abstract String getName();
-
-    public abstract String getDescription();
-
-    public abstract String getUsage();
 }

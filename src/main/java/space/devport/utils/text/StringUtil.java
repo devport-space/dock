@@ -20,6 +20,11 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class StringUtil {
 
+    // Strip colors from String
+    public String stripColor(String msg) {
+        return msg != null ? ChatColor.stripColor(msg) : null;
+    }
+
     /**
      * Colors a string with Bukkit color codes.
      *

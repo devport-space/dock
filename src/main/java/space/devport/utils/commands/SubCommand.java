@@ -4,23 +4,16 @@ import org.bukkit.command.CommandSender;
 
 public class SubCommand extends AbstractCommand {
 
+    public SubCommand(String name) {
+        super(name);
+    }
+
+    public SubCommand(String name, String usage, String description) {
+        super(name, usage, description);
+    }
+
     @Override
     protected CommandResult perform(CommandSender sender, String... args) {
         return CommandResult.SUCCESS;
-    }
-
-    @Override
-    public String getName() {
-        return null;
-    }
-
-    @Override
-    public String getDescription() {
-        return null;
-    }
-
-    @Override
-    public String getUsage() {
-        return null;
     }
 }
