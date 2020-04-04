@@ -16,13 +16,14 @@ public class LanguageManager {
     private final Map<String, Message> cache = new HashMap<>();
 
     @Getter
-    private final Map<String, Message> defaults = new HashMap<>();
+    protected final Map<String, Message> defaults = new HashMap<>();
 
     @Getter
     private final Configuration language;
 
     public LanguageManager() {
         this.plugin = DevportPlugin.getInstance();
+        setDefaults();
         this.language = new Configuration(plugin, "language");
     }
 
