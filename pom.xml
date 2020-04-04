@@ -87,5 +87,11 @@
             <scope>system</scope>
             <systemPath>${basedir}/libs/TokenManager-3.2.4.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.github.cryptomorin</groupId>
+            <artifactId>XSeries</artifactId>
+            <version>5.3.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>
