@@ -84,6 +84,9 @@ public class ItemBuilder {
         this.lore = builder.getLore();
     }
 
+    @Getter
+    private static final List<String> filteredNBT = new ArrayList<>(Arrays.asList("Damage", "Enchantments", "display"));
+
     /**
      * To-builder constructor.
      *
@@ -114,12 +117,11 @@ public class ItemBuilder {
             this.flags = new ArrayList<>(itemMeta.getItemFlags());
         }
 
-        // TODO Find out what is saved into NBT by vanilla, then filter them out.
         Map<String, String> map = ItemNBTEditor.getNBTTagMap(item);
 
         for (String key : map.keySet()) {
-            // Filter here
-            this.NBT.put(key, map.get(key));
+            if (!filteredNBT.contains(key))
+                this.NBT.put(key, map.get(key));
         }
     }
 
@@ -133,9 +135,8 @@ public class ItemBuilder {
     // Move to parse format
     @Deprecated
     public ItemBuilder parse(@NotNull String key, @NotNull String value) {
-        if (displayName != null)
-            if (!displayName.isEmpty())
-                displayName.replace(key, value);
+        if (!displayName.isEmpty())
+            displayName.replace(key, value);
 
         if (!lore.isEmpty())
             lore.replace(key, value);
@@ -163,6 +164,8 @@ public class ItemBuilder {
     @NotNull
     public ItemStack build() {
         ItemStack item = new ItemStack(material, amount.getInt(), damage);
+        item.setDurability(damage);
+
         ItemMeta meta = item.getItemMeta();
 
         // Apply lore
@@ -176,11 +179,11 @@ public class ItemBuilder {
         }
 
         // Apply display name
-        if (displayName != null) {
-            displayName.parseWith(placeholders)
-                    .color();
-
-            meta.setDisplayName(displayName.toString());
+        if (!displayName.isEmpty()) {
+            meta.setDisplayName(displayName.copyPlaceholders(parseFormat)
+                    .parsePlaceholders()
+                    .color()
+                    .toString());
 
             displayName.pull();
         }
@@ -203,7 +206,10 @@ public class ItemBuilder {
         // NBT
         if (!NBT.isEmpty())
             for (String key : NBT.keySet()) {
+                if (filteredNBT.contains(key)) continue;
+
                 ItemStack i = ItemNBTEditor.writeNBT(item, key, NBT.get(key));
+
                 if (i == null)
                     DevportUtils.getInstance().getConsoleOutput().warn("Couldn't write NBT to item.");
                 else

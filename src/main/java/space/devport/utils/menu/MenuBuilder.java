@@ -103,7 +103,6 @@ public class MenuBuilder {
 
     // Build the gui with items, placeholders etc.
     // Is called before opening
-    // TODO Output inventory
     public MenuBuilder build() {
 
         String usedTitle = globalFormat.parse(title.color().toString());
@@ -234,7 +233,7 @@ public class MenuBuilder {
 
     // Set the filler ItemBuilder
     public MenuBuilder setFiller(ItemBuilder filler) {
-        this.filler = filler;
+        this.filler = new ItemBuilder(filler);
         return this;
     }
 
@@ -280,7 +279,7 @@ public class MenuBuilder {
         if (itemMatrix.containsKey(matrixItem.getCharacter())) {
 
             // Merge them
-            MatrixItem newItem = new MatrixItem(matrixItem);
+            MatrixItem newItem = new MatrixItem(itemMatrix.get(matrixItem.getCharacter()));
             matrixItem.getMenuItems().forEach(i -> newItem.addItem(new MenuItem(i)));
 
             setMatrixItem(newItem);
@@ -290,7 +289,7 @@ public class MenuBuilder {
 
     // Set a Matrix item to the menu
     public MenuBuilder setMatrixItem(MatrixItem matrixItem) {
-        itemMatrix.put(matrixItem.getCharacter(), matrixItem);
+        itemMatrix.put(matrixItem.getCharacter(), new MatrixItem(matrixItem));
         return this;
     }
 
@@ -302,10 +301,8 @@ public class MenuBuilder {
 
     // Get item from the matrix
     public MatrixItem getMatrixItem(char character) {
-        return itemMatrix.getOrDefault(character, new MatrixItem(character));
+        return itemMatrix.getOrDefault(character, null);
     }
-
-    // --------------- Getters --------------------
 
     // Get an item from the Menu by name
     public MenuItem getItem(String name) {

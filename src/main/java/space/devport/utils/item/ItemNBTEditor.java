@@ -1,13 +1,11 @@
 package space.devport.utils.item;
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.utility.SpigotHelper;
 import space.devport.utils.utility.Reflection;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Item NBT Editor
@@ -21,9 +19,17 @@ public class ItemNBTEditor {
             boolean hasTag = (boolean) nmsItemStack.getClass().getMethod("hasTag").invoke(nmsItemStack);
 
             if (hasTag) {
-                NBTTagCompound tags = (NBTTagCompound) nmsItemStack.getClass().getMethod("getTag").invoke(nmsItemStack);
-                for (String fieldName : tags.c()) {
-                    meta.put(fieldName, tags.get(fieldName).toString());
+                Object tag = getTag(nmsItemStack);
+
+                List<String> keys;
+
+                if (SpigotHelper.getVersion().contains("1.15") || SpigotHelper.getVersion().contains("1.14") || SpigotHelper.getVersion().contains("1.13"))
+                    keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("getKeys").invoke(tag));
+                else
+                    keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("c").invoke(tag));
+
+                for (String fieldName : keys) {
+                    meta.put(fieldName, (String) tag.getClass().getDeclaredMethod("getString", String.class).invoke(tag, fieldName));
                 }
             }
         } catch (Exception ex) {
@@ -90,7 +96,7 @@ public class ItemNBTEditor {
             // remove tag
             tag.getClass().getDeclaredMethod("remove", String.class).invoke(tag, key);
             nativeItemStack.getClass().getDeclaredMethod("setTag", tag.getClass()).invoke(nativeItemStack, tag);
-            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asBukkitCopy", Reflection.getNMSClass("ItemStack")).invoke(null, nativeItemStack);
+            return (ItemStack) Reflection.getDeclaredMethod(Reflection.getCBClass(".inventory.CraftItemStack"), "asBukkitCopy", Reflection.getNMSClass(".ItemStack")).invoke(null, nativeItemStack);
         } catch (Exception x) {
             x.printStackTrace();
         }

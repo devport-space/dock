@@ -1,9 +1,11 @@
-package space.devport.utils.configuration;
+package space.devport.utils.configutil;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -52,6 +54,10 @@ public class Configuration {
 
     @Getter
     private final JavaPlugin plugin;
+
+    @Getter
+    @Setter
+    private boolean autoSave = false;
 
     /**
      * Initializes this class, creates file and loads yaml from path.
@@ -215,6 +221,18 @@ public class Configuration {
     }
 
     /**
+     * Returns a list of strings.
+     *
+     * @param path        Path to list of strings in config file
+     * @param defaultList Default value
+     * @return List of strings
+     */
+    @NotNull
+    public List<String> getStringList(@NotNull String path, @NotNull List<String> defaultList) {
+        return fileConfiguration.getStringList(path) != null ? fileConfiguration.getStringList(path) : defaultList;
+    }
+
+    /**
      * Returns colored string list retrieved from config.
      *
      * @param path Path to list of strings in config file
@@ -234,7 +252,7 @@ public class Configuration {
      */
     @NotNull
     public final List<String> getColoredList(@NotNull String path, @NotNull List<String> defaultList) {
-        return Objects.requireNonNull(StringUtil.color(fileConfiguration.getStringList(path) == null ? defaultList : fileConfiguration.getStringList(path)));
+        return Objects.requireNonNull(StringUtil.color(getStringList(path, defaultList)));
     }
 
     /**
@@ -282,11 +300,6 @@ public class Configuration {
     public char getChar(@NotNull String path, char defaultValue) {
         String str = fileConfiguration.getString(path);
         return str != null ? str.toCharArray()[0] : defaultValue;
-    }
-
-    // Get a List, or return default
-    public final List<String> getStringList(String path, List<String> defaultList) {
-        return fileConfiguration.getStringList(path) != null ? fileConfiguration.getStringList(path) : defaultList;
     }
 
     // --------------------------------- Advanced Load/Save Methods -----------------------------------
@@ -483,6 +496,11 @@ public class Configuration {
             try {
                 ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
+                if (section == null) {
+                    DevportUtils.getInstance().getConsoleOutput().warn("Could not find section for item on path " + path + ", using default.");
+                    return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
+                }
+
                 // Material
                 String type = section.getString(SubPath.ITEM_TYPE.toString());
 
@@ -491,9 +509,15 @@ public class Configuration {
                 try {
                     mat = Strings.isNullOrEmpty(type) ? Material.valueOf(Default.ITEM_TYPE.toString().toUpperCase()) : Material.valueOf(type.toUpperCase());
                 } catch (IllegalArgumentException e) {
-                    DevportUtils.getInstance().getConsoleOutput().err("Invalid item type in default & on path " + path + ", returning a blank ItemBuilder.");
-                    e.printStackTrace();
-                    return new ItemBuilder();
+
+                    DevportUtils.getInstance().getConsoleOutput().err("Invalid item type on path " + path + ", returning default.");
+
+                    format.fill("{message}", e.getMessage());
+
+                    if (DevportUtils.getInstance().getConsoleOutput().isDebug())
+                        e.printStackTrace();
+
+                    return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
                 }
 
                 // Data
@@ -529,7 +553,12 @@ public class Configuration {
                             dataString = dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
                         }
 
-                        Enchantment enchantment = Enchantment.getByName(dataString);
+                        Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(dataString));
+
+                        if (enchantment == null) {
+                            DevportUtils.getInstance().getConsoleOutput().warn("Could not parse enchantment " + dataString);
+                            continue;
+                        }
 
                         b.addEnchant(enchantment, level);
                     }
@@ -546,12 +575,13 @@ public class Configuration {
                 // NBT
                 if (section.contains(SubPath.ITEM_NBT.toString()))
                     for (String nbtString : section.getStringList(SubPath.ITEM_NBT.toString()))
-                        if (nbtString.contains(SubPath.ITEM_NBT_DELIMITER.toString()))
-                            b.addNBT(nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString())[0],
-                                    nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString())[1]);
+                        if (nbtString.contains(SubPath.ITEM_NBT_DELIMITER.toString())) {
+                            String[] arr = nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString());
+                            b.addNBT(arr[0], arr.length > 1 ? arr[1] : "");
+                        }
 
                 return b;
-            } catch (NullPointerException | IllegalArgumentException e) {
+            } catch (Exception e) {
                 if (DevportUtils.getInstance().getConsoleOutput().isDebug())
                     e.printStackTrace();
                 format.add("{message}", e.getMessage());
@@ -559,14 +589,55 @@ public class Configuration {
 
         DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
 
-        return defaultValue.length > 0 ? defaultValue[0] : new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
+        return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
+    }
+
+    private ItemBuilder defaultBuilder(ParseFormat format) {
+        return new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
                 .setPlaceholders(format)
                 .displayName(Default.ITEM_NAME.toString())
                 .addLine(Default.ITEM_LINE.toString());
     }
 
-    public void setItemBuilder(String path, ItemBuilder itemBuilder) {
-        // TODO
+    public void setItemBuilder(String path, ItemBuilder item) {
+        ConfigurationSection section = fileConfiguration.contains(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
+
+        if (section == null) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save ItemBuilder to path " + path);
+            return;
+        }
+
+        section.set(SubPath.ITEM_TYPE.toString(), item.getMaterial().toString());
+        section.set(SubPath.ITEM_DATA.toString(), item.getDamage());
+        section.set(SubPath.ITEM_AMOUNT.toString(), item.getAmount());
+        section.set(SubPath.ITEM_NAME.toString(), item.getDisplayName().toString());
+        section.set(SubPath.ITEM_LORE.toString(), item.getLore().getMessage());
+
+        List<String> enchants = new ArrayList<>();
+        item.getEnchants().forEach((e, l) -> enchants.add(e.getKey().getKey() + SubPath.ITEM_ENCHANT_DELIMITER + l));
+        section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
+
+        section.set(SubPath.ITEM_FLAGS.toString(), item.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
+
+        List<String> nbt = new ArrayList<>();
+        item.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v));
+        section.set(SubPath.ITEM_NBT.toString(), nbt);
+
+        section.set(SubPath.ITEM_GLOW.toString(), item.isGlow());
+
+        if (autoSave)
+            save();
+    }
+
+    public void setMessageBuilder(String path, MessageBuilder message) {
+        if (message.getMessage().isEmpty())
+            fileConfiguration.set(path, "");
+        else {
+            if (message.getMessage().size() > 1) {
+                fileConfiguration.set(path, message.getMessage());
+            } else
+                fileConfiguration.set(path, message.getMessage().get(0));
+        }
     }
 
     /**
