@@ -49,6 +49,14 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Getter
     private ChatColor color = ChatColor.WHITE;
 
+    @Getter
+    private final Random random = new Random();
+
+    @Getter
+    private final ChatColor[] colors = new ChatColor[]{ChatColor.AQUA, ChatColor.YELLOW, ChatColor.RED, ChatColor.GREEN,
+            ChatColor.DARK_GREEN, ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.GOLD, ChatColor.LIGHT_PURPLE,
+            ChatColor.WHITE, ChatColor.DARK_PURPLE};
+
     public static DevportPlugin getInstance() {
         return instance;
     }
@@ -63,10 +71,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
 
-        Random random = new Random();
-        ChatColor[] colors = new ChatColor[]{ChatColor.AQUA, ChatColor.YELLOW, ChatColor.RED, ChatColor.GREEN,
-                ChatColor.DARK_GREEN, ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.GOLD, ChatColor.LIGHT_PURPLE,
-                ChatColor.WHITE, ChatColor.DARK_PURPLE};
         this.color = colors[random.nextInt(colors.length)];
 
         instance = this;
@@ -106,6 +110,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public void reload(CommandSender sender) {
         long start = System.currentTimeMillis();
+
+        this.color = colors[random.nextInt(colors.length)];
 
         consoleOutput.addListener(sender);
 

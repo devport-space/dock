@@ -3,6 +3,8 @@ package space.devport.utils.commands;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.commands.struct.ArgumentRange;
+import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.text.Message;
 
 import java.util.ArrayList;
@@ -29,12 +31,13 @@ public abstract class MainCommand extends AbstractCommand {
         for (SubCommand subCommand : subCommands) {
             if (!subCommand.getName().equalsIgnoreCase(args[0]) && !subCommand.getAliases().contains(args[0])) continue;
 
-            args = Arrays.copyOfRange(args, 1, args.length - 1, String[].class);
+            args = Arrays.copyOfRange(args, 1, args.length, String[].class);
 
-            subCommand.perform(sender, args);
-            break;
+            subCommand.runCommand(sender, args);
+            return CommandResult.SUCCESS;
         }
 
+        constructHelp().send(sender);
         return CommandResult.SUCCESS;
     }
 
@@ -49,6 +52,11 @@ public abstract class MainCommand extends AbstractCommand {
         return help;
     }
 
+    public MainCommand addSubCommand(SubCommand subCommand) {
+        this.subCommands.add(subCommand);
+        return this;
+    }
+
     // TODO: Hook to locale
 
     @Override
@@ -56,4 +64,9 @@ public abstract class MainCommand extends AbstractCommand {
 
     @Override
     public abstract String getDescription();
+
+    @Override
+    public ArgumentRange getRange() {
+        return new ArgumentRange(0);
+    }
 }

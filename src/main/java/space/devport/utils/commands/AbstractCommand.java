@@ -1,11 +1,11 @@
 package space.devport.utils.commands;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.commands.struct.ArgumentRange;
+import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.commands.struct.Preconditions;
-import space.devport.utils.text.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,21 +23,26 @@ public abstract class AbstractCommand {
 
     protected String[] aliases = new String[]{};
 
-    public abstract String getUsage();
-
-    public abstract String getDescription();
-
-    public AbstractCommand(String name) {
-        this.name = name;
-    }
-
-    public List<String> getAliases() {
-        return new ArrayList<>(Arrays.asList(aliases));
-    }
-
     // This is called from outside and sends the message automatically once it gets a response.
     public void runCommand(CommandSender sender, String... args) {
         if (!preconditions.check(sender)) return;
+
+        if (checkRange()) {
+            int res = getRange().check(args.length);
+            if (res > 0) {
+                CommandResult.TOO_MANY_ARGS.getMessage()
+                        .replace("%prefix%", DevportUtils.getInstance().getConsoleOutput().getPrefix())
+                        .replace("%usage%", getUsage())
+                        .send(sender);
+                return;
+            } else if (res < 0) {
+                CommandResult.NOT_ENOUGH_ARGS.getMessage()
+                        .replace("%prefix%", DevportUtils.getInstance().getConsoleOutput().getPrefix())
+                        .replace("%usage%", getUsage())
+                        .send(sender);
+                return;
+            }
+        }
 
         perform(sender, args).getMessage()
                 .replace("%prefix%", DevportUtils.getInstance().getConsoleOutput().getPrefix())
@@ -48,33 +53,21 @@ public abstract class AbstractCommand {
     // This should be overridden by commands and performs the wanted action itself.
     protected abstract CommandResult perform(CommandSender sender, String... args);
 
-    // TODO: Hook messages to locale
-    public enum CommandResult {
+    public abstract String getUsage();
 
-        NOT_ENOUGH_ARGS("%prefix%&cNot enough arguments!", "%usage%"),
-        TOO_MANY_ARGS("%prefix%&cToo many arguments!", "%usage%"),
-        NO_CONSOLE("%prefix%&cOnly for players!"),
-        NO_PLAYER("%prefix%&cOnly for console!"),
-        FAILURE(new Message()),
-        SUCCESS(new Message());
+    public abstract String getDescription();
 
-        @Setter
-        private Message message;
+    public abstract ArgumentRange getRange();
 
-        CommandResult(Message message) {
-            this.message = message;
-        }
+    public boolean checkRange() {
+        return true;
+    }
 
-        CommandResult(String... message) {
-            this.message = new Message(message);
-        }
+    public AbstractCommand(String name) {
+        this.name = name;
+    }
 
-        public void sendMessage(CommandSender sender) {
-            message.send(sender);
-        }
-
-        public Message getMessage() {
-            return new Message(message);
-        }
+    public List<String> getAliases() {
+        return new ArrayList<>(Arrays.asList(aliases));
     }
 }

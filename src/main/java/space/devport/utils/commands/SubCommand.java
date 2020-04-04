@@ -1,6 +1,8 @@
 package space.devport.utils.commands;
 
 import org.bukkit.command.CommandSender;
+import space.devport.utils.commands.struct.ArgumentRange;
+import space.devport.utils.commands.struct.CommandResult;
 
 public abstract class SubCommand extends AbstractCommand {
 
@@ -20,4 +22,7 @@ public abstract class SubCommand extends AbstractCommand {
 
     @Override
     public abstract String getDescription();
+
+    @Override
+    public abstract ArgumentRange getRange();
 }
