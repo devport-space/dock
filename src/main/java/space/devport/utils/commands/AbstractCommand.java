@@ -3,7 +3,6 @@ package space.devport.utils.commands;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
-import space.devport.utils.DevportPlugin;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.commands.struct.Preconditions;
 import space.devport.utils.text.Message;
@@ -46,7 +45,7 @@ public abstract class AbstractCommand {
                 .send(sender);
     }
 
-    // This should be overriden by commands and performs the wanted action itself.
+    // This should be overridden by commands and performs the wanted action itself.
     protected abstract CommandResult perform(CommandSender sender, String... args);
 
     // TODO: Hook messages to locale
