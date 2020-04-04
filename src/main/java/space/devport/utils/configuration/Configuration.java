@@ -1,15 +1,15 @@
 package space.devport.utils.configuration;
 
+import com.cryptomorin.xseries.XEnchantment;
+import com.cryptomorin.xseries.XMaterial;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -510,29 +510,24 @@ public class Configuration {
                     return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
                 }
 
-                // Material
-                String type = section.getString(SubPath.ITEM_TYPE.toString());
+                String type;
 
-                Material mat;
+                if (Strings.isNullOrEmpty(section.getString(SubPath.ITEM_TYPE.toString()))) {
+                    type = Default.ITEM_TYPE.toString();
+                } else
+                    type = section.getString(SubPath.ITEM_TYPE.toString());
 
-                try {
-                    mat = Strings.isNullOrEmpty(type) ? Material.valueOf(Default.ITEM_TYPE.toString().toUpperCase()) : Material.valueOf(type.toUpperCase());
-                } catch (IllegalArgumentException e) {
+                XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
 
+                if (xMaterial == null || xMaterial.parseMaterial() == null) {
                     DevportUtils.getInstance().getConsoleOutput().err("Invalid item type on path " + path + ", returning default.");
-
-                    format.add("{message}", e.getMessage());
-
-                    if (DevportUtils.getInstance().getConsoleOutput().isDebug())
-                        e.printStackTrace();
-
-                    return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
+                    return defaultBuilder(format.add("{message}", "&cInvalid material"));
                 }
 
                 // Data
                 short data = (short) (section.contains(SubPath.ITEM_DATA.toString()) ? section.getInt(SubPath.ITEM_DATA.toString()) : 0);
 
-                ItemBuilder b = new ItemBuilder(mat).damage(data);
+                ItemBuilder b = new ItemBuilder(xMaterial.parseMaterial()).damage(data);
 
                 // Display name
                 if (section.contains(SubPath.ITEM_NAME.toString()))
@@ -562,14 +557,15 @@ public class Configuration {
                             dataString = dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
                         }
 
-                        Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(dataString));
 
-                        if (enchantment == null) {
+                        XEnchantment xEnchantment = XEnchantment.matchXEnchantment(dataString).orElse(null);
+
+                        if (xEnchantment == null || xEnchantment.parseEnchantment() == null) {
                             DevportUtils.getInstance().getConsoleOutput().warn("Could not parse enchantment " + dataString);
                             continue;
                         }
 
-                        b.addEnchant(enchantment, level);
+                        b.addEnchant(xEnchantment.parseEnchantment(), level);
                     }
                 }
 
