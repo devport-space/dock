@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.item.ItemBuilder;
-import space.devport.utils.text.CacheMessage;
+import space.devport.utils.text.CachedMessage;
 import space.devport.utils.text.Placeholders;
 
 import java.util.*;
@@ -39,7 +39,7 @@ public class MenuBuilder {
     // Title of the GUI
     // Is colored and parsed when built
     @Getter
-    private CacheMessage title = new CacheMessage("My Simple GUI");
+    private CachedMessage title = new CachedMessage("My Simple GUI");
 
     // Slots
     @Getter
@@ -188,7 +188,7 @@ public class MenuBuilder {
 
     // Set the title
     public MenuBuilder setTitle(String title) {
-        this.title = new CacheMessage(title);
+        this.title = new CachedMessage(title);
         return this;
     }
 

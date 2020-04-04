@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportUtils;
-import space.devport.utils.text.CacheMessage;
+import space.devport.utils.text.CachedMessage;
 import space.devport.utils.text.Message;
 import space.devport.utils.text.Placeholders;
 
@@ -34,10 +34,10 @@ public class ItemBuilder {
     private Amount amount = new Amount(1);
 
     @Getter
-    private CacheMessage displayName = new CacheMessage();
+    private CachedMessage displayName = new CachedMessage();
 
     @Getter
-    private CacheMessage lore = new CacheMessage();
+    private CachedMessage lore = new CachedMessage();
 
     @Getter
     private HashMap<Enchantment, Integer> enchants = new HashMap<>();
@@ -103,11 +103,11 @@ public class ItemBuilder {
 
             // Display name
             if (itemMeta.hasDisplayName())
-                this.displayName = new CacheMessage(itemMeta.getDisplayName());
+                this.displayName = new CachedMessage(itemMeta.getDisplayName());
 
             // Lore
             if (itemMeta.hasLore())
-                this.lore = new CacheMessage(itemMeta.getLore());
+                this.lore = new CachedMessage(itemMeta.getLore());
 
             // Enchants
             if (itemMeta.hasEnchants())
@@ -180,8 +180,8 @@ public class ItemBuilder {
 
         // Apply display name
         if (!displayName.isEmpty()) {
-            meta.setDisplayName(displayName.copyPlaceholders(parseFormat)
-                    .parsePlaceholders()
+            meta.setDisplayName(displayName.setPlaceholders(placeholders)
+                    .parse()
                     .color()
                     .toString());
 
@@ -282,7 +282,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder displayName(@Nullable Message displayName) {
-        this.displayName = displayName != null ? new CacheMessage(displayName) : new CacheMessage();
+        this.displayName = displayName != null ? new CachedMessage(displayName) : new CachedMessage();
         return this;
     }
 
@@ -303,7 +303,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder lore(@Nullable Message lore) {
-        this.lore = lore != null ? new CacheMessage(lore) : new CacheMessage();
+        this.lore = lore != null ? new CachedMessage(lore) : new CachedMessage();
         return this;
     }
 
@@ -335,7 +335,7 @@ public class ItemBuilder {
      */
     public ItemBuilder addLine(@NotNull String line) {
         if (lore == null)
-            this.lore = new CacheMessage();
+            this.lore = new CachedMessage();
         lore.append(line);
         return this;
     }

@@ -1,4 +1,4 @@
-package space.devport.utils.configutil;
+package space.devport.utils.configuration;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
@@ -512,7 +512,7 @@ public class Configuration {
 
                     DevportUtils.getInstance().getConsoleOutput().err("Invalid item type on path " + path + ", returning default.");
 
-                    format.fill("{message}", e.getMessage());
+                    format.add("{message}", e.getMessage());
 
                     if (DevportUtils.getInstance().getConsoleOutput().isDebug())
                         e.printStackTrace();
@@ -592,9 +592,9 @@ public class Configuration {
         return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
     }
 
-    private ItemBuilder defaultBuilder(ParseFormat format) {
+    private ItemBuilder defaultBuilder(Placeholders placeholders) {
         return new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
-                .setPlaceholders(format)
+                .setPlaceholders(placeholders)
                 .displayName(Default.ITEM_NAME.toString())
                 .addLine(Default.ITEM_LINE.toString());
     }
@@ -629,8 +629,8 @@ public class Configuration {
             save();
     }
 
-    public void setMessageBuilder(String path, MessageBuilder message) {
-        if (message.getMessage().isEmpty())
+    public void setMessageBuilder(String path, Message message) {
+        if (message.isEmpty())
             fileConfiguration.set(path, "");
         else {
             if (message.getMessage().size() > 1) {

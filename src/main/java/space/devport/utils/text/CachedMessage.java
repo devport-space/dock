@@ -13,36 +13,36 @@ import java.util.List;
  *
  * @author Devport Team
  */
-public class CacheMessage extends Message {
+public class CachedMessage extends Message {
 
     @Getter
     private List<String> original = new ArrayList<>();
 
-    public CacheMessage(@NotNull Message message) {
+    public CachedMessage(@NotNull Message message) {
         super(message);
     }
 
-    public CacheMessage(@Nullable String... message) {
+    public CachedMessage(@Nullable String... message) {
         super(message);
     }
 
-    public CacheMessage(@Nullable List<String> message) {
+    public CachedMessage(@Nullable List<String> message) {
         super(message);
     }
 
-    public CacheMessage(@Nullable String line) {
+    public CachedMessage(@Nullable String line) {
         super(line);
     }
 
     @Override
-    public CacheMessage set(@Nullable List<String> message) {
+    public CachedMessage set(@Nullable List<String> message) {
         this.original = message != null ? message : new ArrayList<>();
         this.message = original;
         return this;
     }
 
     @Override
-    public CacheMessage insert(List<String> toAdd) {
+    public CachedMessage insert(List<String> toAdd) {
         List<String> msg = new ArrayList<>(toAdd);
         msg.addAll(this.message);
         this.message = msg;
@@ -54,7 +54,7 @@ public class CacheMessage extends Message {
     }
 
     @Override
-    public CacheMessage append(List<String> toAdd) {
+    public CachedMessage append(List<String> toAdd) {
         this.original.addAll(toAdd);
         this.message.addAll(toAdd);
         return this;
@@ -66,13 +66,13 @@ public class CacheMessage extends Message {
     }
 
     // Pull the original in to working message
-    public CacheMessage pull() {
+    public CachedMessage pull() {
         set(original);
         return this;
     }
 
     // Push the working message into original
-    public CacheMessage push() {
+    public CachedMessage push() {
         set(message);
         return this;
     }
