@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import space.devport.utils.commands.CommandManager;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.menu.MenuHandler;
+import space.devport.utils.text.LanguageManager;
 import space.devport.utils.text.Message;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
@@ -41,6 +42,10 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
     @Setter
+    protected LanguageManager languageManager;
+
+    @Getter
+    @Setter
     protected Configuration configuration;
 
     @Getter
@@ -66,6 +71,8 @@ public abstract class DevportPlugin extends JavaPlugin {
     public abstract void onPluginDisable();
 
     public abstract void onReload();
+
+    public abstract boolean useLanguage();
 
     @Override
     public void onEnable() {
@@ -100,6 +107,12 @@ public abstract class DevportPlugin extends JavaPlugin {
         commandManager = new CommandManager(this);
         menuHandler = new MenuHandler();
 
+        if (useLanguage()) {
+            languageManager = new LanguageManager();
+            languageManager.load();
+            consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
+        }
+
         onPluginEnable();
 
         commandManager.registerAll();
@@ -116,6 +129,12 @@ public abstract class DevportPlugin extends JavaPlugin {
         consoleOutput.addListener(sender);
 
         configuration.reload();
+
+        if (useLanguage()) {
+            languageManager = new LanguageManager();
+            languageManager.load();
+            consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
+        }
 
         onReload();
 
