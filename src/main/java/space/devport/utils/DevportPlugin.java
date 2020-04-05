@@ -99,7 +99,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         consoleOutput.setPrefix(configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : ""));
         consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled"));
 
-        prefix = getDescription().getPrefix();
+        prefix = consoleOutput.getPrefix();
 
         consoleOutput.info("Starting up " + getDescription().getName() + " v" + getDescription().getVersion());
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());

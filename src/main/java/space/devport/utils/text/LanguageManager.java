@@ -63,7 +63,7 @@ public class LanguageManager {
     }
 
     public Message getPrefixed(String path) {
-        return get(path).insert(plugin.getPrefix());
+        return get(path).prefix(plugin.getPrefix());
     }
 
     public void send(CommandSender sender, String path) {

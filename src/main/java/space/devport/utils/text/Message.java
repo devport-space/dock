@@ -140,6 +140,17 @@ public class Message {
 
     // ---- Add a line / lines ----
 
+    // Prefix the first line
+    public Message prefix(String str) {
+        if (this.message.isEmpty()) {
+            this.message.set(0, str);
+            return this;
+        }
+
+        this.message.set(0, str + this.message.get(0));
+        return this;
+    }
+
     public Message insert(List<String> toAdd) {
         toAdd = new ArrayList<>(toAdd);
         toAdd.addAll(message);
