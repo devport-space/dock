@@ -19,12 +19,11 @@ public class LanguageManager {
     protected final Map<String, Message> defaults = new HashMap<>();
 
     @Getter
-    private final Configuration language;
+    private Configuration language;
 
     public LanguageManager() {
         this.plugin = DevportPlugin.getInstance();
         setDefaults();
-        this.language = new Configuration(plugin, "language");
     }
 
     // Override this method to add defaults when needed.
@@ -38,7 +37,7 @@ public class LanguageManager {
     }
 
     public void load() {
-        language.reload();
+        this.language = new Configuration(plugin, "language");
 
         boolean save = false;
 

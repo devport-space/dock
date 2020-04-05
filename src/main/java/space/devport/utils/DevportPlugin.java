@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -126,12 +127,13 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         this.color = colors[random.nextInt(colors.length)];
 
-        consoleOutput.addListener(sender);
+        if (!(sender instanceof ConsoleCommandSender))
+            consoleOutput.addListener(sender);
 
         configuration.reload();
 
         if (useLanguage()) {
-            languageManager = new LanguageManager();
+            if (languageManager == null) languageManager = new LanguageManager();
             languageManager.load();
             consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
         }
