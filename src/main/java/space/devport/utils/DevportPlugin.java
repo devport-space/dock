@@ -96,10 +96,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         configuration = new Configuration(this, "config");
 
-        consoleOutput.setPrefix(configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : ""));
         consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled"));
 
-        prefix = consoleOutput.getPrefix();
+        prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
         consoleOutput.info("Starting up " + getDescription().getName() + " v" + getDescription().getVersion());
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
@@ -120,6 +119,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         consoleOutput.info("&3~~~~~~~~~~~~ &7/////// &3~~~~~~~~~~~~");
         consoleOutput.info("Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
+
+        // Set the prefix as the last thing, startup looks cooler without it.
+        consoleOutput.setPrefix(prefix);
     }
 
     public void reload(CommandSender sender) {
