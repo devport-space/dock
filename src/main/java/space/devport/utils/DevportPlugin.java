@@ -107,13 +107,13 @@ public abstract class DevportPlugin extends JavaPlugin {
         commandManager = new CommandManager(this);
         menuHandler = new MenuHandler();
 
+        onPluginEnable();
+
         if (useLanguage()) {
-            languageManager = new LanguageManager();
+            if (languageManager == null) languageManager = new LanguageManager();
             languageManager.load();
             consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
         }
-
-        onPluginEnable();
 
         commandManager.registerAll();
 

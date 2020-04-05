@@ -29,8 +29,12 @@ public class LanguageManager {
 
     // Override this method to add defaults when needed.
     public void setDefaults() {
-        defaults.put("Commands.Not-Enough-Args", new Message("%prefix%&cNot enough arguments.", "&cUsage: &7%usage%"));
-        defaults.put("Commands.Too-Many-Args", new Message("%prefix%&cToo many arguments.", "&cUsage: &7%usage%"));
+        addDefault("Commands.Not-Enough-Args", "%prefix%&cNot enough arguments.", "&cUsage: &7%usage%");
+        addDefault("Commands.Too-Many-Args", "%prefix%&cToo many arguments.", "&cUsage: &7%usage%");
+    }
+
+    public void addDefault(String path, String... message) {
+        this.defaults.put(path, new Message(message));
     }
 
     public void load() {
