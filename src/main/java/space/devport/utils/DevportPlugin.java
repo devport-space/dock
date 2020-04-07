@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import space.devport.utils.commands.CommandManager;
+import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.menu.MenuHandler;
 import space.devport.utils.text.LanguageManager;
@@ -164,5 +165,10 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public void registerListener(Listener listener) {
         pluginManager.registerEvents(listener, this);
+    }
+
+    public MainCommand addMainCommand(MainCommand mainCommand) {
+        commandManager.registeredCommands.add(mainCommand);
+        return mainCommand;
     }
 }
