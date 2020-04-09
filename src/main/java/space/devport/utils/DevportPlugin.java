@@ -5,9 +5,11 @@ import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
@@ -161,6 +163,11 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public void saveConfig() {
         configuration.save();
+    }
+
+    @Override
+    public @NotNull FileConfiguration getConfig() {
+        return configuration.getFileConfiguration();
     }
 
     public void registerListener(Listener listener) {
