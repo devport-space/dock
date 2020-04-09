@@ -28,4 +28,4 @@ pipelines:
         deployment: test
         script:
           - echo "Deploying to devport public repo..."
-          - mvn deploy -Drepo.user=$DEVPORT_USER -Drepo.pass=$DEVPORT_PASS
+          - mvn deploy -s settings.xml -Drepo.user=$DEVPORT_USER -Drepo.pass=$DEVPORT_PASS
