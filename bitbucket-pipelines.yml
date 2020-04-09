@@ -9,6 +9,14 @@ pipelines:
   branches:
     master:
     - step:
+        name: Default
+        caches:
+          - maven
+        script:
+          - echo "Running a default build.."
+    - step:
+        name: Build
+        trigger: manual
         caches:
           - maven
         script:
@@ -16,6 +24,8 @@ pipelines:
           - mvn clean install -B verify
     - step:
         name: Deploy
+        trigger: manual
+        deployment: test
         script:
           - echo "Deploying to devport public repo..."
-          - mvn deploy
+          - mvn deploy -Drepo.user=$DEVPORT_USER -Drepo.pass=$DEVPORT_PASS
