@@ -16,7 +16,6 @@ pipelines:
           - echo "Running a default build.."
     - step:
         name: Build
-        trigger: manual
         caches:
           - maven
         script:
@@ -24,7 +23,6 @@ pipelines:
           - mvn clean install -B verify
     - step:
         name: Deploy
-        trigger: manual
         deployment: test
         script:
           - echo "Deploying to devport public repo..."
