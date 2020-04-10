@@ -870,8 +870,8 @@ public class Configuration {
     public Rewards getRewards(String path) {
         Rewards rewards = new Rewards();
 
-        rewards.broadcast(getMessage(path + ".broadcast"));
-        rewards.inform(getMessage(path + ".inform"));
+        rewards.broadcast(getMessage(path + ".broadcast", new Message()));
+        rewards.inform(getMessage(path + ".inform", new Message()));
 
         rewards.commands(getStringList(path + ".commands", new ArrayList<>()));
 
