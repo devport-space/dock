@@ -1,8 +1,6 @@
 package space.devport.utils.struct;
 
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.entity.Player;
 import space.devport.utils.item.Amount;
 
@@ -14,30 +12,23 @@ import java.util.List;
  *
  * @author Wertik1206
  */
-@Builder(builderMethodName = "Builder", toBuilder = true, builderClassName = "ConditionPackBuilder")
 public class Conditions {
 
     // Does the player have to be an operator?
     @Getter
-    @Setter
-    @Builder.Default
     private boolean operator = false;
 
     // Player health
     @Getter
-    @Setter
-    @Builder.Default
     private Amount health = new Amount(0);
 
     // Permission conditions the player has to meet
     @Getter
-    @Builder.Default
-    private final List<String> permissions = new ArrayList<>();
+    private List<String> permissions = new ArrayList<>();
 
     // List of possible worlds the player can be in to match this condition
     @Getter
-    @Builder.Default
-    private final List<String> worlds = new ArrayList<>();
+    private List<String> worlds = new ArrayList<>();
 
     // Checks if a player meets configured conditions
     public boolean check(Player player) {
@@ -85,5 +76,25 @@ public class Conditions {
     @Override
     public String toString() {
         return operator + " - " + health + " - " + permissions.toString() + " - " + worlds.toString();
+    }
+
+    public Conditions operator(boolean operator) {
+        this.operator = operator;
+        return this;
+    }
+
+    public Conditions health(Amount amount) {
+        this.health = amount;
+        return this;
+    }
+
+    public Conditions permissions(List<String> permissions) {
+        this.permissions = permissions;
+        return this;
+    }
+
+    public Conditions worlds(List<String> worlds) {
+        this.worlds = worlds;
+        return this;
     }
 }

@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -493,7 +494,7 @@ public class Configuration {
      * @return ItemBuilder object
      */
     @NotNull
-    public ItemBuilder getItemBuilder(@Nullable String path, @NotNull ItemBuilder... defaultValue) {
+    public ItemBuilder getItemBuilder(@Nullable String path, @NotNull ItemBuilder defaultValue) {
 
         // Parse format for the default
         Placeholders format = new Placeholders()
@@ -507,27 +508,34 @@ public class Configuration {
 
                 if (section == null) {
                     DevportUtils.getInstance().getConsoleOutput().warn("Could not find section for item on path " + path + ", using default.");
-                    return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
+                    return defaultValue;
                 }
 
-                String type;
+                String type = section.getString(SubPath.ITEM_TYPE.toString());
 
-                if (Strings.isNullOrEmpty(section.getString(SubPath.ITEM_TYPE.toString()))) {
-                    type = Default.ITEM_TYPE.toString();
-                } else
-                    type = section.getString(SubPath.ITEM_TYPE.toString());
+                if (Strings.isNullOrEmpty(type)) {
+                    DevportUtils.getInstance().getConsoleOutput().err("Invalid material on path " + path + ", returning default.");
+                    return defaultValue;
+                }
 
                 XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
 
                 if (xMaterial == null || xMaterial.parseMaterial() == null) {
-                    DevportUtils.getInstance().getConsoleOutput().err("Invalid item type on path " + path + ", returning default.");
-                    return defaultBuilder(format.add("{message}", "&cInvalid material"));
+                    DevportUtils.getInstance().getConsoleOutput().err("Invalid material on path " + path + ", returning default.");
+                    return defaultValue;
+                }
+
+                Material material = xMaterial.parseMaterial();
+
+                if (material == null) {
+                    DevportUtils.getInstance().getConsoleOutput().err("Invalid material on path " + path + ", returning default.");
+                    return defaultValue;
                 }
 
                 // Data
                 short data = (short) (section.contains(SubPath.ITEM_DATA.toString()) ? section.getInt(SubPath.ITEM_DATA.toString()) : 0);
 
-                ItemBuilder b = new ItemBuilder(xMaterial.parseMaterial()).damage(data);
+                ItemBuilder b = new ItemBuilder(material).damage(data);
 
                 // Display name
                 if (section.contains(SubPath.ITEM_NAME.toString()))
@@ -557,15 +565,21 @@ public class Configuration {
                             dataString = dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
                         }
 
-
                         XEnchantment xEnchantment = XEnchantment.matchXEnchantment(dataString).orElse(null);
 
-                        if (xEnchantment == null || xEnchantment.parseEnchantment() == null) {
+                        if (xEnchantment == null) {
                             DevportUtils.getInstance().getConsoleOutput().warn("Could not parse enchantment " + dataString);
                             continue;
                         }
 
-                        b.addEnchant(xEnchantment.parseEnchantment(), level);
+                        Enchantment enchantment = xEnchantment.parseEnchantment();
+
+                        if (enchantment == null) {
+                            DevportUtils.getInstance().getConsoleOutput().warn("Enchantment " + xEnchantment.name() + " is not valid on this version, skipping it");
+                            continue;
+                        }
+
+                        b.addEnchant(enchantment, level);
                     }
                 }
 
@@ -593,8 +607,125 @@ public class Configuration {
             }
 
         DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
+        return defaultValue;
+    }
 
-        return defaultValue.length > 0 ? defaultValue[0] : defaultBuilder(format);
+    /**
+     * Loads an ItemBuilder from given path.
+     *
+     * @param path String path to ItemBuilder
+     * @return ItemBuilder object
+     */
+    @Nullable
+    public ItemBuilder getItemBuilder(@Nullable String path) {
+
+        // Check path
+        if (Strings.isNullOrEmpty(path)) return null;
+
+        // Try to load
+        try {
+            ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
+
+            if (section == null) {
+                DevportUtils.getInstance().getConsoleOutput().debug("Invalid section - path " + path + ", returning null.");
+                return null;
+            }
+
+            String type = section.getString(SubPath.ITEM_TYPE.toString());
+
+            if (Strings.isNullOrEmpty(type)) {
+                DevportUtils.getInstance().getConsoleOutput().debug("Invalid material on path " + path + ", returning null.");
+                return null;
+            }
+
+            XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
+
+            if (xMaterial == null) {
+                DevportUtils.getInstance().getConsoleOutput().debug("Invalid material on path " + path + ", returning null.");
+                return null;
+            }
+
+            Material material = xMaterial.parseMaterial();
+
+            if (material == null) {
+                DevportUtils.getInstance().getConsoleOutput().debug("Invalid material on path " + path + ", returning null.");
+                return null;
+            }
+
+            // Data
+            short data = (short) (section.contains(SubPath.ITEM_DATA.toString()) ? section.getInt(SubPath.ITEM_DATA.toString()) : 0);
+
+            ItemBuilder b = new ItemBuilder(material).damage(data);
+
+            // Display name
+            if (section.contains(SubPath.ITEM_NAME.toString()))
+                b.displayName(section.getString(SubPath.ITEM_NAME.toString()));
+
+            // Amount
+            if (section.contains(SubPath.ITEM_AMOUNT.toString()))
+                b.amount(section.getInt(SubPath.ITEM_AMOUNT.toString()));
+
+            // Glow
+            if (section.contains(SubPath.ITEM_GLOW.toString()))
+                b.glow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
+
+            // Lore
+            if (section.contains(SubPath.ITEM_LORE.toString()))
+                b.lore(section.getStringList(SubPath.ITEM_LORE.toString()));
+
+            // Enchants
+            if (section.contains(SubPath.ITEM_ENCHANTS.toString())) {
+                List<String> dataList = section.getStringList(SubPath.ITEM_ENCHANTS.toString());
+
+                for (String dataString : dataList) {
+                    int level = 1;
+
+                    if (dataString.contains(SubPath.ITEM_ENCHANT_DELIMITER.toString())) {
+                        level = Integer.parseInt(dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[1]);
+                        dataString = dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
+                    }
+
+                    XEnchantment xEnchantment = XEnchantment.matchXEnchantment(dataString).orElse(null);
+
+                    if (xEnchantment == null) {
+                        DevportUtils.getInstance().getConsoleOutput().warn("Could not parse enchantment " + dataString);
+                        continue;
+                    }
+
+                    Enchantment enchantment = xEnchantment.parseEnchantment();
+
+                    if (enchantment == null) {
+                        DevportUtils.getInstance().getConsoleOutput().warn("Enchantment " + xEnchantment.name() + " is not valid on this version, skipping it");
+                        continue;
+                    }
+
+                    b.addEnchant(enchantment, level);
+                }
+            }
+
+            // Item Flags
+            if (section.contains(SubPath.ITEM_FLAGS.toString()))
+                for (String flagName : section.getStringList(SubPath.ITEM_FLAGS.toString())) {
+                    ItemFlag flag = ItemFlag.valueOf(flagName);
+
+                    b.addFlag(flag);
+                }
+
+            // NBT
+            if (section.contains(SubPath.ITEM_NBT.toString()))
+                for (String nbtString : section.getStringList(SubPath.ITEM_NBT.toString()))
+                    if (nbtString.contains(SubPath.ITEM_NBT_DELIMITER.toString())) {
+                        String[] arr = nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString());
+                        b.addNBT(arr[0], arr.length > 1 ? arr[1] : "");
+                    }
+
+            return b;
+        } catch (Exception e) {
+            if (DevportUtils.getInstance().getConsoleOutput().isDebug())
+                e.printStackTrace();
+        }
+
+        return null;
     }
 
     private ItemBuilder defaultBuilder(Placeholders placeholders) {
@@ -646,13 +777,13 @@ public class Configuration {
     }
 
     /**
-     * Load an Amount from given amount.
+     * Load an Amount from given path.
      *
      * @param path         String path to Amount
      * @param defaultValue Optional Amount, default to return
      * @return Amount object
      */
-    public Amount loadAmount(String path, Amount... defaultValue) {
+    public Amount getAmount(String path, Amount defaultValue) {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
@@ -663,7 +794,7 @@ public class Configuration {
         String dataStr = fileConfiguration.getString(path);
 
         if (Strings.isNullOrEmpty(dataStr))
-            return defaultValue.length > 0 ? defaultValue[0] : (Amount) Default.AMOUNT.get();
+            return defaultValue;
 
         try {
             if (dataStr.contains("-")) {
@@ -679,46 +810,85 @@ public class Configuration {
                 return new Amount(n);
             }
         } catch (IllegalArgumentException e) {
-            return defaultValue.length > 0 ? defaultValue[0] : (Amount) Default.AMOUNT.get();
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Load an Amount from given path.
+     *
+     * @param path String path to Amount
+     * @return Amount object
+     */
+    @Nullable
+    public Amount getAmount(String path) {
+
+        // Check path
+        if (Strings.isNullOrEmpty(path)) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not load Amount at path " + path + ", path is invalid.");
+            return null;
+        }
+
+        String dataStr = fileConfiguration.getString(path);
+
+        if (Strings.isNullOrEmpty(dataStr))
+            return null;
+
+        try {
+            if (dataStr.contains("-")) {
+                String[] arr = dataStr.split("-");
+
+                double low = Double.parseDouble(arr[0]);
+                double high = Double.parseDouble(arr[1]);
+
+                return new Amount(low, high);
+            } else {
+                int n = Integer.parseInt(dataStr);
+
+                return new Amount(n);
+            }
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     @NotNull
     public Conditions getConditions(String path) {
-        Conditions.ConditionPackBuilder pack = Conditions.Builder();
+        Conditions conditions = new Conditions();
 
-        pack.operator(fileConfiguration.getBoolean(path + ".operator", false));
-        pack.permissions(getStringList(path + ".permissions", new ArrayList<>()));
+        conditions.operator(fileConfiguration.getBoolean(path + ".operator", false));
+        conditions.permissions(getStringList(path + ".permissions", new ArrayList<>()));
 
-        pack.worlds(getStringList(path + ".worlds", new ArrayList<>()));
+        conditions.worlds(getStringList(path + ".worlds", new ArrayList<>()));
 
-        pack.health(loadAmount(path + ".health", new Amount(0)));
+        conditions.health(getAmount(path + ".health", new Amount(0)));
 
-        return pack.build();
+        return conditions;
     }
 
     @NotNull
     public Rewards getRewards(String path) {
-        Rewards.RewardPackBuilder pack = Rewards.Builder();
+        Rewards rewards = new Rewards();
 
-        pack.broadcast(getMessage(path + ".broadcast"));
-        pack.inform(getMessage(path + ".inform"));
+        rewards.broadcast(getMessage(path + ".broadcast"));
+        rewards.inform(getMessage(path + ".inform"));
 
-        pack.commands(getStringList(path + ".commands", new ArrayList<>()));
+        rewards.commands(getStringList(path + ".commands", new ArrayList<>()));
 
-        pack.money(loadAmount(path + ".money", new Amount(0)));
-        pack.tokens(loadAmount(path + ".tokens", new Amount(0)));
+        rewards.money(getAmount(path + ".money", new Amount(0)));
+        rewards.tokens(getAmount(path + ".tokens", new Amount(0)));
 
-        List<ItemBuilder> items = new ArrayList<>();
+        ConfigurationSection itemsSection = fileConfiguration.getConfigurationSection(path + ".items");
 
-        if (fileConfiguration.contains(path + ".items")) {
-            for (String name : fileConfiguration.getConfigurationSection(path + ".items").getKeys(false)) {
-                items.add(getItemBuilder(path + ".items." + name));
-            }
+        if (itemsSection == null) return rewards;
+
+        for (String name : itemsSection.getKeys(false)) {
+            ItemBuilder itemBuilder = getItemBuilder(path + ".items." + name);
+
+            if (itemBuilder != null)
+                rewards.addItem(itemBuilder);
         }
 
-        pack.items(items);
-
-        return pack.build();
+        return rewards;
     }
 }
