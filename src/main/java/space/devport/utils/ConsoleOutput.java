@@ -62,7 +62,7 @@ public class ConsoleOutput {
             if (colors) colored(finalMsg);
             else Bukkit.getLogger().info(StringUtil.stripColor(finalMsg));
 
-            listeners.forEach(c -> c.sendMessage(finalMsg));
+            toListeners(finalMsg);
         }
     }
 
@@ -91,7 +91,7 @@ public class ConsoleOutput {
         if (colors) colored(finalMsg);
         else Bukkit.getLogger().severe(StringUtil.stripColor(finalMsg));
 
-        listeners.forEach(c -> c.sendMessage(finalMsg));
+        toListeners(finalMsg);
     }
 
     /**
@@ -105,7 +105,7 @@ public class ConsoleOutput {
         if (colors) colored(finalMsg);
         else Bukkit.getLogger().info(StringUtil.stripColor(finalMsg));
 
-        listeners.forEach(c -> c.sendMessage(finalMsg));
+        toListeners(finalMsg);
     }
 
     /**
@@ -120,7 +120,7 @@ public class ConsoleOutput {
         if (colors) colored(finalMsg);
         else Bukkit.getLogger().warning(StringUtil.stripColor(finalMsg));
 
-        listeners.forEach(c -> c.sendMessage(finalMsg));
+        toListeners(finalMsg);
     }
 
     /**
@@ -141,5 +141,10 @@ public class ConsoleOutput {
      */
     public void removeListener(@NotNull CommandSender listener) {
         listeners.remove(listener);
+    }
+
+    public void toListeners(String message) {
+        final String finalMessage = StringUtil.color(message);
+        listeners.forEach(c -> c.sendMessage(finalMessage));
     }
 }
