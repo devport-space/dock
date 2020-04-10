@@ -1,0 +1,29 @@
+# This is a sample build configuration for Java (Maven).
+# Check our guides at https://confluence.atlassian.com/x/zd-5Mw for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image: maven:3.6.1
+
+pipelines:
+  branches:
+    master:
+    - step:
+        name: Default
+        caches:
+          - maven
+        script:
+          - echo "Running a default build.."
+    - step:
+        name: Build
+        caches:
+          - maven
+        script:
+          - echo "Building..."
+          - mvn clean install -B verify
+    - step:
+        name: Deploy
+        deployment: test
+        script:
+          - echo "Deploying to devport public repo..."
+          - mvn deploy -s settings.xml -Drepo.user=$DEVPORT_USER -Drepo.pass=$DEVPORT_PASS

@@ -11,6 +11,16 @@
 
     <packaging>jar</packaging>
 
+    <distributionManagement>
+        <downloadUrl>http://play.pvpcraft.cz:8081/repository/devport/</downloadUrl>
+        <repository>
+            <id>devport</id>
+            <name>Devport Repository</name>
+            <url>http://play.pvpcraft.cz:8081/repository/devport/</url>
+            <uniqueVersion>false</uniqueVersion>
+        </repository>
+    </distributionManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
