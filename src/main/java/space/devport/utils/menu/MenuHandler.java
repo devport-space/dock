@@ -9,7 +9,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import space.devport.utils.DevportUtils;
-import space.devport.utils.menu.events.MenuItemClickEvent;
 
 import java.util.HashMap;
 
@@ -66,17 +65,6 @@ public class MenuHandler implements Listener {
 
         // Get clicked SimpleItem
         MenuItem clickedItem = menu.getItems().get(e.getSlot());
-
-        // Throw new event
-        MenuItemClickEvent clickEvent = new MenuItemClickEvent(e, menu, clickedItem);
-        devportUtils.getPlugin().getServer().getPluginManager().callEvent(clickEvent);
-
-        // Return if the event was cancelled
-        if (clickEvent.isCancelled())
-            return;
-
-        // Update the item from the event
-        clickedItem = clickEvent.getClickItem();
 
         // Cancel event if we should.
         if (clickedItem.isCancelClick()) {
