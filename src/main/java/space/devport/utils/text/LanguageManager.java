@@ -61,7 +61,7 @@ public class LanguageManager {
     }
 
     public Message get(@NotNull String path) {
-        return cache.getOrDefault(path, new Message());
+        return new Message(cache.getOrDefault(path, null));
     }
 
     public Message getPrefixed(@NotNull String path) {
