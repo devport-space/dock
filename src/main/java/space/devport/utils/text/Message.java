@@ -86,7 +86,7 @@ public class Message {
      * @return MessageBuilder object
      */
     public Message set(@Nullable List<String> message) {
-        this.message = message != null ? message : new ArrayList<>();
+        this.message = message != null ? new ArrayList<>(message) : new ArrayList<>();
         return this;
     }
 
