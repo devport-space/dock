@@ -221,13 +221,19 @@ public class Message {
      *
      * @param sender CommandSender to send to
      */
-    public void send(@NotNull CommandSender sender) {
+    public void send(@Nullable CommandSender sender) {
+
+        if (sender == null) return;
+
         if (!isEmpty()) {
             sender.sendMessage(parse().color().toString());
         }
     }
 
     public void sendPrefixed(CommandSender sender) {
+
+        if (sender == null) return;
+
         if (!isEmpty())
             sender.sendMessage(DevportPlugin.getInstance().getPrefix() + color().toString());
     }

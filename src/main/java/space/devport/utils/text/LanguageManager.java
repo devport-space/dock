@@ -2,6 +2,8 @@ package space.devport.utils.text;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.configuration.Configuration;
 
@@ -58,19 +60,24 @@ public class LanguageManager {
             language.save();
     }
 
-    public Message get(String path) {
+    public Message get(@NotNull String path) {
         return cache.getOrDefault(path, new Message());
     }
 
-    public Message getPrefixed(String path) {
-        return get(path).prefix(plugin.getPrefix());
+    public Message getPrefixed(@NotNull String path) {
+        Message msg = get(path);
+
+        if (msg.isEmpty()) return msg;
+        else return msg.prefix(plugin.getPrefix());
     }
 
-    public void send(CommandSender sender, String path) {
+    public void send(@Nullable CommandSender sender, @NotNull String path) {
+        if (sender == null) return;
         get(path).send(sender);
     }
 
-    public void sendPrefixed(CommandSender sender, String path) {
+    public void sendPrefixed(@Nullable CommandSender sender, @NotNull String path) {
+        if (sender == null) return;
         getPrefixed(path).send(sender);
     }
 }
