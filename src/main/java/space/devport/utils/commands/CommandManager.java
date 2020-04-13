@@ -32,8 +32,11 @@ public class CommandManager implements CommandExecutor {
 
             if (cmd == null) continue;
 
+            mainCmd.aliases = new String[cmd.getAliases().size()];
+            cmd.getAliases().toArray(mainCmd.aliases);
+
             cmd.setExecutor(this);
-            plugin.getConsoleOutput().debug("Added command " + cmd.getName());
+            plugin.getConsoleOutput().debug("Added command " + cmd.getName() + " with aliases [" + String.join(", ", mainCmd.aliases) + "]");
         }
     }
 
