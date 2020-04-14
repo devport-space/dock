@@ -90,7 +90,8 @@ public class Message {
         return this;
     }
 
-    public Message set(Message message) {
+    public Message set(@Nullable Message message) {
+        if (message == null) return set(new ArrayList<>());
         return set(message.getMessage());
     }
 

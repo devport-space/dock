@@ -30,7 +30,6 @@ public class LanguageManager {
 
     public LanguageManager() {
         this.plugin = DevportPlugin.getInstance();
-        captureDefaults();
     }
 
     public void captureDefaults() {
@@ -46,10 +45,12 @@ public class LanguageManager {
 
     public void addDefault(String path, String... message) {
         this.defaults.put(path, new Message(message));
+        plugin.getConsoleOutput().debug("Added default " + path);
     }
 
     public void addDefaults(LanguageDefaults defaults) {
         this.languageDefaults.add(defaults);
+        plugin.getConsoleOutput().info("Added language defaults " + defaults.getClass().getSimpleName());
     }
 
     public void load() {
