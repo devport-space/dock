@@ -31,10 +31,9 @@ public class Message {
      *
      * @param message Message to copy
      */
-    public Message(@NotNull Message message) {
+    public Message(@Nullable Message message) {
         set(message);
-
-        this.placeholders = message.getPlaceholders();
+        this.placeholders = message == null ? new Placeholders() : new Placeholders(message.getPlaceholders());
     }
 
     /**
