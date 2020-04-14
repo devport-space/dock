@@ -14,7 +14,6 @@ import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.menu.MenuHandler;
-import space.devport.utils.text.LanguageDefaults;
 import space.devport.utils.text.LanguageManager;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
@@ -45,11 +44,9 @@ public abstract class DevportPlugin extends JavaPlugin {
     protected MenuHandler menuHandler;
 
     @Getter
-    @Setter
     protected LanguageManager languageManager;
 
     @Getter
-    @Setter
     protected Configuration configuration;
 
     @Getter
@@ -110,10 +107,11 @@ public abstract class DevportPlugin extends JavaPlugin {
         commandManager = new CommandManager(this);
         menuHandler = new MenuHandler();
 
+        if (useLanguage()) languageManager = new LanguageManager();
+
         onPluginEnable();
 
         if (useLanguage()) {
-            if (languageManager == null) languageManager = new LanguageManager();
             languageManager.load();
             consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
         }
