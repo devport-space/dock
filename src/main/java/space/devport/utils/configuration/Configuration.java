@@ -314,10 +314,12 @@ public class Configuration {
     public int[] getInts(@NotNull String path) {
         String str = fileConfiguration.getString(path);
 
-        if (Strings.isNullOrEmpty(str)) return null;
+        if (str == null) return new int[]{};
 
         str = str.replace("[", "").replace("]", "")
                 .replace(" ", "");
+
+        if (Strings.isNullOrEmpty(str)) return new int[]{};
 
         return Arrays.stream(str.split(","))
                 .mapToInt(Integer::parseInt)
@@ -335,10 +337,12 @@ public class Configuration {
     public int[] getInts(@NotNull String path, int[] defaultValue) {
         String str = fileConfiguration.getString(path);
 
-        if (Strings.isNullOrEmpty(str)) return defaultValue;
+        if (str == null) return defaultValue;
 
         str = str.replace("[", "").replace("]", "")
                 .replace(" ", "");
+
+        if (Strings.isNullOrEmpty(str)) return new int[]{};
 
         return Arrays.stream(str.split(","))
                 .mapToInt(Integer::parseInt)
