@@ -216,7 +216,8 @@ public class Configuration {
      * @return String with Bukkit color codes
      */
     @NotNull
-    public String getColoredString(@NotNull String path, @NotNull String defaultValue) {
+    public String getColoredString(@Nullable String path, @NotNull String defaultValue) {
+        if (Strings.isNullOrEmpty(path)) return defaultValue;
         return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ? defaultValue : fileConfiguration.getString(path));
     }
 
@@ -228,8 +229,9 @@ public class Configuration {
      * @return List of strings
      */
     @NotNull
-    public List<String> getStringList(@NotNull String path, @NotNull List<String> defaultList) {
-        return fileConfiguration.getStringList(path) != null ? fileConfiguration.getStringList(path) : defaultList;
+    public List<String> getStringList(@Nullable String path, @NotNull List<String> defaultList) {
+        if (Strings.isNullOrEmpty(path)) return defaultList;
+        return !fileConfiguration.getStringList(path).isEmpty() ? fileConfiguration.getStringList(path) : defaultList;
     }
 
     /**
@@ -300,6 +302,47 @@ public class Configuration {
     public char getChar(@NotNull String path, char defaultValue) {
         String str = fileConfiguration.getString(path);
         return str != null ? str.toCharArray()[0] : defaultValue;
+    }
+
+    /**
+     * Returns an array of integers parsed from string.
+     *
+     * @param path String path to an Array.toString output
+     * @return Array of integers.
+     */
+    @Nullable
+    public int[] getInts(@NotNull String path) {
+        String str = fileConfiguration.getString(path);
+
+        if (Strings.isNullOrEmpty(str)) return null;
+
+        str = str.replace("[", "").replace("]", "")
+                .replace(" ", "");
+
+        return Arrays.stream(str.split(","))
+                .mapToInt(Integer::parseInt)
+                .toArray();
+    }
+
+    /**
+     * Returns an array of integers parsed from string.
+     *
+     * @param path         String path to an Array.toString output
+     * @param defaultValue Default value to return if there's nothing on path
+     * @return Array of integers.
+     */
+    @Nullable
+    public int[] getInts(@NotNull String path, int[] defaultValue) {
+        String str = fileConfiguration.getString(path);
+
+        if (Strings.isNullOrEmpty(str)) return defaultValue;
+
+        str = str.replace("[", "").replace("]", "")
+                .replace(" ", "");
+
+        return Arrays.stream(str.split(","))
+                .mapToInt(Integer::parseInt)
+                .toArray();
     }
 
     // --------------------------------- Advanced Load/Save Methods -----------------------------------
