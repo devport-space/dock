@@ -14,8 +14,8 @@ import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.menu.MenuHandler;
+import space.devport.utils.text.LanguageDefaults;
 import space.devport.utils.text.LanguageManager;
-import space.devport.utils.text.Message;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 
@@ -147,7 +147,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         consoleOutput.removeListener(sender);
 
-        new Message("&7Done... reload took &f" + (System.currentTimeMillis() - start) + "&7ms.").send(sender);
+        getLanguageManager().getPrefixed("Commands.Reload")
+                .replace("%time%", (System.currentTimeMillis() - start))
+                .send(sender);
     }
 
     @Override
