@@ -3,6 +3,7 @@ package space.devport.utils.region;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,8 +36,12 @@ public class Region {
      * @param ignoreHeight Optional boolean, whether or not should the region ignore Y axis
      */
     public Region(@NotNull Location min, @NotNull Location max, boolean... ignoreHeight) {
-        this.min = min;
-        this.max = max;
+        World world = min.getWorld();
+
+        if (min.getWorld() != max.getWorld()) throw new IllegalArgumentException("Worlds are not the same");
+
+        this.min = new Location(world, Math.min(min.getX(), max.getX()), Math.min(min.getY(), max.getY()), Math.min(min.getZ(), max.getZ()));
+        this.max = new Location(world, Math.max(min.getX(), max.getX()), Math.max(min.getY(), max.getY()), Math.max(min.getZ(), max.getZ()));
 
         this.ignoreHeight = ignoreHeight.length != 0 && ignoreHeight[0];
     }
