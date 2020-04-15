@@ -5,12 +5,18 @@ import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import space.devport.utils.text.Message;
 
+/**
+ * Various results of the command system.
+ * Makes it easier and way faster to create commands.
+ */
 public enum CommandResult {
 
     NOT_ENOUGH_ARGS("Commands.Not-Enough-Args"),
     TOO_MANY_ARGS("Commands.Too-Many-Args"),
     NO_CONSOLE("Commands.Only-Players"),
     NO_PLAYER("Commands.Only-Console"),
+    NO_PERMISSION("Commands.No-Permission"),
+    NOT_OPERATOR("Commands.Not-Operator"),
     FAILURE(),
     SUCCESS();
 

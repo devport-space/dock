@@ -2,6 +2,7 @@ package space.devport.utils.commands;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
@@ -13,8 +14,6 @@ import java.util.List;
 
 public abstract class AbstractCommand {
 
-    // TODO: Hook all of the options to a commands.yml file for maximum customisation.
-
     @Getter
     private final String name;
 
@@ -25,8 +24,6 @@ public abstract class AbstractCommand {
 
     // This is called from outside and sends the message automatically once it gets a response.
     public void runCommand(CommandSender sender, String... args) {
-        if (!preconditions.check(sender)) return;
-
         if (checkRange()) {
             int res = getRange().check(args.length);
             if (res > 0) {
@@ -42,6 +39,40 @@ public abstract class AbstractCommand {
                         .send(sender);
                 return;
             }
+        }
+
+        // Check preconditions
+
+        if (this.preconditions.isConsoleOnly() && sender instanceof Player) {
+            CommandResult.NO_PLAYER.getMessage()
+                    .replace("%prefix%", DevportUtils.getInstance().getConsoleOutput().getPrefix())
+                    .replace("%usage%", getUsage())
+                    .send(sender);
+            return;
+        }
+
+        if (this.preconditions.isPlayerOnly() && !(sender instanceof Player)) {
+            CommandResult.NO_CONSOLE.getMessage()
+                    .replace("%prefix%", DevportUtils.getInstance().getConsoleOutput().getPrefix())
+                    .replace("%usage%", getUsage())
+                    .send(sender);
+            return;
+        }
+
+        if (!this.preconditions.getPermissions().isEmpty() && this.preconditions.getPermissions().stream().noneMatch(sender::hasPermission)) {
+            CommandResult.NO_PERMISSION.getMessage()
+                    .replace("%prefix%", DevportUtils.getInstance().getConsoleOutput().getPrefix())
+                    .replace("%usage%", getUsage())
+                    .send(sender);
+            return;
+        }
+
+        if (this.preconditions.isOperator() && !sender.isOp()) {
+            CommandResult.NOT_OPERATOR.getMessage()
+                    .replace("%prefix%", DevportUtils.getInstance().getConsoleOutput().getPrefix())
+                    .replace("%usage%", getUsage())
+                    .send(sender);
+            return;
         }
 
         perform(sender, args).getMessage()

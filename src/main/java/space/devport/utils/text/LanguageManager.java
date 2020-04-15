@@ -37,6 +37,8 @@ public class LanguageManager {
         addDefault("Commands.Too-Many-Args", "%prefix%&cToo many arguments.", "%prefix0&cUsage: &7%usage%");
         addDefault("Commands.Only-Players", "%prefix%&cOnly players can do this.");
         addDefault("Commands.Only-Console", "%prefix%&cOnly the console can do this.");
+        addDefault("Commands.No-Permission", "%prefix%&cYou don't have permission to do this.");
+        addDefault("Commands.Only-Operator", "%prefix%&cOnly operators are allowed to do this.");
 
         addDefault("Commands.Reload", "&7Done... reload took &f%time%&7ms.");
 

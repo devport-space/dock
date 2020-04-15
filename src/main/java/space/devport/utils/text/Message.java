@@ -143,7 +143,6 @@ public class Message {
     // Prefix the first line
     public Message prefix(String str) {
         if (this.message.isEmpty()) {
-            this.message.set(0, str);
             return this;
         }
 
