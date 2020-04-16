@@ -2,7 +2,6 @@ package space.devport.utils;
 
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
