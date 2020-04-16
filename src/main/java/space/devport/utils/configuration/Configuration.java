@@ -119,6 +119,7 @@ public class Configuration {
     /**
      * Reloads the yaml, checks if file exists and loads/creates it again.
      */
+    @Deprecated
     public void reload() {
         load();
     }
@@ -773,13 +774,6 @@ public class Configuration {
         }
 
         return null;
-    }
-
-    private ItemBuilder defaultBuilder(Placeholders placeholders) {
-        return new ItemBuilder(Material.valueOf(Default.ITEM_TYPE.toString()))
-                .setPlaceholders(placeholders)
-                .displayName(Default.ITEM_NAME.toString())
-                .addLine(Default.ITEM_LINE.toString());
     }
 
     public void setItemBuilder(String path, ItemBuilder item) {

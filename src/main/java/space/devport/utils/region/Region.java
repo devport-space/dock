@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.utility.Default;
 
 /**
  * Custom region handling.
@@ -31,11 +32,10 @@ public class Region {
     /**
      * Default constructor with a minimal and maximal location.
      *
-     * @param min          Minimal region location
-     * @param max          Maximal region location
-     * @param ignoreHeight Optional boolean, whether or not should the region ignore Y axis
+     * @param min Minimal region location
+     * @param max Maximal region location
      */
-    public Region(@NotNull Location min, @NotNull Location max, boolean... ignoreHeight) {
+    public Region(@NotNull Location min, @NotNull Location max) {
         World world = min.getWorld();
 
         if (min.getWorld() != max.getWorld()) throw new IllegalArgumentException("Worlds are not the same");
@@ -43,7 +43,19 @@ public class Region {
         this.min = new Location(world, Math.min(min.getX(), max.getX()), Math.min(min.getY(), max.getY()), Math.min(min.getZ(), max.getZ()));
         this.max = new Location(world, Math.max(min.getX(), max.getX()), Math.max(min.getY(), max.getY()), Math.max(min.getZ(), max.getZ()));
 
-        this.ignoreHeight = ignoreHeight.length != 0 && ignoreHeight[0];
+        this.ignoreHeight = (boolean) Default.REGION_IGNORE_HEIGHT.getValue();
+    }
+
+    /**
+     * A constructor with a minimal, maximal location and ignore height parameter.
+     *
+     * @param min          Minimal region location
+     * @param max          Maximal region location
+     * @param ignoreHeight boolean, whether or not should the region ignore Y axis
+     */
+    public Region(@NotNull Location min, @NotNull Location max, boolean ignoreHeight) {
+        this(min, max);
+        this.ignoreHeight = ignoreHeight;
     }
 
     /**

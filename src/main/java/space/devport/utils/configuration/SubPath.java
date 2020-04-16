@@ -53,9 +53,7 @@ public enum SubPath {
     ITEM_FLAGS("flags"),
     ITEM_NBT("nbt"),
     ITEM_NBT_DELIMITER(";"),
-    ITEM_GLOW("glow"),
-
-    ;
+    ITEM_GLOW("glow");
 
     @Setter
     private String subPath;

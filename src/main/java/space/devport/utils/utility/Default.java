@@ -29,24 +29,10 @@ public enum Default {
     MENU_ITEM_MATRIX_CHAR(' '),
 
     /**
-     * MESSAGES
-     */
-
-    MESSAGE_BUILDER(new Message()),
-
-    /**
      * REGION
      */
 
     REGION_IGNORE_HEIGHT(false),
-
-    /**
-     * ITEM BUILDER
-     */
-
-    ITEM_TYPE("STONE"),
-    ITEM_NAME("&cCould not load item"),
-    ITEM_LINE("&cReason: &7{message}"),
 
     /**
      * STRING UTIL
@@ -58,13 +44,7 @@ public enum Default {
      * LOCATION UTIL
      */
 
-    LOCATION_DELIMITER(";"),
-
-    /**
-     * AMOUNT
-     */
-
-    AMOUNT(new Amount(1));
+    LOCATION_DELIMITER(";");
 
     @Getter
     @Setter
