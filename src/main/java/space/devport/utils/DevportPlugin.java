@@ -94,15 +94,15 @@ public abstract class DevportPlugin extends JavaPlugin {
         consoleOutput = utils.getConsoleOutput();
         consoleOutput.setColors(true);
 
+        consoleOutput.info("Starting up " + getDescription().getName() + " v" + getDescription().getVersion());
+        consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
+        consoleOutput.info("&3~~~~~~~~~~~~ &7Devport &3~~~~~~~~~~~~");
+
         configuration = new Configuration(this, "config");
 
         consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled"));
 
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
-
-        consoleOutput.info("Starting up " + getDescription().getName() + " v" + getDescription().getVersion());
-        consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
-        consoleOutput.info("&3~~~~~~~~~~~~ &7Devport &3~~~~~~~~~~~~");
 
         commandManager = new CommandManager(this);
         menuHandler = new MenuHandler();

@@ -3,6 +3,7 @@ package space.devport.utils.commands.struct;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.text.Message;
 
 /**
@@ -31,10 +32,11 @@ public enum CommandResult {
     }
 
     public void sendMessage(CommandSender sender) {
-        message.send(sender);
+        getMessage().send(sender);
     }
 
     public Message getMessage() {
+        if (message == null) message = DevportPlugin.getInstance().getLanguageManager().get(path);
         return new Message(message);
     }
 }
