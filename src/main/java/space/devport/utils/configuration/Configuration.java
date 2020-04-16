@@ -812,7 +812,7 @@ public class Configuration {
             save();
     }
 
-    public void setMessageBuilder(String path, Message message) {
+    public void setMessage(String path, Message message) {
         if (message.isEmpty())
             fileConfiguration.set(path, "");
         else {

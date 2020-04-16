@@ -64,7 +64,7 @@ public class LanguageManager {
 
             Message message;
             if (!language.getFileConfiguration().contains(path)) {
-                language.setMessageBuilder(path, defaults.get(path));
+                language.setMessage(path, defaults.get(path));
                 message = defaults.get(path);
                 save = true;
             } else {
