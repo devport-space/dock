@@ -2,35 +2,31 @@ package space.devport.utils.menu;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Keeps an ordered list of items under a character.
+ */
 public class MatrixItem {
 
-    // Character to fill in.
     @Getter
     private final char character;
 
-    // Menu items.
     @Getter
     @Setter
-    private List<MenuItem> menuItems = new ArrayList<>();
+    private List<MenuItem> menuItems = new LinkedList<>();
 
-    // Actual fill index, used when building a menu.
-    @Getter
-    @Setter
-    private int index = 0;
-
-    // Item to fill when we're out of menu items and get a request.
-    // If null, nothing will fill in.
     @Getter
     @Setter
     private MenuItem filler;
 
-    // Repeat the items and return to first when overflow occurs?
+    @Getter
+    @Setter
+    private int index = 0;
+
     @Getter
     @Setter
     private boolean repeat = false;

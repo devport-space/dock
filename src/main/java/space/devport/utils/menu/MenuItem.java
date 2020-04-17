@@ -2,40 +2,37 @@ package space.devport.utils.menu;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.item.ItemBuilder;
 
+
 public class MenuItem {
 
-    // Holds information about an Item in a Simple GUI
-
-    // Name of the item
     @Getter
     @Setter
     private String name;
 
-    // Just to have the info here
     @Getter
     @Setter
     private int slot;
 
-    // Item Builder for the item
     @Getter
     @Setter
     private ItemBuilder itemBuilder;
 
-    // Cancel the event?
+    @Getter
+    @Setter
+    private Consumer<MenuItem> clickAction;
+
     @Getter
     @Setter
     private boolean cancelClick = true;
 
-    // Whether or not is the item clickable.
-    // Spam prevention
     @Getter
     @Setter
     private boolean clickable = true;
 
-    // Default constructor
     public MenuItem(@NotNull ItemBuilder itemBuilder, @NotNull String name, int slot) {
         this.name = name;
 
@@ -50,5 +47,10 @@ public class MenuItem {
         this.itemBuilder = new ItemBuilder(item.getItemBuilder());
 
         this.cancelClick = item.isCancelClick();
+        this.clickAction = item.getClickAction();
+    }
+
+    public void callClick() {
+        clickAction.accept(this);
     }
 }

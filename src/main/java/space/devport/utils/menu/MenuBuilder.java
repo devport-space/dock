@@ -1,174 +1,137 @@
 package space.devport.utils.menu;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.item.ItemBuilder;
-import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.message.CachedMessage;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
+@NoArgsConstructor
 public class MenuBuilder {
 
-    // A simple GUI Builder
-
-    // TODO Move Matrix & stable items to different builders
-
-    // Global parse format for all the items & the title
     @Getter
-    private Placeholders globalFormat = new Placeholders();
+    private String name;
 
-    // Inventory for the GUI
-    @Getter
-    private Inventory inventory;
-
-    // Items that should be filled in.
-    @Getter
-    private HashMap<Integer, MenuItem> items = new HashMap<>();
-
-    // Items that are built in the menu.
-    @Getter
-    private HashMap<Integer, MenuItem> builtItems = new HashMap<>();
-
-    // Spam prevention click delay in ticks
-    @Getter
-    private int clickDelay = 10;
-
-    // Title of the GUI
-    // Is colored and parsed when built
     @Getter
     private CachedMessage title = new CachedMessage("My Simple GUI");
 
-    // Slots
     @Getter
     private int slots = 9;
 
-    // Slots to fill
     @Getter
-    private List<Integer> fillerSlots = new ArrayList<>();
+    private Placeholders placeholders = new Placeholders();
 
-    // Fill all free slots on build?
     @Getter
-    private boolean fillAll = false;
+    private Inventory inventory;
 
-    // Filler item
+    @Getter
+    private HashMap<Integer, MenuItem> items = new HashMap<>();
+
+    @Getter
+    private int clickDelay = 10;
+
     @Getter
     private ItemBuilder filler;
 
-    // The inventory matrix
     @Getter
     private String[] buildMatrix = new String[]{};
 
-    // Matrix of items
     @Getter
     private final HashMap<Character, MatrixItem> itemMatrix = new HashMap<>();
 
-    // Default constructor
-    public MenuBuilder() {
-    }
-
-    // Copy constructor
-    public MenuBuilder(MenuBuilder builder) {
+    public MenuBuilder(String name, MenuBuilder builder) {
+        this.name = name;
         this.slots = builder.getSlots();
         this.title = builder.getTitle();
-
         this.items = builder.getItems();
-
-        this.fillAll = builder.isFillAll();
         this.filler = builder.getFiller();
-        this.fillerSlots = builder.getFillerSlots();
-
         this.buildMatrix = builder.getBuildMatrix();
-
         this.clickDelay = builder.getClickDelay();
 
         for (MatrixItem matrixItem : builder.getItemMatrix().values())
             itemMatrix.put(matrixItem.getCharacter(), new MatrixItem(matrixItem));
 
-        this.globalFormat = new Placeholders(builder.getGlobalFormat());
+        this.placeholders = new Placeholders(builder.getPlaceholders());
     }
 
-    // Clear the builder
     public MenuBuilder clear() {
         if (inventory != null) {
             inventory.clear();
             inventory = null;
         }
 
-        builtItems.clear();
+        items.clear();
         return this;
     }
 
-    // Build the gui with items, placeholders etc.
-    // Is called before opening
-    public MenuBuilder build() {
+    public Menu build() {
 
-        String usedTitle = globalFormat.parse(title.color().toString());
-        title.pull();
+        // Title
 
-        // Check if the inventory title isn't too long.
-        if (usedTitle.length() > 32) {
-            // Cut it to 32
-            usedTitle = usedTitle.substring(0, 31);
+        String title = placeholders.parse(this.title.color().toString());
+        this.title.pull();
 
-            // Send a message to console.
-            DevportUtils.getInstance().getConsoleOutput().warn("Inventory title " + title + " is too long, cutting to 32.");
+        if (title.length() > 32) {
+            title = title.substring(0, 31);
+            DevportUtils.getInstance().getConsoleOutput().warn("Inventory title " + this.title + " is too long, cutting to 32.");
         }
 
-        // Create the inventory
-        inventory = Bukkit.createInventory(null, slots, usedTitle);
+        inventory = Bukkit.createInventory(null, slots, title);
 
-        // buildMatrix will be empty if we're not supposed to use it.
+        // Build scheme
 
-        char[] matrix = new char[]{};
+        if (buildMatrix.length == 0) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not create menu " + name + ", there's not matrix.");
+            return null;
+        }
 
-        if (buildMatrix.length != 0)
-            matrix = String.join("", buildMatrix).toCharArray();
+        char[] matrix = String.join("", buildMatrix).toCharArray();
 
         HashMap<Integer, MenuItem> inventoryItems = new HashMap<>(items);
 
-        // Fill the items.
+        // Fill items
+
         for (int slot = 0; slot < slots; slot++) {
 
-            // Add matrix items to items, don't overwrite
-            if (buildMatrix.length != 0) {
-                char matrixKey = matrix[slot];
+            char matrixKey = matrix[slot];
 
-                if (itemMatrix.containsKey(matrixKey) && !inventoryItems.containsKey(slot)) {
-                    MenuItem item = itemMatrix.get(matrixKey).getNext();
+            MenuItem item = itemMatrix.get(matrixKey).getNext();
 
-                    if (item != null)
-                        inventoryItems.put(slot, item);
-                }
+            if (item == null) {
+                DevportUtils.getInstance().getConsoleOutput().debug("Item for character " + matrixKey + " is null, skipping it.");
+                continue;
             }
 
-            // Set the item if present
+            this.items.put(slot, item);
+
             if (inventoryItems.containsKey(slot)) {
                 inventory.setItem(slot,
                         inventoryItems.get(slot)
                                 .getItemBuilder()
-                                .parseWith(globalFormat)
+                                .parseWith(placeholders)
                                 .build());
-            } else
-                // Fill if we should
-                if ((fillerSlots.contains(slot) || fillAll) && filler != null) {
+            } else {
+                if (filler != null) {
                     inventory.setItem(slot,
                             filler
-                                    .parseWith(globalFormat)
+                                    .parseWith(placeholders)
                                     .build());
                 }
+            }
         }
 
-        // Reset matrix indexes
-        for (MatrixItem matrixItem : itemMatrix.values())
-            matrixItem.setIndex(0);
+        for (MatrixItem matrixItem : itemMatrix.values()) matrixItem.setIndex(0);
+        this.items = new HashMap<>(inventoryItems);
 
-        // Copy to builtItems
-        this.builtItems = new HashMap<>(inventoryItems);
-
-        return this;
+        return new Menu(name, this);
     }
 
     // Return next free slot in the menu
@@ -192,8 +155,8 @@ public class MenuBuilder {
         return this;
     }
 
-    public MenuBuilder setGlobalFormat(Placeholders format) {
-        this.globalFormat = new Placeholders(format);
+    public MenuBuilder setPlaceholders(Placeholders format) {
+        this.placeholders = new Placeholders(format);
         return this;
     }
 
@@ -210,24 +173,6 @@ public class MenuBuilder {
 
     public MenuBuilder setBuildMatrix(String[] buildMatrix) {
         this.buildMatrix = buildMatrix;
-        return this;
-    }
-
-    // Fill all slots that are empty
-    // Other items should be set before this action
-    public MenuBuilder setFillAll(boolean fillAll) {
-        this.fillAll = fillAll;
-        return this;
-    }
-
-    // Set slots to fill
-    public MenuBuilder setFillSlots(int[] slots) {
-        Arrays.stream(slots).forEach(slot -> fillerSlots.add(slot));
-        return this;
-    }
-
-    public MenuBuilder setFillSlots(List<Integer> slots) {
-        this.fillerSlots = slots;
         return this;
     }
 

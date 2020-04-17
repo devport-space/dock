@@ -464,23 +464,6 @@ public class Configuration {
         menuBuilder.setTitle(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(Default.MENU_TITLE.getValue())));
         menuBuilder.setSlots(section.getInt(SubPath.MENU_SLOTS.toString(), (int) Default.MENU_SLOTS.getValue()));
 
-        menuBuilder.setFillAll(section.getBoolean(SubPath.MENU_FILL_ALL.toString(), (boolean) Default.MENU_FILL_ALL.getValue()));
-
-        // Get fill slots
-        if (section.contains(SubPath.MENU_FILL_SLOTS.toString())) {
-            if (section.isString(SubPath.MENU_FILL_SLOTS.toString())) {
-
-                List<Integer> ints =
-                        Arrays.stream(section.getString(SubPath.MENU_FILL_SLOTS.toString())
-                                .split(String.valueOf(SubPath.MENU_FILL_SLOTS_DELIMITER.toString())))
-                                .map(Integer::parseInt)
-                                .collect(Collectors.toList());
-
-                menuBuilder.setFillSlots(ints);
-            } else
-                DevportUtils.getInstance().getConsoleOutput().warn("Could not load fill slots at path " + path + SubPath.MENU_FILL_SLOTS + " is not a string.");
-        }
-
         // Load inventory matrix
         if (section.contains(SubPath.MENU_MATRIX.toString()))
             menuBuilder.setBuildMatrix(getArrayList(path + "." + SubPath.MENU_MATRIX));

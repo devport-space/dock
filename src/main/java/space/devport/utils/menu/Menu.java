@@ -2,6 +2,7 @@ package space.devport.utils.menu;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -14,24 +15,19 @@ import java.util.HashMap;
 
 public class Menu implements MenuListener {
 
-    // System name of the menu
     @Getter
     public String name;
 
-    // Current items in the Menu indexed by slot.
     @Getter
     public HashMap<Integer, MenuItem> items;
 
-    // Menu builder to build the Menu by.
     @Getter
     @Setter
     public MenuBuilder menuBuilder;
 
-    // For whom the inventory is open, null if closed.
     @Getter
     public Player player;
 
-    // Inventory
     @Getter
     @Setter
     public Inventory inventory;
@@ -42,9 +38,9 @@ public class Menu implements MenuListener {
     public Menu(String name, MenuBuilder builder) {
         this.name = name;
 
-        this.menuBuilder = builder;
+        this.menuBuilder = new MenuBuilder(name, builder);
 
-        this.items = builder.getBuiltItems();
+        this.items = builder.getItems();
         this.inventory = builder.getInventory();
     }
 
@@ -60,7 +56,7 @@ public class Menu implements MenuListener {
         if (inventory == null) {
             menuBuilder.build();
             inventory = menuBuilder.getInventory();
-            items = menuBuilder.getBuiltItems();
+            items = menuBuilder.getItems();
         }
 
         // Throw event
@@ -92,7 +88,7 @@ public class Menu implements MenuListener {
             }
 
         menuBuilder.clear().build();
-        items = menuBuilder.getBuiltItems();
+        items = menuBuilder.getItems();
         inventory.setContents(menuBuilder.getInventory().getContents());
     }
 
@@ -119,8 +115,15 @@ public class Menu implements MenuListener {
         }
     }
 
+    public void runClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
+        if (onClick(clickEvent, clickedItem)) {
+            clickedItem.callClick();
+        }
+    }
+
     @Override
-    public void onClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
+    public boolean onClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
+        return true;
     }
 
     @Override
