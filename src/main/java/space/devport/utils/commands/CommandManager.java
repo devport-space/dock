@@ -45,7 +45,7 @@ public class CommandManager implements CommandExecutor {
         for (MainCommand command : registeredCommands) {
             if (!command.getName().equalsIgnoreCase(label) && !command.getAliases().contains(label)) continue;
 
-            command.runCommand(sender, args);
+            command.runCommand(sender, label, args);
             break;
         }
 

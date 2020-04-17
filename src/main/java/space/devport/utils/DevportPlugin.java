@@ -14,6 +14,7 @@ import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.menu.MenuManager;
+import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
@@ -63,6 +64,9 @@ public abstract class DevportPlugin extends JavaPlugin {
             ChatColor.DARK_GREEN, ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.GOLD, ChatColor.LIGHT_PURPLE,
             ChatColor.WHITE, ChatColor.DARK_PURPLE};
 
+    @Getter
+    private final Placeholders globalPlaceholders = new Placeholders();
+
     public static DevportPlugin getInstance() {
         return instance;
     }
@@ -104,6 +108,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
+        globalPlaceholders.add("%prefix%", prefix).add("%version%", getDescription().getVersion());
+
         commandManager = new CommandManager(this);
         menuManager = new MenuManager();
 
@@ -134,7 +140,13 @@ public abstract class DevportPlugin extends JavaPlugin {
         if (!(sender instanceof ConsoleCommandSender))
             consoleOutput.addListener(sender);
 
-        configuration.reload();
+        consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled"));
+
+        prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
+
+        globalPlaceholders.add("%prefix%", prefix).add("%version%", getDescription().getVersion());
+
+        configuration.load();
 
         if (useLanguage()) {
             if (languageManager == null) languageManager = new LanguageManager();

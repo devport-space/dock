@@ -2,9 +2,9 @@ package space.devport.utils.commands;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
-import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
+import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     @Override
-    protected CommandResult perform(CommandSender sender, String... args) {
+    protected CommandResult perform(CommandSender sender, String label, String[] args) {
 
         if (args.length == 0) {
-            constructHelp().send(sender);
+            constructHelp(label).send(sender);
             return CommandResult.SUCCESS;
         }
 
@@ -33,37 +33,46 @@ public abstract class MainCommand extends AbstractCommand {
 
             args = Arrays.copyOfRange(args, 1, args.length, String[].class);
 
-            subCommand.runCommand(sender, args);
+            subCommand.runCommand(sender, label, args);
             return CommandResult.SUCCESS;
         }
 
-        constructHelp().send(sender);
+        constructHelp(label).send(sender);
         return CommandResult.SUCCESS;
     }
 
-    private Message constructHelp() {
-        Message help = new Message("&8&m        &r " + DevportPlugin.getInstance().getColor() + DevportPlugin.getInstance().getName() +
-                " &7v&f" + DevportPlugin.getInstance().getDescription().getVersion() + "&8&m        ");
+    private Message constructHelp(String label) {
+        Message help = language.get("Commands.Help.Header");
 
-        help.append(DevportPlugin.getInstance().getColor() + getUsage() + " &8- &7" + getDescription());
+        String lineFormat = language.get("Commands.Help.Sub-Command-Line").color().toString();
+
+        Placeholders commandParams = new Placeholders()
+                .add("%usage%", getUsage().color().toString())
+                .add("%description%", getUsage().color().toString());
+
+        help.append(commandParams.parse(lineFormat));
+
         for (SubCommand subCommand : this.subCommands) {
-            help.append(DevportPlugin.getInstance().getColor() + subCommand.getUsage() + " &8- &7" + subCommand.getDescription());
+            commandParams
+                    .add("%usage%", subCommand.getDescription().color().toString().replace("%label%", label))
+                    .add("%description%", subCommand.getDescription().color().toString().replace("%label%", label));
+            help.append(commandParams.parse(lineFormat));
         }
+
         return help;
     }
 
     public MainCommand addSubCommand(SubCommand subCommand) {
         this.subCommands.add(subCommand);
+        subCommand.setParent(getName());
         return this;
     }
 
-    // TODO: Hook to locale
+    @Override
+    public abstract String getDefaultUsage();
 
     @Override
-    public abstract String getUsage();
-
-    @Override
-    public abstract String getDescription();
+    public abstract String getDefaultDescription();
 
     @Override
     public ArgumentRange getRange() {
