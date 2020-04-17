@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.menu.events.ItemClick;
 import space.devport.utils.menu.events.MenuCloseEvent;
 import space.devport.utils.menu.events.MenuOpenEvent;
 import space.devport.utils.menu.item.MenuItem;
@@ -117,10 +118,13 @@ public class Menu implements MenuListener {
 
     public void runClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
         if (onClick(clickEvent, clickedItem)) {
-            clickedItem.callClick();
+            clickedItem.getClickAction().accept(new ItemClick((Player) clickEvent.getWhoClicked(), clickedItem, this));
         }
     }
 
+    /**
+     * Return whether or not to run an action assigned to the item that was clicked.
+     */
     @Override
     public boolean onClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
         return true;

@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.menu.events.ItemClick;
 
 
 public class MenuItem {
@@ -23,7 +24,7 @@ public class MenuItem {
 
     @Getter
     @Setter
-    private Consumer<MenuItem> clickAction;
+    private Consumer<ItemClick> clickAction;
 
     @Getter
     @Setter
@@ -48,9 +49,5 @@ public class MenuItem {
 
         this.cancelClick = item.isCancelClick();
         this.clickAction = item.getClickAction();
-    }
-
-    public void callClick() {
-        clickAction.accept(this);
     }
 }

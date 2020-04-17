@@ -23,9 +23,9 @@ import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.region.Region;
 import space.devport.utils.struct.Conditions;
 import space.devport.utils.struct.Rewards;
-import space.devport.utils.text.message.Message;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
+import space.devport.utils.text.message.Message;
 import space.devport.utils.utility.Default;
 import space.devport.utils.utility.LocationUtil;
 
@@ -461,12 +461,13 @@ public class Configuration {
 
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
-        menuBuilder.setTitle(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(Default.MENU_TITLE.getValue())));
-        menuBuilder.setSlots(section.getInt(SubPath.MENU_SLOTS.toString(), (int) Default.MENU_SLOTS.getValue()));
+        menuBuilder.title(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(Default.MENU_TITLE.getValue())));
+
+        menuBuilder.slots(section.getInt(SubPath.MENU_SLOTS.toString(), 9));
 
         // Load inventory matrix
         if (section.contains(SubPath.MENU_MATRIX.toString()))
-            menuBuilder.setBuildMatrix(getArrayList(path + "." + SubPath.MENU_MATRIX));
+            menuBuilder.buildMatrix(getArrayList(path + "." + SubPath.MENU_MATRIX));
 
         // Load items
         if (section.contains(SubPath.MENU_ITEMS.toString())) {
@@ -476,7 +477,7 @@ public class Configuration {
                 MenuItem item = getMenuItem(path + "." + SubPath.MENU_ITEMS + "." + itemName);
 
                 if (itemName.equalsIgnoreCase(SubPath.MENU_FILLER.toString()))
-                    menuBuilder.setFiller(item.getItemBuilder());
+                    menuBuilder.filler(item.getItemBuilder());
 
                 // If it contains matrix-char
                 if (itemSection.contains(SubPath.MENU_MATRIX_CHAR.toString()))
