@@ -1,4 +1,4 @@
-package space.devport.utils.text;
+package space.devport.utils.text.language;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
 import java.util.HashMap;

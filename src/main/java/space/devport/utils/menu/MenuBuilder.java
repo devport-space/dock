@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.item.ItemBuilder;
-import space.devport.utils.text.CachedMessage;
+import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.Placeholders;
 
 import java.util.*;

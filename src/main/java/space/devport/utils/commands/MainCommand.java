@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.text.Message;
+import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -10,8 +10,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportUtils;
-import space.devport.utils.text.CachedMessage;
-import space.devport.utils.text.Message;
+import space.devport.utils.text.message.CachedMessage;
+import space.devport.utils.text.message.Message;
 import space.devport.utils.text.Placeholders;
 
 import java.util.*;

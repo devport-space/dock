@@ -23,7 +23,7 @@ import space.devport.utils.menu.MenuItem;
 import space.devport.utils.region.Region;
 import space.devport.utils.struct.Conditions;
 import space.devport.utils.struct.Rewards;
-import space.devport.utils.text.Message;
+import space.devport.utils.text.message.Message;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.utility.Default;
