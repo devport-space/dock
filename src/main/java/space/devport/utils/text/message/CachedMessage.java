@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,19 +20,22 @@ public class CachedMessage extends Message {
     private List<String> original = new ArrayList<>();
 
     public CachedMessage(@NotNull Message message) {
-        super(message);
+        if (message instanceof CachedMessage) {
+            this.original = ((CachedMessage) message).getOriginal();
+            this.message = message.getMessage();
+        } else set(message.getMessage());
     }
 
     public CachedMessage(@Nullable String... message) {
-        super(message);
+        this(new ArrayList<>(Arrays.asList(message)));
     }
 
     public CachedMessage(@Nullable List<String> message) {
-        super(message);
+        set(message);
     }
 
     public CachedMessage(@Nullable String line) {
-        super(line);
+        set(line);
     }
 
     @Override

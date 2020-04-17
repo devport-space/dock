@@ -14,6 +14,7 @@ import space.devport.utils.text.message.CachedMessage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 public class MenuBuilder {
@@ -90,10 +91,12 @@ public class MenuBuilder {
         int required = buildMatrix.length * 9;
         if (required > this.slots) this.slots = required;
 
+        DevportUtils.getInstance().getConsoleOutput().debug("Slots: " + this.slots);
+
         // Build scheme
 
         if (buildMatrix.length == 0) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not create menu " + name + ", there's not matrix.");
+            DevportUtils.getInstance().getConsoleOutput().err("Could not construct menu " + name + ", there's no matrix.");
             return null;
         }
 
@@ -104,6 +107,11 @@ public class MenuBuilder {
         // Fill items
 
         for (int slot = 0; slot < slots; slot++) {
+
+            if (matrix.length <= slot) {
+                if (filler != null) inventory.setItem(slot, filler.parseWith(placeholders).build());
+                break;
+            }
 
             char matrixKey = matrix[slot];
 
@@ -119,7 +127,8 @@ public class MenuBuilder {
                 continue;
             }
 
-            this.items.put(slot, item);
+            DevportUtils.getInstance().getConsoleOutput().debug("Added item " + item.getName() + " on slot " + slot);
+            inventoryItems.put(slot, item);
         }
 
         for (MatrixItem matrixItem : itemMatrix.values()) matrixItem.setIndex(0);
@@ -253,7 +262,7 @@ public class MenuBuilder {
     }
 
     public MenuItem getItem(String name) {
-        Optional<MenuItem> opt = items.values().stream().filter(i -> i.getName().equalsIgnoreCase(name)).findFirst();
+        Optional<MenuItem> opt = items.values().stream().filter(i -> i.getName().equalsIgnoreCase(name)).findAny();
         return opt.orElse(null);
     }
 
