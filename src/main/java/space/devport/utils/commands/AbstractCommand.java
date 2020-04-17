@@ -3,16 +3,20 @@ package space.devport.utils.commands;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.commands.struct.Preconditions;
+import space.devport.utils.text.language.LanguageManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class AbstractCommand {
+
+    private final LanguageManager language;
 
     @Getter
     private final String name;
@@ -21,6 +25,11 @@ public abstract class AbstractCommand {
     protected Preconditions preconditions = new Preconditions();
 
     protected String[] aliases = new String[]{};
+
+    public AbstractCommand(String name) {
+        this.name = name;
+        this.language = DevportPlugin.getInstance().getLanguageManager();
+    }
 
     // This is called from outside and sends the message automatically once it gets a response.
     public void runCommand(CommandSender sender, String... args) {
@@ -92,10 +101,6 @@ public abstract class AbstractCommand {
 
     public boolean checkRange() {
         return true;
-    }
-
-    public AbstractCommand(String name) {
-        this.name = name;
     }
 
     public List<String> getAliases() {
