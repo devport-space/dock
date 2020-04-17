@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.holograms.HologramManager;
 import space.devport.utils.menu.MenuHandler;
 import space.devport.utils.text.LanguageManager;
 import space.devport.utils.utility.reflection.ServerType;
@@ -48,6 +49,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
     protected Configuration configuration;
+
+    @Getter
+    protected HologramManager hologramManager;
 
     @Getter
     protected String prefix = "";
@@ -116,6 +120,8 @@ public abstract class DevportPlugin extends JavaPlugin {
             languageManager.load();
             consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
         }
+
+        hologramManager = new HologramManager(this);
 
         commandManager.registerAll();
 
