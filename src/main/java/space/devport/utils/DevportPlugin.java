@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
-import space.devport.utils.menu.MenuHandler;
+import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
@@ -41,7 +41,7 @@ public abstract class DevportPlugin extends JavaPlugin {
     protected CommandManager commandManager;
 
     @Getter
-    protected MenuHandler menuHandler;
+    protected MenuManager menuManager;
 
     @Getter
     protected LanguageManager languageManager;
@@ -105,7 +105,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
         commandManager = new CommandManager(this);
-        menuHandler = new MenuHandler();
+        menuManager = new MenuManager();
 
         if (useLanguage()) languageManager = new LanguageManager();
 

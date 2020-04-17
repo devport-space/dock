@@ -9,22 +9,22 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.menu.item.MenuItem;
 
 import java.util.HashMap;
 
-public class MenuHandler implements Listener {
+public class MenuManager implements Listener {
 
     private final DevportUtils devportUtils;
 
     @Getter
     private final HashMap<String, Menu> menuCache = new HashMap<>();
 
-    public MenuHandler() {
+    public MenuManager() {
         this.devportUtils = DevportUtils.getInstance();
         devportUtils.getPlugin().getServer().getPluginManager().registerEvents(this, devportUtils.getPlugin());
     }
 
-    // Click listener, throws SimpleItemClickEvent
     @EventHandler
     public void onClick(InventoryClickEvent e) {
 
@@ -79,12 +79,7 @@ public class MenuHandler implements Listener {
             if (menuLoop.getInventory().equals(e.getInventory()))
                 menu = menuLoop;
 
-        if (menu == null)
-            return;
-
-        // Player is null when the menu is not open
-        if (menu.getPlayer() == null || !menu.isOpen())
-            return;
+        if (menu == null || menu.getPlayer() == null || !menu.isOpen()) return;
 
         menu.close();
     }
@@ -97,7 +92,6 @@ public class MenuHandler implements Listener {
         menuCache.remove(menu.getName());
     }
 
-    // Close all the menus
     public void closeAll() {
         menuCache.values().forEach(Menu::close);
         menuCache.clear();

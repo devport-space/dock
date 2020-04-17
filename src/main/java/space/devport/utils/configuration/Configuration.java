@@ -19,7 +19,7 @@ import space.devport.utils.DevportUtils;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.menu.MenuBuilder;
-import space.devport.utils.menu.MenuItem;
+import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.region.Region;
 import space.devport.utils.struct.Conditions;
 import space.devport.utils.struct.Rewards;

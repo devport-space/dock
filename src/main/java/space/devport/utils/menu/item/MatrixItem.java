@@ -1,4 +1,4 @@
-package space.devport.utils.menu;
+package space.devport.utils.menu.item;
 
 import lombok.Getter;
 import lombok.Setter;

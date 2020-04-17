@@ -6,12 +6,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.menu.item.MatrixItem;
+import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 @NoArgsConstructor
