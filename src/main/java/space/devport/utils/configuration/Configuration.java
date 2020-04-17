@@ -19,13 +19,14 @@ import space.devport.utils.DevportUtils;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.menu.MenuBuilder;
-import space.devport.utils.menu.MenuItem;
+import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.region.Region;
 import space.devport.utils.struct.Conditions;
 import space.devport.utils.struct.Rewards;
 import space.devport.utils.text.message.Message;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
+import space.devport.utils.text.message.Message;
 import space.devport.utils.utility.Default;
 import space.devport.utils.utility.LocationUtil;
 
@@ -461,29 +462,13 @@ public class Configuration {
 
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
-        menuBuilder.setTitle(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(Default.MENU_TITLE.getValue())));
-        menuBuilder.setSlots(section.getInt(SubPath.MENU_SLOTS.toString(), (int) Default.MENU_SLOTS.getValue()));
+        menuBuilder.title(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(Default.MENU_TITLE.getValue())));
 
-        menuBuilder.setFillAll(section.getBoolean(SubPath.MENU_FILL_ALL.toString(), (boolean) Default.MENU_FILL_ALL.getValue()));
-
-        // Get fill slots
-        if (section.contains(SubPath.MENU_FILL_SLOTS.toString())) {
-            if (section.isString(SubPath.MENU_FILL_SLOTS.toString())) {
-
-                List<Integer> ints =
-                        Arrays.stream(section.getString(SubPath.MENU_FILL_SLOTS.toString())
-                                .split(String.valueOf(SubPath.MENU_FILL_SLOTS_DELIMITER.toString())))
-                                .map(Integer::parseInt)
-                                .collect(Collectors.toList());
-
-                menuBuilder.setFillSlots(ints);
-            } else
-                DevportUtils.getInstance().getConsoleOutput().warn("Could not load fill slots at path " + path + SubPath.MENU_FILL_SLOTS + " is not a string.");
-        }
+        menuBuilder.slots(section.getInt(SubPath.MENU_SLOTS.toString(), 9));
 
         // Load inventory matrix
         if (section.contains(SubPath.MENU_MATRIX.toString()))
-            menuBuilder.setBuildMatrix(getArrayList(path + "." + SubPath.MENU_MATRIX));
+            menuBuilder.buildMatrix(getArrayList(path + "." + SubPath.MENU_MATRIX));
 
         // Load items
         if (section.contains(SubPath.MENU_ITEMS.toString())) {
@@ -493,7 +478,7 @@ public class Configuration {
                 MenuItem item = getMenuItem(path + "." + SubPath.MENU_ITEMS + "." + itemName);
 
                 if (itemName.equalsIgnoreCase(SubPath.MENU_FILLER.toString()))
-                    menuBuilder.setFiller(item.getItemBuilder());
+                    menuBuilder.filler(item.getItemBuilder());
 
                 // If it contains matrix-char
                 if (itemSection.contains(SubPath.MENU_MATRIX_CHAR.toString()))

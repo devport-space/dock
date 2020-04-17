@@ -11,19 +11,18 @@ import com.sainttx.holograms.api.line.TextLine;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import space.devport.utils.utility.LocationUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Holograms extends HologramsHook {
+public class Holograms extends HologramsProvider {
 
-    private HologramPlugin holograms;
-    private List<String> hologramIdList = new ArrayList<>();
+    private final HologramPlugin holograms;
+    private final List<String> hologramIdList = new ArrayList<>();
 
     public Holograms() {
-        holograms = (HologramPlugin)Bukkit.getPluginManager().getPlugin("Holograms");
+        holograms = (HologramPlugin) Bukkit.getPluginManager().getPlugin("Holograms");
     }
 
     @Override
@@ -31,7 +30,7 @@ public class Holograms extends HologramsHook {
         String id = LocationUtil.locationToString(loc);
         Hologram hologram = new Hologram(id, loc);
         hologramIdList.add(id);
-        for(String s : lines) {
+        for (String s : lines) {
             hologram.addLine(new TextLine(hologram, s));
         }
         holograms.getHologramManager().addActiveHologram(hologram);
@@ -72,7 +71,7 @@ public class Holograms extends HologramsHook {
 
     @Override
     public void deleteHologram(String id) {
-        if(hologramIdList.contains(id)) {
+        if (hologramIdList.contains(id)) {
             hologramIdList.remove(id);
             holograms.getHologramManager().deleteHologram(holograms.getHologramManager().getHologram(id));
         }
@@ -81,7 +80,7 @@ public class Holograms extends HologramsHook {
     @Override
     public void updateHologram(Location loc, List<String> newLines) {
         String id = LocationUtil.locationToString(loc);
-        if(!hologramIdList.contains(id)) return;
+        if (!hologramIdList.contains(id)) return;
         deleteHologram(id);
         createHologram(loc, newLines);
     }
@@ -89,7 +88,7 @@ public class Holograms extends HologramsHook {
     @Override
     public void updateItemHologram(Location loc, ItemStack item) {
         String id = LocationUtil.locationToString(loc);
-        if(!hologramIdList.contains(id)) return;
+        if (!hologramIdList.contains(id)) return;
         deleteHologram(id);
         createItemHologram(loc, item);
     }
@@ -97,7 +96,7 @@ public class Holograms extends HologramsHook {
     @Override
     public void updateAnimatedHologram(Location loc, List<String> lines, int delay) {
         String id = LocationUtil.locationToString(loc);
-        if(!hologramIdList.contains(id)) return;
+        if (!hologramIdList.contains(id)) return;
         deleteHologram(id);
         createAnimatedHologram(loc, lines, delay);
     }
@@ -105,7 +104,7 @@ public class Holograms extends HologramsHook {
     @Override
     public void updateAnimatedItem(Location loc, ItemStack item, int delay) {
         String id = LocationUtil.locationToString(loc);
-        if(!hologramIdList.contains(id)) return;
+        if (!hologramIdList.contains(id)) return;
         deleteHologram(id);
         createAnimatedItem(loc, item, delay);
     }

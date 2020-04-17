@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 @NoArgsConstructor
-public abstract class HologramsHook {
+public abstract class HologramsProvider {
 
     public abstract void createHologram(Location loc, List<String> lines);
 

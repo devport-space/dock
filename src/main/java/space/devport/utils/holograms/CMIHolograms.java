@@ -10,10 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CMIHolograms extends HologramsHook {
+public class CMIHolograms extends HologramsProvider {
 
-    public CMI plugin;
-    private List<String> hologramIdList = new ArrayList<>();
+    public final CMI plugin;
+
+    private final List<String> hologramIdList = new ArrayList<>();
 
     public CMIHolograms() {
         plugin = CMI.getInstance();
@@ -50,7 +51,7 @@ public class CMIHolograms extends HologramsHook {
     public void createAnimatedItem(Location loc, ItemStack item, int delay) {
         String id = LocationUtil.locationToString(loc);
         CMIHologram hologram = new CMIHologram(id, loc);
-        hologram.setLines(Arrays.asList(String.format("IICON:%s", item.getType().toString())));
+        hologram.setLines(Arrays.asList(String.format("ICON:%s", item.getType().toString())));
         hologramIdList.add(id);
         plugin.getHologramManager().addHologram(hologram);
         hologram.update();
@@ -64,7 +65,7 @@ public class CMIHolograms extends HologramsHook {
 
     @Override
     public void deleteHologram(String id) {
-        if(hologramIdList.contains(id)) {
+        if (hologramIdList.contains(id)) {
             hologramIdList.remove(id);
             plugin.getHologramManager().removeHolo(plugin.getHologramManager().getByName(id));
             plugin.getHologramManager().save();
@@ -96,7 +97,7 @@ public class CMIHolograms extends HologramsHook {
 
     @Override
     public void removeAll() {
-        for(String id : hologramIdList) {
+        for (String id : hologramIdList) {
             deleteHologram(id);
         }
     }

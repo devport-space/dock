@@ -7,31 +7,28 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.menu.events.ItemClick;
 import space.devport.utils.menu.events.MenuCloseEvent;
 import space.devport.utils.menu.events.MenuOpenEvent;
+import space.devport.utils.menu.item.MenuItem;
 
 import java.util.HashMap;
 
 public class Menu implements MenuListener {
 
-    // System name of the menu
     @Getter
     public String name;
 
-    // Current items in the Menu indexed by slot.
     @Getter
     public HashMap<Integer, MenuItem> items;
 
-    // Menu builder to build the Menu by.
     @Getter
     @Setter
     public MenuBuilder menuBuilder;
 
-    // For whom the inventory is open, null if closed.
     @Getter
     public Player player;
 
-    // Inventory
     @Getter
     @Setter
     public Inventory inventory;
@@ -42,9 +39,9 @@ public class Menu implements MenuListener {
     public Menu(String name, MenuBuilder builder) {
         this.name = name;
 
-        this.menuBuilder = builder;
+        this.menuBuilder = new MenuBuilder(name, builder);
 
-        this.items = builder.getBuiltItems();
+        this.items = builder.getItems();
         this.inventory = builder.getInventory();
     }
 
@@ -60,7 +57,7 @@ public class Menu implements MenuListener {
         if (inventory == null) {
             menuBuilder.build();
             inventory = menuBuilder.getInventory();
-            items = menuBuilder.getBuiltItems();
+            items = menuBuilder.getItems();
         }
 
         // Throw event
@@ -70,7 +67,7 @@ public class Menu implements MenuListener {
         if (!openEvent.isCancelled()) {
             this.player = player;
 
-            DevportPlugin.getInstance().getMenuHandler().addMenu(this);
+            DevportPlugin.getInstance().getMenuManager().addMenu(this);
 
             player.openInventory(inventory);
 
@@ -92,7 +89,7 @@ public class Menu implements MenuListener {
             }
 
         menuBuilder.clear().build();
-        items = menuBuilder.getBuiltItems();
+        items = menuBuilder.getItems();
         inventory.setContents(menuBuilder.getInventory().getContents());
     }
 
@@ -111,7 +108,7 @@ public class Menu implements MenuListener {
 
             player.closeInventory();
 
-            DevportPlugin.getInstance().getMenuHandler().removeMenu(this);
+            DevportPlugin.getInstance().getMenuManager().removeMenu(this);
 
             onClose();
 
@@ -119,8 +116,18 @@ public class Menu implements MenuListener {
         }
     }
 
+    public void runClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
+        if (onClick(clickEvent, clickedItem)) {
+            clickedItem.getClickAction().accept(new ItemClick((Player) clickEvent.getWhoClicked(), clickedItem, this));
+        }
+    }
+
+    /**
+     * Return whether or not to run an action assigned to the item that was clicked.
+     */
     @Override
-    public void onClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
+    public boolean onClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
+        return true;
     }
 
     @Override

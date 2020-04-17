@@ -293,7 +293,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder displayName(@Nullable String displayName) {
-        return displayName(new Message(displayName));
+        return displayName(new CachedMessage(displayName));
     }
 
     /**
@@ -314,7 +314,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder lore(@Nullable List<String> lore) {
-        return lore(new Message(lore));
+        return lore(new CachedMessage(lore));
     }
 
     /**
@@ -324,7 +324,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder lore(@NotNull String[] lore) {
-        return lore(new Message(Arrays.asList(lore)));
+        return lore(new CachedMessage(new ArrayList<>(Arrays.asList(lore))));
     }
 
     /**
@@ -334,8 +334,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder addLine(@NotNull String line) {
-        if (lore == null)
-            this.lore = new CachedMessage();
+        if (lore == null) this.lore = new CachedMessage();
         lore.append(line);
         return this;
     }

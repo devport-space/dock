@@ -9,43 +9,22 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.menu.item.MenuItem;
 
 import java.util.HashMap;
 
-public class MenuHandler implements Listener {
+public class MenuManager implements Listener {
 
-    // API reference
     private final DevportUtils devportUtils;
 
-    // Holding currently created GUIs
     @Getter
     private final HashMap<String, Menu> menuCache = new HashMap<>();
 
-    /**
-     * Default constructor, requires DevportUtils instanced with a JavaPlugin reference.
-     * Registers it's Bukkit Event Listener.
-     */
-    public MenuHandler() {
+    public MenuManager() {
         this.devportUtils = DevportUtils.getInstance();
         devportUtils.getPlugin().getServer().getPluginManager().registerEvents(this, devportUtils.getPlugin());
     }
 
-    // Add a gui to the cache
-    public void addMenu(Menu menu) {
-        menuCache.put(menu.getName(), menu);
-    }
-
-    public void removeMenu(Menu menu) {
-        menuCache.remove(menu.getName());
-    }
-
-    // Close all the menus
-    public void closeAll() {
-        menuCache.values().forEach(Menu::close);
-        menuCache.clear();
-    }
-
-    // Click listener, throws SimpleItemClickEvent
     @EventHandler
     public void onClick(InventoryClickEvent e) {
 
@@ -71,7 +50,7 @@ public class MenuHandler implements Listener {
             e.setCancelled(true);
 
             // Spam prevention
-            if (menu.getMenuBuilder().getClickDelay() != 0) {
+            if (menu.getMenuBuilder().getClickDelay() >= 0) {
 
                 if (!clickedItem.isClickable())
                     return;
@@ -89,8 +68,7 @@ public class MenuHandler implements Listener {
             }
         }
 
-        // Call method
-        menu.onClick(e, clickedItem);
+        menu.runClick(e, clickedItem);
     }
 
     @EventHandler
@@ -101,13 +79,21 @@ public class MenuHandler implements Listener {
             if (menuLoop.getInventory().equals(e.getInventory()))
                 menu = menuLoop;
 
-        if (menu == null)
-            return;
-
-        // Player is null when the menu is not open
-        if (menu.getPlayer() == null || !menu.isOpen())
-            return;
+        if (menu == null || menu.getPlayer() == null || !menu.isOpen()) return;
 
         menu.close();
+    }
+
+    public void addMenu(Menu menu) {
+        menuCache.put(menu.getName(), menu);
+    }
+
+    public void removeMenu(Menu menu) {
+        menuCache.remove(menu.getName());
+    }
+
+    public void closeAll() {
+        menuCache.values().forEach(Menu::close);
+        menuCache.clear();
     }
 }

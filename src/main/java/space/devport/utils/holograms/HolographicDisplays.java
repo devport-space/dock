@@ -11,10 +11,10 @@ import space.devport.utils.utility.LocationUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HolographicDisplays extends HologramsHook {
+public class HolographicDisplays extends HologramsProvider {
 
-    private Plugin plugin;
-    private List<String> hologramIdList = new ArrayList<>();
+    private final Plugin plugin;
+    private final List<String> hologramIdList = new ArrayList<>();
 
     public HolographicDisplays() {
         plugin = DevportPlugin.getInstance();

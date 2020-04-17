@@ -1,9 +1,10 @@
 package space.devport.utils.menu;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
+import space.devport.utils.menu.item.MenuItem;
 
 public interface MenuListener {
-    void onClick(InventoryClickEvent clickEvent, MenuItem clickedItem);
+    boolean onClick(InventoryClickEvent clickEvent, MenuItem clickedItem);
 
     void onClose();
 

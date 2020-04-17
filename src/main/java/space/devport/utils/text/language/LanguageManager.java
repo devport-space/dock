@@ -43,6 +43,9 @@ public class LanguageManager {
 
         addDefault("Commands.Reload", "&7Done... reload took &f%time%&7ms.");
 
+        addDefault("Commands.Help.Header", "&8&m        &r &3%pluginName% &7v&f%version% &8&m        ");
+        addDefault("Commands.Help.Sub-Command-Line", "&3%usage% &8- &7%description%");
+
         languageDefaults.forEach(LanguageDefaults::setDefaults);
     }
 
