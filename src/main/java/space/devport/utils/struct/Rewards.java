@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
-import space.devport.utils.text.Message;
+import space.devport.utils.text.message.Message;
 import space.devport.utils.text.Placeholders;
 
 import java.util.ArrayList;

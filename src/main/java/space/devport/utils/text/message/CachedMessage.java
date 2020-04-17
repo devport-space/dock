@@ -1,4 +1,4 @@
-package space.devport.utils.text;
+package space.devport.utils.text.message;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;

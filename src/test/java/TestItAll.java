@@ -1,5 +1,5 @@
 import space.devport.utils.DevportUtils;
-import space.devport.utils.text.Message;
+import space.devport.utils.text.message.Message;
 import space.devport.utils.text.Placeholders;
 
 public class TestItAll {

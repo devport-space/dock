@@ -1,4 +1,4 @@
-package space.devport.utils.text;
+package space.devport.utils.text.message;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;

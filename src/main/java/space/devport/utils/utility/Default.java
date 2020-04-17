@@ -3,8 +3,7 @@ package space.devport.utils.utility;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import space.devport.utils.text.Message;
-import space.devport.utils.item.Amount;
+import space.devport.utils.text.message.Message;
 
 /**
  * Enum that holds default values for custom object loading and manipulation.

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.text.Message;
+import space.devport.utils.text.message.Message;
 
 /**
  * Various results of the command system.

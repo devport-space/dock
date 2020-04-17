@@ -1,4 +1,4 @@
-package space.devport.utils.text;
+package space.devport.utils.text.language;
 
 import space.devport.utils.DevportPlugin;
 
