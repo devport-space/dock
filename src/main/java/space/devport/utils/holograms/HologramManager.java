@@ -25,13 +25,17 @@ public class HologramManager {
     public void attemptHook() {
         if (DevportUtils.getInstance().checkDependency("Holograms")) {
             hologramProvider = new Holograms();
+            instance.getConsoleOutput().info("Using &aHolograms &7as the HologramsProvider.");
         } else if (DevportUtils.getInstance().checkDependency("HolographicDisplays")) {
             hologramProvider = new HolographicDisplays();
+            instance.getConsoleOutput().info("Using &aHolographicDisplays &7as the HologramsProvider.");
         } else if (DevportUtils.getInstance().checkDependency("CMI")) {
             hologramProvider = new CMIHolograms();
+            instance.getConsoleOutput().info("Using &aCMI &7as the HologramsProvider.");
         }
 
         hooked = hologramProvider != null;
+        if (!hooked) instance.getConsoleOutput().info("Found no HologramsProvider installed.");
     }
 
     public void createHologram(Location loc, List<String> lines) {
