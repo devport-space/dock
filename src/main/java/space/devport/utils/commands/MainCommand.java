@@ -2,6 +2,7 @@ package space.devport.utils.commands;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.text.message.Message;
@@ -18,6 +19,8 @@ public abstract class MainCommand extends AbstractCommand {
 
     public MainCommand(String name) {
         super(name);
+        language.addDefault("Commands.Help." + name + ".Usage", getDefaultUsage());
+        language.addDefault("Commands.Help." + name + ".Description", getDefaultDescription());
     }
 
     @Override
@@ -42,7 +45,7 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     private Message constructHelp(String label) {
-        Message help = language.get("Commands.Help.Header");
+        Message help = language.get("Commands.Help.Header").parseWith(DevportPlugin.getInstance().getGlobalPlaceholders());
 
         String lineFormat = language.get("Commands.Help.Sub-Command-Line").color().toString();
 
@@ -65,6 +68,7 @@ public abstract class MainCommand extends AbstractCommand {
     public MainCommand addSubCommand(SubCommand subCommand) {
         this.subCommands.add(subCommand);
         subCommand.setParent(getName());
+        subCommand.addLanguage();
         return this;
     }
 

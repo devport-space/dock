@@ -16,6 +16,11 @@ public abstract class SubCommand extends AbstractCommand {
         super(name);
     }
 
+    public void addLanguage() {
+        language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Usage", getDefaultUsage());
+        language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Description", getDefaultDescription());
+    }
+
     @Override
     protected CommandResult perform(CommandSender sender, String label, String[] args) {
         return CommandResult.FAILURE;

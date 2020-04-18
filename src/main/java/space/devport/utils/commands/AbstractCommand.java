@@ -30,14 +30,6 @@ public abstract class AbstractCommand {
     public AbstractCommand(String name) {
         this.name = name;
         this.language = DevportPlugin.getInstance().getLanguageManager();
-
-        if (this instanceof SubCommand) {
-            language.addDefault("Commands.Help." + ((SubCommand) this).getParent() + "." + getName() + ".Usage", getDefaultUsage());
-            language.addDefault("Commands.Help." + ((SubCommand) this).getParent() + "." + getName() + ".Description", getDefaultDescription());
-        } else {
-            language.addDefault("Commands.Help." + getName() + ".Usage", getDefaultUsage());
-            language.addDefault("Commands.Help." + getName() + ".Description", getDefaultDescription());
-        }
     }
 
     // This should be overridden by commands and performs the wanted action itself.

@@ -112,7 +112,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
-        globalPlaceholders.add("%prefix%", prefix).add("%version%", getDescription().getVersion());
+        globalPlaceholders.add("%prefix%", prefix)
+                .add("%version%", getDescription().getVersion())
+                .add("%pluginName%", getDescription().getName());
 
         commandManager = new CommandManager(this);
         menuManager = new MenuManager();
@@ -150,7 +152,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
-        globalPlaceholders.add("%prefix%", prefix).add("%version%", getDescription().getVersion());
+        globalPlaceholders.add("%prefix%", prefix)
+                .add("%version%", getDescription().getVersion())
+                .add("%pluginName%", getDescription().getName());
 
         configuration.load();
 
