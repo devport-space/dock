@@ -42,8 +42,8 @@ public class HolographicDisplays extends HologramProvider {
     @Override
     public void createHologram(String id, Location location, List<String> content) {
         Hologram hologram = HologramsAPI.createHologram(plugin, location);
-        holograms.put(id, hologram);
         registeredHolograms.add(id);
+        holograms.put(id, hologram);
 
         for (String s : content) {
             hologram.appendTextLine(s);
@@ -62,10 +62,8 @@ public class HolographicDisplays extends HologramProvider {
     @Override
     public void deleteHologram(String id) {
         Hologram hologram = getHologram(id);
-
-        if (hologram == null) return;
-
-        hologram.delete();
+        if (hologram != null)
+            hologram.delete();
     }
 
     @Override
@@ -82,7 +80,9 @@ public class HolographicDisplays extends HologramProvider {
     @Override
     public void updateItemHologram(String id, ItemStack item) {
         Hologram hologram = getHologram(id);
+
         if (hologram == null) return;
+
         Location location = hologram.getLocation();
         deleteHologram(id);
         createItemHologram(id, location, item);
