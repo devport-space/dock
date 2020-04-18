@@ -96,7 +96,6 @@ public class Configuration {
      * Loads the Yaml configuration from a file.
      */
     public void load() {
-        DevportUtils.getInstance().getConsoleOutput().info("Loading " + path);
         file = new File(plugin.getDataFolder(), path);
 
         if (!file.exists())
@@ -115,6 +114,7 @@ public class Configuration {
             }
 
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
+        DevportUtils.getInstance().getConsoleOutput().info("Loaded " + path + "...");
     }
 
     /**
