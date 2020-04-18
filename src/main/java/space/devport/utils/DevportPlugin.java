@@ -164,14 +164,14 @@ public abstract class DevportPlugin extends JavaPlugin {
             consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
         }
 
-        if (hologramManager != null && hologramManager.isHooked()) {
+        onReload();
+
+        if (hologramManager.isHooked()) {
             hologramManager.getHologramProvider().save();
+            hologramManager.getHologramProvider().load();
         } else {
-            hologramManager = new HologramManager(this);
             hologramManager.attemptHook();
         }
-
-        onReload();
 
         consoleOutput.removeListener(sender);
 

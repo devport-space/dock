@@ -23,8 +23,14 @@ public abstract class HologramProvider {
 
     public HologramProvider() {
         this.plugin = DevportPlugin.getInstance();
-
         storage = new Configuration(plugin, "holograms");
+
+        load();
+    }
+
+    public void load() {
+        registeredHolograms.clear();
+        storage.load();
 
         for (String id : storage.getFileConfiguration().getKeys(false)) {
             Location location = LocationUtil.locationFromString(storage.getFileConfiguration().getString(id));
