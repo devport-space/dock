@@ -5,8 +5,8 @@ import org.bukkit.command.CommandSender;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.text.message.Message;
 import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,9 +53,12 @@ public abstract class MainCommand extends AbstractCommand {
                 .add("%usage%", getUsage().color().toString())
                 .add("%description%", getDescription().color().toString());
 
-        help.append(commandParams.parse(lineFormat));
+        if (!getUsage().isEmpty() || !getDescription().isEmpty())
+            help.append(commandParams.parse(lineFormat));
 
         for (SubCommand subCommand : this.subCommands) {
+            if (subCommand.getUsage().isEmpty() && subCommand.getDescription().isEmpty()) continue;
+
             commandParams
                     .add("%usage%", subCommand.getUsage().color().toString().replace("%label%", label))
                     .add("%description%", subCommand.getDescription().color().toString().replace("%label%", label));
