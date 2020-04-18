@@ -27,8 +27,8 @@ public class CMIHolograms extends HologramProvider {
     @Override
     public void createHologram(String id, Location location, List<String> content) {
         CMIHologram hologram = new CMIHologram(id, location);
-        hologram.setLines(content);
         registeredHolograms.add(id);
+        hologram.setLines(content);
         hologramManager.addHologram(hologram);
         hologram.update();
         hologramManager.save();
@@ -37,8 +37,8 @@ public class CMIHolograms extends HologramProvider {
     @Override
     public void createItemHologram(String id, Location location, ItemStack item) {
         CMIHologram hologram = new CMIHologram(id, location);
-        hologram.setLines(Collections.singletonList(String.format("SICON:%s", item.getType().toString())));
         registeredHolograms.add(id);
+        hologram.setLines(Collections.singletonList(String.format("SICON:%s", item.getType().toString())));
         hologramManager.addHologram(hologram);
         hologram.update();
         hologramManager.save();
@@ -52,8 +52,8 @@ public class CMIHolograms extends HologramProvider {
     @Override
     public void createAnimatedItem(String id, Location location, ItemStack item, int delay) {
         CMIHologram hologram = new CMIHologram(id, location);
-        hologram.setLines(Collections.singletonList(String.format("ICON:%s", item.getType().toString())));
         registeredHolograms.add(id);
+        hologram.setLines(Collections.singletonList(String.format("ICON:%s", item.getType().toString())));
         hologramManager.addHologram(hologram);
         hologram.update();
         hologramManager.save();

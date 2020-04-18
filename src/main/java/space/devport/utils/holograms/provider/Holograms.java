@@ -33,6 +33,7 @@ public class Holograms extends HologramProvider {
     @Override
     public void createHologram(String id, Location location, List<String> content) {
         Hologram hologram = new Hologram(id, location, true);
+        registeredHolograms.add(id);
         for (String s : content) {
             hologram.addLine(new TextLine(hologram, s));
         }
@@ -43,6 +44,7 @@ public class Holograms extends HologramProvider {
     @Override
     public void createItemHologram(String id, Location location, ItemStack item) {
         Hologram hologram = new Hologram(id, location, true);
+        registeredHolograms.add(id);
         hologram.addLine(new ItemLine(hologram, item));
         hologramManager.addActiveHologram(hologram);
         hologram.spawn();
