@@ -1,6 +1,7 @@
 package space.devport.utils.holograms.provider;
 
 import com.sainttx.holograms.api.Hologram;
+import com.sainttx.holograms.api.HologramManager;
 import com.sainttx.holograms.api.HologramPlugin;
 import com.sainttx.holograms.api.animation.ItemAnimation;
 import com.sainttx.holograms.api.animation.TextAnimation;
@@ -8,116 +9,106 @@ import com.sainttx.holograms.api.line.AnimatedItemLine;
 import com.sainttx.holograms.api.line.AnimatedTextLine;
 import com.sainttx.holograms.api.line.ItemLine;
 import com.sainttx.holograms.api.line.TextLine;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import space.devport.utils.utility.LocationUtil;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Holograms extends HologramsProvider {
+public class Holograms extends HologramProvider {
 
-    private final HologramPlugin holograms;
-    private final List<String> hologramIdList = new ArrayList<>();
+    private final HologramManager hologramManager;
 
     public Holograms() {
-        holograms = (HologramPlugin) Bukkit.getPluginManager().getPlugin("Holograms");
+        this.hologramManager = JavaPlugin.getPlugin(HologramPlugin.class).getHologramManager();
     }
 
     @Override
-    public void createHologram(Location loc, List<String> lines) {
-        String id = LocationUtil.locationToString(loc);
-        Hologram hologram = new Hologram(id, loc);
+    public void createHologram(String id, Location location, List<String> content) {
+        Hologram hologram = new Hologram(id, location, true);
         hologramIdList.add(id);
-        for (String s : lines) {
+        for (String s : content) {
             hologram.addLine(new TextLine(hologram, s));
         }
-        holograms.getHologramManager().addActiveHologram(hologram);
+        hologramManager.addActiveHologram(hologram);
+        hologram.spawn();
     }
 
     @Override
-    public void createItemHologram(Location loc, ItemStack item) {
-        String id = LocationUtil.locationToString(loc);
-        Hologram hologram = new Hologram(id, loc);
+    public void createItemHologram(String id, Location location, ItemStack item) {
+        Hologram hologram = new Hologram(id, location, true);
         hologramIdList.add(id);
         hologram.addLine(new ItemLine(hologram, item));
-        holograms.getHologramManager().addActiveHologram(hologram);
+        hologramManager.addActiveHologram(hologram);
+        hologram.spawn();
     }
 
     @Override
-    public void createAnimatedHologram(Location loc, List<String> lines, int delay) {
-        String id = LocationUtil.locationToString(loc);
-        Hologram hologram = new Hologram(id, loc);
+    public void createAnimatedHologram(String id, Location location, List<String> content, int delay) {
+        Hologram hologram = new Hologram(id, location, true);
         hologramIdList.add(id);
-        hologram.addLine(new AnimatedTextLine(hologram, new TextAnimation(lines), delay));
-        holograms.getHologramManager().addActiveHologram(hologram);
+        hologram.addLine(new AnimatedTextLine(hologram, new TextAnimation(content), delay));
+        hologramManager.addActiveHologram(hologram);
+        hologram.spawn();
     }
 
     @Override
-    public void createAnimatedItem(Location loc, ItemStack item, int delay) {
-        String id = LocationUtil.locationToString(loc);
-        Hologram hologram = new Hologram(id, loc);
+    public void createAnimatedItem(String id, Location location, ItemStack item, int delay) {
+        Hologram hologram = new Hologram(id, location, true);
         hologramIdList.add(id);
         hologram.addLine(new AnimatedItemLine(hologram, new ItemAnimation(item), delay));
-        holograms.getHologramManager().addActiveHologram(hologram);
-    }
-
-    @Override
-    public void deleteHologram(Location loc) {
-        String id = LocationUtil.locationToString(loc);
-        deleteHologram(id);
+        hologramManager.addActiveHologram(hologram);
+        hologram.spawn();
     }
 
     @Override
     public void deleteHologram(String id) {
-        if (hologramIdList.contains(id)) {
-            hologramIdList.remove(id);
-            holograms.getHologramManager().deleteHologram(holograms.getHologramManager().getHologram(id));
-        }
-    }
-
-    @Override
-    public void updateHologram(Location loc, List<String> newLines) {
-        String id = LocationUtil.locationToString(loc);
         if (!hologramIdList.contains(id)) return;
-        deleteHologram(id);
-        createHologram(loc, newLines);
+
+        hologramIdList.remove(id);
+        hologramManager.deleteHologram(hologramManager.getHologram(id));
     }
 
     @Override
-    public void updateItemHologram(Location loc, ItemStack item) {
-        String id = LocationUtil.locationToString(loc);
+    public void updateHologram(String id, List<String> newContent) {
         if (!hologramIdList.contains(id)) return;
+
+        Location location = hologramManager.getHologram(id).getLocation();
         deleteHologram(id);
-        createItemHologram(loc, item);
+        createHologram(id, location, newContent);
     }
 
     @Override
-    public void updateAnimatedHologram(Location loc, List<String> lines, int delay) {
-        String id = LocationUtil.locationToString(loc);
+    public void moveHologram(String id, Location newLocation) {
         if (!hologramIdList.contains(id)) return;
-        deleteHologram(id);
-        createAnimatedHologram(loc, lines, delay);
+
+        hologramManager.getHologram(id).teleport(newLocation);
     }
 
     @Override
-    public void updateAnimatedItem(Location loc, ItemStack item, int delay) {
-        String id = LocationUtil.locationToString(loc);
+    public void updateItemHologram(String id, ItemStack item) {
         if (!hologramIdList.contains(id)) return;
+
+        Location location = hologramManager.getHologram(id).getLocation();
         deleteHologram(id);
-        createAnimatedItem(loc, item, delay);
+        createItemHologram(id, location, item);
     }
 
     @Override
-    public void removeAll() {
-        for (String id : hologramIdList) {
-            deleteHologram(id);
-        }
+    public void updateAnimatedHologram(String id, List<String> newContent, int delay) {
+        if (!hologramIdList.contains(id)) return;
+
+        Location location = hologramManager.getHologram(id).getLocation();
+        deleteHologram(id);
+        createAnimatedHologram(id, location, newContent, delay);
     }
 
     @Override
-    public List<String> getHolograms() {
-        return hologramIdList;
+    public void updateAnimatedItem(String id, ItemStack item, int delay) {
+        if (!hologramIdList.contains(id)) return;
+
+        Location location = hologramManager.getHologram(id).getLocation();
+        deleteHologram(id);
+        createAnimatedItem(id, location, item, delay);
     }
 }

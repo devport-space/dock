@@ -6,8 +6,8 @@ import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.holograms.provider.CMIHolograms;
+import space.devport.utils.holograms.provider.HologramProvider;
 import space.devport.utils.holograms.provider.Holograms;
-import space.devport.utils.holograms.provider.HologramsProvider;
 import space.devport.utils.holograms.provider.HolographicDisplays;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class HologramManager {
     private final DevportPlugin instance;
 
     @Getter
-    private HologramsProvider hologramProvider = null;
+    private HologramProvider hologramProvider = null;
 
     @Getter
     private boolean hooked = false;
@@ -66,39 +66,39 @@ public class HologramManager {
         }
     }
 
-    public void deleteHologram(Location loc) {
-        if (checkHooked()) {
-            hologramProvider.deleteHologram(loc);
-        }
-    }
-
     public void deleteHologram(String id) {
         if (checkHooked()) {
             hologramProvider.deleteHologram(id);
         }
     }
 
-    public void updateHologram(Location loc, List<String> newLines) {
+    public void updateHologram(String id, List<String> newContent) {
         if (checkHooked()) {
-            hologramProvider.updateHologram(loc, newLines);
+            hologramProvider.updateHologram(id, newContent);
         }
     }
 
-    public void updateItemHologram(Location loc, ItemStack item) {
+    public void moveHologram(String id, Location newLocation) {
         if (checkHooked()) {
-            hologramProvider.updateItemHologram(loc, item);
+            hologramProvider.moveHologram(id, newLocation);
         }
     }
 
-    public void updateAnimatedHologram(Location loc, List<String> lines, int delay) {
+    public void updateItemHologram(String id, ItemStack item) {
         if (checkHooked()) {
-            hologramProvider.updateAnimatedHologram(loc, lines, delay);
+            hologramProvider.updateItemHologram(id, item);
         }
     }
 
-    public void updateAnimatedItem(Location loc, ItemStack item, int delay) {
+    public void updateAnimatedHologram(String id, List<String> lines, int delay) {
         if (checkHooked()) {
-            hologramProvider.updateAnimatedItem(loc, item, delay);
+            hologramProvider.updateAnimatedHologram(id, lines, delay);
+        }
+    }
+
+    public void updateAnimatedItem(String id, ItemStack item, int delay) {
+        if (checkHooked()) {
+            hologramProvider.updateAnimatedItem(id, item, delay);
         }
     }
 
@@ -109,7 +109,7 @@ public class HologramManager {
     }
 
     public List<String> getHolograms() {
-        return checkHooked() ? hologramProvider.getHolograms() : null;
+        return checkHooked() ? hologramProvider.getHologramIdList() : null;
     }
 
     private boolean checkHooked() {

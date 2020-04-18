@@ -4,96 +4,100 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.utility.LocationUtil;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class HolographicDisplays extends HologramsProvider {
+public class HolographicDisplays extends HologramProvider {
 
-    private final Plugin plugin;
-    private final List<String> hologramIdList = new ArrayList<>();
+    private final DevportPlugin plugin;
+
+    // We need a separate cache, because HoloDisplay API is retarded.
+    private final Map<String, Hologram> holograms = new HashMap<>();
 
     public HolographicDisplays() {
         plugin = DevportPlugin.getInstance();
     }
 
+    private Hologram getHologram(String id) {
+        return holograms.getOrDefault(id, null);
+    }
+
     @Override
-    public void createHologram(Location loc, List<String> lines) {
-        String id = LocationUtil.locationToString(loc);
-        Hologram hologram = HologramsAPI.createHologram(plugin, loc);
+    public void createHologram(String id, Location location, List<String> content) {
+        Hologram hologram = HologramsAPI.createHologram(plugin, location);
+        holograms.put(id, hologram);
         hologramIdList.add(id);
-        for(String s : lines) {
+
+        for (String s : content) {
             hologram.appendTextLine(s);
         }
     }
 
     @Override
-    public void createItemHologram(Location loc, ItemStack item) {
-        String id = LocationUtil.locationToString(loc);
-        Hologram hologram = HologramsAPI.createHologram(plugin, loc);
+    public void createItemHologram(String id, Location location, ItemStack item) {
+        Hologram hologram = HologramsAPI.createHologram(plugin, location);
         hologramIdList.add(id);
+        holograms.put(id, hologram);
+
         hologram.appendItemLine(item);
     }
 
     @Override
-    public void createAnimatedHologram(Location loc, List<String> lines, int delay) {
-        throw new UnsupportedOperationException("Holographic displays doesn't implement animated holograms");
-    }
-
-    @Override
-    public void createAnimatedItem(Location loc, ItemStack item, int delay) {
-        throw new UnsupportedOperationException("Holographic displays doesn't implement animated holograms");
-    }
-
-    @Override
-    public void deleteHologram(Location loc) {
-        if(loc == null) return;
-        for (Hologram hol : new ArrayList<>(HologramsAPI.getHolograms(plugin))) {
-            if(hol.getLocation() == loc) {
-                hol.delete();
-            }
-        }
-    }
-
-    @Override
     public void deleteHologram(String id) {
-        deleteHologram(LocationUtil.locationFromString(id));
+        Hologram hologram = getHologram(id);
+
+        if (hologram == null) return;
+
+        hologram.delete();
     }
 
     @Override
-    public void updateHologram(Location loc, List<String> newLines) {
-        deleteHologram(loc);
-        createHologram(loc, newLines);
+    public void updateHologram(String id, List<String> newContent) {
+        Hologram hologram = getHologram(id);
+
+        if (hologram == null) return;
+
+        Location location = hologram.getLocation();
+        deleteHologram(id);
+        createHologram(id, location, newContent);
     }
 
     @Override
-    public void updateItemHologram(Location loc, ItemStack item) {
-        deleteHologram(loc);
-        createItemHologram(loc, item);
+    public void updateItemHologram(String id, ItemStack item) {
+        Hologram hologram = getHologram(id);
+        if (hologram == null) return;
+        Location location = hologram.getLocation();
+        deleteHologram(id);
+        createItemHologram(id, location, item);
     }
 
     @Override
-    public void updateAnimatedHologram(Location loc, List<String> lines, int delay) {
+    public void updateAnimatedHologram(String id, List<String> newContent, int delay) {
         throw new UnsupportedOperationException("Holographic displays doesn't implement animated holograms");
     }
 
     @Override
-    public void updateAnimatedItem(Location loc, ItemStack item, int delay) {
+    public void updateAnimatedItem(String id, ItemStack item, int delay) {
         throw new UnsupportedOperationException("Holographic displays doesn't implement animated holograms");
     }
 
     @Override
-    public void removeAll() {
-        for (String id : hologramIdList) {
-            deleteHologram(id);
-        }
+    public void createAnimatedHologram(String id, Location location, List<String> lines, int delay) {
+        throw new UnsupportedOperationException("Holographic displays doesn't implement animated holograms");
     }
 
     @Override
-    public List<String> getHolograms() {
-        return hologramIdList;
+    public void createAnimatedItem(String id, Location location, ItemStack item, int delay) {
+        throw new UnsupportedOperationException("Holographic displays doesn't implement animated holograms");
+    }
+
+    @Override
+    public void moveHologram(String id, Location newLocation) {
+        Hologram hologram = getHologram(id);
+        if (hologram == null) return;
+        hologram.teleport(newLocation);
     }
 }

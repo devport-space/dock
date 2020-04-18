@@ -2,108 +2,94 @@ package space.devport.utils.holograms.provider;
 
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
+import com.Zrips.CMI.Modules.Holograms.HologramManager;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import space.devport.utils.utility.LocationUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-public class CMIHolograms extends HologramsProvider {
+public class CMIHolograms extends HologramProvider {
 
-    public final CMI plugin;
-
-    private final List<String> hologramIdList = new ArrayList<>();
+    public final HologramManager hologramManager;
 
     public CMIHolograms() {
-        plugin = CMI.getInstance();
+        this.hologramManager = CMI.getInstance().getHologramManager();
     }
 
     @Override
-    public void createHologram(Location loc, List<String> lines) {
-        String id = LocationUtil.locationToString(loc);
-        CMIHologram hologram = new CMIHologram(id, loc);
-        hologram.setLines(lines);
+    public void createHologram(String id, Location location, List<String> content) {
+        CMIHologram hologram = new CMIHologram(id, location);
+        hologram.setLines(content);
         hologramIdList.add(id);
-        plugin.getHologramManager().addHologram(hologram);
+        hologramManager.addHologram(hologram);
         hologram.update();
-        plugin.getHologramManager().save();
+        hologramManager.save();
     }
 
     @Override
-    public void createItemHologram(Location loc, ItemStack item) {
-        String id = LocationUtil.locationToString(loc);
-        CMIHologram hologram = new CMIHologram(id, loc);
-        hologram.setLines(Arrays.asList(String.format("SICON:%s", item.getType().toString())));
+    public void createItemHologram(String id, Location location, ItemStack item) {
+        CMIHologram hologram = new CMIHologram(id, location);
+        hologram.setLines(Collections.singletonList(String.format("SICON:%s", item.getType().toString())));
         hologramIdList.add(id);
-        plugin.getHologramManager().addHologram(hologram);
+        hologramManager.addHologram(hologram);
         hologram.update();
-        plugin.getHologramManager().save();
+        hologramManager.save();
     }
 
     @Override
-    public void createAnimatedHologram(Location loc, List<String> lines, int delay) {
+    public void createAnimatedHologram(String id, Location location, List<String> lines, int delay) {
         throw new UnsupportedOperationException("CMI doesn't implement animated holograms");
     }
 
     @Override
-    public void createAnimatedItem(Location loc, ItemStack item, int delay) {
-        String id = LocationUtil.locationToString(loc);
-        CMIHologram hologram = new CMIHologram(id, loc);
-        hologram.setLines(Arrays.asList(String.format("ICON:%s", item.getType().toString())));
+    public void createAnimatedItem(String id, Location location, ItemStack item, int delay) {
+        CMIHologram hologram = new CMIHologram(id, location);
+        hologram.setLines(Collections.singletonList(String.format("ICON:%s", item.getType().toString())));
         hologramIdList.add(id);
-        plugin.getHologramManager().addHologram(hologram);
+        hologramManager.addHologram(hologram);
         hologram.update();
-        plugin.getHologramManager().save();
-    }
-
-    @Override
-    public void deleteHologram(Location loc) {
-        deleteHologram(LocationUtil.locationToString(loc));
+        hologramManager.save();
     }
 
     @Override
     public void deleteHologram(String id) {
-        if (hologramIdList.contains(id)) {
-            hologramIdList.remove(id);
-            plugin.getHologramManager().removeHolo(plugin.getHologramManager().getByName(id));
-            plugin.getHologramManager().save();
-        }
+        if (!hologramIdList.contains(id)) return;
+
+        hologramIdList.remove(id);
+        hologramManager.removeHolo(hologramManager.getByName(id));
+        hologramManager.save();
     }
 
     @Override
-    public void updateHologram(Location loc, List<String> newLines) {
-        deleteHologram(loc);
-        createHologram(loc, newLines);
+    public void updateHologram(String id, List<String> newContent) {
+        Location location = hologramManager.getByName(id).getLoc();
+        deleteHologram(id);
+        createHologram(id, location, newContent);
     }
 
     @Override
-    public void updateItemHologram(Location loc, ItemStack item) {
-        deleteHologram(loc);
-        createItemHologram(loc, item);
+    public void updateItemHologram(String id, ItemStack item) {
+        Location location = hologramManager.getByName(id).getLoc();
+        deleteHologram(id);
+        createItemHologram(location, item);
     }
 
     @Override
-    public void updateAnimatedHologram(Location loc, List<String> lines, int delay) {
+    public void updateAnimatedHologram(String id, List<String> newContent, int delay) {
         throw new UnsupportedOperationException("CMI doesn't implement animated holograms");
     }
 
     @Override
-    public void updateAnimatedItem(Location loc, ItemStack item, int delay) {
-        deleteHologram(loc);
-        createAnimatedItem(loc, item, delay);
+    public void moveHologram(String id, Location newLocation) {
+        CMIHologram cmiHologram = hologramManager.getByName(id);
+        cmiHologram.setLoc(newLocation);
     }
 
     @Override
-    public void removeAll() {
-        for (String id : hologramIdList) {
-            deleteHologram(id);
-        }
-    }
-
-    @Override
-    public List<String> getHolograms() {
-        return hologramIdList;
+    public void updateAnimatedItem(String id, ItemStack item, int delay) {
+        Location location = hologramManager.getByName(id).getLoc();
+        deleteHologram(id);
+        createAnimatedItem(location, item, delay);
     }
 }
