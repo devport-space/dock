@@ -359,6 +359,7 @@ public class Configuration {
 
         if (fileConfiguration.isString(path)) {
             String msg = fileConfiguration.getString(path);
+            if (Strings.isNullOrEmpty(msg)) return new Message();
             return new Message(msg);
         } else if (fileConfiguration.isList(path)) {
             List<String> msg = fileConfiguration.getStringList(path);
@@ -382,6 +383,7 @@ public class Configuration {
 
         if (fileConfiguration.isString(path)) {
             String msg = fileConfiguration.getString(path);
+            if (Strings.isNullOrEmpty(msg)) return new Message();
             return new Message(msg);
         } else if (fileConfiguration.isList(path)) {
             List<String> msg = fileConfiguration.getStringList(path);
