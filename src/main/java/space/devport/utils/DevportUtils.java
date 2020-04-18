@@ -38,9 +38,7 @@ public class DevportUtils {
     public boolean checkDependency(String pluginName) {
         if (plugin == null) return false;
 
-        if (plugin.getServer().getPluginManager().getPlugin(pluginName) == null) return false;
-
-        return plugin.getServer().getPluginManager().isPluginEnabled(pluginName);
+        return plugin.getServer().getPluginManager().getPlugin(pluginName) != null;
     }
 
     private void setupEconomy() {
