@@ -18,10 +18,17 @@ public class CMIHolograms extends HologramProvider {
     }
 
     @Override
+    public Location getLocation(String id) {
+        if (!registeredHolograms.contains(id)) return null;
+        CMIHologram hologram = hologramManager.getByName(id);
+        return hologram != null ? hologram.getLoc() : null;
+    }
+
+    @Override
     public void createHologram(String id, Location location, List<String> content) {
         CMIHologram hologram = new CMIHologram(id, location);
         hologram.setLines(content);
-        hologramIdList.add(id);
+        registeredHolograms.add(id);
         hologramManager.addHologram(hologram);
         hologram.update();
         hologramManager.save();
@@ -31,7 +38,7 @@ public class CMIHolograms extends HologramProvider {
     public void createItemHologram(String id, Location location, ItemStack item) {
         CMIHologram hologram = new CMIHologram(id, location);
         hologram.setLines(Collections.singletonList(String.format("SICON:%s", item.getType().toString())));
-        hologramIdList.add(id);
+        registeredHolograms.add(id);
         hologramManager.addHologram(hologram);
         hologram.update();
         hologramManager.save();
@@ -46,7 +53,7 @@ public class CMIHolograms extends HologramProvider {
     public void createAnimatedItem(String id, Location location, ItemStack item, int delay) {
         CMIHologram hologram = new CMIHologram(id, location);
         hologram.setLines(Collections.singletonList(String.format("ICON:%s", item.getType().toString())));
-        hologramIdList.add(id);
+        registeredHolograms.add(id);
         hologramManager.addHologram(hologram);
         hologram.update();
         hologramManager.save();
@@ -54,9 +61,9 @@ public class CMIHolograms extends HologramProvider {
 
     @Override
     public void deleteHologram(String id) {
-        if (!hologramIdList.contains(id)) return;
+        if (!registeredHolograms.contains(id)) return;
 
-        hologramIdList.remove(id);
+        registeredHolograms.remove(id);
         hologramManager.removeHolo(hologramManager.getByName(id));
         hologramManager.save();
     }

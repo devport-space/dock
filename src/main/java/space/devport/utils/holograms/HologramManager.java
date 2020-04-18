@@ -48,6 +48,12 @@ public class HologramManager {
         }
     }
 
+    public void createHologram(String id, Location location, List<String> content) {
+        if (checkHooked()) {
+            hologramProvider.createHologram(id, location, content);
+        }
+    }
+
     public void createItemHologram(Location loc, ItemStack item) {
         if (checkHooked()) {
             hologramProvider.createItemHologram(loc, item);
@@ -109,7 +115,7 @@ public class HologramManager {
     }
 
     public List<String> getHolograms() {
-        return checkHooked() ? hologramProvider.getHologramIdList() : null;
+        return checkHooked() ? hologramProvider.getHolograms() : null;
     }
 
     private boolean checkHooked() {

@@ -164,6 +164,13 @@ public abstract class DevportPlugin extends JavaPlugin {
             consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
         }
 
+        if (hologramManager != null && hologramManager.isHooked()) {
+            hologramManager.getHologramProvider().save();
+        } else {
+            hologramManager = new HologramManager(this);
+            hologramManager.attemptHook();
+        }
+
         onReload();
 
         consoleOutput.removeListener(sender);
@@ -175,6 +182,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (hologramManager != null && hologramManager.isHooked())
+            hologramManager.getHologramProvider().save();
+
         onPluginDisable();
     }
 

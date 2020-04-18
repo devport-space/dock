@@ -1,23 +1,63 @@
 package space.devport.utils.holograms.provider;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import space.devport.utils.DevportPlugin;
+import space.devport.utils.configuration.Configuration;
+import space.devport.utils.utility.LocationUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-@NoArgsConstructor
+/**
+ * In default holograms will not persist and only exist as long as they're registered here.
+ */
 public abstract class HologramProvider {
 
-    @Getter
-    protected final List<String> hologramIdList = new ArrayList<>();
+    private final DevportPlugin plugin;
+
+    private final Configuration storage;
+
+    protected final List<String> registeredHolograms = new ArrayList<>();
+
+    public HologramProvider() {
+        this.plugin = DevportPlugin.getInstance();
+
+        storage = new Configuration(plugin, "holograms");
+
+        for (String id : storage.getFileConfiguration().getKeys(false)) {
+            Location location = LocationUtil.locationFromString(storage.getFileConfiguration().getString(id));
+            addHologram(id, location);
+        }
+
+        plugin.getConsoleOutput().info("Loaded " + registeredHolograms.size() + " hologram(s)...");
+    }
+
+    public void addHologram(String id, Location location) {
+        this.registeredHolograms.add(id);
+    }
+
+    public void save() {
+        storage.clear();
+
+        for (String id : registeredHolograms) {
+            storage.getFileConfiguration().set(id, LocationUtil.locationToString(getLocation(id)));
+        }
+
+        storage.save();
+    }
 
     private String nextId() {
-        String id = "devport_holo_" + hologramIdList.size();
-        if (hologramIdList.contains(id)) return nextId();
+        String id = "devport_holo_" + getHolograms().size();
+        if (getHolograms().contains(id)) return nextId();
         return id;
+    }
+
+    public abstract Location getLocation(String id);
+
+    public List<String> getHolograms() {
+        return Collections.unmodifiableList(registeredHolograms);
     }
 
     public abstract void createHologram(String id, Location loc, List<String> content);
@@ -57,7 +97,7 @@ public abstract class HologramProvider {
     public abstract void updateAnimatedItem(String id, ItemStack item, int delay);
 
     public void removeAll() {
-        for (String id : hologramIdList) {
+        for (String id : getHolograms()) {
             deleteHologram(id);
         }
     }
