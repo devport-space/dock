@@ -51,13 +51,13 @@ public abstract class MainCommand extends AbstractCommand {
 
         Placeholders commandParams = new Placeholders()
                 .add("%usage%", getUsage().color().toString())
-                .add("%description%", getUsage().color().toString());
+                .add("%description%", getDescription().color().toString());
 
         help.append(commandParams.parse(lineFormat));
 
         for (SubCommand subCommand : this.subCommands) {
             commandParams
-                    .add("%usage%", subCommand.getDescription().color().toString().replace("%label%", label))
+                    .add("%usage%", subCommand.getUsage().color().toString().replace("%label%", label))
                     .add("%description%", subCommand.getDescription().color().toString().replace("%label%", label));
             help.append(commandParams.parse(lineFormat));
         }
