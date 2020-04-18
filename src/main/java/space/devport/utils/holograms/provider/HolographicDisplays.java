@@ -1,4 +1,4 @@
-package space.devport.utils.holograms;
+package space.devport.utils.holograms.provider;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
@@ -90,5 +90,10 @@ public class HolographicDisplays extends HologramsProvider {
         for (String id : hologramIdList) {
             deleteHologram(id);
         }
+    }
+
+    @Override
+    public List<String> getHolograms() {
+        return hologramIdList;
     }
 }

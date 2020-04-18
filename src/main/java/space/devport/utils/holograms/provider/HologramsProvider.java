@@ -1,4 +1,4 @@
-package space.devport.utils.holograms;
+package space.devport.utils.holograms.provider;
 
 import lombok.NoArgsConstructor;
 import org.bukkit.Location;
@@ -30,4 +30,6 @@ public abstract class HologramsProvider {
     public abstract void updateAnimatedItem(Location loc, ItemStack item, int delay);
 
     public abstract void removeAll();
+
+    public abstract List<String> getHolograms();
 }

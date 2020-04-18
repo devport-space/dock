@@ -1,4 +1,4 @@
-package space.devport.utils.holograms;
+package space.devport.utils.holograms.provider;
 
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
@@ -100,5 +100,10 @@ public class CMIHolograms extends HologramsProvider {
         for (String id : hologramIdList) {
             deleteHologram(id);
         }
+    }
+
+    @Override
+    public List<String> getHolograms() {
+        return hologramIdList;
     }
 }

@@ -1,4 +1,4 @@
-package space.devport.utils.holograms;
+package space.devport.utils.holograms.provider;
 
 import com.sainttx.holograms.api.Hologram;
 import com.sainttx.holograms.api.HologramPlugin;
@@ -116,5 +116,8 @@ public class Holograms extends HologramsProvider {
         }
     }
 
-
+    @Override
+    public List<String> getHolograms() {
+        return hologramIdList;
+    }
 }

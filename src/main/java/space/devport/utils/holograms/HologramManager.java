@@ -5,6 +5,10 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.DevportUtils;
+import space.devport.utils.holograms.provider.CMIHolograms;
+import space.devport.utils.holograms.provider.Holograms;
+import space.devport.utils.holograms.provider.HologramsProvider;
+import space.devport.utils.holograms.provider.HolographicDisplays;
 
 import java.util.List;
 
@@ -102,6 +106,10 @@ public class HologramManager {
         if (checkHooked()) {
             hologramProvider.removeAll();
         }
+    }
+
+    public List<String> getHolograms() {
+        return checkHooked() ? hologramProvider.getHolograms() : null;
     }
 
     private boolean checkHooked() {
