@@ -463,6 +463,11 @@ public class Configuration {
 
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
+        if (section == null) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not load MenuBuilder at path " + path + ", path is invalid.");
+            return null;
+        }
+
         menuBuilder.title(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(Default.MENU_TITLE.getValue())));
 
         menuBuilder.slots(section.getInt(SubPath.MENU_SLOTS.toString(), 9));
@@ -471,12 +476,18 @@ public class Configuration {
         if (section.contains(SubPath.MENU_MATRIX.toString()))
             menuBuilder.buildMatrix(getArrayList(path + "." + SubPath.MENU_MATRIX));
 
+        ConfigurationSection itemsSection = section.getConfigurationSection(SubPath.MENU_ITEMS.toString());
+
         // Load items
-        if (section.contains(SubPath.MENU_ITEMS.toString())) {
-            for (String itemName : section.getConfigurationSection(SubPath.MENU_ITEMS.toString()).getKeys(false)) {
+        if (itemsSection != null) {
+            for (String itemName : itemsSection.getKeys(false)) {
                 ConfigurationSection itemSection = section.getConfigurationSection(SubPath.MENU_ITEMS + "." + itemName);
 
+                if (itemSection == null) continue;
+
                 MenuItem item = getMenuItem(path + "." + SubPath.MENU_ITEMS + "." + itemName);
+
+                if (item == null) continue;
 
                 if (itemName.equalsIgnoreCase(SubPath.MENU_FILLER.toString()))
                     menuBuilder.filler(item.getItemBuilder());
@@ -513,6 +524,8 @@ public class Configuration {
         String itemName = path.contains(".") ? path.split("\\.")[path.split("\\.").length - 1] : path;
 
         int slot = fileConfiguration.getInt(path + "." + SubPath.MENU_ITEM_SLOT, -1);
+
+        if (itemBuilder == null) return null;
 
         MenuItem item = new MenuItem(itemBuilder, itemName, slot);
 
