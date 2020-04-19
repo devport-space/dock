@@ -40,7 +40,7 @@ public class MenuBuilder {
     private int clickDelay = 10;
 
     @Getter
-    private ItemBuilder filler;
+    private MenuItem filler;
 
     @Getter
     private String[] buildMatrix = new String[]{};
@@ -120,7 +120,7 @@ public class MenuBuilder {
         for (int slot = 0; slot < slots; slot++) {
 
             if (matrix.length <= slot) {
-                if (filler != null) inventory.setItem(slot, filler.parseWith(placeholders).build());
+                if (filler != null) inventoryItems.put(slot, filler);
                 break;
             }
 
@@ -128,7 +128,7 @@ public class MenuBuilder {
 
             if (!itemMatrix.containsKey(matrixKey)) continue;
             else {
-                if (filler != null) inventory.setItem(slot, filler.parseWith(placeholders).build());
+                if (filler != null) inventoryItems.put(slot, filler);
             }
 
             MenuItem item = itemMatrix.get(matrixKey).getNext();
@@ -205,7 +205,7 @@ public class MenuBuilder {
     }
 
     public MenuBuilder filler(ItemBuilder filler) {
-        this.filler = new ItemBuilder(filler);
+        this.filler = new MenuItem(filler, "filler", -1);
         return this;
     }
 
