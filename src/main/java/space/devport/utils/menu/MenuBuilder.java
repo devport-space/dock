@@ -92,6 +92,18 @@ public class MenuBuilder {
 
         DevportUtils.getInstance().getConsoleOutput().debug("Slots: " + this.slots);
 
+        // Title
+
+        String title = placeholders.parse(this.title.color().toString());
+        this.title.pull();
+
+        if (title.length() > 32) {
+            title = title.substring(0, 31);
+            DevportUtils.getInstance().getConsoleOutput().warn("Inventory title " + this.title + " is too long, cutting to 32.");
+        }
+
+        inventory = Bukkit.createInventory(null, slots, title);
+
         // Build scheme
 
         if (buildMatrix.length == 0) {
@@ -142,18 +154,6 @@ public class MenuBuilder {
 
         // Menu has to be at least once constructed
         if (!constructed) construct();
-
-        // Title
-
-        String title = placeholders.parse(this.title.color().toString());
-        this.title.pull();
-
-        if (title.length() > 32) {
-            title = title.substring(0, 31);
-            DevportUtils.getInstance().getConsoleOutput().warn("Inventory title " + this.title + " is too long, cutting to 32.");
-        }
-
-        inventory = Bukkit.createInventory(null, slots, title);
 
         // Fill items
 
