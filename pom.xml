@@ -28,6 +28,7 @@
     </properties>
 
     <build>
+        <defaultGoal>clean install</defaultGoal>
         <finalName>${project.name}-${project.version}</finalName>
         <plugins>
             <plugin>
