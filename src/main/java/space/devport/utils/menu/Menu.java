@@ -36,6 +36,10 @@ public class Menu implements MenuListener {
     @Getter
     private boolean open = false;
 
+    public Menu(String name) {
+        this(name, new MenuBuilder());
+    }
+
     public Menu(String name, MenuBuilder builder) {
         this.name = name;
 
@@ -117,9 +121,8 @@ public class Menu implements MenuListener {
     }
 
     public void runClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
-        if (onClick(clickEvent, clickedItem)) {
+        if (onClick(clickEvent, clickedItem) && clickedItem.getClickAction() != null)
             clickedItem.getClickAction().accept(new ItemClick((Player) clickEvent.getWhoClicked(), clickedItem, this));
-        }
     }
 
     /**

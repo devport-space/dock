@@ -134,7 +134,7 @@ public class MenuBuilder {
             MenuItem item = itemMatrix.get(matrixKey).getNext();
 
             if (item == null) {
-                DevportUtils.getInstance().getConsoleOutput().debug("Item for character " + matrixKey + " is null, skipping it.");
+                DevportUtils.getInstance().getConsoleOutput().debug("Item for character '" + matrixKey + "' is null, skipping it.");
                 continue;
             }
 
