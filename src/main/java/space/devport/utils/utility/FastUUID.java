@@ -1,4 +1,4 @@
-package space.devport.utils.utilities;
+package space.devport.utils.utility;
 
 import java.util.Arrays;
 import java.util.UUID;
