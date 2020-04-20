@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Keeps an ordered list of items under a character.
@@ -58,15 +57,11 @@ public class MatrixItem {
     }
 
     public MenuItem getItem(String name) {
-        Optional<MenuItem> opt = menuItems.stream().filter(i -> i.getName().equals(name)).findFirst();
-        return opt.orElse(null);
+        return menuItems.stream().filter(i -> i.getName().equals(name)).findFirst().orElse(null);
     }
 
     public void removeItem(String name) {
-        MenuItem item = getItem(name);
-
-        if (item != null)
-            menuItems.remove(item);
+        menuItems.removeIf(i -> i.getName().equals(name));
     }
 
     public void clear() {
