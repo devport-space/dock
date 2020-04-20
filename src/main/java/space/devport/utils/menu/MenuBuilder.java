@@ -161,7 +161,9 @@ public class MenuBuilder {
             inventory.setItem(item.getKey(), item.getValue().getItemBuilder().parseWith(placeholders).build());
         }
 
-        return new Menu(name, this);
+        Menu menu = new Menu(name, this);
+        menu.setInventory(inventory);
+        return menu;
     }
 
     // Return next free slot in the menu
