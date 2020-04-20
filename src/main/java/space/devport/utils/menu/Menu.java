@@ -20,6 +20,7 @@ public class Menu implements MenuListener {
     public String name;
 
     @Getter
+    @Setter
     public HashMap<Integer, MenuItem> items;
 
     @Getter
@@ -92,8 +93,7 @@ public class Menu implements MenuListener {
                 return;
             }
 
-        menuBuilder.clear().build();
-        items = menuBuilder.getItems();
+        items = menuBuilder.construct().build().getItems();
         inventory.setContents(menuBuilder.getInventory().getContents());
     }
 

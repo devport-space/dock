@@ -163,6 +163,7 @@ public class MenuBuilder {
 
         Menu menu = new Menu(name, this);
         menu.setInventory(inventory);
+        menu.setItems(this.items);
         return menu;
     }
 
