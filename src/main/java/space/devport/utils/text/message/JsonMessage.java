@@ -58,7 +58,7 @@ public class JsonMessage extends Message {
             mc_IChatBaseComponent_ChatSerializer = Reflection.getNMSClass("IChatBaseComponent$ChatSerializer");
             mc_IChatBaseComponent_ChatSerializer_a = mc_IChatBaseComponent_ChatSerializer.getMethod("a", String.class);
 
-            mc_PacketPlayOutChat = Reflection.getNMSClass("PacketPlayerOutChat");
+            mc_PacketPlayOutChat = Reflection.getNMSClass("PacketPlayOutChat");
             mc_PacketPlayOutChat_new = mc_PacketPlayOutChat.getConstructor(mc_IChatBaseComponent);
         } catch (Throwable ex) {
             Bukkit.getLogger().log(Level.WARNING, "Problem preparing raw chat packets (disabling further packets)", ex);
