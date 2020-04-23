@@ -22,6 +22,7 @@ public enum CommandResult {
     SUCCESS();
 
     @Getter
+    @Setter
     private String path;
 
     @Setter
