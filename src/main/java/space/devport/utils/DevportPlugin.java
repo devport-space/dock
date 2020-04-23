@@ -64,6 +64,10 @@ public abstract class DevportPlugin extends JavaPlugin {
     private final Random random = new Random();
 
     @Getter
+    @Setter
+    private String reloadMessagePath = "Commands.Reload";
+
+    @Getter
     private final ChatColor[] colors = new ChatColor[]{ChatColor.AQUA, ChatColor.YELLOW, ChatColor.RED, ChatColor.GREEN,
             ChatColor.DARK_GREEN, ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.GOLD, ChatColor.LIGHT_PURPLE,
             ChatColor.WHITE, ChatColor.DARK_PURPLE};
@@ -175,7 +179,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         consoleOutput.removeListener(sender);
 
-        getLanguageManager().getPrefixed("Commands.Reload")
+        getLanguageManager().getPrefixed(reloadMessagePath)
                 .replace("%time%", (System.currentTimeMillis() - start))
                 .send(sender);
     }

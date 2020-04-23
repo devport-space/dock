@@ -1,6 +1,7 @@
 package space.devport.utils.text.language;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,22 +30,28 @@ public class LanguageManager {
     @Getter
     private Configuration language;
 
+    @Getter
+    @Setter
+    private boolean setInternalDefaults = true;
+
     public LanguageManager() {
         this.plugin = DevportPlugin.getInstance();
     }
 
     public void captureDefaults() {
-        addDefault("Commands.Not-Enough-Args", "%prefix%&cNot enough arguments.", "%prefix%&cUsage: &7%usage%");
-        addDefault("Commands.Too-Many-Args", "%prefix%&cToo many arguments.", "%prefix0&cUsage: &7%usage%");
-        addDefault("Commands.Only-Players", "%prefix%&cOnly players can do this.");
-        addDefault("Commands.Only-Console", "%prefix%&cOnly the console can do this.");
-        addDefault("Commands.No-Permission", "%prefix%&cYou don't have permission to do this.");
-        addDefault("Commands.Only-Operator", "%prefix%&cOnly operators are allowed to do this.");
+        if (setInternalDefaults) {
+            addDefault("Commands.Not-Enough-Args", "%prefix%&cNot enough arguments.", "%prefix%&cUsage: &7%usage%");
+            addDefault("Commands.Too-Many-Args", "%prefix%&cToo many arguments.", "%prefix0&cUsage: &7%usage%");
+            addDefault("Commands.Only-Players", "%prefix%&cOnly players can do this.");
+            addDefault("Commands.Only-Console", "%prefix%&cOnly the console can do this.");
+            addDefault("Commands.No-Permission", "%prefix%&cYou don't have permission to do this.");
+            addDefault("Commands.Only-Operator", "%prefix%&cOnly operators are allowed to do this.");
 
-        addDefault("Commands.Reload", "&7Done... reload took &f%time%&7ms.");
+            addDefault("Commands.Reload", "&7Done... reload took &f%time%&7ms.");
 
-        addDefault("Commands.Help.Header", "&8&m        &r &3%pluginName% &7v&f%version% &8&m        ");
-        addDefault("Commands.Help.Sub-Command-Line", "&3%usage% &8- &7%description%");
+            addDefault("Commands.Help.Header", "&8&m        &r &3%pluginName% &7v&f%version% &8&m        ");
+            addDefault("Commands.Help.Sub-Command-Line", "&3%usage% &8- &7%description%");
+        }
 
         languageDefaults.forEach(LanguageDefaults::setDefaults);
     }
