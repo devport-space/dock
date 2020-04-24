@@ -791,7 +791,7 @@ public class Configuration {
 
         section.set(SubPath.ITEM_TYPE.toString(), builder.getMaterial().toString());
         section.set(SubPath.ITEM_DATA.toString(), builder.getDamage());
-        section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().toString());
+        section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().isFixed() ? builder.getAmount().getFixedValue() : builder.getAmount().toString());
         section.set(SubPath.ITEM_NAME.toString(), builder.getDisplayName().toString());
         section.set(SubPath.ITEM_LORE.toString(), builder.getLore().getMessage());
 
@@ -875,26 +875,26 @@ public class Configuration {
             return null;
         }
 
+        if (fileConfiguration.isDouble(path)) {
+            double fixed = fileConfiguration.getDouble(path);
+            return new Amount(fixed);
+        }
+
         String dataStr = fileConfiguration.getString(path);
 
-        if (Strings.isNullOrEmpty(dataStr))
+        if (Strings.isNullOrEmpty(dataStr) ||
+                !dataStr.contains("-"))
             return null;
 
         dataStr = dataStr.replace(" ", "");
 
         try {
-            if (dataStr.contains("-")) {
-                String[] arr = dataStr.split("-");
+            String[] arr = dataStr.split("-");
 
-                double low = Double.parseDouble(arr[0]);
-                double high = Double.parseDouble(arr[1]);
+            double low = Double.parseDouble(arr[0]);
+            double high = Double.parseDouble(arr[1]);
 
-                return new Amount(low, high);
-            } else {
-                int n = Integer.parseInt(dataStr);
-
-                return new Amount(n);
-            }
+            return new Amount(low, high);
         } catch (IllegalArgumentException e) {
             return null;
         }
