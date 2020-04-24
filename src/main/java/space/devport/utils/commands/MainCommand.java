@@ -50,8 +50,8 @@ public abstract class MainCommand extends AbstractCommand {
         String lineFormat = language.get("Commands.Help.Sub-Command-Line").color().toString();
 
         Placeholders commandParams = new Placeholders()
-                .add("%usage%", getUsage().color().toString())
-                .add("%description%", getDescription().color().toString());
+                .add("%usage%", getUsage().replace("%label%", label).color().toString())
+                .add("%description%", getDescription().replace("%label%", label).color().toString());
 
         if (!getUsage().isEmpty() || !getDescription().isEmpty())
             help.append(commandParams.parse(lineFormat));
@@ -60,8 +60,8 @@ public abstract class MainCommand extends AbstractCommand {
             if (subCommand.getUsage().isEmpty() && subCommand.getDescription().isEmpty()) continue;
 
             commandParams
-                    .add("%usage%", subCommand.getUsage().color().toString().replace("%label%", label))
-                    .add("%description%", subCommand.getDescription().color().toString().replace("%label%", label));
+                    .add("%usage%", subCommand.getUsage().replace("%label%", label).color().toString())
+                    .add("%description%", subCommand.getDescription().replace("%label%", label).color().toString());
             help.append(commandParams.parse(lineFormat));
         }
 

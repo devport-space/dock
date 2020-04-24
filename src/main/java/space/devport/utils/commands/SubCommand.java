@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public abstract class SubCommand extends AbstractCommand {
     public abstract ArgumentRange getRange();
 
     public List<String> requestTabComplete(CommandSender sender, String[] args) {
-        return null;
+        return new ArrayList<>();
     }
 
     protected List<String> filterSuggestions(List<String> input, String arg) {
