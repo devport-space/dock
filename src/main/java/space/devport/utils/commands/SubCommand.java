@@ -37,5 +37,7 @@ public abstract class SubCommand extends AbstractCommand {
     @Override
     public abstract ArgumentRange getRange();
 
-    public abstract List<String> requestTabComplete(CommandSender sender, String[] args);
+    public List<String> requestTabComplete(CommandSender sender, String[] args) {
+        return null;
+    }
 }
