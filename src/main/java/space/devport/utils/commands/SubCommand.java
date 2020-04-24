@@ -1,5 +1,6 @@
 package space.devport.utils.commands;
 
+import jdk.internal.joptsimple.internal.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
@@ -7,6 +8,7 @@ import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class SubCommand extends AbstractCommand {
 
@@ -39,5 +41,10 @@ public abstract class SubCommand extends AbstractCommand {
 
     public List<String> requestTabComplete(CommandSender sender, String[] args) {
         return null;
+    }
+
+    protected List<String> filterSuggestions(List<String> input, String arg) {
+        if (Strings.isNullOrEmpty(arg)) return input;
+        return input.stream().filter(o -> o.toLowerCase().startsWith(arg.toLowerCase())).collect(Collectors.toList());
     }
 }
