@@ -1,6 +1,7 @@
 package space.devport.utils.text.message;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,6 +18,7 @@ import java.util.List;
 public class CachedMessage extends Message {
 
     @Getter
+    @Setter
     private List<String> original = new ArrayList<>();
 
     public CachedMessage(@NotNull Message message) {
@@ -42,6 +44,11 @@ public class CachedMessage extends Message {
     public CachedMessage set(@Nullable List<String> message) {
         this.original = message != null ? message : new ArrayList<>();
         this.message = original;
+        return this;
+    }
+
+    public CachedMessage setMessage(List<String> list) {
+        this.message = list;
         return this;
     }
 
