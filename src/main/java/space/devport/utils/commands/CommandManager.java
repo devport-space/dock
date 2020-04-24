@@ -54,7 +54,6 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-
         for (MainCommand mainCommand : registeredCommands) {
             if (!label.equalsIgnoreCase(mainCommand.getName()) && !mainCommand.getAliases().contains(label)) continue;
 
@@ -66,11 +65,20 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 return subCommands;
             } else {
                 SubCommand subCommand = mainCommand.getSubCommands().stream().filter(sc -> sc.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
-                if (subCommand != null) return subCommand.requestTabComplete(sender, args);
+
+                if (subCommand != null) {
+                    String[] newArgs = Arrays.copyOfRange(args, 2, args.length);
+                    return filterSuggestions(subCommand.requestTabComplete(sender, newArgs), newArgs.length > 0 ? newArgs[newArgs.length - 1] : "");
+                }
             }
         }
 
         return null;
+    }
+
+    private List<String> filterSuggestions(List<String> input, String arg) {
+        if (Strings.isNullOrEmpty(arg)) return input;
+        return input.stream().filter(o -> o.toLowerCase().startsWith(arg.toLowerCase())).collect(Collectors.toList());
     }
 
     private void runCommands(CommandSender sender, String label, String[] args) {
