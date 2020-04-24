@@ -775,7 +775,13 @@ public class Configuration {
         return null;
     }
 
-    public void setItemBuilder(String path, ItemBuilder item) {
+    /**
+     * Set an ItemBuilder object to a yaml file under a given path.
+     *
+     * @param path    Path to save it under
+     * @param builder ItemBuilder to save.
+     */
+    public void setItemBuilder(String path, ItemBuilder builder) {
         ConfigurationSection section = fileConfiguration.contains(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
 
         if (section == null) {
@@ -783,23 +789,23 @@ public class Configuration {
             return;
         }
 
-        section.set(SubPath.ITEM_TYPE.toString(), item.getMaterial().toString());
-        section.set(SubPath.ITEM_DATA.toString(), item.getDamage());
-        section.set(SubPath.ITEM_AMOUNT.toString(), item.getAmount());
-        section.set(SubPath.ITEM_NAME.toString(), item.getDisplayName().toString());
-        section.set(SubPath.ITEM_LORE.toString(), item.getLore().getMessage());
+        section.set(SubPath.ITEM_TYPE.toString(), builder.getMaterial().toString());
+        section.set(SubPath.ITEM_DATA.toString(), builder.getDamage());
+        section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().toString());
+        section.set(SubPath.ITEM_NAME.toString(), builder.getDisplayName().toString());
+        section.set(SubPath.ITEM_LORE.toString(), builder.getLore().getMessage());
 
         List<String> enchants = new ArrayList<>();
-        item.getEnchants().forEach((e, l) -> enchants.add(e.getKey().getKey() + SubPath.ITEM_ENCHANT_DELIMITER + l));
+        builder.getEnchants().forEach((e, l) -> enchants.add(e.getKey().getKey() + SubPath.ITEM_ENCHANT_DELIMITER + l));
         section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
 
-        section.set(SubPath.ITEM_FLAGS.toString(), item.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
+        section.set(SubPath.ITEM_FLAGS.toString(), builder.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
 
         List<String> nbt = new ArrayList<>();
-        item.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v));
+        builder.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v));
         section.set(SubPath.ITEM_NBT.toString(), nbt);
 
-        section.set(SubPath.ITEM_GLOW.toString(), item.isGlow());
+        section.set(SubPath.ITEM_GLOW.toString(), builder.isGlow());
 
         if (autoSave)
             save();
@@ -873,6 +879,8 @@ public class Configuration {
 
         if (Strings.isNullOrEmpty(dataStr))
             return null;
+
+        dataStr = dataStr.replace(" ", "");
 
         try {
             if (dataStr.contains("-")) {

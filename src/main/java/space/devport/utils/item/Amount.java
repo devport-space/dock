@@ -59,6 +59,6 @@ public class Amount {
     }
 
     public String toString() {
-        return fixed ? String.valueOf(fixedValue) : lowValue + " - " + highValue;
+        return fixed ? String.valueOf(fixedValue) : lowValue + "-" + highValue;
     }
 }
