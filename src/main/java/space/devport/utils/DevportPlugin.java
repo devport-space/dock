@@ -87,6 +87,10 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public abstract boolean useLanguage();
 
+    public abstract boolean useHolograms();
+
+    public abstract boolean useMenus();
+
     @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
@@ -113,7 +117,6 @@ public abstract class DevportPlugin extends JavaPlugin {
         configuration = new Configuration(this, "config");
 
         consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled"));
-
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
         globalPlaceholders.add("%prefix%", prefix)
@@ -121,9 +124,14 @@ public abstract class DevportPlugin extends JavaPlugin {
                 .add("%pluginName%", getDescription().getName());
 
         commandManager = new CommandManager(this);
-        menuManager = new MenuManager();
-        hologramManager = new HologramManager(this);
-        hologramManager.attemptHook();
+
+        if (useMenus())
+            menuManager = new MenuManager();
+
+        if (useHolograms()) {
+            hologramManager = new HologramManager(this);
+            hologramManager.attemptHook();
+        }
 
         if (useLanguage()) languageManager = new LanguageManager();
 
@@ -152,15 +160,14 @@ public abstract class DevportPlugin extends JavaPlugin {
         if (!(sender instanceof ConsoleCommandSender))
             consoleOutput.addListener(sender);
 
-        consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled"));
+        configuration.load();
 
+        consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName());
-
-        configuration.load();
 
         if (useLanguage()) {
             if (languageManager == null) languageManager = new LanguageManager();
@@ -170,12 +177,13 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         onReload();
 
-        if (hologramManager.isHooked()) {
-            hologramManager.getHologramProvider().save();
-            hologramManager.getHologramProvider().load();
-        } else {
-            hologramManager.attemptHook();
-        }
+        if (useHolograms())
+            if (hologramManager.isHooked()) {
+                hologramManager.getHologramProvider().save();
+                hologramManager.getHologramProvider().load();
+            } else {
+                hologramManager.attemptHook();
+            }
 
         consoleOutput.removeListener(sender);
 
