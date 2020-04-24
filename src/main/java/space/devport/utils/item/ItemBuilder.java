@@ -85,7 +85,7 @@ public class ItemBuilder {
     }
 
     @Getter
-    private static final List<String> filteredNBT = new ArrayList<>(Arrays.asList("Damage", "Enchantments", "display"));
+    private static final List<String> filteredNBT = new ArrayList<>(Arrays.asList("Damage", "Enchantments", "display", "HideFlags"));
 
     /**
      * To-builder constructor.
