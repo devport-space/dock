@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 
+import java.util.List;
+
 public abstract class SubCommand extends AbstractCommand {
 
     @Getter
@@ -34,4 +36,6 @@ public abstract class SubCommand extends AbstractCommand {
 
     @Override
     public abstract ArgumentRange getRange();
+
+    public abstract List<String> requestTabComplete(CommandSender sender, String[] args);
 }

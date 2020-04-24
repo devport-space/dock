@@ -81,6 +81,10 @@ public abstract class MainCommand extends AbstractCommand {
     @Override
     public abstract String getDefaultDescription();
 
+    public boolean registerTabCompleter() {
+        return true;
+    }
+
     @Override
     public ArgumentRange getRange() {
         return new ArgumentRange(0);

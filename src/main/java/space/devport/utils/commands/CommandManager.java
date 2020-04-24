@@ -1,10 +1,7 @@
 package space.devport.utils.commands;
 
 import com.google.common.base.Strings;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
+import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
@@ -12,8 +9,9 @@ import space.devport.utils.DevportPlugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class CommandManager implements CommandExecutor {
+public class CommandManager implements CommandExecutor, TabCompleter {
 
     private final DevportPlugin plugin;
 
@@ -40,6 +38,11 @@ public class CommandManager implements CommandExecutor {
 
             cmd.setExecutor(this);
             plugin.getConsoleOutput().debug("Added command " + cmd.getName() + " with aliases [" + String.join(", ", mainCmd.aliases) + "]");
+
+            if (mainCmd.registerTabCompleter()) {
+                cmd.setTabCompleter(this);
+                plugin.getConsoleOutput().debug("And registered a tab completer for it.");
+            }
         }
     }
 
@@ -47,6 +50,27 @@ public class CommandManager implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         runCommands(sender, label, args);
         return false;
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+
+        for (MainCommand mainCommand : registeredCommands) {
+            if (!label.equalsIgnoreCase(mainCommand.getName()) && !mainCommand.getAliases().contains(label)) continue;
+
+            if (args.length == 1) {
+                List<String> subCommands = mainCommand.getSubCommands().stream().map(SubCommand::getName).collect(Collectors.toList());
+
+                if (!Strings.isNullOrEmpty(args[0]))
+                    subCommands.removeIf(sc -> !sc.toLowerCase().startsWith(args[0].toLowerCase()));
+                return subCommands;
+            } else {
+                SubCommand subCommand = mainCommand.getSubCommands().stream().filter(sc -> sc.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
+                if (subCommand != null) return subCommand.requestTabComplete(sender, args);
+            }
+        }
+
+        return null;
     }
 
     private void runCommands(CommandSender sender, String label, String[] args) {
