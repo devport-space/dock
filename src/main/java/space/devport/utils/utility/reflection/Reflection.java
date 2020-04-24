@@ -30,7 +30,7 @@ public class Reflection {
     }
 
     // Can see only PUBLIC methods of the class, no statics
-    public static Method getMethod(Class<?> className, String methodName, Class<?>... args) {
+    public Method getMethod(Class<?> className, String methodName, Class<?>... args) {
         try {
             Method m = className.getMethod(methodName, args);
             m.setAccessible(true);
@@ -42,7 +42,7 @@ public class Reflection {
     }
 
     // Can see all the methods of the class
-    public static Method getDeclaredMethod(Class<?> className, String methodName, Class<?>... args) {
+    public Method getDeclaredMethod(Class<?> className, String methodName, Class<?>... args) {
         try {
             Method m = className.getDeclaredMethod(methodName, args);
             m.setAccessible(true);
@@ -93,7 +93,7 @@ public class Reflection {
         return null;
     }
 
-    public static void sendPacket(Player p, Object packet) {
+    public void sendPacket(Player p, Object packet) {
         try {
             EntityPlayer player = (EntityPlayer) Reflection.getHandle(p);
             PlayerConnection connection = (PlayerConnection) player.getClass().getDeclaredField("playerConnection").get(player);

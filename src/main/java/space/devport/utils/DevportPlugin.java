@@ -140,7 +140,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         if (useLanguage()) {
             languageManager.captureDefaults();
             languageManager.load();
-            consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
+            consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)...");
         }
 
         commandManager.registerAll();
