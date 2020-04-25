@@ -40,9 +40,6 @@ public class MenuBuilder {
     private int clickDelay = 10;
 
     @Getter
-    private MenuItem filler;
-
-    @Getter
     private String[] buildMatrix = new String[]{};
 
     @Getter
@@ -60,7 +57,6 @@ public class MenuBuilder {
         this.slots = builder.getSlots();
         this.title = builder.getTitle();
         this.items = builder.getItems();
-        this.filler = builder.getFiller();
         this.buildMatrix = builder.getBuildMatrix();
         this.clickDelay = builder.getClickDelay();
 
@@ -119,26 +115,16 @@ public class MenuBuilder {
 
         for (int slot = 0; slot < slots; slot++) {
 
-            if (matrix.length <= slot) {
-                if (filler != null) inventoryItems.put(slot, filler);
-                break;
-            }
+            if (matrix.length <= slot) break;
 
             char matrixKey = matrix[slot];
 
             if (!itemMatrix.containsKey(matrixKey)) continue;
-            else {
-                if (filler != null) inventoryItems.put(slot, filler);
-            }
 
             MenuItem item = itemMatrix.get(matrixKey).getNext();
 
-            if (item == null) {
-                DevportUtils.getInstance().getConsoleOutput().debug("Item for character '" + matrixKey + "' is null, skipping it.");
-                continue;
-            }
+            if (item == null) continue;
 
-            DevportUtils.getInstance().getConsoleOutput().debug("Added item " + item.getName() + " on slot " + slot);
             inventoryItems.put(slot, item);
         }
 
@@ -204,11 +190,6 @@ public class MenuBuilder {
 
     public MenuBuilder buildMatrix(String[] buildMatrix) {
         this.buildMatrix = buildMatrix;
-        return this;
-    }
-
-    public MenuBuilder filler(ItemBuilder filler) {
-        this.filler = new MenuItem(filler, "filler", -1);
         return this;
     }
 
