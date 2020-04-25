@@ -24,12 +24,8 @@ public enum SubPath {
 
     MENU_TITLE("title"),
     MENU_SLOTS("slots"),
-    MENU_FILL_ALL("fill-all"),
-    MENU_FILL_SLOTS("fill-slots"),
-    MENU_FILL_SLOTS_DELIMITER(";"),
     MENU_MATRIX("matrix"),
     MENU_ITEMS("items"),
-    MENU_FILLER("filler"),
     MENU_MATRIX_CHAR("matrix-char"),
 
     /**

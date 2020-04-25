@@ -489,9 +489,6 @@ public class Configuration {
 
                 if (item == null) continue;
 
-                if (itemName.equalsIgnoreCase(SubPath.MENU_FILLER.toString()))
-                    menuBuilder.filler(item.getItemBuilder());
-
                 // If it contains matrix-char
                 if (itemSection.contains(SubPath.MENU_MATRIX_CHAR.toString()))
                     menuBuilder.addMatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, (char) Default.MENU_ITEM_MATRIX_CHAR.getValue()), item);
