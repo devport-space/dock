@@ -590,7 +590,7 @@ public class Configuration {
 
                 // Amount
                 if (section.contains(SubPath.ITEM_AMOUNT.toString()))
-                    b.amount(section.getInt(SubPath.ITEM_AMOUNT.toString()));
+                    b.amount(getAmount(section.getCurrentPath() + "." + SubPath.ITEM_AMOUNT.toString(), new Amount(1)));
 
                 // Glow
                 if (section.contains(SubPath.ITEM_GLOW.toString()))
@@ -710,7 +710,7 @@ public class Configuration {
 
             // Amount
             if (section.contains(SubPath.ITEM_AMOUNT.toString()))
-                b.amount(section.getInt(SubPath.ITEM_AMOUNT.toString()));
+                b.amount(getAmount(section.getCurrentPath() + "." + SubPath.ITEM_AMOUNT.toString(), new Amount(1)));
 
             // Glow
             if (section.contains(SubPath.ITEM_GLOW.toString()))
@@ -791,7 +791,7 @@ public class Configuration {
 
         section.set(SubPath.ITEM_TYPE.toString(), builder.getMaterial().toString());
         section.set(SubPath.ITEM_DATA.toString(), builder.getDamage());
-        section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().isFixed() ? builder.getAmount().getFixedValue() : builder.getAmount().toString());
+        section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().isFixed() ? (int) builder.getAmount().getFixedValue() : builder.getAmount().toString());
         section.set(SubPath.ITEM_NAME.toString(), builder.getDisplayName().toString());
         section.set(SubPath.ITEM_LORE.toString(), builder.getLore().getMessage());
 
@@ -834,7 +834,7 @@ public class Configuration {
         // Check path
         if (Strings.isNullOrEmpty(path)) {
             DevportUtils.getInstance().getConsoleOutput().err("Could not load Amount at path " + path + ", path is invalid.");
-            return null;
+            return defaultValue;
         }
 
         String dataStr = fileConfiguration.getString(path);
