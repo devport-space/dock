@@ -27,7 +27,7 @@ public abstract class MainCommand extends AbstractCommand {
     protected CommandResult perform(CommandSender sender, String label, String[] args) {
 
         if (args.length == 0) {
-            constructHelp(label).send(sender);
+            constructHelp(sender, label).send(sender);
             return CommandResult.SUCCESS;
         }
 
@@ -40,11 +40,11 @@ public abstract class MainCommand extends AbstractCommand {
             return CommandResult.SUCCESS;
         }
 
-        constructHelp(label).send(sender);
+        constructHelp(sender, label).send(sender);
         return CommandResult.SUCCESS;
     }
 
-    private Message constructHelp(String label) {
+    private Message constructHelp(CommandSender sender, String label) {
         Message help = language.get("Commands.Help.Header").parseWith(DevportPlugin.getInstance().getGlobalPlaceholders());
 
         String lineFormat = language.get("Commands.Help.Sub-Command-Line").color().toString();
@@ -58,6 +58,8 @@ public abstract class MainCommand extends AbstractCommand {
 
         for (SubCommand subCommand : this.subCommands) {
             if (subCommand.getUsage().isEmpty() && subCommand.getDescription().isEmpty()) continue;
+
+            if (!subCommand.getPreconditions().check(sender)) continue;
 
             commandParams
                     .add("%usage%", subCommand.getUsage().replace("%label%", label).color().toString())

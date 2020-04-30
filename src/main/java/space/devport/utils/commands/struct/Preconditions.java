@@ -2,6 +2,8 @@ package space.devport.utils.commands.struct;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,5 +42,14 @@ public class Preconditions {
     public Preconditions permissions(String... permissions) {
         this.permissions = new ArrayList<>(Arrays.asList(permissions));
         return this;
+    }
+
+    public boolean check(CommandSender sender) {
+        if (!permissions.isEmpty() && permissions.stream().noneMatch(sender::hasPermission) ||
+                operator && !sender.isOp() ||
+                playerOnly && !(sender instanceof Player))
+            return false;
+
+        return !consoleOnly || (!(sender instanceof Player));
     }
 }
