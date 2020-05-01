@@ -35,14 +35,17 @@ public abstract class AbstractCommand {
     // This should be overridden by commands and performs the wanted action itself.
     protected abstract CommandResult perform(CommandSender sender, String label, String[] args);
 
+    @NotNull
     public abstract ArgumentRange getRange();
 
     /**
      * Usage and description here are only taken as defaults, they're added to language by their name.
      */
 
+    @NotNull
     public abstract String getDefaultUsage();
 
+    @NotNull
     public abstract String getDefaultDescription();
 
     @NotNull

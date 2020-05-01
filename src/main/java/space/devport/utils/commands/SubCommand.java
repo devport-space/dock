@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 
@@ -32,13 +33,13 @@ public abstract class SubCommand extends AbstractCommand {
     }
 
     @Override
-    public abstract String getDefaultUsage();
+    public abstract @NotNull String getDefaultUsage();
 
     @Override
-    public abstract String getDefaultDescription();
+    public abstract @NotNull String getDefaultDescription();
 
     @Override
-    public abstract ArgumentRange getRange();
+    public abstract @NotNull ArgumentRange getRange();
 
     public List<String> requestTabComplete(CommandSender sender, String[] args) {
         return new ArrayList<>();

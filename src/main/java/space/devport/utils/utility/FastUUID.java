@@ -3,8 +3,8 @@ package space.devport.utils.utility;
 import java.util.Arrays;
 import java.util.UUID;
 
-//Mainly stolen from https://github.com/jchambers/fast-uuid/blob/master/src/main/java/com/eatthepath/uuid/FastUUID.java
-//Thanks :) @Denyk
+// Mainly stolen from https://github.com/jchambers/fast-uuid/blob/master/src/main/java/com/eatthepath/uuid/FastUUID.java
+// Thanks :) ~ Denyk
 
 /**
  * <p>A utility class for quickly and efficiently parsing {@link java.util.UUID} instances from strings and writing UUID
@@ -37,7 +37,7 @@ public class FastUUID {
     private static final int UUID_STRING_LENGTH = 36;
 
     private static final char[] HEX_DIGITS =
-            new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+            new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     private static final long[] HEX_VALUES = new long[128];
 
@@ -79,11 +79,9 @@ public class FastUUID {
      * {@link UUID#toString()}.
      *
      * @param uuidSequence the character sequence from which to parse a UUID
-     *
      * @return the UUID represented by the given character sequence
-     *
      * @throws IllegalArgumentException if the given character sequence does not conform to the string representation as
-     * described in {@link UUID#toString()}
+     *                                  described in {@link UUID#toString()}
      */
     public static UUID parseUUID(final CharSequence uuidSequence) {
         if (uuidSequence.length() != UUID_STRING_LENGTH ||
@@ -140,7 +138,6 @@ public class FastUUID {
      * {@link UUID#toString()}.
      *
      * @param uuid the UUID to represent as a string
-     *
      * @return a string representation of the given UUID
      */
     public static String toString(final UUID uuid) {
@@ -155,16 +152,16 @@ public class FastUUID {
 
         final char[] uuidChars = new char[UUID_STRING_LENGTH];
 
-        uuidChars[0]  = HEX_DIGITS[(int) ((mostSignificantBits & 0xf000000000000000L) >>> 60)];
-        uuidChars[1]  = HEX_DIGITS[(int) ((mostSignificantBits & 0x0f00000000000000L) >>> 56)];
-        uuidChars[2]  = HEX_DIGITS[(int) ((mostSignificantBits & 0x00f0000000000000L) >>> 52)];
-        uuidChars[3]  = HEX_DIGITS[(int) ((mostSignificantBits & 0x000f000000000000L) >>> 48)];
-        uuidChars[4]  = HEX_DIGITS[(int) ((mostSignificantBits & 0x0000f00000000000L) >>> 44)];
-        uuidChars[5]  = HEX_DIGITS[(int) ((mostSignificantBits & 0x00000f0000000000L) >>> 40)];
-        uuidChars[6]  = HEX_DIGITS[(int) ((mostSignificantBits & 0x000000f000000000L) >>> 36)];
-        uuidChars[7]  = HEX_DIGITS[(int) ((mostSignificantBits & 0x0000000f00000000L) >>> 32)];
-        uuidChars[8]  = '-';
-        uuidChars[9]  = HEX_DIGITS[(int) ((mostSignificantBits & 0x00000000f0000000L) >>> 28)];
+        uuidChars[0] = HEX_DIGITS[(int) ((mostSignificantBits & 0xf000000000000000L) >>> 60)];
+        uuidChars[1] = HEX_DIGITS[(int) ((mostSignificantBits & 0x0f00000000000000L) >>> 56)];
+        uuidChars[2] = HEX_DIGITS[(int) ((mostSignificantBits & 0x00f0000000000000L) >>> 52)];
+        uuidChars[3] = HEX_DIGITS[(int) ((mostSignificantBits & 0x000f000000000000L) >>> 48)];
+        uuidChars[4] = HEX_DIGITS[(int) ((mostSignificantBits & 0x0000f00000000000L) >>> 44)];
+        uuidChars[5] = HEX_DIGITS[(int) ((mostSignificantBits & 0x00000f0000000000L) >>> 40)];
+        uuidChars[6] = HEX_DIGITS[(int) ((mostSignificantBits & 0x000000f000000000L) >>> 36)];
+        uuidChars[7] = HEX_DIGITS[(int) ((mostSignificantBits & 0x0000000f00000000L) >>> 32)];
+        uuidChars[8] = '-';
+        uuidChars[9] = HEX_DIGITS[(int) ((mostSignificantBits & 0x00000000f0000000L) >>> 28)];
         uuidChars[10] = HEX_DIGITS[(int) ((mostSignificantBits & 0x000000000f000000L) >>> 24)];
         uuidChars[11] = HEX_DIGITS[(int) ((mostSignificantBits & 0x0000000000f00000L) >>> 20)];
         uuidChars[12] = HEX_DIGITS[(int) ((mostSignificantBits & 0x00000000000f0000L) >>> 16)];
@@ -172,7 +169,7 @@ public class FastUUID {
         uuidChars[14] = HEX_DIGITS[(int) ((mostSignificantBits & 0x000000000000f000L) >>> 12)];
         uuidChars[15] = HEX_DIGITS[(int) ((mostSignificantBits & 0x0000000000000f00L) >>> 8)];
         uuidChars[16] = HEX_DIGITS[(int) ((mostSignificantBits & 0x00000000000000f0L) >>> 4)];
-        uuidChars[17] = HEX_DIGITS[(int)  (mostSignificantBits & 0x000000000000000fL)];
+        uuidChars[17] = HEX_DIGITS[(int) (mostSignificantBits & 0x000000000000000fL)];
         uuidChars[18] = '-';
         uuidChars[19] = HEX_DIGITS[(int) ((leastSignificantBits & 0xf000000000000000L) >>> 60)];
         uuidChars[20] = HEX_DIGITS[(int) ((leastSignificantBits & 0x0f00000000000000L) >>> 56)];
@@ -190,7 +187,7 @@ public class FastUUID {
         uuidChars[32] = HEX_DIGITS[(int) ((leastSignificantBits & 0x000000000000f000L) >>> 12)];
         uuidChars[33] = HEX_DIGITS[(int) ((leastSignificantBits & 0x0000000000000f00L) >>> 8)];
         uuidChars[34] = HEX_DIGITS[(int) ((leastSignificantBits & 0x00000000000000f0L) >>> 4)];
-        uuidChars[35] = HEX_DIGITS[(int)  (leastSignificantBits & 0x000000000000000fL)];
+        uuidChars[35] = HEX_DIGITS[(int) (leastSignificantBits & 0x000000000000000fL)];
 
         return new String(uuidChars);
     }

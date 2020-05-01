@@ -2,6 +2,7 @@ package space.devport.utils.commands;
 
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
@@ -78,10 +79,10 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     @Override
-    public abstract String getDefaultUsage();
+    public abstract @NotNull String getDefaultUsage();
 
     @Override
-    public abstract String getDefaultDescription();
+    public abstract @NotNull String getDefaultDescription();
 
     public boolean registerTabCompleter() {
         return true;
@@ -93,7 +94,7 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     @Override
-    public ArgumentRange getRange() {
+    public @NotNull ArgumentRange getRange() {
         return new ArgumentRange(0);
     }
 }
