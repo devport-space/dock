@@ -132,4 +132,8 @@ public abstract class AbstractCommand {
     public List<String> getAliases() {
         return new ArrayList<>(Arrays.asList(aliases));
     }
+    
+    protected void setAliases(String... aliases) {
+        this.aliases = aliases;
+    }
 }

@@ -88,6 +88,11 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     @Override
+    public boolean checkRange() {
+        return false;
+    }
+
+    @Override
     public ArgumentRange getRange() {
         return new ArgumentRange(0);
     }

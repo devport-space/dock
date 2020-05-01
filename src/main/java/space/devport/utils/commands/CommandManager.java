@@ -55,13 +55,14 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         for (MainCommand mainCommand : registeredCommands) {
-            if (!label.equalsIgnoreCase(mainCommand.getName()) && !mainCommand.getAliases().contains(label)) continue;
+            if (!label.equalsIgnoreCase(mainCommand.getName()) && !mainCommand.getAliases().contains(label))
+                continue;
 
             if (args.length == 1) {
                 List<String> subCommands = mainCommand.getSubCommands().stream().map(SubCommand::getName).collect(Collectors.toList());
 
                 if (!Strings.isNullOrEmpty(args[0]))
-                    subCommands.removeIf(sc -> !sc.toLowerCase().startsWith(args[0].toLowerCase()));
+                    subCommands = filterSuggestions(subCommands, args[0]);
                 return subCommands;
             } else {
                 SubCommand subCommand = mainCommand.getSubCommands().stream()
