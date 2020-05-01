@@ -41,7 +41,7 @@ public class LanguageManager {
     public void captureDefaults() {
         if (setInternalDefaults) {
             addDefault("Commands.Not-Enough-Args", "%prefix%&cNot enough arguments.", "%prefix%&cUsage: &7%usage%");
-            addDefault("Commands.Too-Many-Args", "%prefix%&cToo many arguments.", "%prefix0&cUsage: &7%usage%");
+            addDefault("Commands.Too-Many-Args", "%prefix%&cToo many arguments.", "%prefix%&cUsage: &7%usage%");
             addDefault("Commands.Only-Players", "%prefix%&cOnly players can do this.");
             addDefault("Commands.Only-Console", "%prefix%&cOnly the console can do this.");
             addDefault("Commands.No-Permission", "%prefix%&cYou don't have permission to do this.");
