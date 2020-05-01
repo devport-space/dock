@@ -64,7 +64,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                     subCommands.removeIf(sc -> !sc.toLowerCase().startsWith(args[0].toLowerCase()));
                 return subCommands;
             } else {
-                SubCommand subCommand = mainCommand.getSubCommands().stream().filter(sc -> sc.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
+                SubCommand subCommand = mainCommand.getSubCommands().stream()
+                        .filter(sc -> sc.getName().equalsIgnoreCase(args[0]) || sc.getAliases().contains(args[0]))
+                        .findAny()
+                        .orElse(null);
 
                 if (subCommand != null) {
                     String[] newArgs = Arrays.copyOfRange(args, 2, args.length);
