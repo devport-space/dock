@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
-import space.devport.utils.text.message.Message;
 import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +71,11 @@ public class Rewards {
         // Broadcast - to all players
         broadcast.setPlaceholders(placeholders);
         DevportUtils.getInstance().getPlugin().getServer().getOnlinePlayers().forEach(broadcast::send);
+
+        parseCommands(player);
+    }
+
+    public void parseCommands(Player player) {
 
         // Commands - with prefixes
         if (!commands.isEmpty()) {
