@@ -18,7 +18,7 @@ import java.util.Random;
  *
  * @author Wertik1206
  */
-public class Rewards {
+public class Rewards implements Cloneable {
 
     @Getter
     private Amount tokens = new Amount(0);
@@ -42,6 +42,27 @@ public class Rewards {
     private Placeholders placeholders = new Placeholders();
 
     private final Random random = new Random();
+
+    @Override
+    protected Object clone() {
+
+        Rewards clone;
+        try {
+            clone = (Rewards) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        clone.tokens(tokens);
+        clone.money(money);
+        clone.items(new ArrayList<>(items));
+        clone.inform(new Message(inform));
+        clone.broadcast(new Message(broadcast));
+        clone.commands(new ArrayList<>(commands));
+        clone.placeholders(new Placeholders(placeholders));
+        return clone;
+    }
 
     // Reward a player
     public void give(Player player) {

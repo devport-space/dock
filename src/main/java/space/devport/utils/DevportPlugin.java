@@ -27,8 +27,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Setter
     private static DevportPlugin instance;
 
-    // TODO: Modules
-
     @Getter
     protected DevportUtils utils;
 
