@@ -1,9 +1,11 @@
 package space.devport.utils.struct;
 
+import jdk.internal.joptsimple.internal.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.realized.tokenmanager.TokenManagerPlugin;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportUtils;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
@@ -56,29 +58,31 @@ public class Rewards implements Cloneable {
     }
 
     // Reward a player
-    public void give(Player player) {
+    public void give(@Nullable Player player) {
 
-        placeholders.add("%player%", player.getName());
+        if (player != null) {
+            placeholders.add("%player%", player.getName());
 
-        // Tokens - TokenManager
-        int tokens = this.tokens.getInt();
-        if (tokens != 0 && DevportUtils.getInstance().checkDependency("TokenManager"))
-            TokenManagerPlugin.getInstance().addTokens(player, tokens);
+            // Tokens - TokenManager
+            int tokens = this.tokens.getInt();
+            if (tokens != 0 && DevportUtils.getInstance().checkDependency("TokenManager"))
+                TokenManagerPlugin.getInstance().addTokens(player, tokens);
 
-        // Money - Vault
-        double money = this.money.getDouble();
-        if (money != 0 && DevportUtils.getInstance().checkDependency("Vault"))
-            DevportUtils.getInstance().getEconomy().depositPlayer(player, money);
+            // Money - Vault
+            double money = this.money.getDouble();
+            if (money != 0 && DevportUtils.getInstance().checkDependency("Vault"))
+                DevportUtils.getInstance().getEconomy().depositPlayer(player, money);
 
-        // Items
-        for (ItemBuilder item : items) {
-            player.getInventory().addItem(item
-                    .parseWith(placeholders)
-                    .build());
+            // Items
+            for (ItemBuilder item : items) {
+                player.getInventory().addItem(item
+                        .parseWith(placeholders)
+                        .build());
+            }
+
+            // Inform - to player
+            inform.setPlaceholders(placeholders).send(player);
         }
-
-        // Inform - to player
-        inform.setPlaceholders(placeholders).send(player);
 
         // Broadcast - to all players
         broadcast.setPlaceholders(placeholders);
@@ -87,7 +91,7 @@ public class Rewards implements Cloneable {
         parseCommands(player);
     }
 
-    public void parseCommands(Player player) {
+    public void parseCommands(@Nullable Player player) {
 
         // Commands - with prefixes
         if (!commands.isEmpty()) {
@@ -110,18 +114,20 @@ public class Rewards implements Cloneable {
     }
 
     // Parses a single command
-    private void parseCommand(Player player, String cmd) {
+    private void parseCommand(@Nullable Player player, @Nullable String cmd) {
+
+        if (Strings.isNullOrEmpty(cmd)) return;
 
         // Parse placeholders
         cmd = placeholders.parse(cmd);
 
-        if (cmd.startsWith("op!"))
+        if (cmd.startsWith("op!")) {
             // Execute as OP
-            executeOp(cmd.replace("op!", ""), player);
-        else if (cmd.startsWith("p!"))
+            if (player != null) executeOp(cmd.replace("op!", ""), player);
+        } else if (cmd.startsWith("p!")) {
             // Execute as player
-            executePlayer(cmd.replace("p!", ""), player);
-        else
+            if (player != null) executePlayer(cmd.replace("p!", ""), player);
+        } else
             // Execute as console
             executeConsole(cmd);
     }
