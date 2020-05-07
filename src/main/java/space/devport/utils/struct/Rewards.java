@@ -1,6 +1,6 @@
 package space.devport.utils.struct;
 
-import jdk.internal.joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.realized.tokenmanager.TokenManagerPlugin;
