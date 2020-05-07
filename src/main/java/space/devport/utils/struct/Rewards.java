@@ -134,7 +134,7 @@ public class Rewards implements Cloneable {
     // Parses a single command
     private void parseCommand(@Nullable Player player, @Nullable String cmd) {
 
-        if (Strings.isNullOrEmpty(cmd)) return;
+        if (Strings.isNullOrEmpty(cmd) || cmd.contains("%player%") && player == null) return;
 
         // Parse placeholders
         cmd = placeholders.parse(cmd);
