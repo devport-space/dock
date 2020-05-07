@@ -1,6 +1,7 @@
 package space.devport.utils.struct;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import me.realized.tokenmanager.TokenManagerPlugin;
 import org.bukkit.entity.Player;
 import space.devport.utils.DevportUtils;
@@ -18,6 +19,7 @@ import java.util.Random;
  *
  * @author Wertik1206
  */
+@NoArgsConstructor
 public class Rewards implements Cloneable {
 
     @Getter
@@ -43,25 +45,14 @@ public class Rewards implements Cloneable {
 
     private final Random random = new Random();
 
-    @Override
-    protected Object clone() {
-
-        Rewards clone;
-        try {
-            clone = (Rewards) super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        clone.tokens(tokens);
-        clone.money(money);
-        clone.items(new ArrayList<>(items));
-        clone.inform(new Message(inform));
-        clone.broadcast(new Message(broadcast));
-        clone.commands(new ArrayList<>(commands));
-        clone.placeholders(new Placeholders(placeholders));
-        return clone;
+    public Rewards(Rewards rewards) {
+        this.tokens = rewards.getTokens();
+        this.money = rewards.getMoney();
+        this.items = new ArrayList<>(rewards.getItems());
+        this.inform = new Message(rewards.getInform());
+        this.broadcast = new Message(rewards.getBroadcast());
+        this.commands = new ArrayList<>(rewards.getCommands());
+        this.placeholders = new Placeholders(rewards.getPlaceholders());
     }
 
     // Reward a player
