@@ -64,21 +64,13 @@ public class Rewards implements Cloneable {
             placeholders.add("%player%", player.getName());
 
             // Tokens - TokenManager
-            int tokens = this.tokens.getInt();
-            if (tokens != 0 && DevportUtils.getInstance().checkDependency("TokenManager"))
-                TokenManagerPlugin.getInstance().addTokens(player, tokens);
+            giveTokens(player);
 
             // Money - Vault
-            double money = this.money.getDouble();
-            if (money != 0 && DevportUtils.getInstance().checkDependency("Vault"))
-                DevportUtils.getInstance().getEconomy().depositPlayer(player, money);
+            giveMoney(player);
 
             // Items
-            for (ItemBuilder item : items) {
-                player.getInventory().addItem(item
-                        .parseWith(placeholders)
-                        .build());
-            }
+            giveItems(player);
 
             // Inform - to player
             inform.setPlaceholders(placeholders).send(player);
@@ -89,6 +81,32 @@ public class Rewards implements Cloneable {
         DevportUtils.getInstance().getPlugin().getServer().getOnlinePlayers().forEach(broadcast::send);
 
         parseCommands(player);
+    }
+
+    public void giveTokens(@Nullable Player player) {
+        if (player == null) return;
+
+        int tokens = this.tokens.getInt();
+        if (tokens != 0 && DevportUtils.getInstance().checkDependency("TokenManager"))
+            TokenManagerPlugin.getInstance().addTokens(player, tokens);
+    }
+
+    public void giveMoney(@Nullable Player player) {
+        if (player == null) return;
+
+        double money = this.money.getDouble();
+        if (money != 0 && DevportUtils.getInstance().checkDependency("Vault"))
+            DevportUtils.getInstance().getEconomy().depositPlayer(player, money);
+    }
+
+    public void giveItems(@Nullable Player player) {
+        if (player == null) return;
+
+        for (ItemBuilder item : items) {
+            player.getInventory().addItem(item
+                    .parseWith(placeholders)
+                    .build());
+        }
     }
 
     public void parseCommands(@Nullable Player player) {
