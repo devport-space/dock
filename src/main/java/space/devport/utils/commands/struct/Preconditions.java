@@ -39,6 +39,9 @@ public class Preconditions {
         return this;
     }
 
+    /**
+     * Permissions are checked with an OR scheme ( has to have at least one of them )
+     */
     public Preconditions permissions(String... permissions) {
         this.permissions = new ArrayList<>(Arrays.asList(permissions));
         return this;

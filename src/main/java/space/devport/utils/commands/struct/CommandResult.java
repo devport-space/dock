@@ -7,17 +7,28 @@ import space.devport.utils.DevportPlugin;
 import space.devport.utils.text.message.Message;
 
 /**
- * Various results of the command system.
- * Makes it easier and way faster to create commands.
+ * Various results of a command execution.
+ * Makes it easier and way faster to create command execution.
  */
 public enum CommandResult {
 
+    /**
+     * Fired after an ArgumentRange check.
+     */
     NOT_ENOUGH_ARGS("Commands.Not-Enough-Args"),
     TOO_MANY_ARGS("Commands.Too-Many-Args"),
+
+    /**
+     * Preconditions
+     */
     NO_CONSOLE("Commands.Only-Players"),
     NO_PLAYER("Commands.Only-Console"),
     NO_PERMISSION("Commands.No-Permission"),
     NOT_OPERATOR("Commands.Not-Operator"),
+
+    /**
+     * Generic, no message.
+     */
     FAILURE(),
     SUCCESS();
 

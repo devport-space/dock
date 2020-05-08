@@ -1,16 +1,15 @@
 package space.devport.utils.commands;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class SubCommand extends AbstractCommand {
 
@@ -23,8 +22,10 @@ public abstract class SubCommand extends AbstractCommand {
     }
 
     public void addLanguage() {
-        language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Usage", getDefaultUsage());
-        language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Description", getDefaultDescription());
+        if (getDefaultUsage() != null)
+            language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Usage", getDefaultUsage());
+        if (getDefaultDescription() != null)
+            language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Description", getDefaultDescription());
     }
 
     @Override
@@ -33,20 +34,15 @@ public abstract class SubCommand extends AbstractCommand {
     }
 
     @Override
-    public abstract @NotNull String getDefaultUsage();
+    public abstract @Nullable String getDefaultUsage();
 
     @Override
-    public abstract @NotNull String getDefaultDescription();
+    public abstract @Nullable String getDefaultDescription();
 
     @Override
-    public abstract @NotNull ArgumentRange getRange();
+    public abstract @Nullable ArgumentRange getRange();
 
     public List<String> requestTabComplete(CommandSender sender, String[] args) {
         return new ArrayList<>();
-    }
-
-    protected List<String> filterSuggestions(List<String> input, String arg) {
-        if (Strings.isNullOrEmpty(arg)) return input;
-        return input.stream().filter(o -> o.toLowerCase().startsWith(arg.toLowerCase())).collect(Collectors.toList());
     }
 }

@@ -9,7 +9,6 @@ import space.devport.utils.DevportPlugin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CommandManager implements CommandExecutor, TabCompleter {
 
@@ -22,27 +21,27 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     }
 
     public void registerAll() {
+
         // Register commands
-        for (MainCommand mainCmd : this.registeredCommands) {
-            if (!plugin.getDescription().getCommands().containsKey(mainCmd.getName())) {
-                plugin.getConsoleOutput().warn("Command " + mainCmd.getName() + " is not in plugin.yml");
+        for (MainCommand mainCommand : this.registeredCommands) {
+            if (!plugin.getDescription().getCommands().containsKey(mainCommand.getName())) {
+                plugin.getConsoleOutput().warn("Command " + mainCommand.getName() + " is not in plugin.yml");
                 continue;
             }
 
-            PluginCommand cmd = plugin.getCommand(mainCmd.getName());
+            PluginCommand cmd = plugin.getCommand(mainCommand.getName());
 
             if (cmd == null) continue;
 
-            mainCmd.aliases = new String[cmd.getAliases().size()];
-            cmd.getAliases().toArray(mainCmd.aliases);
+            mainCommand.setAliases(cmd.getAliases().toArray(new String[0]));
 
             cmd.setExecutor(this);
-            plugin.getConsoleOutput().debug("Added command " + cmd.getName() + " with aliases [" + String.join(", ", mainCmd.aliases) + "]");
 
-            if (mainCmd.registerTabCompleter()) {
+            if (mainCommand.registerTabCompleter()) {
                 cmd.setTabCompleter(this);
-                plugin.getConsoleOutput().debug("And registered a tab completer for it.");
             }
+
+            plugin.getConsoleOutput().debug("Added command " + cmd.getName() + " with aliases [" + String.join(", ", mainCommand.getAliases()) + "]" + (mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
         }
     }
 
@@ -55,34 +54,10 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         for (MainCommand mainCommand : registeredCommands) {
-            if (!label.equalsIgnoreCase(mainCommand.getName()) && !mainCommand.getAliases().contains(label))
-                continue;
-
-            if (args.length == 1) {
-                List<String> subCommands = mainCommand.getSubCommands().stream().map(SubCommand::getName).collect(Collectors.toList());
-
-                if (!Strings.isNullOrEmpty(args[0]))
-                    subCommands = filterSuggestions(subCommands, args[0]);
-                return subCommands;
-            } else {
-                SubCommand subCommand = mainCommand.getSubCommands().stream()
-                        .filter(sc -> sc.getName().equalsIgnoreCase(args[0]) || sc.getAliases().contains(args[0]))
-                        .findAny()
-                        .orElse(null);
-
-                if (subCommand != null) {
-                    String[] newArgs = Arrays.copyOfRange(args, 2, args.length);
-                    return filterSuggestions(subCommand.requestTabComplete(sender, newArgs), newArgs.length > 0 ? newArgs[newArgs.length - 1] : "");
-                }
-            }
+            if (label.equalsIgnoreCase(mainCommand.getName()) || mainCommand.getAliases().contains(label))
+                mainCommand.requestTabComplete(sender, args);
         }
-
-        return null;
-    }
-
-    private List<String> filterSuggestions(List<String> input, String arg) {
-        if (Strings.isNullOrEmpty(arg)) return input;
-        return input.stream().filter(o -> o.toLowerCase().startsWith(arg.toLowerCase())).collect(Collectors.toList());
+        return new ArrayList<>();
     }
 
     private void runCommands(CommandSender sender, String label, String[] args) {
