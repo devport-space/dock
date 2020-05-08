@@ -5,7 +5,7 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.utility.Default;
+import space.devport.utils.utility.Settings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,7 +80,7 @@ public class StringUtil {
      */
     @Nullable
     public String listToString(@Nullable List<String> list) {
-        return listToString(list, Default.LIST_DELIMITER.toString());
+        return listToString(list, Settings.LIST_DELIMITER.toString());
     }
 
     /**
@@ -118,7 +118,7 @@ public class StringUtil {
      */
     @NotNull
     public List<String> listFromString(@Nullable String string) {
-        return listFromString(string, Default.LIST_DELIMITER.toString());
+        return listFromString(string, Settings.LIST_DELIMITER.toString());
     }
 
     public List<String> replace(List<String> list, String key, Object value) {

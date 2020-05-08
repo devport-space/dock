@@ -26,7 +26,6 @@ import space.devport.utils.struct.Rewards;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.message.Message;
-import space.devport.utils.utility.Default;
 import space.devport.utils.utility.LocationUtil;
 
 import java.io.File;
@@ -34,11 +33,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * Class to handle Configuration files and custom object loading.
+ * Only supports the Yml format.
  *
  * @author Devport Team
  */
@@ -168,7 +167,12 @@ public class Configuration {
      * @param path Path to save to
      * @param set  Whether to set the file as default or not
      */
-    public void saveToFile(@NotNull String path, boolean... set) {
+    public void saveToFile(@Nullable String path, boolean... set) {
+        if (Strings.isNullOrEmpty(path)) {
+            DevportUtils.getInstance().getConsoleOutput().warn("Could not save " + this.path + " to another location, other path is null.");
+            return;
+        }
+
         File file = new File(path.contains(".yml") ? path : path + ".yml");
         saveToFile(file, set);
     }
@@ -203,7 +207,8 @@ public class Configuration {
      * @return String with Bukkit color codes
      */
     @Nullable
-    public String getColoredString(@NotNull String path) {
+    public String getColoredString(@Nullable String path) {
+        if (Strings.isNullOrEmpty(path)) return null;
         return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ?
                 null : fileConfiguration.getString(path));
     }
@@ -218,8 +223,27 @@ public class Configuration {
      */
     @NotNull
     public String getColoredString(@Nullable String path, @NotNull String defaultValue) {
-        if (Strings.isNullOrEmpty(path)) return defaultValue;
-        return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ? defaultValue : fileConfiguration.getString(path));
+        return StringUtil.color(getString(path, defaultValue));
+    }
+
+    @Nullable
+    public String getString(@Nullable String path) {
+        return path != null ? fileConfiguration.getString(path) : null;
+    }
+
+    /**
+     * A replacement for FileConfiguration.getString(String, String), as it doesn't have the functionality we want.
+     */
+    @NotNull
+    public String getString(@Nullable String path, String defaultValue) {
+        if (path == null) return defaultValue;
+        String str = fileConfiguration.getString(path);
+        return str != null ? str : defaultValue;
+    }
+
+    @Nullable
+    public List<String> getStringList(@Nullable String path) {
+        return path != null ? fileConfiguration.getStringList(path) : null;
     }
 
     /**
@@ -242,8 +266,9 @@ public class Configuration {
      * @return List of strings with Bukkit color codes
      */
     @Nullable
-    public final List<String> getColoredList(@NotNull String path) {
-        return StringUtil.color(fileConfiguration.getStringList(path));
+    public final List<String> getColoredList(@Nullable String path) {
+        Message msg = getMessage(path);
+        return msg != null ? msg.color().getMessage() : null;
     }
 
     /**
@@ -254,8 +279,8 @@ public class Configuration {
      * @return List of strings with Bukkit color codes
      */
     @NotNull
-    public final List<String> getColoredList(@NotNull String path, @NotNull List<String> defaultList) {
-        return Objects.requireNonNull(StringUtil.color(getStringList(path, defaultList)));
+    public final List<String> getColoredList(@Nullable String path, @NotNull List<String> defaultList) {
+        return getMessage(path, new Message(defaultList)).color().getMessage();
     }
 
     /**
@@ -265,8 +290,8 @@ public class Configuration {
      * @return Multi-line colored string
      */
     @NotNull
-    public String getColoredMessage(@NotNull String path) {
-        return getMessage(path).color().toString();
+    public String getColoredMessage(@Nullable String path) {
+        return getMessage(path, new Message()).color().toString();
     }
 
     /**
@@ -276,8 +301,8 @@ public class Configuration {
      * @return Array of strings
      */
     @NotNull
-    public String[] getArrayList(@NotNull String path) {
-        return fileConfiguration.getStringList(path).toArray(new String[0]);
+    public String[] getArrayList(@Nullable String path) {
+        return getStringList(path, new ArrayList<>()).toArray(new String[0]);
     }
 
     /**
@@ -288,8 +313,9 @@ public class Configuration {
      * @return String array
      */
     @NotNull
-    public String[] getArray(@NotNull String path, @NotNull String delimiter) {
-        return fileConfiguration.getString(path).split(delimiter);
+    public String[] getArray(@Nullable String path, @NotNull String delimiter) {
+        String str = getString(path);
+        return str != null ? str.split(delimiter) : new String[0];
     }
 
     /**
@@ -300,8 +326,8 @@ public class Configuration {
      * @param defaultValue Default to use
      * @return char
      */
-    public char getChar(@NotNull String path, char defaultValue) {
-        String str = fileConfiguration.getString(path);
+    public char getChar(@Nullable String path, char defaultValue) {
+        String str = getString(path);
         return str != null ? str.toCharArray()[0] : defaultValue;
     }
 
@@ -312,8 +338,8 @@ public class Configuration {
      * @return Array of integers.
      */
     @Nullable
-    public int[] getInts(@NotNull String path) {
-        String str = fileConfiguration.getString(path);
+    public int[] getInts(@Nullable String path) {
+        String str = getString(path);
 
         if (str == null) return new int[]{};
 
@@ -335,8 +361,8 @@ public class Configuration {
      * @return Array of integers.
      */
     @Nullable
-    public int[] getInts(@NotNull String path, int[] defaultValue) {
-        String str = fileConfiguration.getString(path);
+    public int[] getInts(@Nullable String path, int[] defaultValue) {
+        String str = getString(path);
 
         if (str == null) return defaultValue;
 
@@ -352,6 +378,12 @@ public class Configuration {
 
     // --------------------------------- Advanced Load/Save Methods -----------------------------------
 
+    /**
+     * Get a Message from the Configuration.
+     *
+     * @param path Path to the Message
+     * @return null if the message is completely absent. Return a blank one otherwise.
+     */
     @Nullable
     public Message getMessage(@Nullable String path) {
         if (Strings.isNullOrEmpty(path)) return null;
@@ -372,8 +404,9 @@ public class Configuration {
      * Loads a message builder either from String or from a list of strings.
      * Returns a default from Default.java when missing.
      *
-     * @param path Path to the MessageBuilder
-     * @return MessageBuilder object
+     * @param path         Path to the Message
+     * @param defaultValue Default Message to return.
+     * @return Message on the path.
      */
     @NotNull
     public Message getMessage(@Nullable String path, @NotNull Message defaultValue) {
@@ -413,7 +446,7 @@ public class Configuration {
             return null;
         }
 
-        return new Region(min, max, (boolean) Default.REGION_IGNORE_HEIGHT.getValue());
+        return new Region(min, max);
     }
 
     /**
@@ -468,7 +501,7 @@ public class Configuration {
             return null;
         }
 
-        menuBuilder.title(section.getString(SubPath.MENU_TITLE.toString(), String.valueOf(Default.MENU_TITLE.getValue())));
+        menuBuilder.title(section.getString(SubPath.MENU_TITLE.toString(), "My nice menu"));
 
         menuBuilder.slots(section.getInt(SubPath.MENU_SLOTS.toString(), 9));
 
@@ -491,7 +524,7 @@ public class Configuration {
 
                 // If it contains matrix-char
                 if (itemSection.contains(SubPath.MENU_MATRIX_CHAR.toString()))
-                    menuBuilder.addMatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, (char) Default.MENU_ITEM_MATRIX_CHAR.getValue()), item);
+                    menuBuilder.addMatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, ' '), item);
                 else
                     menuBuilder.setItem(item);
             }
@@ -778,11 +811,16 @@ public class Configuration {
      * @param path    Path to save it under
      * @param builder ItemBuilder to save.
      */
-    public void setItemBuilder(String path, ItemBuilder builder) {
+    public void setItemBuilder(@Nullable String path, @NotNull ItemBuilder builder) {
+        if (Strings.isNullOrEmpty(path)) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save ItemBuilder, path null.");
+            return;
+        }
+
         ConfigurationSection section = fileConfiguration.contains(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
 
         if (section == null) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not save ItemBuilder to path " + path);
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save ItemBuilder to path " + path + ", section non-existant.");
             return;
         }
 
@@ -808,7 +846,12 @@ public class Configuration {
             save();
     }
 
-    public void setMessage(String path, Message message) {
+    public void setMessage(@Nullable String path, @NotNull Message message) {
+        if (Strings.isNullOrEmpty(path)) {
+            DevportUtils.getInstance().getConsoleOutput().err("Could not save Message, path null.");
+            return;
+        }
+
         if (message.isEmpty())
             fileConfiguration.set(path, "");
         else {
@@ -826,7 +869,8 @@ public class Configuration {
      * @param defaultValue Optional Amount, default to return
      * @return Amount object
      */
-    public Amount getAmount(String path, Amount defaultValue) {
+    @NotNull
+    public Amount getAmount(@Nullable String path, @NotNull Amount defaultValue) {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
@@ -864,7 +908,7 @@ public class Configuration {
      * @return Amount object
      */
     @Nullable
-    public Amount getAmount(String path) {
+    public Amount getAmount(@Nullable String path) {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
@@ -898,8 +942,10 @@ public class Configuration {
     }
 
     @NotNull
-    public Conditions getConditions(String path) {
+    public Conditions getConditions(@Nullable String path) {
         Conditions conditions = new Conditions();
+
+        if (Strings.isNullOrEmpty(path)) return conditions;
 
         conditions.operator(fileConfiguration.getBoolean(path + ".operator", false));
         conditions.permissions(getStringList(path + ".permissions", new ArrayList<>()));
@@ -912,8 +958,10 @@ public class Configuration {
     }
 
     @NotNull
-    public Rewards getRewards(String path) {
+    public Rewards getRewards(@Nullable String path) {
         Rewards rewards = new Rewards();
+
+        if (Strings.isNullOrEmpty(path)) return rewards;
 
         rewards.broadcast(getMessage(path + ".broadcast", new Message()));
         rewards.inform(getMessage(path + ".inform", new Message()));

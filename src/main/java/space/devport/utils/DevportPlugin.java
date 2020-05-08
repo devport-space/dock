@@ -20,6 +20,8 @@ import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public abstract class DevportPlugin extends JavaPlugin {
@@ -196,6 +198,16 @@ public abstract class DevportPlugin extends JavaPlugin {
             hologramManager.getHologramProvider().save();
 
         onPluginDisable();
+    }
+
+    /**
+     * Get the whole dependency list.
+     */
+    public List<String> getDependencies() {
+        List<String> dependencies = new ArrayList<>();
+        dependencies.addAll(getDescription().getDepend());
+        dependencies.addAll(getDescription().getSoftDepend());
+        return dependencies;
     }
 
     @Override

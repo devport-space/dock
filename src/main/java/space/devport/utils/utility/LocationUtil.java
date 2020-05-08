@@ -21,7 +21,7 @@ public class LocationUtil {
      */
     @Nullable
     public String locationToString(@Nullable Location location) {
-        return locationToString(location, Default.LOCATION_DELIMITER.toString());
+        return locationToString(location, Settings.LOCATION_DELIMITER.toString());
     }
 
     /**
@@ -52,7 +52,7 @@ public class LocationUtil {
      */
     @Nullable
     public Location locationFromString(@Nullable String locationString) {
-        return locationFromString(locationString, Default.LOCATION_DELIMITER.toString());
+        return locationFromString(locationString, Settings.LOCATION_DELIMITER.toString());
     }
 
     /**

@@ -3,35 +3,14 @@ package space.devport.utils.utility;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import space.devport.utils.text.message.Message;
 
 /**
- * Enum that holds default values for custom object loading and manipulation.
+ * Enum that holds settings for object-to-string parsing.
  *
  * @author Devport Team
  */
 @AllArgsConstructor
-public enum Default {
-
-    /**
-     * MENU
-     */
-
-    MENU_TITLE(new Message("My Cute Menu")),
-    MENU_SLOTS(9),
-    MENU_FILL_ALL(false),
-
-    /**
-     * MENU ITEMS
-     */
-
-    MENU_ITEM_MATRIX_CHAR(' '),
-
-    /**
-     * REGION
-     */
-
-    REGION_IGNORE_HEIGHT(false),
+public enum Settings {
 
     /**
      * STRING UTIL
