@@ -55,7 +55,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         for (MainCommand mainCommand : registeredCommands) {
             if (label.equalsIgnoreCase(mainCommand.getName()) || mainCommand.getAliases().contains(label))
-                mainCommand.requestTabComplete(sender, args);
+                return mainCommand.requestTabComplete(sender, args);
         }
         return new ArrayList<>();
     }

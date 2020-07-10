@@ -1,6 +1,5 @@
 package space.devport.utils.commands;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -86,20 +85,24 @@ public abstract class MainCommand extends AbstractCommand {
 
     @Override
     public List<String> requestTabComplete(CommandSender sender, String[] args) {
-        if (args.length == 1) {
-            List<String> subCommands = getSubCommands().stream().map(SubCommand::getName).collect(Collectors.toList());
 
-            if (!Strings.isNullOrEmpty(args[0]))
-                subCommands = filterSuggestions(subCommands, args[0]);
-            return subCommands;
+        if (args.length == 1) {
+            List<String> subCommands = getSubCommands().stream()
+                    .map(SubCommand::getName)
+                    .collect(Collectors.toList());
+            return filterSuggestions(subCommands, args[0]);
         } else {
             SubCommand subCommand = getSubCommands().stream()
-                    .filter(sc -> sc.getName().equalsIgnoreCase(args[0]) || sc.getAliases().contains(args[0]))
+                    .filter(sc -> sc.getName().equalsIgnoreCase(args[0]) ||
+                            sc.getAliases().stream()
+                                    .map(String::toLowerCase)
+                                    .collect(Collectors.toList())
+                                    .contains(args[0].toLowerCase()))
                     .findAny()
                     .orElse(null);
 
             if (subCommand != null) {
-                String[] newArgs = Arrays.copyOfRange(args, 2, args.length);
+                String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
                 return filterSuggestions(subCommand.requestTabComplete(sender, newArgs), newArgs.length > 0 ? newArgs[newArgs.length - 1] : "");
             }
         }
