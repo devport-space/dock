@@ -16,6 +16,7 @@ import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -136,6 +137,7 @@ public abstract class AbstractCommand {
     public abstract List<String> requestTabComplete(CommandSender sender, String[] args);
 
     protected List<String> filterSuggestions(List<String> input, String arg) {
+        Collections.sort(input);
         if (Strings.isNullOrEmpty(arg)) return input;
         return input.stream().filter(o -> o.toLowerCase().startsWith(arg.toLowerCase())).collect(Collectors.toList());
     }
