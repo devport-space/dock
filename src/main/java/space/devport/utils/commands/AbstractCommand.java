@@ -29,7 +29,7 @@ public abstract class AbstractCommand {
 
     @Getter
     @Setter
-    private Preconditions preconditions = new Preconditions();
+    protected Preconditions preconditions = new Preconditions();
 
     private String[] aliases = new String[]{};
 
