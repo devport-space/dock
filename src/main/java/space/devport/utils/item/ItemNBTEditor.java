@@ -2,8 +2,9 @@ package space.devport.utils.item;
 
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.utility.reflection.SpigotHelper;
 import space.devport.utils.utility.reflection.Reflection;
+import space.devport.utils.utility.reflection.ServerVersion;
+import space.devport.utils.utility.reflection.SpigotHelper;
 
 import java.util.*;
 
@@ -23,7 +24,7 @@ public class ItemNBTEditor {
 
                 List<String> keys;
 
-                if (SpigotHelper.getVersion().contains("1.15") || SpigotHelper.getVersion().contains("1.14") || SpigotHelper.getVersion().contains("1.13"))
+                if (ServerVersion.isAboveCurrent(ServerVersion.v1_13))
                     keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("getKeys").invoke(tag));
                 else
                     keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("c").invoke(tag));
