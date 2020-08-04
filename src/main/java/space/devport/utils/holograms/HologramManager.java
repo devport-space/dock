@@ -27,6 +27,9 @@ public class HologramManager {
     }
 
     public void attemptHook() {
+
+        if (hologramProvider != null) return;
+
         if (DevportUtils.getInstance().checkDependency("Holograms")) {
             hologramProvider = new Holograms();
             instance.getConsoleOutput().info("Using &aHolograms &7as the HologramsProvider.");

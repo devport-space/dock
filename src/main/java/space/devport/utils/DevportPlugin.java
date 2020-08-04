@@ -2,6 +2,7 @@ package space.devport.utils;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -85,6 +86,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public abstract void onReload();
 
+    public abstract void onDependencyLookup();
+
     public abstract boolean useLanguage();
 
     public abstract boolean useHolograms();
@@ -150,6 +153,12 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         // Set the prefix as the last thing, startup looks cooler without it.
         consoleOutput.setPrefix(prefix);
+
+        // Runs after Server finished loading to ensure all possible deps would be loaded.
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            if (useHolograms())
+                hologramManager.attemptHook();
+        }, 1L);
     }
 
     public void reload(CommandSender sender) {
