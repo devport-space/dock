@@ -1,8 +1,6 @@
 package space.devport.utils.utility.reflection;
 
 import lombok.experimental.UtilityClass;
-import net.minecraft.server.v1_15_R1.EntityPlayer;
-import net.minecraft.server.v1_15_R1.PlayerConnection;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -93,11 +91,19 @@ public class Reflection {
         return null;
     }
 
+    private Class<?> entityPlayerClazz, playerConnectionClazz;
+
     public void sendPacket(Player p, Object packet) {
         try {
-            EntityPlayer player = (EntityPlayer) Reflection.getHandle(p);
-            PlayerConnection connection = (PlayerConnection) player.getClass().getDeclaredField("playerConnection").get(player);
-            connection.getClass().getMethod("sendPacket", Reflection.getNMSClass("Packet")).invoke(connection, packet);
+            if (entityPlayerClazz == null) {
+                entityPlayerClazz = getNMSClass("EntityPlayer");
+                playerConnectionClazz = getNMSClass("PlayerConnection");
+            }
+
+            Object entityPlayer = entityPlayerClazz.cast(Reflection.getHandle(p));
+            Object playerConnection = playerConnectionClazz.cast(entityPlayerClazz.getDeclaredField("playerConnection").get(entityPlayer));
+
+            playerConnectionClazz.getMethod("sendPacket", Reflection.getNMSClass("Packet")).invoke(playerConnection, packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
