@@ -86,8 +86,6 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public abstract void onReload();
 
-    public abstract void onDependencyLookup();
-
     public abstract boolean useLanguage();
 
     public abstract boolean useHolograms();
