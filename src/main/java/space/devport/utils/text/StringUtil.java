@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.utility.Settings;
+import space.devport.utils.utility.reflection.ServerVersion;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,9 +23,13 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class StringUtil {
 
-    public String HEX_PATTERN = "<#([A-Fa-f0-9]){6}>";
+    public String HEX_PATTERN = "\\{#[A-Fa-f0-9]{6}}";
 
-    private final Pattern hexPattern = Pattern.compile(HEX_PATTERN);
+    private Pattern hexPattern = Pattern.compile(HEX_PATTERN);
+
+    public void compilePattern() {
+        hexPattern = Pattern.compile(HEX_PATTERN);
+    }
 
     // Strip colors from String
     public String stripColor(String msg) {
@@ -51,24 +56,24 @@ public class StringUtil {
      */
     @Nullable
     public String color(@Nullable String msg, char colorChar) {
+        //return msg == null ? null : ChatColor.translateAlternateColorCodes(colorChar, msg);
         return msg == null ? null : hexColor(msg, colorChar);
     }
 
-    /**
-     * Apply hex colors to string.
-     */
     @Nullable
     public String hexColor(String string, char colorChar) {
 
         if (Strings.isNullOrEmpty(string)) return null;
 
-        Matcher matcher = hexPattern.matcher(string);
-        while (matcher.find()) {
-            final ChatColor hexColor = ChatColor.of(matcher.group().substring(1, matcher.group().length() - 1));
-            final String before = string.substring(0, matcher.start());
-            final String after = string.substring(matcher.end());
-            string = before + hexColor + after;
-            matcher = hexPattern.matcher(string);
+        if (hexPattern != null || ServerVersion.isAboveCurrent(ServerVersion.v1_16)) {
+            Matcher matcher = hexPattern.matcher(string);
+            while (matcher.find()) {
+                final ChatColor hexColor = ChatColor.of(matcher.group().substring(1, matcher.group().length() - 1));
+                final String before = string.substring(0, matcher.start());
+                final String after = string.substring(matcher.end());
+                string = before + hexColor + after;
+                matcher = hexPattern.matcher(string);
+            }
         }
         return ChatColor.translateAlternateColorCodes(colorChar, string);
     }

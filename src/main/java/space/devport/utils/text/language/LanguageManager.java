@@ -67,21 +67,31 @@ public class LanguageManager {
     }
 
     public void load() {
-        this.language = new Configuration(plugin, "language");
+
+        if (this.language == null)
+            this.language = new Configuration(plugin, "language");
+        else
+            this.language.load();
 
         boolean save = false;
 
-        for (String path : defaults.keySet()) {
+        for (Map.Entry<String, Message> entry : defaults.entrySet()) {
+
+            //plugin.getConsoleOutput().debug("Path: " + entry.getKey());
 
             Message message;
-            if (!language.getFileConfiguration().contains(path)) {
-                language.setMessage(path, defaults.get(path));
-                message = defaults.get(path);
+            if (!language.getFileConfiguration().contains(entry.getKey())) {
+                //plugin.getConsoleOutput().debug("Does not contain the message.");
+                language.setMessage(entry.getKey(), entry.getValue());
+                message = defaults.get(entry.getKey());
                 save = true;
             } else {
-                message = language.getMessage(path, new Message());
+                //plugin.getConsoleOutput().debug("Contains the message.");
+                message = language.getMessage(entry.getKey(), new Message());
             }
-            cache.put(path, message);
+
+            //plugin.getConsoleOutput().debug("Final message: " + message.toString());
+            cache.put(entry.getKey(), message);
         }
 
         if (save)

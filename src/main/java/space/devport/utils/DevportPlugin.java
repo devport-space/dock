@@ -3,7 +3,6 @@ package space.devport.utils;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +16,7 @@ import space.devport.utils.configuration.Configuration;
 import space.devport.utils.holograms.HologramManager;
 import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
@@ -59,19 +59,11 @@ public abstract class DevportPlugin extends JavaPlugin {
     protected String prefix = "";
 
     @Getter
-    private ChatColor color = ChatColor.WHITE;
-
-    @Getter
     private final Random random = new Random();
 
     @Getter
     @Setter
     private String reloadMessagePath = "Commands.Reload";
-
-    @Getter
-    private final ChatColor[] colors = new ChatColor[]{ChatColor.AQUA, ChatColor.YELLOW, ChatColor.RED, ChatColor.GREEN,
-            ChatColor.DARK_GREEN, ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.GOLD, ChatColor.LIGHT_PURPLE,
-            ChatColor.WHITE, ChatColor.DARK_PURPLE};
 
     @Getter
     private final Placeholders globalPlaceholders = new Placeholders();
@@ -96,8 +88,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
 
-        this.color = colors[random.nextInt(colors.length)];
-
         instance = this;
 
         ServerVersion.loadServerVersion();
@@ -111,13 +101,17 @@ public abstract class DevportPlugin extends JavaPlugin {
         consoleOutput = utils.getConsoleOutput();
         consoleOutput.setColors(true);
 
-        consoleOutput.info("Starting up " + getDescription().getName() + " v" + getDescription().getVersion());
+        consoleOutput.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
         consoleOutput.info("&3~~~~~~~~~~~~ &7Devport &3~~~~~~~~~~~~");
 
         configuration = new Configuration(this, "config");
 
-        consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled"));
+        if (configuration.getFileConfiguration().contains("hex-pattern"))
+            StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
+        StringUtil.compilePattern();
+
+        consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
         globalPlaceholders.add("%prefix%", prefix)
@@ -162,12 +156,15 @@ public abstract class DevportPlugin extends JavaPlugin {
     public void reload(CommandSender sender) {
         long start = System.currentTimeMillis();
 
-        this.color = colors[random.nextInt(colors.length)];
-
         if (!(sender instanceof ConsoleCommandSender))
             consoleOutput.addListener(sender);
 
         configuration.load();
+
+        if (configuration.getFileConfiguration().contains("hex-pattern")) {
+            StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
+            StringUtil.compilePattern();
+        }
 
         consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
         prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");

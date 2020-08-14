@@ -96,9 +96,10 @@ public class Configuration {
     public void load() {
         file = new File(plugin.getDataFolder(), path);
 
-        if (!file.exists())
+        if (!file.exists()) {
             try {
                 plugin.saveResource(path, false);
+                DevportUtils.getInstance().getConsoleOutput().debug("Created new " + path);
             } catch (Exception e) {
                 try {
                     if (!file.createNewFile()) {
@@ -110,6 +111,7 @@ public class Configuration {
                     return;
                 }
             }
+        }
 
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
         DevportUtils.getInstance().getConsoleOutput().info("Loaded " + path + "...");
