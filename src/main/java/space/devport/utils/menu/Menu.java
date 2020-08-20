@@ -130,6 +130,7 @@ public class Menu implements MenuListener {
      */
     @Override
     public boolean onClick(InventoryClickEvent clickEvent, MenuItem clickedItem) {
+        if (clickedItem.getRewards() != null) clickedItem.getRewards().give((Player) clickEvent.getWhoClicked());
         return true;
     }
 

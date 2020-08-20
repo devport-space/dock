@@ -562,6 +562,10 @@ public class Configuration {
 
         item.setCancelClick(fileConfiguration.getBoolean(path + "." + SubPath.MENU_ITEM_CANCEL_CLICK, true));
 
+        // Load rewards
+        if (section(path).contains("rewards"))
+            item.setRewards(getRewards(path.concat(".rewards")));
+
         return item;
     }
 

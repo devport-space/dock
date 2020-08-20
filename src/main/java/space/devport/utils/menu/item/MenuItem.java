@@ -6,6 +6,7 @@ import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.menu.events.ItemClick;
+import space.devport.utils.struct.Rewards;
 
 
 public class MenuItem {
@@ -28,6 +29,10 @@ public class MenuItem {
 
     @Getter
     @Setter
+    private Rewards rewards = new Rewards();
+
+    @Getter
+    @Setter
     private boolean cancelClick = true;
 
     @Getter
@@ -47,6 +52,7 @@ public class MenuItem {
 
         this.itemBuilder = new ItemBuilder(item.getItemBuilder());
 
+        this.rewards = item.getRewards();
         this.cancelClick = item.isCancelClick();
         this.clickAction = item.getClickAction();
     }
