@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.DevportUtils;
 import space.devport.utils.holograms.provider.CMIHolograms;
 import space.devport.utils.holograms.provider.HologramProvider;
 import space.devport.utils.holograms.provider.Holograms;

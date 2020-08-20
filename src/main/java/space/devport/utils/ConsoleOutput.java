@@ -42,6 +42,7 @@ public class ConsoleOutput {
 
     public ConsoleOutput(JavaPlugin plugin) {
         this.console = plugin.getServer().getConsoleSender();
+        this.colors = true;
     }
 
     public void colored(String msg) {

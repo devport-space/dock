@@ -21,39 +21,33 @@ import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public abstract class DevportPlugin extends JavaPlugin {
 
+    @Getter
     @Setter
     private static DevportPlugin instance;
 
-    @Getter
-    protected DevportUtils utils;
-
-    @Getter
     protected PluginManager pluginManager;
 
     @Getter
-    @Setter
     protected ConsoleOutput consoleOutput;
 
     @Getter
-    protected CommandManager commandManager;
+    private final Set<UsageFlag> usageFlags = new HashSet<>();
 
+    @Getter
+    protected CommandManager commandManager;
     @Getter
     protected MenuManager menuManager;
-
     @Getter
     protected LanguageManager languageManager;
+    @Getter
+    protected HologramManager hologramManager;
 
     @Getter
     protected Configuration configuration;
-
-    @Getter
-    protected HologramManager hologramManager;
 
     @Getter
     protected String prefix = "";
@@ -62,15 +56,7 @@ public abstract class DevportPlugin extends JavaPlugin {
     private final Random random = new Random();
 
     @Getter
-    @Setter
-    private String reloadMessagePath = "Commands.Reload";
-
-    @Getter
     private final Placeholders globalPlaceholders = new Placeholders();
-
-    public static DevportPlugin getInstance() {
-        return instance;
-    }
 
     public abstract void onPluginEnable();
 
@@ -78,11 +64,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public abstract void onReload();
 
-    public abstract boolean useLanguage();
-
-    public abstract boolean useHolograms();
-
-    public abstract boolean useMenus();
+    public abstract UsageFlag[] usageFlags();
 
     @Override
     public void onEnable() {
@@ -90,55 +72,64 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         instance = this;
 
+        // Load version
         ServerVersion.loadServerVersion();
         ServerType.loadServerType();
 
         pluginManager = getServer().getPluginManager();
 
-        utils = new DevportUtils(this);
-
         // Setup Console Output
-        consoleOutput = utils.getConsoleOutput();
-        consoleOutput.setColors(true);
+        consoleOutput = new ConsoleOutput(this);
 
+        // Print header
         consoleOutput.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
         consoleOutput.info("&3~~~~~~~~~~~~ &7Devport &3~~~~~~~~~~~~");
 
-        configuration = new Configuration(this, "config");
+        // Load usage flags
+        this.usageFlags.addAll(Arrays.asList(usageFlags()));
 
-        if (configuration.getFileConfiguration().contains("hex-pattern"))
-            StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
-        StringUtil.compilePattern();
+        if (use(UsageFlag.CONFIGURATION)) {
+            configuration = new Configuration(this, "config");
 
-        consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
-        prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
+            if (configuration.getFileConfiguration().contains("hex-pattern"))
+                StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
+            StringUtil.compilePattern();
+
+            consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
+            prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
+        }
+
+        consoleOutput.debug("Usage flags: " + usageFlags.toString());
 
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName());
 
-        commandManager = new CommandManager(this);
+        if (use(UsageFlag.COMMANDS))
+            commandManager = new CommandManager(this);
 
-        if (useMenus())
+        if (use(UsageFlag.MENUS))
             menuManager = new MenuManager();
 
-        if (useHolograms()) {
+        if (use(UsageFlag.HOLOGRAMS)) {
             hologramManager = new HologramManager(this);
             hologramManager.attemptHook();
         }
 
-        if (useLanguage()) languageManager = new LanguageManager();
+        if (use(UsageFlag.LANGUAGE))
+            languageManager = new LanguageManager();
 
         onPluginEnable();
 
-        if (useLanguage()) {
+        if (use(UsageFlag.LANGUAGE)) {
             languageManager.captureDefaults();
             languageManager.load();
             consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)...");
         }
 
-        commandManager.registerAll();
+        if (use(UsageFlag.COMMANDS))
+            commandManager.registerAll();
 
         consoleOutput.info("&3~~~~~~~~~~~~ &7/////// &3~~~~~~~~~~~~");
         consoleOutput.info("Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
@@ -148,7 +139,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         // Runs after Server finished loading to ensure all possible deps would be loaded.
         Bukkit.getScheduler().runTaskLater(this, () -> {
-            if (useHolograms())
+            if (use(UsageFlag.HOLOGRAMS))
                 hologramManager.attemptHook();
         }, 1L);
     }
@@ -173,7 +164,7 @@ public abstract class DevportPlugin extends JavaPlugin {
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName());
 
-        if (useLanguage()) {
+        if (use(UsageFlag.LANGUAGE)) {
             if (languageManager == null) languageManager = new LanguageManager();
             languageManager.load();
             consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
@@ -181,7 +172,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         onReload();
 
-        if (useHolograms())
+        if (use(UsageFlag.HOLOGRAMS))
             if (hologramManager.isHooked()) {
                 hologramManager.getHologramProvider().save();
                 hologramManager.getHologramProvider().load();
@@ -191,7 +182,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         consoleOutput.removeListener(sender);
 
-        getLanguageManager().getPrefixed(reloadMessagePath)
+        getLanguageManager().getPrefixed("Commands.Reload")
                 .replace("%time%", (System.currentTimeMillis() - start))
                 .send(sender);
     }
@@ -202,6 +193,10 @@ public abstract class DevportPlugin extends JavaPlugin {
             hologramManager.getHologramProvider().save();
 
         onPluginDisable();
+    }
+
+    public boolean use(UsageFlag usageFlag) {
+        return this.usageFlags.contains(usageFlag);
     }
 
     /**
@@ -216,12 +211,12 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Override
     public void reloadConfig() {
-        configuration.load();
+        if (configuration != null) configuration.load();
     }
 
     @Override
     public void saveConfig() {
-        configuration.save();
+        if (configuration != null) configuration.save();
     }
 
     @Override
