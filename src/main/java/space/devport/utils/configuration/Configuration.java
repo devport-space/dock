@@ -201,6 +201,10 @@ public class Configuration {
             load();
     }
 
+    public ConfigurationSection section(String path) {
+        return fileConfiguration.isConfigurationSection(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
+    }
+
     /**
      * Returns colored string retrieved from config.
      * Returns null if string is null or empty.
