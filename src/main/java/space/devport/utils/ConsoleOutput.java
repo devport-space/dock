@@ -1,7 +1,6 @@
 package space.devport.utils;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -18,8 +17,15 @@ import java.util.List;
  *
  * @author Devport Team
  */
-@NoArgsConstructor
 public class ConsoleOutput {
+
+    @Setter
+    private static ConsoleOutput instance;
+
+    @NotNull
+    public static ConsoleOutput getInstance() {
+        return instance == null ? new ConsoleOutput() : instance;
+    }
 
     @Getter
     @Setter
@@ -40,7 +46,13 @@ public class ConsoleOutput {
     @Getter
     private final List<CommandSender> listeners = new ArrayList<>();
 
+    public ConsoleOutput() {
+        instance = this;
+    }
+
     public ConsoleOutput(JavaPlugin plugin) {
+        instance = this;
+
         this.console = plugin.getServer().getConsoleSender();
         this.colors = true;
     }

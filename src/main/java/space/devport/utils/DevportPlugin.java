@@ -80,6 +80,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         // Setup Console Output
         consoleOutput = new ConsoleOutput(this);
+        ConsoleOutput.setInstance(consoleOutput);
 
         // Print header
         consoleOutput.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
