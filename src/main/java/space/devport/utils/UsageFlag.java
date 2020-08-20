@@ -7,5 +7,7 @@ public enum UsageFlag {
     COMMANDS,
     LANGUAGE,
     CONFIGURATION,
-    HOLOGRAMS
+    HOLOGRAMS,
+    //TODO temporary, replace with a standalone Dependency + Currency system
+    ECONOMY
 }

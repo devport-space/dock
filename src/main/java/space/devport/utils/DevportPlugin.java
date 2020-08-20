@@ -2,12 +2,14 @@ package space.devport.utils;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.commands.CommandManager;
@@ -29,6 +31,7 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Setter
     private static DevportPlugin instance;
 
+    @Getter
     protected PluginManager pluginManager;
 
     @Getter
@@ -59,6 +62,10 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
     private final Placeholders globalPlaceholders = new Placeholders();
+
+    // Temporary.
+    @Getter
+    private Economy economy;
 
     public abstract void onPluginEnable();
 
@@ -149,6 +156,8 @@ public abstract class DevportPlugin extends JavaPlugin {
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (use(UsageFlag.HOLOGRAMS))
                 hologramManager.attemptHook();
+            if (use(UsageFlag.ECONOMY))
+                setupEconomy();
         }, 1L);
     }
 
@@ -158,15 +167,17 @@ public abstract class DevportPlugin extends JavaPlugin {
         if (!(sender instanceof ConsoleCommandSender))
             consoleOutput.addListener(sender);
 
-        configuration.load();
+        if (use(UsageFlag.CONFIGURATION)) {
+            configuration.load();
 
-        if (configuration.getFileConfiguration().contains("hex-pattern")) {
-            StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
-            StringUtil.compilePattern();
+            if (configuration.getFileConfiguration().contains("hex-pattern")) {
+                StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
+                StringUtil.compilePattern();
+            }
+
+            consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
+            prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
-
-        consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
-        prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
 
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
@@ -187,6 +198,9 @@ public abstract class DevportPlugin extends JavaPlugin {
             } else {
                 hologramManager.attemptHook();
             }
+
+        if (use(UsageFlag.ECONOMY))
+            setupEconomy();
 
         consoleOutput.removeListener(sender);
 
@@ -215,6 +229,27 @@ public abstract class DevportPlugin extends JavaPlugin {
         dependencies.addAll(getDescription().getDepend());
         dependencies.addAll(getDescription().getSoftDepend());
         return dependencies;
+    }
+
+    public void setupEconomy() {
+
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            if (economy != null) economy = null;
+            return;
+        }
+
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+
+        if (rsp == null) {
+            if (economy != null) economy = null;
+            consoleOutput.info("Found Vault, but no economy manager.");
+            return;
+        }
+
+        if (economy != null) return;
+
+        economy = rsp.getProvider();
+        consoleOutput.info("Found Vault, using economy.");
     }
 
     @Override

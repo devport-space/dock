@@ -8,6 +8,7 @@ import space.devport.utils.holograms.provider.CMIHolograms;
 import space.devport.utils.holograms.provider.HologramProvider;
 import space.devport.utils.holograms.provider.Holograms;
 import space.devport.utils.holograms.provider.HolographicDisplays;
+import space.devport.utils.utility.DependencyUtil;
 
 import java.util.List;
 
@@ -29,13 +30,13 @@ public class HologramManager {
 
         if (hologramProvider != null) return;
 
-        if (DevportUtils.getInstance().checkDependency("Holograms")) {
+        if (DependencyUtil.isEnabled("Holograms")) {
             hologramProvider = new Holograms();
             instance.getConsoleOutput().info("Using &aHolograms &7as the HologramsProvider.");
-        } else if (DevportUtils.getInstance().checkDependency("HolographicDisplays")) {
+        } else if (DependencyUtil.isEnabled("HolographicDisplays")) {
             hologramProvider = new HolographicDisplays();
             instance.getConsoleOutput().info("Using &aHolographicDisplays &7as the HologramsProvider.");
-        } else if (DevportUtils.getInstance().checkDependency("CMI")) {
+        } else if (DependencyUtil.isEnabled("CMI")) {
             hologramProvider = new CMIHolograms();
             instance.getConsoleOutput().info("Using &aCMI &7as the HologramsProvider.");
         }

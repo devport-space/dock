@@ -4,12 +4,15 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.realized.tokenmanager.TokenManagerPlugin;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.Message;
+import space.devport.utils.utility.DependencyUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +80,7 @@ public class Rewards implements Cloneable {
 
         // Broadcast - to all players
         broadcast.setPlaceholders(placeholders);
-        DevportUtils.getInstance().getPlugin().getServer().getOnlinePlayers().forEach(broadcast::send);
+        Bukkit.getOnlinePlayers().forEach(broadcast::send);
 
         parseCommands(player);
     }
@@ -86,7 +89,7 @@ public class Rewards implements Cloneable {
         if (player == null) return;
 
         int tokens = this.tokens.getInt();
-        if (tokens != 0 && DevportUtils.getInstance().checkDependency("TokenManager"))
+        if (tokens != 0 && DependencyUtil.isEnabled("TokenManager"))
             TokenManagerPlugin.getInstance().addTokens(player, tokens);
     }
 
@@ -94,8 +97,8 @@ public class Rewards implements Cloneable {
         if (player == null) return;
 
         double money = this.money.getDouble();
-        if (money != 0 && DevportUtils.getInstance().checkDependency("Vault"))
-            DevportUtils.getInstance().getEconomy().depositPlayer(player, money);
+        if (money != 0 && DependencyUtil.isEnabled("Vault"))
+            DevportPlugin.getInstance().getEconomy().depositPlayer(player, money);
     }
 
     public void giveItems(@Nullable Player player) {
@@ -151,7 +154,7 @@ public class Rewards implements Cloneable {
 
     // Execute command as console
     private void executeConsole(String cmd) {
-        DevportUtils.getInstance().getPlugin().getServer().dispatchCommand(DevportUtils.getInstance().getPlugin().getServer().getConsoleSender(), cmd.trim());
+        DevportPlugin.getInstance().getServer().dispatchCommand(DevportPlugin.getInstance().getServer().getConsoleSender(), cmd.trim());
     }
 
     // Execute command as player
