@@ -121,6 +121,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         if (use(UsageFlag.CUSTOMISATION)) {
             customisationManager = new CustomisationManager(this);
+            this.customisationManager.load();
         }
 
         if (use(UsageFlag.MENUS))
@@ -178,6 +179,9 @@ public abstract class DevportPlugin extends JavaPlugin {
             consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
             prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
+
+        if (use(UsageFlag.CUSTOMISATION))
+            this.customisationManager.load();
 
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
