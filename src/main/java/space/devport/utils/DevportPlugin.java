@@ -45,6 +45,8 @@ public abstract class DevportPlugin extends JavaPlugin {
     protected LanguageManager languageManager;
     @Getter
     protected HologramManager hologramManager;
+    @Getter
+    protected CustomisationManager customisationManager;
 
     @Getter
     protected Configuration configuration;
@@ -110,6 +112,10 @@ public abstract class DevportPlugin extends JavaPlugin {
         if (use(UsageFlag.COMMANDS))
             commandManager = new CommandManager(this);
 
+        if (use(UsageFlag.CUSTOMISATION)) {
+            customisationManager = new CustomisationManager(this);
+        }
+
         if (use(UsageFlag.MENUS))
             menuManager = new MenuManager();
 
@@ -121,6 +127,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         if (use(UsageFlag.LANGUAGE))
             languageManager = new LanguageManager();
 
+        // Call plugin enable
         onPluginEnable();
 
         if (use(UsageFlag.LANGUAGE)) {
