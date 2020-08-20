@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.ConsoleOutput;
 
 /**
  * Static util class to assist location related operations.
@@ -33,7 +34,7 @@ public class LocationUtil {
     @Nullable
     public String locationToString(@Nullable Location location, @Nullable String delimiter) {
         if (location == null) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not parse location to string, location is null.");
+            ConsoleOutput.getInstance().err("Could not parse location to string, location is null.");
             return null;
         }
 
@@ -72,7 +73,7 @@ public class LocationUtil {
         String[] arr = locationString.split(delimiter);
 
         if (arr.length < 4) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", too few parameters.");
+            ConsoleOutput.getInstance().err("Could not parse a location from " + locationString + ", too few parameters.");
             return null;
         }
 
@@ -82,9 +83,9 @@ public class LocationUtil {
             else
                 return new Location(null, Double.parseDouble(arr[1]), Double.parseDouble(arr[2]), Double.parseDouble(arr[3]));
         } catch (NumberFormatException e) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", parameter not a number.");
+            ConsoleOutput.getInstance().err("Could not parse a location from " + locationString + ", parameter not a number.");
         } catch (NullPointerException e1) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not parse a location from " + locationString + ", parameter(s) missing.");
+            ConsoleOutput.getInstance().err("Could not parse a location from " + locationString + ", parameter(s) missing.");
         }
 
         return null;

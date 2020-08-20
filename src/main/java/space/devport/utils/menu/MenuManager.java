@@ -8,20 +8,21 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.menu.item.MenuItem;
 
 import java.util.HashMap;
 
 public class MenuManager implements Listener {
 
-    private final DevportUtils devportUtils;
+    private final DevportPlugin plugin;
 
     @Getter
     private final HashMap<String, Menu> menuCache = new HashMap<>();
 
     public MenuManager() {
-        this.devportUtils = DevportUtils.getInstance();
-        devportUtils.getPlugin().getServer().getPluginManager().registerEvents(this, devportUtils.getPlugin());
+        this.plugin = DevportPlugin.getInstance();
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
@@ -63,7 +64,7 @@ public class MenuManager implements Listener {
                     public void run() {
                         finalItem.setClickable(true);
                     }
-                }.runTaskLaterAsynchronously(devportUtils.getPlugin(), menu.getMenuBuilder().getClickDelay());
+                }.runTaskLaterAsynchronously(plugin, menu.getMenuBuilder().getClickDelay());
             }
         }
 

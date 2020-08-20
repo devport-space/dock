@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
+import space.devport.utils.ConsoleOutput;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.menu.item.MatrixItem;
 import space.devport.utils.menu.item.MenuItem;
@@ -85,7 +86,7 @@ public class MenuBuilder {
         int required = buildMatrix.length * 9;
         if (required > this.slots) this.slots = required;
 
-        DevportUtils.getInstance().getConsoleOutput().debug("Slots: " + this.slots);
+        ConsoleOutput.getInstance().debug("Slots: " + this.slots);
 
         // Title
 
@@ -94,7 +95,7 @@ public class MenuBuilder {
 
         if (title.length() > 32) {
             title = title.substring(0, 31);
-            DevportUtils.getInstance().getConsoleOutput().warn("Inventory title " + this.title + " is too long, cutting to 32.");
+            ConsoleOutput.getInstance().warn("Inventory title " + this.title + " is too long, cutting to 32.");
         }
 
         inventory = Bukkit.createInventory(null, slots, title);
@@ -102,7 +103,7 @@ public class MenuBuilder {
         // Build scheme
 
         if (buildMatrix.length == 0) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not construct menu " + name + ", there's no matrix.");
+            ConsoleOutput.getInstance().err("Could not construct menu " + name + ", there's no matrix.");
             return null;
         }
 

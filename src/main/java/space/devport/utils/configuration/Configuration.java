@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.ConsoleOutput;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.menu.MenuBuilder;
@@ -81,11 +82,6 @@ public class Configuration {
         this.file = file;
         this.path = file.getPath();
 
-        if (DevportUtils.getInstance() == null) {
-            new DevportUtils(plugin);
-            return;
-        }
-
         load();
     }
 
@@ -98,22 +94,22 @@ public class Configuration {
         if (!file.exists()) {
             try {
                 plugin.saveResource(path, false);
-                DevportUtils.getInstance().getConsoleOutput().debug("Created new " + path);
+                ConsoleOutput.getInstance().debug("Created new " + path);
             } catch (Exception e) {
                 try {
                     if (!file.createNewFile()) {
-                        DevportUtils.getInstance().getConsoleOutput().err("Could not create " + path);
+                        ConsoleOutput.getInstance().err("Could not create " + path);
                         return;
                     }
                 } catch (IOException e1) {
-                    DevportUtils.getInstance().getConsoleOutput().err("Could not create " + path);
+                    ConsoleOutput.getInstance().err("Could not create " + path);
                     return;
                 }
             }
         }
 
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
-        DevportUtils.getInstance().getConsoleOutput().info("Loaded " + path + "...");
+        ConsoleOutput.getInstance().info("Loaded " + path + "...");
     }
 
     /**
@@ -134,7 +130,7 @@ public class Configuration {
             fileConfiguration.save(file);
             return true;
         } catch (IOException e) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not save " + path);
+            ConsoleOutput.getInstance().err("Could not save " + path);
             return false;
         }
     }
@@ -156,8 +152,8 @@ public class Configuration {
         try {
             this.fileConfiguration.save(file);
         } catch (IOException e) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not save " + path);
-            if (DevportUtils.getInstance().getConsoleOutput().isDebug())
+            ConsoleOutput.getInstance().err("Could not save " + path);
+            if (ConsoleOutput.getInstance().isDebug())
                 e.printStackTrace();
         }
     }
@@ -170,7 +166,7 @@ public class Configuration {
      */
     public void saveToFile(@Nullable String path, boolean... set) {
         if (Strings.isNullOrEmpty(path)) {
-            DevportUtils.getInstance().getConsoleOutput().warn("Could not save " + this.path + " to another location, other path is null.");
+            ConsoleOutput.getInstance().warn("Could not save " + this.path + " to another location, other path is null.");
             return;
         }
 
@@ -187,7 +183,7 @@ public class Configuration {
         if (file.delete())
             return true;
         else {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not delete file " + path);
+            ConsoleOutput.getInstance().err("Could not delete file " + path);
             return false;
         }
     }
@@ -442,12 +438,12 @@ public class Configuration {
         Location max = LocationUtil.locationFromString(fileConfiguration.getString(path + "." + SubPath.REGION_MAX));
 
         if (min == null) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load a region at path " + path + ", minimum location didn't load.");
+            ConsoleOutput.getInstance().err("Could not load a region at path " + path + ", minimum location didn't load.");
             return null;
         }
 
         if (max == null) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load a region at path " + path + ", maximum location didn't load.");
+            ConsoleOutput.getInstance().err("Could not load a region at path " + path + ", maximum location didn't load.");
             return null;
         }
 
@@ -464,13 +460,13 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not save region to path " + path + ", path is invalid.");
+            ConsoleOutput.getInstance().err("Could not save region to path " + path + ", path is invalid.");
             return;
         }
 
         // Check region
         if (region == null) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not save region to path " + path + ", region is null.");
+            ConsoleOutput.getInstance().err("Could not save region to path " + path + ", region is null.");
             return;
         }
 
@@ -493,7 +489,7 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load MenuBuilder at path " + path + ", path is invalid.");
+            ConsoleOutput.getInstance().err("Could not load MenuBuilder at path " + path + ", path is invalid.");
             return null;
         }
 
@@ -502,7 +498,7 @@ public class Configuration {
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
         if (section == null) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load MenuBuilder at path " + path + ", path is invalid.");
+            ConsoleOutput.getInstance().err("Could not load MenuBuilder at path " + path + ", path is invalid.");
             return null;
         }
 
@@ -549,7 +545,7 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load MenuItem at path " + path + ", path is invalid.");
+            ConsoleOutput.getInstance().err("Could not load MenuItem at path " + path + ", path is invalid.");
             return null;
         }
 
@@ -589,28 +585,28 @@ public class Configuration {
                 ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
                 if (section == null) {
-                    DevportUtils.getInstance().getConsoleOutput().warn("Could not find section for item on path " + path + ", using default.");
+                    ConsoleOutput.getInstance().warn("Could not find section for item on path " + path + ", using default.");
                     return defaultValue;
                 }
 
                 String type = section.getString(SubPath.ITEM_TYPE.toString());
 
                 if (Strings.isNullOrEmpty(type)) {
-                    DevportUtils.getInstance().getConsoleOutput().err("Invalid material on path " + path + ", returning default.");
+                    ConsoleOutput.getInstance().err("Invalid material on path " + path + ", returning default.");
                     return defaultValue;
                 }
 
                 XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
 
                 if (xMaterial == null || xMaterial.parseMaterial() == null) {
-                    DevportUtils.getInstance().getConsoleOutput().err("Invalid material on path " + path + ", returning default.");
+                    ConsoleOutput.getInstance().err("Invalid material on path " + path + ", returning default.");
                     return defaultValue;
                 }
 
                 Material material = xMaterial.parseMaterial();
 
                 if (material == null) {
-                    DevportUtils.getInstance().getConsoleOutput().err("Invalid material on path " + path + ", returning default.");
+                    ConsoleOutput.getInstance().err("Invalid material on path " + path + ", returning default.");
                     return defaultValue;
                 }
 
@@ -650,14 +646,14 @@ public class Configuration {
                         XEnchantment xEnchantment = XEnchantment.matchXEnchantment(dataString).orElse(null);
 
                         if (xEnchantment == null) {
-                            DevportUtils.getInstance().getConsoleOutput().warn("Could not parse enchantment " + dataString);
+                            ConsoleOutput.getInstance().warn("Could not parse enchantment " + dataString);
                             continue;
                         }
 
                         Enchantment enchantment = xEnchantment.parseEnchantment();
 
                         if (enchantment == null) {
-                            DevportUtils.getInstance().getConsoleOutput().warn("Enchantment " + xEnchantment.name() + " is not valid on this version, skipping it");
+                            ConsoleOutput.getInstance().warn("Enchantment " + xEnchantment.name() + " is not valid on this version, skipping it");
                             continue;
                         }
 
@@ -683,12 +679,12 @@ public class Configuration {
 
                 return b;
             } catch (Exception e) {
-                if (DevportUtils.getInstance().getConsoleOutput().isDebug())
+                if (ConsoleOutput.getInstance().isDebug())
                     e.printStackTrace();
                 format.add("{message}", e.getMessage());
             }
 
-        DevportUtils.getInstance().getConsoleOutput().warn("Could not load item on path " + path + ", using default.");
+        ConsoleOutput.getInstance().warn("Could not load item on path " + path + ", using default.");
         return defaultValue;
     }
 
@@ -709,28 +705,28 @@ public class Configuration {
             ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
             if (section == null) {
-                DevportUtils.getInstance().getConsoleOutput().debug("Invalid section - path " + path + ", returning null.");
+                ConsoleOutput.getInstance().debug("Invalid section - path " + path + ", returning null.");
                 return null;
             }
 
             String type = section.getString(SubPath.ITEM_TYPE.toString());
 
             if (Strings.isNullOrEmpty(type)) {
-                DevportUtils.getInstance().getConsoleOutput().debug("Invalid material on path " + path + ", returning null.");
+                ConsoleOutput.getInstance().debug("Invalid material on path " + path + ", returning null.");
                 return null;
             }
 
             XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
 
             if (xMaterial == null) {
-                DevportUtils.getInstance().getConsoleOutput().debug("Invalid material on path " + path + ", returning null.");
+                ConsoleOutput.getInstance().debug("Invalid material on path " + path + ", returning null.");
                 return null;
             }
 
             Material material = xMaterial.parseMaterial();
 
             if (material == null) {
-                DevportUtils.getInstance().getConsoleOutput().debug("Invalid material on path " + path + ", returning null.");
+                ConsoleOutput.getInstance().debug("Invalid material on path " + path + ", returning null.");
                 return null;
             }
 
@@ -770,14 +766,14 @@ public class Configuration {
                     XEnchantment xEnchantment = XEnchantment.matchXEnchantment(dataString).orElse(null);
 
                     if (xEnchantment == null) {
-                        DevportUtils.getInstance().getConsoleOutput().warn("Could not parse enchantment " + dataString);
+                        ConsoleOutput.getInstance().warn("Could not parse enchantment " + dataString);
                         continue;
                     }
 
                     Enchantment enchantment = xEnchantment.parseEnchantment();
 
                     if (enchantment == null) {
-                        DevportUtils.getInstance().getConsoleOutput().warn("Enchantment " + xEnchantment.name() + " is not valid on this version, skipping it");
+                        ConsoleOutput.getInstance().warn("Enchantment " + xEnchantment.name() + " is not valid on this version, skipping it");
                         continue;
                     }
 
@@ -803,7 +799,7 @@ public class Configuration {
 
             return b;
         } catch (Exception e) {
-            if (DevportUtils.getInstance().getConsoleOutput().isDebug())
+            if (ConsoleOutput.getInstance().isDebug())
                 e.printStackTrace();
         }
 
@@ -818,14 +814,14 @@ public class Configuration {
      */
     public void setItemBuilder(@Nullable String path, @NotNull ItemBuilder builder) {
         if (Strings.isNullOrEmpty(path)) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not save ItemBuilder, path null.");
+            ConsoleOutput.getInstance().err("Could not save ItemBuilder, path null.");
             return;
         }
 
         ConfigurationSection section = fileConfiguration.contains(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
 
         if (section == null) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not save ItemBuilder to path " + path + ", section non-existant.");
+            ConsoleOutput.getInstance().err("Could not save ItemBuilder to path " + path + ", section non-existant.");
             return;
         }
 
@@ -853,7 +849,7 @@ public class Configuration {
 
     public void setMessage(@Nullable String path, @NotNull Message message) {
         if (Strings.isNullOrEmpty(path)) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not save Message, path null.");
+            ConsoleOutput.getInstance().err("Could not save Message, path null.");
             return;
         }
 
@@ -879,7 +875,7 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load Amount at path " + path + ", path is invalid.");
+            ConsoleOutput.getInstance().err("Could not load Amount at path " + path + ", path is invalid.");
             return defaultValue;
         }
 
@@ -917,7 +913,7 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            DevportUtils.getInstance().getConsoleOutput().err("Could not load Amount at path " + path + ", path is invalid.");
+            ConsoleOutput.getInstance().err("Could not load Amount at path " + path + ", path is invalid.");
             return null;
         }
 

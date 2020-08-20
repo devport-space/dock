@@ -12,6 +12,7 @@ import space.devport.utils.menu.events.MenuOpenEvent;
 import space.devport.utils.menu.item.MenuItem;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Menu implements MenuListener {
 
@@ -66,7 +67,7 @@ public class Menu implements MenuListener {
 
         // Throw event
         MenuOpenEvent openEvent = new MenuOpenEvent(player, this);
-        DevportUtils.getInstance().getPlugin().getServer().getPluginManager().callEvent(openEvent);
+        DevportPlugin.getInstance().getServer().getPluginManager().callEvent(openEvent);
 
         if (!openEvent.isCancelled()) {
             this.player = player;
@@ -103,7 +104,7 @@ public class Menu implements MenuListener {
 
         // Throw close event
         MenuCloseEvent closeEvent = new MenuCloseEvent(player, this);
-        DevportUtils.getInstance().getPlugin().getServer().getPluginManager().callEvent(closeEvent);
+        DevportPlugin.getInstance().getServer().getPluginManager().callEvent(closeEvent);
 
         if (!closeEvent.isCancelled()) {
 
@@ -138,5 +139,19 @@ public class Menu implements MenuListener {
 
     @Override
     public void onOpen() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Menu menu = (Menu) o;
+        return name.equals(menu.name) &&
+                player.equals(menu.player);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, player);
     }
 }

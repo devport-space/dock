@@ -9,9 +9,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.ConsoleOutput;
+import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
-import space.devport.utils.text.Placeholders;
 
 import java.util.*;
 
@@ -210,7 +211,7 @@ public class ItemBuilder {
                 ItemStack i = ItemNBTEditor.writeNBT(item, key, NBT.get(key));
 
                 if (i == null)
-                    DevportUtils.getInstance().getConsoleOutput().warn("Couldn't write NBT to item.");
+                    ConsoleOutput.getInstance().warn("Couldn't write NBT to item.");
                 else
                     item = i;
             }
