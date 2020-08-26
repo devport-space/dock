@@ -39,7 +39,7 @@ public class CustomisationManager {
 
         plugin.getConsoleOutput().debug("Loading menus...");
         for (String name : customisation.section("menus").getKeys(false)) {
-            MenuBuilder menuBuilder = customisation.getMenuBuilder(name);
+            MenuBuilder menuBuilder = customisation.getMenuBuilder("menus.".concat(name));
 
             this.loadedMenus.put(name, menuBuilder);
         }
@@ -49,7 +49,7 @@ public class CustomisationManager {
 
         plugin.getConsoleOutput().debug("Loading items...");
         for (String name : customisation.section("items").getKeys(false)) {
-            ItemBuilder itemBuilder = customisation.getItemBuilder(name);
+            ItemBuilder itemBuilder = customisation.getItemBuilder("items.".concat(name));
 
             this.loadedItems.put(name, itemBuilder);
         }
