@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.text.message.Message;
 
 import java.util.LinkedHashMap;
@@ -85,8 +86,9 @@ public class Placeholders {
      * @param value       Value to fill in
      * @return ParseFormat object
      */
-    public Placeholders add(@NotNull String placeholder, @NotNull Object value) {
-        placeholderCache.put(placeholder, value.toString());
+    public Placeholders add(@NotNull String placeholder, @Nullable Object value) {
+        if (value != null)
+            placeholderCache.put(placeholder, value.toString());
         return this;
     }
 
