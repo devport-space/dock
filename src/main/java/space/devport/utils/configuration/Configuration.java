@@ -92,9 +92,9 @@ public class Configuration {
         file = new File(plugin.getDataFolder(), path);
 
         if (!file.exists()) {
-            
+
             // Ensure folder structure
-            file.mkdirs();
+            file.getParentFile().mkdirs();
 
             try {
                 plugin.saveResource(path, false);
