@@ -27,6 +27,7 @@ import java.util.*;
 
 public abstract class DevportPlugin extends JavaPlugin {
 
+    //TODO Hold instance, but replace with dependency injection in most cases.
     @Getter
     @Setter
     private static DevportPlugin instance;

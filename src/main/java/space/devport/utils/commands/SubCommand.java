@@ -3,8 +3,9 @@ package space.devport.utils.commands;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportPlugin;
+import space.devport.utils.UsageFlag;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 
@@ -22,10 +23,12 @@ public abstract class SubCommand extends AbstractCommand {
     }
 
     public void addLanguage() {
-        if (getDefaultUsage() != null)
-            language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Usage", getDefaultUsage());
-        if (getDefaultDescription() != null)
-            language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Description", getDefaultDescription());
+        if (DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) {
+            if (getDefaultUsage() != null)
+                language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Usage", getDefaultUsage());
+            if (getDefaultDescription() != null)
+                language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Description", getDefaultDescription());
+        }
     }
 
     @Override

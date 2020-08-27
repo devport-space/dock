@@ -5,6 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.UsageFlag;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.text.Placeholders;
@@ -23,10 +24,12 @@ public abstract class MainCommand extends AbstractCommand {
     public MainCommand(String name) {
         super(name);
 
-        if (getDefaultUsage() != null)
-            language.addDefault("Commands.Help." + name + ".Usage", getDefaultUsage());
-        if (getDefaultDescription() != null)
-            language.addDefault("Commands.Help." + name + ".Description", getDefaultDescription());
+        if (DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) {
+            if (getDefaultUsage() != null)
+                language.addDefault("Commands.Help." + name + ".Usage", getDefaultUsage());
+            if (getDefaultDescription() != null)
+                language.addDefault("Commands.Help." + name + ".Description", getDefaultDescription());
+        }
     }
 
     @Override
@@ -51,9 +54,13 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     private Message constructHelp(CommandSender sender, String label) {
-        Message help = language.get("Commands.Help.Header").parseWith(DevportPlugin.getInstance().getGlobalPlaceholders());
 
-        String lineFormat = language.get("Commands.Help.Sub-Command-Line").color().toString();
+        DevportPlugin plugin = DevportPlugin.getInstance();
+
+        Message help = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Header") : new Message("&8&m        &r &3%pluginName% &7v&f%version% &8&m        "))
+                .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders());
+
+        String lineFormat = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Sub-Command-Line") : new Message("&3%usage% &8- &7%description%")).color().toString();
 
         Placeholders commandParams = new Placeholders()
                 .add("%usage%", getUsage().replace("%label%", label).color().toString())
@@ -72,7 +79,6 @@ public abstract class MainCommand extends AbstractCommand {
                     .add("%description%", subCommand.getDescription().replace("%label%", label).color().toString());
             help.append(commandParams.parse(lineFormat));
         }
-
         return help;
     }
 
