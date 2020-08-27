@@ -39,8 +39,6 @@ public class ConsoleOutput {
     private ConsoleCommandSender console = null;
 
     @Getter
-    @Setter
-    @NotNull
     private String prefix = "";
 
     @Getter
@@ -159,5 +157,9 @@ public class ConsoleOutput {
     public void toListeners(String message) {
         final String finalMessage = StringUtil.color(message);
         listeners.forEach(c -> c.sendMessage(finalMessage));
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix == null ? "" : prefix;
     }
 }
