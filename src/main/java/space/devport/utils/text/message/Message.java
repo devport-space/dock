@@ -231,11 +231,18 @@ public class Message {
         }
     }
 
+    /**
+     * Send a message prefixed with the DevportPlugin prefix.
+     *
+     * @param sender CommandSender to send to
+     */
     public void sendPrefixed(CommandSender sender) {
 
         if (sender == null) return;
 
-        if (!isEmpty())
-            sender.sendMessage(DevportPlugin.getInstance().getPrefix() + color().toString());
+        if (!isEmpty()) {
+            String prefix = DevportPlugin.getInstance().getPrefix();
+            sender.sendMessage(prefix == null ? "" : prefix + color().toString());
+        }
     }
 }
