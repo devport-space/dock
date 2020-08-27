@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.text.message.Message;
 
@@ -40,12 +41,10 @@ public class LanguageManager {
 
     public void captureDefaults() {
         if (setInternalDefaults) {
-            addDefault("Commands.Not-Enough-Args", "%prefix%&cNot enough arguments.", "%prefix%&cUsage: &7%usage%");
-            addDefault("Commands.Too-Many-Args", "%prefix%&cToo many arguments.", "%prefix%&cUsage: &7%usage%");
-            addDefault("Commands.Only-Players", "%prefix%&cOnly players can do this.");
-            addDefault("Commands.Only-Console", "%prefix%&cOnly the console can do this.");
-            addDefault("Commands.No-Permission", "%prefix%&cYou don't have permission to do this.");
-            addDefault("Commands.Only-Operator", "%prefix%&cOnly operators are allowed to do this.");
+            for (CommandResult result : CommandResult.values()) {
+                if (result.isDefaultMessage())
+                    addDefault(result.getPath(), result.getMessage().toString());
+            }
 
             addDefault("Commands.Reload", "&7Done... reload took &f%time%&7ms.");
 

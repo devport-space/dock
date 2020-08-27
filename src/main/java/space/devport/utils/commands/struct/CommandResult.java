@@ -1,30 +1,33 @@
 package space.devport.utils.commands.struct;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.UsageFlag;
 import space.devport.utils.text.message.Message;
 
 /**
  * Various results of a command execution.
  * Makes it easier and way faster to create command execution.
  */
+@NoArgsConstructor
 public enum CommandResult {
 
     /**
      * Fired after an ArgumentRange check.
      */
-    NOT_ENOUGH_ARGS("Commands.Not-Enough-Args"),
-    TOO_MANY_ARGS("Commands.Too-Many-Args"),
+    NOT_ENOUGH_ARGS("Commands.Not-Enough-Args", "%prefix%&cNot enough arguments.", "%prefix%&cUsage: &7%usage%"),
+    TOO_MANY_ARGS("Commands.Too-Many-Args", "%prefix%&cToo many arguments.", "%prefix%&cUsage: &7%usage%"),
 
     /**
      * Preconditions
      */
-    NO_CONSOLE("Commands.Only-Players"),
-    NO_PLAYER("Commands.Only-Console"),
-    NO_PERMISSION("Commands.No-Permission"),
-    NOT_OPERATOR("Commands.Not-Operator"),
+    NO_CONSOLE("Commands.Only-Players", "%prefix%&cOnly players can do this."),
+    NO_PLAYER("Commands.Only-Console", "%prefix%&cOnly the console can do this."),
+    NO_PERMISSION("Commands.No-Permission", "%prefix%&cYou don't have permission to do this."),
+    NOT_OPERATOR("Commands.Not-Operator", "%prefix%&cOnly operators are allowed to do this."),
 
     /**
      * Generic, no message.
@@ -39,8 +42,12 @@ public enum CommandResult {
     @Setter
     private Message message;
 
-    CommandResult(String... path) {
-        if (path.length > 0) this.path = path[0];
+    @Getter
+    private boolean defaultMessage = false;
+
+    CommandResult(String path, String... defaultMessage) {
+        this.message = new Message(defaultMessage);
+        this.path = path;
     }
 
     public void sendMessage(CommandSender sender) {
@@ -48,7 +55,10 @@ public enum CommandResult {
     }
 
     public Message getMessage() {
-        if (message == null) message = DevportPlugin.getInstance().getLanguageManager().get(path);
+        if (defaultMessage && message == null && DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) {
+            message = DevportPlugin.getInstance().getLanguageManager().get(path);
+            defaultMessage = false;
+        }
         return new Message(message);
     }
 }

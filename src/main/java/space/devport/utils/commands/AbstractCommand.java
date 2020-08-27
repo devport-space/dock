@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.UsageFlag;
 import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.commands.struct.Preconditions;
@@ -56,6 +57,8 @@ public abstract class AbstractCommand {
 
     @NotNull
     public Message getUsage() {
+        if (!DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) return new Message(getDefaultUsage());
+
         if (this instanceof SubCommand) {
             return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent() + "." + getName() + ".Usage") : new Message();
         } else return language.get("Commands.Help." + getName() + ".Usage");
@@ -63,6 +66,8 @@ public abstract class AbstractCommand {
 
     @NotNull
     public Message getDescription() {
+        if (!DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) return new Message(getDefaultDescription());
+
         if (this instanceof SubCommand) {
             return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent() + "." + getName() + ".Description") : new Message();
         } else return language.get("Commands.Help." + getName() + ".Description");
