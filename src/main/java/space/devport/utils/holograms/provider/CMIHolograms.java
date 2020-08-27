@@ -61,7 +61,7 @@ public class CMIHolograms extends HologramProvider {
 
     @Override
     public void deleteHologram(String id) {
-        if (!registeredHolograms.contains(id)) return;
+        if (!registeredHolograms.contains(id) || hologramManager.getByName(id) == null) return;
 
         registeredHolograms.remove(id);
         hologramManager.removeHolo(hologramManager.getByName(id));

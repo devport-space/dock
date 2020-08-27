@@ -70,7 +70,7 @@ public class Holograms extends HologramProvider {
 
     @Override
     public void deleteHologram(String id) {
-        if (!registeredHolograms.contains(id)) return;
+        if (!registeredHolograms.contains(id) || hologramManager.getHologram(id) == null) return;
 
         registeredHolograms.remove(id);
         hologramManager.deleteHologram(hologramManager.getHologram(id));
