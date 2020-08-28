@@ -17,9 +17,14 @@ public class CMIHolograms extends HologramProvider {
         this.hologramManager = CMI.getInstance().getHologramManager();
     }
 
+    public boolean exists(String id) {
+        return this.registeredHolograms.contains(id) && this.hologramManager.getByName(id) != null;
+    }
+
     @Override
     public Location getLocation(String id) {
-        if (!registeredHolograms.contains(id)) return null;
+        if (!exists(id)) return null;
+
         CMIHologram hologram = hologramManager.getByName(id);
         return hologram != null ? hologram.getLoc() : null;
     }
@@ -61,7 +66,7 @@ public class CMIHolograms extends HologramProvider {
 
     @Override
     public void deleteHologram(String id) {
-        if (!registeredHolograms.contains(id) || hologramManager.getByName(id) == null) return;
+        if (!exists(id)) return;
 
         registeredHolograms.remove(id);
         hologramManager.removeHolo(hologramManager.getByName(id));
@@ -70,6 +75,7 @@ public class CMIHolograms extends HologramProvider {
 
     @Override
     public void updateHologram(String id, List<String> newContent) {
+        if (!exists(id)) return;
         Location location = hologramManager.getByName(id).getLoc();
         deleteHologram(id);
         createHologram(id, location, newContent);
@@ -77,6 +83,7 @@ public class CMIHolograms extends HologramProvider {
 
     @Override
     public void updateItemHologram(String id, ItemStack item) {
+        if (!exists(id)) return;
         Location location = hologramManager.getByName(id).getLoc();
         deleteHologram(id);
         createItemHologram(location, item);
@@ -89,12 +96,14 @@ public class CMIHolograms extends HologramProvider {
 
     @Override
     public void moveHologram(String id, Location newLocation) {
+        if (!exists(id)) return;
         CMIHologram cmiHologram = hologramManager.getByName(id);
         cmiHologram.setLoc(newLocation);
     }
 
     @Override
     public void updateAnimatedItem(String id, ItemStack item, int delay) {
+        if (!exists(id)) return;
         Location location = hologramManager.getByName(id).getLoc();
         deleteHologram(id);
         createAnimatedItem(location, item, delay);
