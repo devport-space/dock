@@ -511,6 +511,25 @@ public class ItemBuilder {
     }
 
     /**
+     * Check if ItemBuilder has a NBT key.
+     *
+     * @param key The key to look for
+     */
+    public boolean hasNBT(String key) {
+        return this.NBT != null && this.NBT.containsKey(key);
+    }
+
+    /**
+     * Check if ItemBuilder has NBT key with a value.
+     *
+     * @param key   The key to look for
+     * @param value Required value
+     */
+    public boolean hasNBT(String key, String value) {
+        return this.hasNBT(key) && this.getNBT().get(key).equals(value);
+    }
+
+    /**
      * Set the glow.
      * Applies Luck 1 enchantment with a HIDE_ENCHANTS flag on build.
      *
