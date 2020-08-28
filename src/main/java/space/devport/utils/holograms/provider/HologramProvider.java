@@ -1,9 +1,11 @@
 package space.devport.utils.holograms.provider;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.utility.FastUUID;
 import space.devport.utils.utility.LocationUtil;
 
 import java.util.ArrayList;
@@ -18,20 +20,22 @@ public abstract class HologramProvider {
 
     private final DevportPlugin plugin;
 
-    private final Configuration storage;
-
     protected final List<String> registeredHolograms = new ArrayList<>();
+
+    private Configuration storage;
 
     public HologramProvider() {
         this.plugin = DevportPlugin.getInstance();
-        storage = new Configuration(plugin, "holograms");
 
         load();
     }
 
     public void load() {
         registeredHolograms.clear();
-        storage.load();
+
+        if (storage == null)
+            storage = new Configuration(plugin, "holograms");
+        else storage.load();
 
         for (String id : storage.getFileConfiguration().getKeys(false)) {
             Location location = LocationUtil.locationFromString(storage.getFileConfiguration().getString(id));
@@ -39,6 +43,8 @@ public abstract class HologramProvider {
         }
 
         plugin.getConsoleOutput().info("Loaded " + registeredHolograms.size() + " hologram(s)...");
+
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this::purgeNonexistent, 40);
     }
 
     public void addHologram(String id, Location location) {
@@ -47,6 +53,7 @@ public abstract class HologramProvider {
 
     public void save() {
         storage.clear();
+        purgeNonexistent();
 
         for (String id : registeredHolograms) {
             storage.getFileConfiguration().set(id, LocationUtil.locationToString(getLocation(id)));
@@ -56,14 +63,21 @@ public abstract class HologramProvider {
     }
 
     private String nextId() {
-        return UUID.randomUUID().toString();
+        return FastUUID.toString(UUID.randomUUID()).split("-")[0];
     }
 
     public abstract Location getLocation(String id);
 
+    private void purgeNonexistent() {
+        this.registeredHolograms.removeIf(id -> !exists(id));
+    }
+
     public List<String> getHolograms() {
+        purgeNonexistent();
         return Collections.unmodifiableList(registeredHolograms);
     }
+
+    public abstract boolean exists(String id);
 
     public abstract void createHologram(String id, Location loc, List<String> content);
 

@@ -17,8 +17,9 @@ public class CMIHolograms extends HologramProvider {
         this.hologramManager = CMI.getInstance().getHologramManager();
     }
 
+    @Override
     public boolean exists(String id) {
-        return this.registeredHolograms.contains(id) && this.hologramManager.getByName(id) != null;
+        return this.hologramManager.getByName(id) != null;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class CMIHolograms extends HologramProvider {
         if (!exists(id)) return null;
 
         CMIHologram hologram = hologramManager.getByName(id);
-        return hologram != null ? hologram.getLoc() : null;
+        return hologram != null ? hologram.getLoc().clone() : null;
     }
 
     @Override
@@ -76,9 +77,9 @@ public class CMIHolograms extends HologramProvider {
     @Override
     public void updateHologram(String id, List<String> newContent) {
         if (!exists(id)) return;
-        Location location = hologramManager.getByName(id).getLoc();
-        deleteHologram(id);
-        createHologram(id, location, newContent);
+        CMIHologram hologram = hologramManager.getByName(id);
+        hologram.setLines(newContent);
+        hologram.update();
     }
 
     @Override

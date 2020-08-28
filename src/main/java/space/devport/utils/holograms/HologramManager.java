@@ -10,6 +10,7 @@ import space.devport.utils.holograms.provider.Holograms;
 import space.devport.utils.holograms.provider.HolographicDisplays;
 import space.devport.utils.utility.DependencyUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HologramManager {
@@ -118,7 +119,7 @@ public class HologramManager {
     }
 
     public List<String> getHolograms() {
-        return checkHooked() ? hologramProvider.getHolograms() : null;
+        return checkHooked() ? hologramProvider.getHolograms() : new ArrayList<>();
     }
 
     private boolean checkHooked() {

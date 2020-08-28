@@ -22,9 +22,14 @@ public class HolographicDisplays extends HologramProvider {
     }
 
     @Override
+    public boolean exists(String id) {
+        return holograms.containsKey(id);
+    }
+
+    @Override
     public Location getLocation(String id) {
         Hologram hologram = getHologram(id);
-        return hologram != null ? hologram.getLocation() : null;
+        return hologram != null ? hologram.getLocation().clone() : null;
     }
 
     @Override

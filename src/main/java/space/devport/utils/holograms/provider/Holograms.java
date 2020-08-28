@@ -24,10 +24,15 @@ public class Holograms extends HologramProvider {
     }
 
     @Override
+    public boolean exists(String id) {
+        return hologramManager.getHologram(id) != null;
+    }
+
+    @Override
     public Location getLocation(String id) {
         if (!registeredHolograms.contains(id)) return null;
         Hologram hologram = hologramManager.getHologram(id);
-        return hologram != null ? hologram.getLocation() : null;
+        return hologram != null ? hologram.getLocation().clone() : null;
     }
 
     @Override
