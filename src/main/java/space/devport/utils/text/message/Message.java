@@ -242,7 +242,7 @@ public class Message {
 
         if (!isEmpty()) {
             String prefix = DevportPlugin.getInstance().getPrefix();
-            sender.sendMessage(prefix == null ? "" : prefix + color().toString());
+            sender.sendMessage(StringUtil.color((prefix == null ? "" : prefix) + toString()));
         }
     }
 }
