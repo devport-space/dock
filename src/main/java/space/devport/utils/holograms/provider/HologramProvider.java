@@ -9,6 +9,7 @@ import space.devport.utils.utility.LocationUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * In default holograms will not persist and only exist as long as they're registered here.
@@ -55,9 +56,7 @@ public abstract class HologramProvider {
     }
 
     private String nextId() {
-        String id = "devport_holo_" + getHolograms().size();
-        if (getHolograms().contains(id)) return nextId();
-        return id;
+        return UUID.randomUUID().toString();
     }
 
     public abstract Location getLocation(String id);
