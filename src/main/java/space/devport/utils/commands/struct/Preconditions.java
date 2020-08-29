@@ -2,6 +2,7 @@ package space.devport.utils.commands.struct;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -13,15 +14,19 @@ import java.util.List;
 public class Preconditions {
 
     @Getter
+    @Setter
     private boolean operator = false;
 
     @Getter
+    @Setter
     private List<String> permissions = new ArrayList<>();
 
     @Getter
+    @Setter
     private boolean playerOnly = false;
 
     @Getter
+    @Setter
     private boolean consoleOnly = false;
 
     public Preconditions operator(boolean... b) {

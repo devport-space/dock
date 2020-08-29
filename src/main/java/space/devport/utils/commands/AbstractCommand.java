@@ -165,10 +165,14 @@ public abstract class AbstractCommand {
         } else this.preconditions.permissions(permissions);
     }
 
-    private String craftPermission() {
+    protected String craftPermission() {
         String permission = DevportPlugin.getInstance().getDescription().getName().toLowerCase();
-        if (this instanceof SubCommand)
-            permission += "." + ((SubCommand) this).getParent().toLowerCase();
+
+        if (this instanceof SubCommand) {
+            SubCommand subCommand = (SubCommand) this;
+            if (subCommand.getParent() != null)
+                permission += "." + subCommand.getParent().toLowerCase();
+        }
         return permission + "." + this.getName().toLowerCase();
     }
 }

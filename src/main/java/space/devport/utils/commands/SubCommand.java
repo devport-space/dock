@@ -1,7 +1,6 @@
 package space.devport.utils.commands;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
@@ -10,12 +9,13 @@ import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class SubCommand extends AbstractCommand {
 
     @Getter
-    @Setter
     private String parent;
 
     public SubCommand(String name) {
@@ -44,6 +44,11 @@ public abstract class SubCommand extends AbstractCommand {
 
     @Override
     public abstract @Nullable ArgumentRange getRange();
+
+    public void setParent(String parent) {
+        this.parent = parent;
+        this.preconditions.setPermissions(Collections.singletonList(craftPermission()));
+    }
 
     public List<String> requestTabComplete(CommandSender sender, String[] args) {
         return new ArrayList<>();
