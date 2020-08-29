@@ -43,7 +43,7 @@ public class Preconditions {
      * Permissions are checked with an OR scheme ( has to have at least one of them )
      */
     public Preconditions permissions(String... permissions) {
-        this.permissions = new ArrayList<>(Arrays.asList(permissions));
+        this.permissions.addAll(Arrays.asList(permissions));
         return this;
     }
 

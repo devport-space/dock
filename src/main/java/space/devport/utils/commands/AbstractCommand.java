@@ -158,4 +158,17 @@ public abstract class AbstractCommand {
     protected void setAliases(String... aliases) {
         this.aliases = aliases;
     }
+
+    protected void setPermissions(String... permissions) {
+        if (permissions.length == 0) {
+            this.preconditions.permissions(craftPermission());
+        } else this.preconditions.permissions(permissions);
+    }
+
+    private String craftPermission() {
+        String permission = DevportPlugin.getInstance().getDescription().getName().toLowerCase();
+        if (this instanceof SubCommand)
+            permission += "." + ((SubCommand) this).getParent().toLowerCase();
+        return permission + "." + this.getName().toLowerCase();
+    }
 }
