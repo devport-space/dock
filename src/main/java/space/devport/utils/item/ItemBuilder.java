@@ -1,5 +1,6 @@
 package space.devport.utils.item;
 
+import com.cryptomorin.xseries.XEnchantment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Material;
@@ -10,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
@@ -40,14 +42,14 @@ public class ItemBuilder {
     private CachedMessage lore = new CachedMessage();
 
     @Getter
-    private HashMap<Enchantment, Integer> enchants = new HashMap<>();
+    private Map<XEnchantment, Integer> enchants = new HashMap<>();
 
     @Getter
     private List<ItemFlag> flags = new ArrayList<>();
 
     // Holds item nbt keys & values
     @Getter
-    private HashMap<String, String> NBT = new HashMap<>();
+    private Map<String, String> NBT = new HashMap<>();
 
     // Apply luck & hide enchants flag?
     @Getter
@@ -55,7 +57,7 @@ public class ItemBuilder {
 
     // ParseFormat for placeholders
     @Getter
-    private Placeholders placeholders = new Placeholders();
+    private transient Placeholders placeholders = new Placeholders();
 
     /**
      * Constructor with a material.
@@ -85,7 +87,7 @@ public class ItemBuilder {
     }
 
     @Getter
-    private static final List<String> filteredNBT = new ArrayList<>(Arrays.asList("Damage", "Enchantments", "display", "HideFlags"));
+    public static final List<String> FILTERED_NBT = new ArrayList<>(Arrays.asList("Damage", "Enchantments", "display", "HideFlags"));
 
     /**
      * To-builder constructor.
@@ -111,7 +113,7 @@ public class ItemBuilder {
 
             // Enchants
             if (itemMeta.hasEnchants())
-                this.enchants = new HashMap<>(itemMeta.getEnchants());
+                this.enchants = translateEnchants(itemMeta.getEnchants());
 
             // Flags
             this.flags = new ArrayList<>(itemMeta.getItemFlags());
@@ -120,9 +122,20 @@ public class ItemBuilder {
         Map<String, String> map = ItemNBTEditor.getNBTTagMap(item);
 
         for (String key : map.keySet()) {
-            if (!filteredNBT.contains(key))
+            if (!FILTERED_NBT.contains(key))
                 this.NBT.put(key, map.get(key));
         }
+    }
+
+    @NotNull
+    private Map<XEnchantment, Integer> translateEnchants(@Nullable Map<Enchantment, Integer> input) {
+        Map<XEnchantment, Integer> output = new HashMap<>();
+        if (input != null)
+            for (Map.Entry<Enchantment, Integer> entry : input.entrySet()) {
+                XEnchantment xEnchantment = XEnchantment.matchXEnchantment(entry.getKey());
+                output.put(xEnchantment, entry.getValue());
+            }
+        return output;
     }
 
     /**
@@ -168,6 +181,11 @@ public class ItemBuilder {
 
         ItemMeta meta = item.getItemMeta();
 
+        if (meta == null) {
+            DevportPlugin.getInstance().getConsoleOutput().err("Could not build Item, there's not ItemMeta on a fresh ItemStack.");
+            return item;
+        }
+
         // Apply lore
         if (!lore.isEmpty()) {
             lore.parseWith(placeholders)
@@ -189,8 +207,15 @@ public class ItemBuilder {
         }
 
         // Apply enchants
-        if (!enchants.isEmpty())
-            enchants.forEach((enchantment, level) -> meta.addEnchant(enchantment, level, true));
+        if (!enchants.isEmpty()) {
+            for (Map.Entry<XEnchantment, Integer> entry : enchants.entrySet()) {
+                Enchantment enchantment = entry.getKey().parseEnchantment();
+
+                if (enchantment == null) continue;
+
+                meta.addEnchant(enchantment, entry.getValue(), true);
+            }
+        }
 
         // Add flags
         if (!flags.isEmpty())
@@ -206,7 +231,7 @@ public class ItemBuilder {
         // NBT
         if (!NBT.isEmpty())
             for (String key : NBT.keySet()) {
-                if (filteredNBT.contains(key)) continue;
+                if (FILTERED_NBT.contains(key)) continue;
 
                 ItemStack i = ItemNBTEditor.writeNBT(item, key, NBT.get(key));
 
@@ -345,8 +370,8 @@ public class ItemBuilder {
      * @param enchants Enchants to set
      * @return ItemBuilder object
      */
-    public ItemBuilder enchants(@Nullable HashMap<Enchantment, Integer> enchants) {
-        this.enchants = enchants;
+    public ItemBuilder enchants(@Nullable Map<Enchantment, Integer> enchants) {
+        this.enchants = translateEnchants(enchants);
         return this;
     }
 
@@ -360,8 +385,14 @@ public class ItemBuilder {
     public ItemBuilder addEnchant(@NotNull Enchantment enchantment, int... level) {
         if (this.enchants == null)
             this.enchants = new HashMap<>();
-        enchants.put(enchantment, level.length > 0 ? level[0] : 1);
+        enchants.put(XEnchantment.matchXEnchantment(enchantment), level.length > 0 ? level[0] : 1);
         return this;
+    }
+
+    public ItemBuilder addEnchant(@NotNull XEnchantment xEnchantment, int... level) {
+        Enchantment enchantment = xEnchantment.parseEnchantment();
+        if (enchantment == null) return this;
+        return this.addEnchant(enchantment, level);
     }
 
     /**
@@ -370,10 +401,10 @@ public class ItemBuilder {
      * @param enchants Enchants to add
      * @return ItemBuilder object
      */
-    public ItemBuilder addEnchants(@NotNull HashMap<Enchantment, Integer> enchants) {
+    public ItemBuilder addEnchants(@NotNull Map<Enchantment, Integer> enchants) {
         if (this.enchants == null)
             this.enchants = new HashMap<>();
-        this.enchants.putAll(enchants);
+        this.enchants.putAll(translateEnchants(enchants));
         return this;
     }
 

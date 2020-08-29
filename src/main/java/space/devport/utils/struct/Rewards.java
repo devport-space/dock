@@ -45,9 +45,9 @@ public class Rewards implements Cloneable {
     private List<String> commands = new ArrayList<>();
 
     @Getter
-    private Placeholders placeholders = new Placeholders();
+    private transient Placeholders placeholders = new Placeholders();
 
-    private final Random random = new Random();
+    private final transient Random random = new Random();
 
     public Rewards(Rewards rewards) {
         this.tokens = rewards.getTokens();

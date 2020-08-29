@@ -26,7 +26,7 @@ public class Message {
     protected List<String> message = new ArrayList<>();
 
     @Getter
-    protected Placeholders placeholders = new Placeholders();
+    protected transient Placeholders placeholders = new Placeholders();
 
     /**
      * Copy constructor.

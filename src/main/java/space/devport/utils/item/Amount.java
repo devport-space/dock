@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Amount {
 
-    private final Random random = new Random();
+    private final transient Random random = new Random();
 
     @Getter
     @Setter
