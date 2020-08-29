@@ -840,7 +840,7 @@ public class Configuration {
         section.set(SubPath.ITEM_LORE.toString(), builder.getLore().getMessage());
 
         List<String> enchants = new ArrayList<>();
-        builder.getEnchants().forEach((e, l) -> enchants.add(e.getKey().getKey() + SubPath.ITEM_ENCHANT_DELIMITER + l));
+        builder.getEnchants().forEach((e, l) -> enchants.add(e.getVanillaName() + SubPath.ITEM_ENCHANT_DELIMITER + l));
         section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
 
         section.set(SubPath.ITEM_FLAGS.toString(), builder.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
