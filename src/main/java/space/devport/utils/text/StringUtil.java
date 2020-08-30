@@ -56,14 +56,13 @@ public class StringUtil {
      */
     @Nullable
     public String color(@Nullable String msg, char colorChar) {
-        //return msg == null ? null : ChatColor.translateAlternateColorCodes(colorChar, msg);
         return msg == null ? null : hexColor(msg, colorChar);
     }
 
     @Nullable
     public String hexColor(String string, char colorChar) {
 
-        if (Strings.isNullOrEmpty(string)) return null;
+        if (string == null) return null;
 
         if (hexPattern != null || ServerVersion.isAboveCurrent(ServerVersion.v1_16)) {
             Matcher matcher = hexPattern.matcher(string);

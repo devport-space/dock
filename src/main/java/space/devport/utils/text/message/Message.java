@@ -122,7 +122,7 @@ public class Message {
      * @return boolean
      */
     public boolean isEmpty() {
-        return message.isEmpty();
+        return message == null || message.isEmpty();
     }
 
     /**
@@ -133,9 +133,11 @@ public class Message {
      * @return MessageBuilder object
      */
     public Message replace(@Nullable String placeholder, @Nullable Object value) {
-        if (placeholder == null || value == null) return this;
+        if (placeholder == null || value == null || message == null)
+            return this;
+
         message = message.stream()
-                .map(line -> line.replaceAll("(?i)" + placeholder, value.toString()))
+                .map(line -> !line.isEmpty() ? line.replaceAll("(?i)" + placeholder, value.toString()) : "")
                 .collect(Collectors.toList());
         return this;
     }
@@ -144,9 +146,8 @@ public class Message {
 
     // Prefix the first line
     public Message prefix(String str) {
-        if (this.message.isEmpty()) {
+        if (isEmpty())
             return this;
-        }
 
         this.message.set(0, str + this.message.get(0));
         return this;
@@ -242,7 +243,8 @@ public class Message {
 
         if (!isEmpty()) {
             String prefix = DevportPlugin.getInstance().getPrefix();
-            sender.sendMessage(StringUtil.color((prefix == null ? "" : prefix) + toString()));
+            String message = StringUtil.color((prefix == null ? "" : prefix) + toString());
+            sender.sendMessage(message == null ? "" : message);
         }
     }
 }

@@ -50,6 +50,8 @@ public class Rewards implements Cloneable {
     private final transient Random random = new Random();
 
     public Rewards(Rewards rewards) {
+        if (rewards == null) return;
+
         this.tokens = rewards.getTokens();
         this.money = rewards.getMoney();
         this.items = new ArrayList<>(rewards.getItems());
