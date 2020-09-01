@@ -61,8 +61,15 @@ public class Rewards implements Cloneable {
         this.placeholders = new Placeholders(rewards.getPlaceholders());
     }
 
+    public void giveAll() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            give(player, false);
+        }
+        sendBroadcast();
+    }
+
     // Reward a player
-    public void give(@Nullable Player player) {
+    public void give(@Nullable Player player, boolean... broadcast) {
 
         if (player != null) {
             placeholders.add("%player%", player.getName());
@@ -80,11 +87,16 @@ public class Rewards implements Cloneable {
             inform.setPlaceholders(placeholders).send(player);
         }
 
+        if (broadcast.length > 0 && broadcast[0])
+            sendBroadcast();
+
+        parseCommands(player);
+    }
+
+    public void sendBroadcast() {
         // Broadcast - to all players
         broadcast.setPlaceholders(placeholders);
         Bukkit.getOnlinePlayers().forEach(broadcast::send);
-
-        parseCommands(player);
     }
 
     public void giveTokens(@Nullable Player player) {
