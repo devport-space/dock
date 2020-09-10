@@ -4,8 +4,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerVersion;
-import space.devport.utils.utility.reflection.SpigotHelper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -63,6 +63,16 @@ public class ItemNBTEditor {
         return null;
     }
 
+    private static Object queryNBTBase(ItemStack item, String methodName, String key) {
+        try {
+            Object tag = queryTag(item);
+            return tag.getClass().getDeclaredMethod(methodName, String.class).invoke(tag, key);
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+        return null;
+    }
+
     /**
      * Gets value from NBT compound that matches a key from item's NBT.
      *
@@ -72,15 +82,34 @@ public class ItemNBTEditor {
      * @throws NullPointerException when did found anything in NBTCompound of item.
      */
 
-    public static String getNBT(@NotNull ItemStack item, @NotNull String key) {
+    public static String getString(@NotNull ItemStack item, @NotNull String key) {
+        Object value = queryNBTBase(item, "getString", key);
+        return value == null ? null : (String) value;
+    }
+
+    public static boolean getBoolean(ItemStack item, String key) {
+        Object value = queryNBTBase(item, "getBoolean", key);
+        return value != null && (Boolean) value;
+    }
+
+    public static int getInt(ItemStack item, String key) {
+        Object value = queryNBTBase(item, "getInt", key);
+        return value == null ? 0 : (Integer) value;
+    }
+
+    public static double getDouble(ItemStack item, String key) {
+        Object value = queryNBTBase(item, "getDouble", key);
+        return value == null ? 0 : (Double) value;
+    }
+
+    private static Object queryTag(ItemStack item) {
+        Object nativeItemStack = null;
         try {
-            Object nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
-            Object tag = getTag(nativeItemStack);
-            return (String) tag.getClass().getDeclaredMethod("getString", String.class).invoke(tag, key);
-        } catch (Exception x) {
-            x.printStackTrace();
+            nativeItemStack = Reflection.getDeclaredMethod(Reflection.getCBClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
         }
-        return null;
+        return getTag(nativeItemStack);
     }
 
     /**
@@ -147,7 +176,7 @@ public class ItemNBTEditor {
      */
     private static Object getTag(Object nativeItemStack) {
         try {
-            if (SpigotHelper.getVersion().contains("1.8") || SpigotHelper.getVersion().contains("1.7")) {
+            if (ServerVersion.isBelowCurrent(ServerVersion.v1_8)) {
                 if (!(boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack)) {
                     Object compound = Reflection.getNMSClass("NBTTagCompound").getConstructor().newInstance();
                     nativeItemStack.getClass().getMethod("setTag", compound.getClass()).invoke(nativeItemStack, compound);
