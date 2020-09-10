@@ -19,12 +19,19 @@ import java.util.List;
  */
 public class ConsoleOutput {
 
-    @Setter
     private static ConsoleOutput instance;
 
     @NotNull
     public static ConsoleOutput getInstance() {
         return instance == null ? new ConsoleOutput() : instance;
+    }
+
+    @NotNull
+    public static ConsoleOutput getInstance(JavaPlugin plugin) {
+        if (instance != null) {
+            instance.setPlugin(plugin);
+            return instance;
+        } else return new ConsoleOutput(plugin);
     }
 
     @Getter
@@ -44,13 +51,16 @@ public class ConsoleOutput {
     @Getter
     private final List<CommandSender> listeners = new ArrayList<>();
 
-    public ConsoleOutput() {
+    private ConsoleOutput() {
         instance = this;
     }
 
-    public ConsoleOutput(JavaPlugin plugin) {
-        instance = this;
+    private ConsoleOutput(JavaPlugin plugin) {
+        this();
+        setPlugin(plugin);
+    }
 
+    public void setPlugin(JavaPlugin plugin) {
         this.console = plugin.getServer().getConsoleSender();
         this.colors = true;
     }
@@ -156,7 +166,8 @@ public class ConsoleOutput {
 
     public void toListeners(String message) {
         final String finalMessage = StringUtil.color(message);
-        listeners.forEach(c -> c.sendMessage(finalMessage));
+        if (finalMessage != null)
+            listeners.forEach(c -> c.sendMessage(finalMessage));
     }
 
     public void setPrefix(String prefix) {

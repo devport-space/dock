@@ -1,20 +1,18 @@
 package space.devport.utils;
 
 import lombok.Getter;
-import lombok.Setter;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.holograms.HologramManager;
 import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.Placeholders;
@@ -24,36 +22,36 @@ import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class DevportPlugin extends JavaPlugin {
 
-    //TODO Hold instance, but replace with dependency injection in most cases.
-    //TODO Code is sloppy, optimize
-    //TODO Solve maven transitive dependency issues
-    //TODO Split into modules to allow exclusions
     @Getter
-    @Setter
     private static DevportPlugin instance;
 
     @Getter
-    protected PluginManager pluginManager;
+    private final Map<Class<? extends DevportManager>, DevportManager> managers = new HashMap<>();
 
-    @Getter
-    protected ConsoleOutput consoleOutput;
+    public <T extends DevportManager> T getManager(Class<T> clazz) {
+        DevportManager manager = this.managers.get(clazz);
+
+        if (manager == null) {
+            consoleOutput.err("Tried to access a manager that's not registered.");
+            return null;
+        }
+
+        return (T) manager;
+    }
+
+    public boolean isRegistered(Class<? extends DevportManager> clazz) {
+        return this.managers.containsKey(clazz);
+    }
 
     @Getter
     private final Set<UsageFlag> usageFlags = new HashSet<>();
 
     @Getter
-    protected CommandManager commandManager;
-    @Getter
-    protected MenuManager menuManager;
-    @Getter
-    protected LanguageManager languageManager;
-    @Getter
-    protected HologramManager hologramManager;
-    @Getter
-    protected CustomisationManager customisationManager;
+    protected ConsoleOutput consoleOutput;
 
     @Getter
     protected Configuration configuration;
@@ -67,10 +65,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Getter
     private final Placeholders globalPlaceholders = new Placeholders();
 
-    // Temporary.
-    @Getter
-    private Economy economy;
-
     public abstract void onPluginEnable();
 
     public abstract void onPluginDisable();
@@ -80,20 +74,58 @@ public abstract class DevportPlugin extends JavaPlugin {
     public abstract UsageFlag[] usageFlags();
 
     @Override
+    public void onLoad() {
+        instance = getPlugin(this.getClass());
+
+        // Setup Console Output
+        consoleOutput = ConsoleOutput.getInstance(this);
+
+        consoleOutput.debug("Usage flags: " + usageFlags.toString());
+
+        if (use(UsageFlag.COMMANDS)) {
+            CommandManager commandManager = new CommandManager(this);
+            registerManager(commandManager);
+        }
+
+        if (use(UsageFlag.CUSTOMISATION)) {
+            CustomisationManager customisationManager = new CustomisationManager(this);
+            registerManager(customisationManager);
+        }
+
+        if (use(UsageFlag.MENUS)) {
+            MenuManager menuManager = new MenuManager(this);
+            registerManager(menuManager);
+        }
+
+        if (use(UsageFlag.HOLOGRAMS)) {
+            HologramManager hologramManager = new HologramManager(this);
+            registerManager(hologramManager);
+        }
+
+        if (use(UsageFlag.LANGUAGE)) {
+            LanguageManager languageManager = new LanguageManager(this);
+            registerManager(languageManager);
+        }
+
+        if (use(UsageFlag.ECONOMY)) {
+            EconomyManager economyManager = new EconomyManager(this);
+            registerManager(economyManager);
+        }
+    }
+
+    public void callManagerAction(Consumer<DevportManager> action) {
+        for (DevportManager manager : this.managers.values()) {
+            action.accept(manager);
+        }
+    }
+
+    @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
-
-        instance = this;
 
         // Load version
         ServerVersion.loadServerVersion();
         ServerType.loadServerType();
-
-        pluginManager = getServer().getPluginManager();
-
-        // Setup Console Output
-        consoleOutput = new ConsoleOutput(this);
-        ConsoleOutput.setInstance(consoleOutput);
 
         // Print header
         consoleOutput.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
@@ -114,42 +146,16 @@ public abstract class DevportPlugin extends JavaPlugin {
             prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
-        consoleOutput.debug("Usage flags: " + usageFlags.toString());
-
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName());
 
-        if (use(UsageFlag.COMMANDS))
-            commandManager = new CommandManager(this);
-
-        if (use(UsageFlag.CUSTOMISATION)) {
-            customisationManager = new CustomisationManager(this);
-            this.customisationManager.load();
-        }
-
-        if (use(UsageFlag.MENUS))
-            menuManager = new MenuManager();
-
-        if (use(UsageFlag.HOLOGRAMS)) {
-            hologramManager = new HologramManager(this);
-            hologramManager.attemptHook();
-        }
-
-        if (use(UsageFlag.LANGUAGE))
-            languageManager = new LanguageManager();
+        callManagerAction(DevportManager::preEnable);
 
         // Call plugin enable
         onPluginEnable();
 
-        if (use(UsageFlag.LANGUAGE)) {
-            languageManager.captureDefaults();
-            languageManager.load();
-            consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)...");
-        }
-
-        if (use(UsageFlag.COMMANDS))
-            commandManager.registerAll();
+        callManagerAction(DevportManager::afterEnable);
 
         consoleOutput.info("&3~~~~~~~~~~~~ &7/////// &3~~~~~~~~~~~~");
         consoleOutput.info("Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
@@ -157,13 +163,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Set the prefix as the last thing, startup looks cooler without it.
         consoleOutput.setPrefix(prefix);
 
-        // Runs after Server finished loading to ensure all possible deps would be loaded.
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-            if (use(UsageFlag.HOLOGRAMS))
-                hologramManager.attemptHook();
-            if (use(UsageFlag.ECONOMY))
-                setupEconomy();
-        }, 1L);
+        Bukkit.getScheduler().runTask(this, () -> callManagerAction(DevportManager::afterDependencyLoad));
     }
 
     public void reload(CommandSender sender) {
@@ -184,45 +184,28 @@ public abstract class DevportPlugin extends JavaPlugin {
             prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
-        if (use(UsageFlag.CUSTOMISATION))
-            this.customisationManager.load();
-
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName());
 
-        if (use(UsageFlag.LANGUAGE)) {
-            if (languageManager == null) languageManager = new LanguageManager();
-            languageManager.load();
-            consoleOutput.info("Loaded " + languageManager.getCache().size() + " message(s)..");
-        }
+        callManagerAction(DevportManager::preReload);
 
         onReload();
 
-        if (use(UsageFlag.HOLOGRAMS))
-            if (hologramManager.isHooked()) {
-                hologramManager.getHologramProvider().save();
-                hologramManager.getHologramProvider().load();
-            } else {
-                hologramManager.attemptHook();
-            }
-
-        if (use(UsageFlag.ECONOMY))
-            setupEconomy();
+        callManagerAction(DevportManager::afterReload);
 
         consoleOutput.removeListener(sender);
 
-        getLanguageManager().getPrefixed("Commands.Reload")
-                .replace("%time%", (System.currentTimeMillis() - start))
-                .send(sender);
+        if (use(UsageFlag.LANGUAGE))
+            getManager(LanguageManager.class).getPrefixed("Commands.Reload")
+                    .replace("%time%", (System.currentTimeMillis() - start))
+                    .send(sender);
     }
 
     @Override
     public void onDisable() {
-        if (hologramManager != null && hologramManager.isHooked())
-            hologramManager.getHologramProvider().save();
-
         onPluginDisable();
+        callManagerAction(DevportManager::onDisable);
     }
 
     public boolean use(UsageFlag usageFlag) {
@@ -237,27 +220,6 @@ public abstract class DevportPlugin extends JavaPlugin {
         dependencies.addAll(getDescription().getDepend());
         dependencies.addAll(getDescription().getSoftDepend());
         return dependencies;
-    }
-
-    public void setupEconomy() {
-
-        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
-            if (economy != null) economy = null;
-            return;
-        }
-
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-
-        if (rsp == null) {
-            if (economy != null) economy = null;
-            consoleOutput.info("Found Vault, but no economy manager.");
-            return;
-        }
-
-        if (economy != null) return;
-
-        economy = rsp.getProvider();
-        consoleOutput.info("Found Vault, using economy.");
     }
 
     @Override
@@ -275,12 +237,22 @@ public abstract class DevportPlugin extends JavaPlugin {
         return configuration.getFileConfiguration();
     }
 
+    public PluginManager getPluginManager() {
+        return getServer().getPluginManager();
+    }
+
     public void registerListener(Listener listener) {
-        pluginManager.registerEvents(listener, this);
+        getPluginManager().registerEvents(listener, this);
+    }
+
+    public void registerManager(DevportManager devportManager) {
+        this.managers.put(devportManager.getClass(), devportManager);
     }
 
     public MainCommand addMainCommand(MainCommand mainCommand) {
-        commandManager.registeredCommands.add(mainCommand);
+        if (use(UsageFlag.COMMANDS))
+            getManager(CommandManager.class).registeredCommands.add(mainCommand);
+        else consoleOutput.err("Attempted to register a command when command manager is not registered.");
         return mainCommand;
     }
 }

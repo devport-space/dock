@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.configuration.Configuration;
@@ -15,9 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LanguageManager {
-
-    private final DevportPlugin plugin;
+public class LanguageManager extends DevportManager {
 
     @Getter
     private final Map<String, Message> cache = new HashMap<>();
@@ -35,8 +34,15 @@ public class LanguageManager {
     @Setter
     private boolean setInternalDefaults = true;
 
-    public LanguageManager() {
-        this.plugin = DevportPlugin.getInstance();
+    public LanguageManager(DevportPlugin plugin) {
+        super(plugin);
+    }
+
+    @Override
+    public void afterEnable() {
+        captureDefaults();
+        load();
+        consoleOutput.info("Loaded " + this.cache.size() + " message(s)...");
     }
 
     public void captureDefaults() {
@@ -98,7 +104,7 @@ public class LanguageManager {
     }
 
     public Message get(@NotNull String path) {
-        return new Message(cache.getOrDefault(path, null));
+        return new Message(cache.get(path));
     }
 
     public Message getPrefixed(@NotNull String path) {

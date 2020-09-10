@@ -2,6 +2,7 @@ package space.devport.utils.menu;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -67,12 +68,12 @@ public class Menu implements MenuListener {
 
         // Throw event
         MenuOpenEvent openEvent = new MenuOpenEvent(player, this);
-        DevportPlugin.getInstance().getServer().getPluginManager().callEvent(openEvent);
+        Bukkit.getPluginManager().callEvent(openEvent);
 
         if (!openEvent.isCancelled()) {
             this.player = player;
 
-            DevportPlugin.getInstance().getMenuManager().addMenu(this);
+            DevportPlugin.getInstance().getManager(MenuManager.class).addMenu(this);
 
             player.openInventory(inventory);
 
@@ -104,7 +105,7 @@ public class Menu implements MenuListener {
 
         // Throw close event
         MenuCloseEvent closeEvent = new MenuCloseEvent(player, this);
-        DevportPlugin.getInstance().getServer().getPluginManager().callEvent(closeEvent);
+        Bukkit.getPluginManager().callEvent(closeEvent);
 
         if (!closeEvent.isCancelled()) {
 
@@ -112,7 +113,7 @@ public class Menu implements MenuListener {
 
             player.closeInventory();
 
-            DevportPlugin.getInstance().getMenuManager().removeMenu(this);
+            DevportPlugin.getInstance().getManager(MenuManager.class).removeMenu(this);
 
             onClose();
 

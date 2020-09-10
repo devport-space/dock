@@ -1,7 +1,6 @@
 package space.devport.utils;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.configuration.Configuration;
@@ -12,16 +11,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
-public class CustomisationManager {
-
-    private final DevportPlugin plugin;
+public class CustomisationManager extends DevportManager {
 
     @Getter
     private Configuration customisation;
 
     private final Map<String, MenuBuilder> loadedMenus = new HashMap<>();
     private final Map<String, ItemBuilder> loadedItems = new HashMap<>();
+
+    public CustomisationManager(DevportPlugin plugin) {
+        super(plugin);
+    }
 
     @NotNull
     public MenuBuilder getMenuBuilder(String name) {
@@ -31,6 +31,11 @@ public class CustomisationManager {
     @NotNull
     public ItemBuilder getItemBuilder(String name) {
         return this.loadedItems.getOrDefault(name, new ItemBuilder(Material.AIR));
+    }
+
+    @Override
+    public void afterEnable() {
+        load();
     }
 
     public void load() {

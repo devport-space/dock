@@ -13,6 +13,8 @@ import space.devport.utils.ConsoleOutput;
 @UtilityClass
 public class LocationUtil {
 
+    public String LOCATION_DELIMITER = ";";
+
     /**
      * Parses a location to string using the default location delimiter.
      *
@@ -21,7 +23,7 @@ public class LocationUtil {
      */
     @Nullable
     public String locationToString(@Nullable Location location) {
-        return locationToString(location, Settings.LOCATION_DELIMITER.toString());
+        return locationToString(location, LOCATION_DELIMITER);
     }
 
     /**
@@ -33,8 +35,14 @@ public class LocationUtil {
      */
     @Nullable
     public String locationToString(@Nullable Location location, @Nullable String delimiter) {
+
         if (location == null) {
             ConsoleOutput.getInstance().err("Could not parse location to string, location is null.");
+            return null;
+        }
+
+        if (location.getWorld() == null) {
+            ConsoleOutput.getInstance().err("Could not parse location to string, world is null.");
             return null;
         }
 
@@ -52,7 +60,7 @@ public class LocationUtil {
      */
     @Nullable
     public Location locationFromString(@Nullable String locationString) {
-        return locationFromString(locationString, Settings.LOCATION_DELIMITER.toString());
+        return locationFromString(locationString, LOCATION_DELIMITER);
     }
 
     /**

@@ -8,20 +8,23 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.menu.item.MenuItem;
 
 import java.util.HashMap;
 
-public class MenuManager implements Listener {
-
-    private final DevportPlugin plugin;
+public class MenuManager extends DevportManager implements Listener {
 
     @Getter
-    private final HashMap<String, Menu> menuCache = new HashMap<>();
+    private final HashMap<String, Menu> registeredMenus = new HashMap<>();
 
-    public MenuManager() {
-        this.plugin = DevportPlugin.getInstance();
+    public MenuManager(DevportPlugin plugin) {
+        super(plugin);
+    }
+
+    @Override
+    public void afterEnable() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -36,7 +39,7 @@ public class MenuManager implements Listener {
 
         Menu menu = null;
 
-        for (Menu menuLoop : menuCache.values())
+        for (Menu menuLoop : registeredMenus.values())
             if (inventory.equals(menuLoop.getInventory()) && menuLoop.getPlayer().equals(player))
                 menu = menuLoop;
 
@@ -81,7 +84,7 @@ public class MenuManager implements Listener {
     public void onClose(InventoryCloseEvent e) {
         Menu menu = null;
 
-        for (Menu menuLoop : menuCache.values())
+        for (Menu menuLoop : registeredMenus.values())
             if (menuLoop.getInventory().equals(e.getInventory()))
                 menu = menuLoop;
 
@@ -91,15 +94,15 @@ public class MenuManager implements Listener {
     }
 
     public void addMenu(Menu menu) {
-        menuCache.put(menu.getName(), menu);
+        registeredMenus.put(menu.getName(), menu);
     }
 
     public void removeMenu(Menu menu) {
-        menuCache.remove(menu.getName());
+        registeredMenus.remove(menu.getName());
     }
 
     public void closeAll() {
-        menuCache.values().forEach(Menu::close);
-        menuCache.clear();
+        registeredMenus.values().forEach(Menu::close);
+        registeredMenus.clear();
     }
 }

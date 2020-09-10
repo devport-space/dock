@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.utility.Settings;
 
 /**
  * Custom region handling.
@@ -14,17 +14,14 @@ import space.devport.utils.utility.Settings;
  */
 public class Region {
 
-    // Min location of the region
     @Getter
     @Setter
     private Location min;
 
-    // Max location of the region
     @Getter
     @Setter
     private Location max;
 
-    // Should we ignore Y coordinates?
     @Getter
     @Setter
     private boolean ignoreHeight;
@@ -56,6 +53,10 @@ public class Region {
     public Region(@NotNull Location min, @NotNull Location max, boolean ignoreHeight) {
         this(min, max);
         this.ignoreHeight = ignoreHeight;
+    }
+
+    public boolean contains(Player player) {
+        return contains(player.getLocation());
     }
 
     /**

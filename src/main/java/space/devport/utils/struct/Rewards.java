@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.text.Placeholders;
@@ -111,8 +112,8 @@ public class Rewards implements Cloneable {
         if (player == null) return;
 
         double money = this.money.getDouble();
-        if (money != 0 && DependencyUtil.isEnabled("Vault"))
-            DevportPlugin.getInstance().getEconomy().depositPlayer(player, money);
+        if (money != 0 && DependencyUtil.isEnabled("Vault") && DevportPlugin.getInstance().isRegistered(EconomyManager.class))
+            DevportPlugin.getInstance().getManager(EconomyManager.class).getEconomy().depositPlayer(player, money);
     }
 
     public void giveItems(@Nullable Player player) {
@@ -168,7 +169,7 @@ public class Rewards implements Cloneable {
 
     // Execute command as console
     private void executeConsole(String cmd) {
-        DevportPlugin.getInstance().getServer().dispatchCommand(DevportPlugin.getInstance().getServer().getConsoleSender(), cmd.trim());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim());
     }
 
     // Execute command as player

@@ -1,10 +1,12 @@
-package space.devport.utils.holograms.provider;
+package space.devport.utils.holograms.provider.impl;
 
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 import com.Zrips.CMI.Modules.Holograms.HologramManager;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import space.devport.utils.DevportPlugin;
+import space.devport.utils.holograms.provider.HologramProvider;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +15,8 @@ public class CMIHolograms extends HologramProvider {
 
     public final HologramManager hologramManager;
 
-    public CMIHolograms() {
+    public CMIHolograms(DevportPlugin plugin) {
+        super(plugin);
         this.hologramManager = CMI.getInstance().getHologramManager();
     }
 

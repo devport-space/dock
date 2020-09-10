@@ -4,45 +4,19 @@ import com.google.common.base.Strings;
 import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CommandManager implements CommandExecutor, TabCompleter {
-
-    private final DevportPlugin plugin;
+public class CommandManager extends DevportManager implements CommandExecutor, TabCompleter {
 
     public final List<MainCommand> registeredCommands = new ArrayList<>();
 
     public CommandManager(DevportPlugin plugin) {
-        this.plugin = plugin;
-    }
-
-    public void registerAll() {
-
-        // Register commands
-        for (MainCommand mainCommand : this.registeredCommands) {
-            if (!plugin.getDescription().getCommands().containsKey(mainCommand.getName())) {
-                plugin.getConsoleOutput().warn("Command " + mainCommand.getName() + " is not in plugin.yml");
-                continue;
-            }
-
-            PluginCommand cmd = plugin.getCommand(mainCommand.getName());
-
-            if (cmd == null) continue;
-
-            mainCommand.setAliases(cmd.getAliases().toArray(new String[0]));
-
-            cmd.setExecutor(this);
-
-            if (mainCommand.registerTabCompleter()) {
-                cmd.setTabCompleter(this);
-            }
-
-            plugin.getConsoleOutput().debug("Added command " + cmd.getName() + " with aliases [" + String.join(", ", mainCommand.getAliases()) + "]" + (mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
-        }
+        super(plugin);
     }
 
     @Override
@@ -80,5 +54,35 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         String label = arr[0].contains("/") ? arr[0].replace("/", "") : arr[0];
         List<String> argList = new ArrayList<>(Arrays.asList(arr).subList(1, arr.length));
         runCommands(sender, label, argList.toArray(new String[0]));
+    }
+
+    public void registerAll() {
+
+        // Register commands
+        for (MainCommand mainCommand : this.registeredCommands) {
+            if (!plugin.getDescription().getCommands().containsKey(mainCommand.getName())) {
+                plugin.getConsoleOutput().warn("Command " + mainCommand.getName() + " is not in plugin.yml");
+                continue;
+            }
+
+            PluginCommand cmd = plugin.getCommand(mainCommand.getName());
+
+            if (cmd == null) continue;
+
+            mainCommand.setAliases(cmd.getAliases().toArray(new String[0]));
+
+            cmd.setExecutor(this);
+
+            if (mainCommand.registerTabCompleter()) {
+                cmd.setTabCompleter(this);
+            }
+
+            plugin.getConsoleOutput().debug("Added command " + cmd.getName() + " with aliases [" + String.join(", ", mainCommand.getAliases()) + "]" + (mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
+        }
+    }
+
+    @Override
+    public void afterEnable() {
+        registerAll();
     }
 }

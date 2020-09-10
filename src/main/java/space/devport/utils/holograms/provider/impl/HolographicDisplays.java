@@ -1,10 +1,11 @@
-package space.devport.utils.holograms.provider;
+package space.devport.utils.holograms.provider.impl;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.holograms.provider.HologramProvider;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,13 +13,11 @@ import java.util.Map;
 
 public class HolographicDisplays extends HologramProvider {
 
-    private final DevportPlugin plugin;
-
     // We need a separate cache, because HoloDisplay API is retarded.
     private final Map<String, Hologram> holograms = new HashMap<>();
 
-    public HolographicDisplays() {
-        plugin = DevportPlugin.getInstance();
+    public HolographicDisplays(DevportPlugin plugin) {
+        super(plugin);
     }
 
     @Override

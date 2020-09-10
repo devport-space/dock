@@ -18,14 +18,14 @@ import java.util.UUID;
  */
 public abstract class HologramProvider {
 
-    private final DevportPlugin plugin;
+    protected final DevportPlugin plugin;
 
     protected final List<String> registeredHolograms = new ArrayList<>();
 
     private Configuration storage;
 
-    public HologramProvider() {
-        this.plugin = DevportPlugin.getInstance();
+    public HologramProvider(DevportPlugin plugin) {
+        this.plugin = plugin;
 
         load();
     }

@@ -23,6 +23,8 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
 
+    //TODO Try to remove static access to DevportPlugin
+
     protected final LanguageManager language;
 
     @Getter
@@ -36,7 +38,7 @@ public abstract class AbstractCommand {
 
     public AbstractCommand(String name) {
         this.name = name;
-        this.language = DevportPlugin.getInstance().getLanguageManager();
+        this.language = DevportPlugin.getInstance().getManager(LanguageManager.class);
     }
 
     // This should be overridden by commands and performs the wanted action itself.

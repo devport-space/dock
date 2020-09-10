@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.utility.Settings;
 import space.devport.utils.utility.reflection.ServerVersion;
 
 import java.util.ArrayList;
@@ -22,6 +21,8 @@ import java.util.stream.Collectors;
  */
 @UtilityClass
 public class StringUtil {
+
+    public String LIST_DELIMITER = "\n";
 
     public String HEX_PATTERN = "\\{#[A-Fa-f0-9]{6}}";
 
@@ -109,7 +110,7 @@ public class StringUtil {
      */
     @Nullable
     public String listToString(@Nullable List<String> list) {
-        return listToString(list, Settings.LIST_DELIMITER.toString());
+        return listToString(list, LIST_DELIMITER);
     }
 
     /**
@@ -147,7 +148,7 @@ public class StringUtil {
      */
     @NotNull
     public List<String> listFromString(@Nullable String string) {
-        return listFromString(string, Settings.LIST_DELIMITER.toString());
+        return listFromString(string, LIST_DELIMITER);
     }
 
     public List<String> replace(List<String> list, String key, Object value) {

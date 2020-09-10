@@ -11,7 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
-import space.devport.utils.DevportPlugin;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
@@ -182,7 +181,7 @@ public class ItemBuilder {
         ItemMeta meta = item.getItemMeta();
 
         if (meta == null) {
-            DevportPlugin.getInstance().getConsoleOutput().err("Could not build Item, there's not ItemMeta on a fresh ItemStack.");
+            ConsoleOutput.getInstance().err("Could not build Item, there's not ItemMeta on a fresh ItemStack.");
             return item;
         }
 
@@ -415,6 +414,12 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder removeEnchant(@Nullable Enchantment enchantment) {
+        if (enchantment == null) return this;
+        XEnchantment xEnchantment = XEnchantment.matchXEnchantment(enchantment);
+        return removeEnchant(xEnchantment);
+    }
+
+    public ItemBuilder removeEnchant(@Nullable XEnchantment enchantment) {
         enchants.remove(enchantment);
         return this;
     }

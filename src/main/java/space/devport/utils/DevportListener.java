@@ -4,8 +4,8 @@ import org.bukkit.event.Listener;
 
 public class DevportListener implements Listener {
 
-    public DevportListener() {
-        DevportPlugin.getInstance().registerListener(this);
-        DevportPlugin.getInstance().getConsoleOutput().debug("Registered listener " + this.getClass().getName());
+    public DevportListener(DevportPlugin plugin) {
+        plugin.registerListener(this);
+        plugin.getConsoleOutput().debug("Registered listener " + this.getClass().getName());
     }
 }

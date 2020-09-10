@@ -1,4 +1,4 @@
-package space.devport.utils.holograms.provider;
+package space.devport.utils.holograms.provider.impl;
 
 import com.sainttx.holograms.api.Hologram;
 import com.sainttx.holograms.api.HologramManager;
@@ -11,7 +11,10 @@ import com.sainttx.holograms.api.line.ItemLine;
 import com.sainttx.holograms.api.line.TextLine;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.holograms.provider.HologramProvider;
 
 import java.util.List;
 
@@ -19,8 +22,16 @@ public class Holograms extends HologramProvider {
 
     private final HologramManager hologramManager;
 
-    public Holograms() {
-        this.hologramManager = ((HologramPlugin) DevportPlugin.getInstance().getPluginManager().getPlugin("Holograms")).getHologramManager();
+    public Holograms(DevportPlugin plugin) {
+        super(plugin);
+
+        Plugin hologramsPlugin = plugin.getPluginManager().getPlugin("Holograms");
+        if (hologramsPlugin == null) {
+            ConsoleOutput.getInstance().err("Tried to hook into Holograms when it's not enabled.");
+            this.hologramManager = null;
+            return;
+        }
+        this.hologramManager = ((HologramPlugin) hologramsPlugin).getHologramManager();
     }
 
     @Override

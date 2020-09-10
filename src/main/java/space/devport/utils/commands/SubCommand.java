@@ -15,6 +15,7 @@ import java.util.List;
 
 public abstract class SubCommand extends AbstractCommand {
 
+    //TODO Change parent to MainCommand
     @Getter
     private String parent;
 
