@@ -80,6 +80,9 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Setup Console Output
         consoleOutput = ConsoleOutput.getInstance(this);
 
+        // Load usage flags
+        this.usageFlags.addAll(Arrays.asList(usageFlags()));
+
         consoleOutput.debug("Usage flags: " + usageFlags.toString());
 
         if (use(UsageFlag.COMMANDS)) {
@@ -132,9 +135,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
         consoleOutput.info("&3~~~~~~~~~~~~ &7Devport &3~~~~~~~~~~~~");
 
-        // Load usage flags
-        this.usageFlags.addAll(Arrays.asList(usageFlags()));
-
+        //TODO Maybe move to load to allow debugging in #onLoad().
         if (use(UsageFlag.CONFIGURATION)) {
             configuration = new Configuration(this, "config");
 
