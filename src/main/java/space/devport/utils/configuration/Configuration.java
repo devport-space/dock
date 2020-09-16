@@ -200,8 +200,9 @@ public class Configuration {
             load();
     }
 
+    @NotNull
     public ConfigurationSection section(String path) {
-        return fileConfiguration.isConfigurationSection(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
+        return fileConfiguration.getConfigurationSection(path) != null ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
     }
 
     /**
@@ -460,7 +461,7 @@ public class Configuration {
      * @param path   String path to save to
      * @param region Region to save
      */
-    public void saveRegion(@Nullable String path, @Nullable Region region) {
+    public void setRegion(@Nullable String path, @Nullable Region region) {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
@@ -479,7 +480,8 @@ public class Configuration {
         section.set(SubPath.REGION_MIN.toString(), LocationUtil.locationToString(region.getMin()));
         section.set(SubPath.REGION_MAX.toString(), LocationUtil.locationToString(region.getMax()));
 
-        save();
+        if (autoSave)
+            save();
     }
 
     /**
@@ -826,7 +828,7 @@ public class Configuration {
             return;
         }
 
-        ConfigurationSection section = fileConfiguration.contains(path) ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
+        ConfigurationSection section = section(path);
 
         if (section == null) {
             ConsoleOutput.getInstance().err("Could not save ItemBuilder to path " + path + ", section non-existant.");
@@ -869,6 +871,9 @@ public class Configuration {
             } else
                 fileConfiguration.set(path, message.getMessage().get(0));
         }
+
+        if (autoSave)
+            save();
     }
 
     /**
@@ -992,5 +997,24 @@ public class Configuration {
         }
 
         return rewards;
+    }
+
+    public void setRewards(String path, Rewards rewards) {
+        if (Strings.isNullOrEmpty(path)) return;
+
+        ConfigurationSection section = section(path);
+
+        section.set("tokens", rewards.getTokens().toString());
+        section.set("money", rewards.getMoney().toString());
+        section.set("inform", rewards.getInform().getMessage());
+        section.set("broadcast", rewards.getBroadcast().getMessage());
+        section.set("commands", rewards.getCommands());
+
+        for (int i = 0; i < rewards.getItems().size(); i++) {
+            setItemBuilder(path + ".items." + i, rewards.getItems().get(i));
+        }
+
+        if (autoSave)
+            save();
     }
 }
