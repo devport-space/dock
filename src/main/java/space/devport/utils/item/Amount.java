@@ -2,6 +2,9 @@ package space.devport.utils.item;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
+import space.devport.utils.ConsoleOutput;
+import space.devport.utils.ParseUtil;
 
 import java.util.Random;
 
@@ -48,6 +51,25 @@ public class Amount {
         fixed = true;
 
         this.fixedValue = fixedValue;
+    }
+
+    @Nullable
+    public static Amount fromString(String str) {
+        if (str.contains("-")) {
+            String[] arr = str.split("-");
+
+            if (arr.length != 2) {
+                ConsoleOutput.getInstance().warn("Could not parse Amount from " + str + ", incorrect number of parameters in a dynamic syntax.o");
+                return null;
+            }
+
+            double low = ParseUtil.parseDouble(arr[0]);
+            double high = ParseUtil.parseDouble(arr[1]);
+
+            return new Amount(low, high);
+        } else {
+            return new Amount(ParseUtil.parseDouble(str));
+        }
     }
 
     public int getInt() {
