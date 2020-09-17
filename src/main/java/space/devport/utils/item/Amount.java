@@ -61,4 +61,8 @@ public class Amount {
     public String toString() {
         return fixed ? String.valueOf(fixedValue) : lowValue + "-" + highValue;
     }
+
+    public boolean isEmpty() {
+        return fixed ? fixedValue == 0 : lowValue == 0 && highValue == 0;
+    }
 }

@@ -1004,11 +1004,16 @@ public class Configuration {
 
         ConfigurationSection section = section(path);
 
-        section.set("tokens", rewards.getTokens().toString());
-        section.set("money", rewards.getMoney().toString());
-        section.set("inform", rewards.getInform().getMessage());
-        section.set("broadcast", rewards.getBroadcast().getMessage());
-        section.set("commands", rewards.getCommands());
+        if (!rewards.getTokens().isEmpty())
+            section.set("tokens", rewards.getTokens().toString());
+        if (!rewards.getMoney().isEmpty())
+            section.set("money", rewards.getMoney().toString());
+        if (!rewards.getInform().isEmpty())
+            section.set("inform", rewards.getInform().getMessage());
+        if (!rewards.getBroadcast().isEmpty())
+            section.set("broadcast", rewards.getBroadcast().getMessage());
+        if (!rewards.getCommands().isEmpty())
+            section.set("commands", rewards.getCommands());
 
         for (int i = 0; i < rewards.getItems().size(); i++) {
             setItemBuilder(path + ".items." + i, rewards.getItems().get(i));
