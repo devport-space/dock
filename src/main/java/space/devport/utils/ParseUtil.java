@@ -10,18 +10,26 @@ public class ParseUtil {
             return Double.parseDouble(str.trim());
         } catch (NumberFormatException e) {
             if (silent.length < 1 || !silent[0])
-                ConsoleOutput.getInstance().warn("Could not parse double from " + str + ", using 0 as default.");
+                ConsoleOutput.getInstance().warn("Could not parse double from " + str + ", using " + defaultValue + " as default.");
             return defaultValue;
         }
     }
 
     public double parseDouble(String str, boolean... silent) {
+        return parseDouble(str, 0, silent);
+    }
+
+    public int parseInteger(String str, int defaultValue, boolean... silent) {
         try {
-            return Double.parseDouble(str.trim());
+            return Integer.parseInt(str.trim());
         } catch (NumberFormatException e) {
             if (silent.length < 1 || !silent[0])
-                ConsoleOutput.getInstance().warn("Could not parse double from " + str + ", using 0 as default.");
-            return 0;
+                ConsoleOutput.getInstance().warn("Could not parse int from " + str + ", using " + defaultValue + " as default.");
+            return defaultValue;
         }
+    }
+
+    public int parseInteger(String str, boolean... silent) {
+        return parseInteger(str, 0, silent);
     }
 }
