@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
@@ -147,6 +148,58 @@ public abstract class AbstractCommand {
         Collections.sort(input);
         if (Strings.isNullOrEmpty(arg)) return input;
         return input.stream().filter(o -> o.toLowerCase().startsWith(arg.toLowerCase())).collect(Collectors.toList());
+    }
+
+    protected <T> T parse(CommandSender sender, String arg, Function<String, T> parser, Message errorMessage) {
+        T result = parse(arg, parser);
+        if (result == null) {
+            errorMessage.replace("%param%", arg)
+                    .send(sender);
+            return null;
+        }
+        return result;
+    }
+
+    protected <T> T parse(String arg, Function<String, T> parser) {
+        return parser.apply(arg);
+    }
+
+    protected <T> T parse(CommandSender sender, String arg, Function<String, T> parser, String errorMessageKey) {
+        return parse(sender, arg, parser, language.getPrefixed(errorMessageKey));
+    }
+
+    protected String findSwitchValue(String[] args, String switchName) {
+        String real = findSwitch(args, switchName);
+
+        if (real == null) return null;
+
+        List<String> argsList = Arrays.asList(args);
+        int index = argsList.indexOf(real) + 1;
+
+        if (index > argsList.size()) return null;
+
+        return argsList.get(index);
+    }
+
+    protected String[] filterSwitch(String[] args, String switchName) {
+        String real = findSwitch(args, switchName);
+        args = Arrays.stream(args).filter(arg -> !arg.equalsIgnoreCase(real)).toArray(String[]::new);
+        return args;
+    }
+
+    protected String findSwitch(String[] args, String switchName) {
+        for (String arg : args) {
+            String real = arg.replace("-", "").replace("-", "");
+
+            if (switchName.toLowerCase().startsWith(real.toLowerCase())) {
+                return arg;
+            }
+        }
+        return null;
+    }
+
+    protected boolean containsSwitch(String[] args, String switchName) {
+        return findSwitch(args, switchName) != null;
     }
 
     public boolean checkRange() {
