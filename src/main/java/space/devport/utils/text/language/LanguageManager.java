@@ -54,8 +54,8 @@ public class LanguageManager extends DevportManager {
 
             addDefault("Commands.Reload", "&7Done... reload took &f%time%&7ms.");
 
-            addDefault("Commands.Help.Header", "&8&m        &r &3%pluginName% &7v&f%version% &8&m        ");
-            addDefault("Commands.Help.Sub-Command-Line", "&3%usage% &8- &7%description%");
+            addDefault("Commands.Help.Header", "&8&m        &r &" + plugin.getColor().getChar() + "%pluginName% &7v&f%version% &8&m        ");
+            addDefault("Commands.Help.Sub-Command-Line", "&" + plugin.getColor().getChar() + "%usage% &8- &7%description%");
         }
 
         languageDefaults.forEach(LanguageDefaults::setDefaults);
@@ -82,20 +82,14 @@ public class LanguageManager extends DevportManager {
 
         for (Map.Entry<String, Message> entry : defaults.entrySet()) {
 
-            //plugin.getConsoleOutput().debug("Path: " + entry.getKey());
-
             Message message;
             if (!language.getFileConfiguration().contains(entry.getKey())) {
-                //plugin.getConsoleOutput().debug("Does not contain the message.");
                 language.setMessage(entry.getKey(), entry.getValue());
                 message = defaults.get(entry.getKey());
                 save = true;
-            } else {
-                //plugin.getConsoleOutput().debug("Contains the message.");
+            } else
                 message = language.getMessage(entry.getKey(), new Message());
-            }
 
-            //plugin.getConsoleOutput().debug("Final message: " + message.toString());
             cache.put(entry.getKey(), message);
         }
 

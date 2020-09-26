@@ -2,6 +2,7 @@ package space.devport.utils;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,7 +22,14 @@ import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class DevportPlugin extends JavaPlugin {
@@ -31,21 +39,6 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new HashMap<>();
-
-    public <T extends DevportManager> T getManager(Class<T> clazz) {
-        DevportManager manager = this.managers.get(clazz);
-
-        if (manager == null) {
-            consoleOutput.err("Tried to access a manager that's not registered.");
-            return null;
-        }
-
-        return (T) manager;
-    }
-
-    public boolean isRegistered(Class<? extends DevportManager> clazz) {
-        return this.managers.containsKey(clazz);
-    }
 
     @Getter
     private final Set<UsageFlag> usageFlags = new HashSet<>();
@@ -133,7 +126,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Print header
         consoleOutput.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
-        consoleOutput.info("&3~~~~~~~~~~~~ &7Devport &3~~~~~~~~~~~~");
+        consoleOutput.info("&" + getColor().getChar() + "~~~~~~~~~~~~ &7Devport &" + getColor().getChar() + "~~~~~~~~~~~~");
 
         //TODO Maybe move to load to allow debugging in #onLoad().
         if (use(UsageFlag.CONFIGURATION)) {
@@ -158,7 +151,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::afterEnable);
 
-        consoleOutput.info("&3~~~~~~~~~~~~ &7/////// &3~~~~~~~~~~~~");
+        consoleOutput.info("&" + getColor().getChar() + "~~~~~~~~~~~~ &7/////// &" + getColor().getChar() + "~~~~~~~~~~~~");
         consoleOutput.info("Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
 
         // Set the prefix as the last thing, startup looks cooler without it.
@@ -209,6 +202,21 @@ public abstract class DevportPlugin extends JavaPlugin {
         callManagerAction(DevportManager::onDisable);
     }
 
+    public <T extends DevportManager> T getManager(Class<T> clazz) {
+        DevportManager manager = this.managers.get(clazz);
+
+        if (manager == null) {
+            consoleOutput.err("Tried to access a manager with class " + clazz.getSimpleName() + " that's not registered.");
+            return null;
+        }
+
+        return (T) manager;
+    }
+
+    public boolean isRegistered(Class<? extends DevportManager> clazz) {
+        return this.managers.containsKey(clazz);
+    }
+
     public boolean use(UsageFlag usageFlag) {
         return this.usageFlags.contains(usageFlag);
     }
@@ -236,6 +244,10 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public @NotNull FileConfiguration getConfig() {
         return configuration.getFileConfiguration();
+    }
+
+    public ChatColor getColor() {
+        return ChatColor.AQUA;
     }
 
     public PluginManager getPluginManager() {
