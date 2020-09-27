@@ -176,7 +176,7 @@ public class ItemNBTEditor {
      */
     private static Object getTag(Object nativeItemStack) {
         try {
-            if (ServerVersion.isBelowCurrent(ServerVersion.v1_8)) {
+            if (ServerVersion.isBelowCurrent(ServerVersion.v1_12)) {
                 if (!(boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack)) {
                     Object compound = Reflection.getNMSClass("NBTTagCompound").getConstructor().newInstance();
                     nativeItemStack.getClass().getMethod("setTag", compound.getClass()).invoke(nativeItemStack, compound);
@@ -184,7 +184,7 @@ public class ItemNBTEditor {
 
                 return nativeItemStack.getClass().getMethod("getTag").invoke(nativeItemStack);
             } else {
-                return nativeItemStack.getClass().getDeclaredMethod("getOrCreateTag").invoke(nativeItemStack);
+                return nativeItemStack.getClass().getMethod("getOrCreateTag").invoke(nativeItemStack);
             }
 
         } catch (Exception e) {
