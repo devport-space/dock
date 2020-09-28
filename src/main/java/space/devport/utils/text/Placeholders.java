@@ -5,9 +5,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.ConsoleOutput;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.message.Message;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -73,9 +75,13 @@ public class Placeholders {
     public String parse(@NotNull String string) {
         for (String placeholder : placeholderCache.keySet())
             string = string.replaceAll("(?i)" + placeholder, placeholderCache.get(placeholder));
+
+        string = parseDynamic(string);
+        string = parseExternal(string);
         return string;
     }
 
+    @Deprecated
     public Message parse(@NotNull Message message) {
         message.getPlaceholders().copy(this);
         return message;
@@ -114,41 +120,59 @@ public class Placeholders {
         return this;
     }
 
+    public Placeholders addContext(Context context) {
+        this.context.add(context);
+        return this;
+    }
+
+    public Placeholders addContext(Object object) {
+        this.context.add(object);
+        return this;
+    }
+
+    public Placeholders addContext(Object... objects) {
+        Arrays.asList(objects).forEach(this.context::add);
+        return this;
+    }
+
     @Getter
     private final Set<BiFunction<Object, String, String>> parsers = new HashSet<>();
 
+    @NotNull
     public String parseExternal(String text) {
         for (BiFunction<Object, String, String> parser : parsers) {
-            String value = null;
             for (Object context : this.context.getValues()) {
-                String ctxValue = parser.apply(context, text);
-                if (ctxValue != null)
-                    value = ctxValue;
+                String result = parser.apply(context, text);
+                if (result != null)
+                    text = result;
             }
-            if (value == null) continue;
-            text = value;
         }
         return text;
     }
 
-    public <T> Placeholders addParser(BiFunction<T, String, String> parser) {
+    public <T> Placeholders addParser(PlaceholderParser<T> parser, Class<T> type) {
         this.parsers.add((o, str) -> {
-            if (o != null)
-                return parser.apply((T) o, str);
+            if (type.isInstance(o)) {
+                T t = type.cast(o);
+                str = parser.parse(str, t);
+            }
             return str;
         });
         return this;
     }
 
-    public <T> Placeholders addDynamicPlaceholder(String placeholder, DynamicParser<T> parser) {
+    public <T> Placeholders addDynamicPlaceholder(String placeholder, DynamicParser<T> parser, Class<T> type) {
         this.dynamicPlaceholders.put(placeholder, o -> {
-            if (o != null)
-                return parser.apply((T) o);
+            if (type.isInstance(o)) {
+                T t = type.cast(o);
+                return parser.extractValue(t);
+            }
             return null;
         });
         return this;
     }
 
+    @NotNull
     public String parseDynamic(String text) {
         for (Map.Entry<String, Function<Object, String>> entry : dynamicPlaceholders.entrySet()) {
             if (!text.toLowerCase().contains(entry.getKey().toLowerCase())) {
@@ -186,5 +210,10 @@ public class Placeholders {
      */
     public Set<String> getPlaceholders() {
         return placeholderCache.keySet();
+    }
+
+    @Override
+    public String toString() {
+        return placeholderCache.toString();
     }
 }

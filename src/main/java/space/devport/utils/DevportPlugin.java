@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public abstract class DevportPlugin extends JavaPlugin {
@@ -146,7 +146,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
-                .add("%pluginName%", getDescription().getName());
+                .add("%pluginName%", getDescription().getName())
+                .addParser((str, player) -> str.replaceAll("(?i)%player%", player.getName()), OfflinePlayer.class);
 
         callManagerAction(DevportManager::preEnable);
 
@@ -164,7 +165,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         Bukkit.getScheduler().runTask(this, () -> {
 
             if (DependencyUtil.isEnabled("PlaceholderAPI")) {
-                globalPlaceholders.addParser((BiFunction<Player, String, String>) PlaceholderAPI::setPlaceholders);
+                globalPlaceholders.addParser((str, player) -> PlaceholderAPI.setPlaceholders(player, str), Player.class);
             }
 
             callManagerAction(DevportManager::afterDependencyLoad);

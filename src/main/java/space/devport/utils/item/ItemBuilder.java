@@ -94,7 +94,7 @@ public class ItemBuilder {
         this.placeholders = new Placeholders(builder.getPlaceholders());
         this.NBT = new HashMap<>(builder.getNBT());
         this.lore = builder.getLore();
-        this.skullData = new SkullData(builder.getSkullData());
+        this.skullData = builder.getSkullData() == null ? null : new SkullData(builder.getSkullData());
     }
 
     /**
@@ -171,12 +171,12 @@ public class ItemBuilder {
     /**
      * Parse the item's display name and lore with given parse format.
      *
-     * @param format Parse format to parse with
+     * @param placeholders Parse format to parse with
      * @return ItemBuilder object
      */
-    public ItemBuilder parseWith(@NotNull Placeholders format) {
-        for (String key : format.getPlaceholders())
-            parse(key, format.getPlaceholderCache().get(key));
+    public ItemBuilder parseWith(@NotNull Placeholders placeholders) {
+        displayName.parseWith(placeholders).parse();
+        lore.parseWith(placeholders).parse();
         return this;
     }
 

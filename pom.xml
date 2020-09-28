@@ -7,7 +7,7 @@
 
     <groupId>space.devport.utils</groupId>
     <artifactId>DevportUtils</artifactId>
-    <version>3.3.0</version>
+    <version>3.4.0</version>
 
     <packaging>jar</packaging>
 

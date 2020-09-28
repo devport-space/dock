@@ -3,6 +3,7 @@ package space.devport.utils.text.message;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
@@ -70,13 +71,24 @@ public class Message {
         return this;
     }
 
+    public Message parse(Object... objects) {
+        return context(objects).parse();
+    }
+
     // Parse placeholders
     public Message parse() {
-        return this.placeholders.parse(this);
+        this.message = this.message.stream().map(l -> placeholders.parse(l)).collect(Collectors.toList());
+        return this;
     }
 
     public Message parseWith(Placeholders placeholders) {
-        return placeholders.parse(this);
+        this.placeholders.copy(placeholders);
+        return this;
+    }
+
+    public Message context(Object... objects) {
+        this.placeholders.addContext(objects);
+        return this;
     }
 
     /**
@@ -218,6 +230,14 @@ public class Message {
         return StringUtil.listToString(message, "\n");
     }
 
+    public void send(Player player) {
+        send(player, player);
+    }
+
+    public void send(CommandSender sender, Object... context) {
+        this.context(context).send(sender);
+    }
+
     /**
      * Parse placeholders, color the message and send.
      *
@@ -225,11 +245,9 @@ public class Message {
      */
     public void send(@Nullable CommandSender sender) {
 
-        if (sender == null) return;
+        if (sender == null || isEmpty()) return;
 
-        if (!isEmpty()) {
-            sender.sendMessage(parse().color().toString());
-        }
+        sender.sendMessage(parse().color().toString());
     }
 
     /**
