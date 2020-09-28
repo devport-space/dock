@@ -24,9 +24,9 @@ public abstract class SubCommand extends AbstractCommand {
     public void addLanguage() {
         if (DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) {
             if (getDefaultUsage() != null)
-                language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Usage", getDefaultUsage());
+                language.addDefault("Commands.Help." + getParent().getName() + "." + getName() + ".Usage", getDefaultUsage());
             if (getDefaultDescription() != null)
-                language.addDefault("Commands.Help." + getParent() + "." + getName() + ".Description", getDefaultDescription());
+                language.addDefault("Commands.Help." + getParent().getName() + "." + getName() + ".Description", getDefaultDescription());
         }
     }
 
