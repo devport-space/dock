@@ -49,6 +49,7 @@ public enum SubPath {
     ITEM_FLAGS("flags"),
     ITEM_NBT("nbt"),
     ITEM_NBT_DELIMITER(";"),
+    ITEM_SKULL_DATA("head"),
     ITEM_GLOW("glow");
 
     @Setter

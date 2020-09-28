@@ -1,5 +1,6 @@
 package space.devport.utils.item;
 
+import com.google.common.base.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.libs.org.apache.commons.codec.binary.Base64;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.utility.reflection.ServerVersion;
 
@@ -99,7 +101,12 @@ public class SkullData {
         return new Property("textures", new String(encodedData));
     }
 
-    public static SkullData fromString(String str) {
+    @Nullable
+    public static SkullData fromString(@Nullable String str) {
+
+        if (Strings.isNullOrEmpty(str))
+            return null;
+
         if (str.toLowerCase().startsWith("owner:")) {
             str = str.replace("owner:", "");
             return new SkullData(str, null);
@@ -108,6 +115,15 @@ public class SkullData {
             return new SkullData(null, str);
         } else
             return new SkullData(str, null);
+    }
+
+    @Override
+    public String toString() {
+        if (owningPlayer != null)
+            return "owner:" + owningPlayer;
+        else if (token != null)
+            return "token:" + token;
+        else return "";
     }
 
     public static SkullData readSkullTexture(ItemStack item) {

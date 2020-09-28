@@ -59,7 +59,7 @@ public class ItemBuilder {
     private Map<String, String> NBT = new HashMap<>();
 
     @Getter
-    private SkullData skullData = new SkullData(null, null);
+    private SkullData skullData;
 
     // Apply luck & hide enchants flag?
     @Getter
@@ -252,6 +252,10 @@ public class ItemBuilder {
                 else
                     item = i;
             }
+
+        // Skull data
+        if (skullData != null)
+            item = skullData.apply(item);
 
         return item;
     }

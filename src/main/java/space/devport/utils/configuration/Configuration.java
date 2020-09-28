@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.item.SkullData;
 import space.devport.utils.menu.MenuBuilder;
 import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.region.Region;
@@ -799,6 +800,10 @@ public class Configuration {
                     b.addFlag(flag);
                 }
 
+            // Skull data
+            if (section.contains(SubPath.ITEM_SKULL_DATA.toString()))
+                b.skullData(SkullData.fromString(section.getString(SubPath.ITEM_SKULL_DATA.toString())));
+
             // NBT
             if (section.contains(SubPath.ITEM_NBT.toString()))
                 for (String nbtString : section.getStringList(SubPath.ITEM_NBT.toString()))
@@ -823,6 +828,7 @@ public class Configuration {
      * @param builder ItemBuilder to save.
      */
     public void setItemBuilder(@Nullable String path, @NotNull ItemBuilder builder) {
+
         if (Strings.isNullOrEmpty(path)) {
             ConsoleOutput.getInstance().err("Could not save ItemBuilder, path null.");
             return;
@@ -830,28 +836,40 @@ public class Configuration {
 
         ConfigurationSection section = section(path);
 
-        if (section == null) {
-            ConsoleOutput.getInstance().err("Could not save ItemBuilder to path " + path + ", section non-existant.");
-            return;
+        section.set(SubPath.ITEM_TYPE.toString(), builder.getMaterial().toString());
+
+        if (builder.getDamage() != 0)
+            section.set(SubPath.ITEM_DATA.toString(), builder.getDamage());
+
+        if (!(builder.getAmount().isFixed() && builder.getAmount().getFixedValue() == 1))
+            section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().isFixed() ? (int) builder.getAmount().getFixedValue() : builder.getAmount().toString());
+
+        if (!builder.getDisplayName().isEmpty())
+            section.set(SubPath.ITEM_NAME.toString(), builder.getDisplayName().toString());
+
+        if (!builder.getLore().isEmpty())
+            section.set(SubPath.ITEM_LORE.toString(), builder.getLore().getMessage());
+
+        if (!builder.getEnchants().isEmpty()) {
+            List<String> enchants = new ArrayList<>();
+            builder.getEnchants().forEach((e, l) -> enchants.add(e.getVanillaName() + SubPath.ITEM_ENCHANT_DELIMITER + l));
+            section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
         }
 
-        section.set(SubPath.ITEM_TYPE.toString(), builder.getMaterial().toString());
-        section.set(SubPath.ITEM_DATA.toString(), builder.getDamage());
-        section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().isFixed() ? (int) builder.getAmount().getFixedValue() : builder.getAmount().toString());
-        section.set(SubPath.ITEM_NAME.toString(), builder.getDisplayName().toString());
-        section.set(SubPath.ITEM_LORE.toString(), builder.getLore().getMessage());
+        if (!builder.getFlags().isEmpty())
+            section.set(SubPath.ITEM_FLAGS.toString(), builder.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
 
-        List<String> enchants = new ArrayList<>();
-        builder.getEnchants().forEach((e, l) -> enchants.add(e.getVanillaName() + SubPath.ITEM_ENCHANT_DELIMITER + l));
-        section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
+        if (!builder.getNBT().isEmpty()) {
+            List<String> nbt = new ArrayList<>();
+            builder.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v));
+            section.set(SubPath.ITEM_NBT.toString(), nbt);
+        }
 
-        section.set(SubPath.ITEM_FLAGS.toString(), builder.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
+        if (builder.isGlow())
+            section.set(SubPath.ITEM_GLOW.toString(), builder.isGlow());
 
-        List<String> nbt = new ArrayList<>();
-        builder.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v));
-        section.set(SubPath.ITEM_NBT.toString(), nbt);
-
-        section.set(SubPath.ITEM_GLOW.toString(), builder.isGlow());
+        if (builder.getSkullData() != null)
+            section.set(SubPath.ITEM_SKULL_DATA.toString(), builder.getSkullData().toString());
 
         if (autoSave)
             save();
