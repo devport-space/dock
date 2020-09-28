@@ -1,6 +1,7 @@
 package space.devport.utils.item;
 
 import com.cryptomorin.xseries.XEnchantment;
+import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Material;
@@ -15,7 +16,11 @@ import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class to handle Item construction.
@@ -24,6 +29,9 @@ import java.util.*;
  */
 @NoArgsConstructor
 public class ItemBuilder {
+
+    @Getter
+    public static final List<String> FILTERED_NBT = new ArrayList<>(Arrays.asList("Damage", "Enchantments", "display", "HideFlags"));
 
     // Item Data information
     @Getter
@@ -49,6 +57,9 @@ public class ItemBuilder {
     // Holds item nbt keys & values
     @Getter
     private Map<String, String> NBT = new HashMap<>();
+
+    @Getter
+    private SkullData skullData = new SkullData(null, null);
 
     // Apply luck & hide enchants flag?
     @Getter
@@ -83,10 +94,8 @@ public class ItemBuilder {
         this.placeholders = new Placeholders(builder.getPlaceholders());
         this.NBT = new HashMap<>(builder.getNBT());
         this.lore = builder.getLore();
+        this.skullData = new SkullData(builder.getSkullData());
     }
-
-    @Getter
-    public static final List<String> FILTERED_NBT = new ArrayList<>(Arrays.asList("Damage", "Enchantments", "display", "HideFlags"));
 
     /**
      * To-builder constructor.
@@ -116,6 +125,10 @@ public class ItemBuilder {
 
             // Flags
             this.flags = new ArrayList<>(itemMeta.getItemFlags());
+
+            // Skull data
+            if (XMaterial.matchXMaterial(item) == XMaterial.PLAYER_HEAD)
+                this.skullData = SkullData.readSkullTexture(item);
         }
 
         Map<String, String> map = ItemNBTEditor.getNBTTagMap(item);
@@ -574,6 +587,11 @@ public class ItemBuilder {
      */
     public ItemBuilder glow(boolean... glow) {
         this.glow = glow.length <= 0 || glow[0];
+        return this;
+    }
+
+    public ItemBuilder skullData(SkullData skullData) {
+        this.skullData = skullData;
         return this;
     }
 
