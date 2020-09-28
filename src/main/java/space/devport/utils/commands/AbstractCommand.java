@@ -64,7 +64,7 @@ public abstract class AbstractCommand {
         if (!plugin.use(UsageFlag.LANGUAGE)) return new Message(getDefaultUsage());
 
         if (this instanceof SubCommand) {
-            return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent() + "." + getName() + ".Usage") : new Message();
+            return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent().getName() + "." + getName() + ".Usage") : new Message();
         } else return language.get("Commands.Help." + getName() + ".Usage");
     }
 
@@ -73,7 +73,7 @@ public abstract class AbstractCommand {
         if (!plugin.use(UsageFlag.LANGUAGE)) return new Message(getDefaultDescription());
 
         if (this instanceof SubCommand) {
-            return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent() + "." + getName() + ".Description") : new Message();
+            return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent().getName() + "." + getName() + ".Description") : new Message();
         } else return language.get("Commands.Help." + getName() + ".Description");
     }
 

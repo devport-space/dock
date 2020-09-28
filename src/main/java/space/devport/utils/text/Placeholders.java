@@ -1,5 +1,6 @@
 package space.devport.utils.text;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -71,7 +72,11 @@ public class Placeholders {
      * @param string String to parse
      * @return Parsed string
      */
-    public String parse(@NotNull String string) {
+    public String parse(@Nullable String string) {
+
+        if (Strings.isNullOrEmpty(string))
+            return string;
+
         for (String placeholder : placeholderCache.keySet())
             string = string.replaceAll("(?i)" + placeholder, placeholderCache.get(placeholder));
 
@@ -151,7 +156,7 @@ public class Placeholders {
 
     public <T> Placeholders addParser(PlaceholderParser<T> parser, Class<T> type) {
         this.parsers.add((o, str) -> {
-            if (type.isAssignableFrom(o.getClass())) {
+            if (o != null && str != null && type.isAssignableFrom(o.getClass())) {
                 T t = type.cast(o);
                 str = parser.parse(str, t);
             }
@@ -162,7 +167,7 @@ public class Placeholders {
 
     public <T> Placeholders addDynamicPlaceholder(String placeholder, DynamicParser<T> parser, Class<T> type) {
         this.dynamicPlaceholders.put(placeholder, o -> {
-            if (type.isAssignableFrom(o.getClass())) {
+            if (o != null && type.isAssignableFrom(o.getClass())) {
                 T t = type.cast(o);
                 return parser.extractValue(t);
             }
