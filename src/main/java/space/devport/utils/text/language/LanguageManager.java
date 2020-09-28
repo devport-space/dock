@@ -42,7 +42,11 @@ public class LanguageManager extends DevportManager {
     public void afterEnable() {
         captureDefaults();
         load();
-        consoleOutput.info("Loaded " + this.cache.size() + " message(s)...");
+    }
+
+    @Override
+    public void afterReload() {
+        load();
     }
 
     public void captureDefaults() {
@@ -57,7 +61,6 @@ public class LanguageManager extends DevportManager {
             addDefault("Commands.Help.Header", "&8&m        &r &" + plugin.getColor().getChar() + "%pluginName% &7v&f%version% &8&m        ");
             addDefault("Commands.Help.Sub-Command-Line", "&" + plugin.getColor().getChar() + "%usage% &8- &7%description%");
         }
-
         languageDefaults.forEach(LanguageDefaults::setDefaults);
     }
 
@@ -79,6 +82,7 @@ public class LanguageManager extends DevportManager {
             this.language.load();
 
         boolean save = false;
+        int added = 0;
 
         for (Map.Entry<String, Message> entry : defaults.entrySet()) {
 
@@ -86,6 +90,7 @@ public class LanguageManager extends DevportManager {
             if (!language.getFileConfiguration().contains(entry.getKey())) {
                 language.setMessage(entry.getKey(), entry.getValue());
                 message = defaults.get(entry.getKey());
+                added++;
                 save = true;
             } else
                 message = language.getMessage(entry.getKey(), new Message());
@@ -95,6 +100,8 @@ public class LanguageManager extends DevportManager {
 
         if (save)
             language.save();
+
+        consoleOutput.info("Loaded " + this.cache.size() + " " + (added != 0 ? "and added " + added + " new " : "") + "message(s)...");
     }
 
     public Message get(@NotNull String path) {
