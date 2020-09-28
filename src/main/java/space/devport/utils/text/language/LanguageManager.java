@@ -5,13 +5,10 @@ import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.configuration.Configuration;
-import space.devport.utils.struct.Context;
-import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
@@ -102,18 +99,8 @@ public class LanguageManager extends DevportManager {
 
     public Message get(@NotNull String path) {
         Message msg = new Message(cache.get(path));
-        plugin.getGlobalPlaceholders().parse(msg);
+        msg.parseWith(plugin.getGlobalPlaceholders());
         return msg;
-    }
-
-    public Message get(String path, Context context) {
-        Message msg = get(path);
-
-        if (msg.isEmpty()) return msg;
-
-        Placeholders placeholders = new Placeholders(plugin.getGlobalPlaceholders()).setContext(context);
-
-        return placeholders.parse(msg);
     }
 
     public Message getPrefixed(@NotNull String path) {
@@ -122,19 +109,9 @@ public class LanguageManager extends DevportManager {
         if (msg.isEmpty()) return msg;
 
         msg.prefix("%prefix%");
-        plugin.getGlobalPlaceholders().parse(msg);
+        msg.parseWith(plugin.getGlobalPlaceholders());
 
         return msg;
-    }
-
-    public Message getPrefixed(String path, Context context) {
-        Message msg = getPrefixed(path);
-
-        if (msg.isEmpty()) return msg;
-
-        Placeholders placeholders = new Placeholders(plugin.getGlobalPlaceholders()).setContext(context);
-
-        return placeholders.parse(msg);
     }
 
     public void send(@Nullable CommandSender sender, @NotNull String path) {

@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.message.Message;
 
@@ -152,7 +151,7 @@ public class Placeholders {
 
     public <T> Placeholders addParser(PlaceholderParser<T> parser, Class<T> type) {
         this.parsers.add((o, str) -> {
-            if (type.isInstance(o)) {
+            if (type.isAssignableFrom(o.getClass())) {
                 T t = type.cast(o);
                 str = parser.parse(str, t);
             }
@@ -163,7 +162,7 @@ public class Placeholders {
 
     public <T> Placeholders addDynamicPlaceholder(String placeholder, DynamicParser<T> parser, Class<T> type) {
         this.dynamicPlaceholders.put(placeholder, o -> {
-            if (type.isInstance(o)) {
+            if (type.isAssignableFrom(o.getClass())) {
                 T t = type.cast(o);
                 return parser.extractValue(t);
             }

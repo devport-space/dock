@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 
@@ -88,6 +89,11 @@ public class Message {
 
     public Message context(Object... objects) {
         this.placeholders.addContext(objects);
+        return this;
+    }
+
+    public Message context(Context context) {
+        this.placeholders.addContext(context);
         return this;
     }
 
@@ -235,6 +241,10 @@ public class Message {
     }
 
     public void send(CommandSender sender, Object... context) {
+        send(sender, new Context(context));
+    }
+
+    public void send(CommandSender sender, Context context) {
         this.context(context).send(sender);
     }
 

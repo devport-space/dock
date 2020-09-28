@@ -1,5 +1,8 @@
 package space.devport.utils.struct;
 
+import org.bukkit.OfflinePlayer;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,8 +14,12 @@ public class Context {
     public Context() {
     }
 
+    public Context(Object... objects) {
+        add(objects);
+    }
+
     public Context(Object object) {
-        this.values.add(object);
+        add(object);
     }
 
     public Context(Context context) {
@@ -35,11 +42,22 @@ public class Context {
         return this;
     }
 
+    public Context add(Object... objects) {
+        this.values.addAll(Arrays.asList(objects));
+        return this;
+    }
+
     public void clear() {
         this.values.clear();
     }
 
     public Set<Object> getValues() {
         return Collections.unmodifiableSet(values);
+    }
+
+    public Context fromPlayer(OfflinePlayer offlinePlayer) {
+        if (offlinePlayer.isOnline())
+            add(offlinePlayer.getPlayer());
+        return add(offlinePlayer);
     }
 }
