@@ -1,11 +1,13 @@
 package space.devport.utils;
 
 import lombok.Getter;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +21,7 @@ import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.language.LanguageManager;
+import space.devport.utils.utility.DependencyUtil;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 
@@ -30,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public abstract class DevportPlugin extends JavaPlugin {
@@ -157,7 +161,14 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Set the prefix as the last thing, startup looks cooler without it.
         consoleOutput.setPrefix(prefix);
 
-        Bukkit.getScheduler().runTask(this, () -> callManagerAction(DevportManager::afterDependencyLoad));
+        Bukkit.getScheduler().runTask(this, () -> {
+
+            if (DependencyUtil.isEnabled("PlaceholderAPI")) {
+                globalPlaceholders.addParser((BiFunction<Player, String, String>) PlaceholderAPI::setPlaceholders);
+            }
+
+            callManagerAction(DevportManager::afterDependencyLoad);
+        });
     }
 
     public void reload(CommandSender sender) {

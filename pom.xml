@@ -7,7 +7,7 @@
 
     <groupId>space.devport.utils</groupId>
     <artifactId>DevportUtils</artifactId>
-    <version>3.2.0</version>
+    <version>3.3.0</version>
 
     <packaging>jar</packaging>
 
@@ -101,6 +101,10 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>clip-repo</id>
+            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -158,6 +162,12 @@
             <groupId>com.Zrips.CMI</groupId>
             <artifactId>CMI</artifactId>
             <version>7.1.3.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.10.9</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

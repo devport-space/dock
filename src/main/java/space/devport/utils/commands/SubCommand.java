@@ -9,15 +9,13 @@ import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class SubCommand extends AbstractCommand {
 
-    //TODO Change parent to MainCommand
     @Getter
-    private String parent;
+    private MainCommand parent;
 
     public SubCommand(String name) {
         super(name);
@@ -46,7 +44,7 @@ public abstract class SubCommand extends AbstractCommand {
     @Override
     public abstract @Nullable ArgumentRange getRange();
 
-    public void setParent(String parent) {
+    public void setParent(MainCommand parent) {
         this.parent = parent;
         this.preconditions.setPermissions(Collections.singletonList(craftPermission()));
     }

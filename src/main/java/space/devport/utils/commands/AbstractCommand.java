@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
 
-    //TODO Try to remove static access to DevportPlugin
+    private final DevportPlugin plugin;
 
     protected final LanguageManager language;
 
@@ -39,7 +39,8 @@ public abstract class AbstractCommand {
 
     public AbstractCommand(String name) {
         this.name = name;
-        this.language = DevportPlugin.getInstance().getManager(LanguageManager.class);
+        this.plugin = DevportPlugin.getInstance();
+        this.language = plugin.getManager(LanguageManager.class);
     }
 
     // This should be overridden by commands and performs the wanted action itself.
@@ -60,7 +61,7 @@ public abstract class AbstractCommand {
 
     @NotNull
     public Message getUsage() {
-        if (!DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) return new Message(getDefaultUsage());
+        if (!plugin.use(UsageFlag.LANGUAGE)) return new Message(getDefaultUsage());
 
         if (this instanceof SubCommand) {
             return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent() + "." + getName() + ".Usage") : new Message();
@@ -69,7 +70,7 @@ public abstract class AbstractCommand {
 
     @NotNull
     public Message getDescription() {
-        if (!DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) return new Message(getDefaultDescription());
+        if (!plugin.use(UsageFlag.LANGUAGE)) return new Message(getDefaultDescription());
 
         if (this instanceof SubCommand) {
             return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent() + "." + getName() + ".Description") : new Message();
@@ -82,14 +83,14 @@ public abstract class AbstractCommand {
             int res = getRange().compare(args.length);
             if (res > 0) {
                 CommandResult.TOO_MANY_ARGS.getMessage()
-                        .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders())
+                        .parseWith(plugin.getGlobalPlaceholders())
                         .replace("%label%", label)
                         .replace("%usage%", getUsage().color().toString().replace("%label%", label))
                         .send(sender);
                 return;
             } else if (res < 0) {
                 CommandResult.NOT_ENOUGH_ARGS.getMessage()
-                        .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders())
+                        .parseWith(plugin.getGlobalPlaceholders())
                         .replace("%label%", label)
                         .replace("%usage%", getUsage().color().toString().replace("%label%", label))
                         .send(sender);
@@ -101,7 +102,7 @@ public abstract class AbstractCommand {
 
         if (this.preconditions.isConsoleOnly() && sender instanceof Player) {
             CommandResult.NO_PLAYER.getMessage()
-                    .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders())
+                    .parseWith(plugin.getGlobalPlaceholders())
                     .replace("%label%", label)
                     .replace("%usage%", getUsage().color().toString().replace("%label%", label))
                     .send(sender);
@@ -110,7 +111,7 @@ public abstract class AbstractCommand {
 
         if (this.preconditions.isPlayerOnly() && !(sender instanceof Player)) {
             CommandResult.NO_CONSOLE.getMessage()
-                    .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders())
+                    .parseWith(plugin.getGlobalPlaceholders())
                     .replace("%label%", label)
                     .replace("%usage%", getUsage().color().toString().replace("%label%", label))
                     .send(sender);
@@ -119,7 +120,7 @@ public abstract class AbstractCommand {
 
         if (!this.preconditions.getPermissions().isEmpty() && this.preconditions.getPermissions().stream().noneMatch(sender::hasPermission)) {
             CommandResult.NO_PERMISSION.getMessage()
-                    .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders())
+                    .parseWith(plugin.getGlobalPlaceholders())
                     .replace("%label%", label)
                     .replace("%usage%", getUsage().color().toString().replace("%label%", label))
                     .send(sender);
@@ -128,7 +129,7 @@ public abstract class AbstractCommand {
 
         if (this.preconditions.isOperator() && !sender.isOp()) {
             CommandResult.NOT_OPERATOR.getMessage()
-                    .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders())
+                    .parseWith(plugin.getGlobalPlaceholders())
                     .replace("%label%", label)
                     .replace("%usage%", getUsage().color().toString().replace("%label%", label))
                     .send(sender);
@@ -136,7 +137,7 @@ public abstract class AbstractCommand {
         }
 
         perform(sender, label, args).getMessage()
-                .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders())
+                .parseWith(plugin.getGlobalPlaceholders())
                 .replace("%label%", label)
                 .replace("%usage%", getUsage().color().toString().replace("%label%", label))
                 .send(sender);
@@ -221,12 +222,12 @@ public abstract class AbstractCommand {
     }
 
     protected String craftPermission() {
-        String permission = DevportPlugin.getInstance().getDescription().getName().toLowerCase();
+        String permission = plugin.getDescription().getName().toLowerCase();
 
         if (this instanceof SubCommand) {
             SubCommand subCommand = (SubCommand) this;
             if (subCommand.getParent() != null)
-                permission += "." + subCommand.getParent().toLowerCase();
+                permission += "." + subCommand.getParent().getName().toLowerCase();
         }
         return permission + "." + this.getName().toLowerCase();
     }

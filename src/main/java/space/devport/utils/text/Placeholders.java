@@ -5,11 +5,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.struct.Context;
 import space.devport.utils.text.message.Message;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -47,11 +53,14 @@ public class Placeholders {
     /**
      * Copy placeholders and values from a format.
      *
-     * @param format Parse format to copy placeholders from
+     * @param placeholders Parse format to copy placeholders from
      * @return ParseFormat object
      */
-    public Placeholders copy(@NotNull Placeholders format) {
-        format.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
+    public Placeholders copy(@NotNull Placeholders placeholders) {
+        placeholders.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
+        this.context.add(placeholders.getContext());
+        placeholders.getDynamicPlaceholders().forEach(this.dynamicPlaceholders::put);
+        this.parsers.addAll(placeholders.getParsers());
         return this;
     }
 
@@ -63,13 +72,12 @@ public class Placeholders {
      */
     public String parse(@NotNull String string) {
         for (String placeholder : placeholderCache.keySet())
-            string = string.replace(placeholder, placeholderCache.get(placeholder));
+            string = string.replaceAll("(?i)" + placeholder, placeholderCache.get(placeholder));
         return string;
     }
 
     public Message parse(@NotNull Message message) {
-        for (String placeholder : placeholderCache.keySet())
-            message.replace(placeholder, placeholderCache.get(placeholder));
+        message.getPlaceholders().copy(this);
         return message;
     }
 
@@ -90,6 +98,75 @@ public class Placeholders {
         if (value != null)
             placeholderCache.put(placeholder, value.toString());
         return this;
+    }
+
+    private final Context context = new Context();
+
+    @Getter
+    private final Map<String, Function<Object, String>> dynamicPlaceholders = new HashMap<>();
+
+    public Context getContext() {
+        return this.context;
+    }
+
+    public Placeholders setContext(Context context) {
+        this.context.set(context);
+        return this;
+    }
+
+    @Getter
+    private final Set<BiFunction<Object, String, String>> parsers = new HashSet<>();
+
+    public String parseExternal(String text) {
+        for (BiFunction<Object, String, String> parser : parsers) {
+            String value = null;
+            for (Object context : this.context.getValues()) {
+                String ctxValue = parser.apply(context, text);
+                if (ctxValue != null)
+                    value = ctxValue;
+            }
+            if (value == null) continue;
+            text = value;
+        }
+        return text;
+    }
+
+    public <T> Placeholders addParser(BiFunction<T, String, String> parser) {
+        this.parsers.add((o, str) -> {
+            if (o != null)
+                return parser.apply((T) o, str);
+            return str;
+        });
+        return this;
+    }
+
+    public <T> Placeholders addDynamicPlaceholder(String placeholder, DynamicParser<T> parser) {
+        this.dynamicPlaceholders.put(placeholder, o -> {
+            if (o != null)
+                return parser.apply((T) o);
+            return null;
+        });
+        return this;
+    }
+
+    public String parseDynamic(String text) {
+        for (Map.Entry<String, Function<Object, String>> entry : dynamicPlaceholders.entrySet()) {
+            if (!text.toLowerCase().contains(entry.getKey().toLowerCase())) {
+                continue;
+            }
+
+            String value = null;
+            for (Object context : this.context.getValues()) {
+                String ctxValue = entry.getValue().apply(context);
+                if (ctxValue != null)
+                    value = ctxValue;
+            }
+
+            if (value == null) continue;
+
+            text = text.replaceAll("(?i)" + entry.getKey(), value);
+        }
+        return text;
     }
 
     /**

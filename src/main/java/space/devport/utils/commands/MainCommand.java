@@ -84,7 +84,7 @@ public abstract class MainCommand extends AbstractCommand {
 
     public MainCommand addSubCommand(SubCommand subCommand) {
         this.subCommands.add(subCommand);
-        subCommand.setParent(getName());
+        subCommand.setParent(this);
         subCommand.addLanguage();
         return this;
     }
