@@ -35,10 +35,10 @@ public class Placeholders {
     /**
      * Copy constructor.
      *
-     * @param format Parse format to copy
+     * @param placeholders Parse format to copy
      */
-    public Placeholders(@NotNull Placeholders format) {
-        this.copy(format);
+    public Placeholders(@NotNull Placeholders placeholders) {
+        this.copy(placeholders);
     }
 
     /**
@@ -47,6 +47,7 @@ public class Placeholders {
      * @param placeholders Placeholder array
      * @param values       Value array
      */
+    @Deprecated
     public Placeholders(@NotNull String[] placeholders, @NotNull Object[] values) {
         for (int i = 0; i < placeholders.length; i++)
             placeholderCache.put(placeholders[i], values[i].toString());
@@ -59,10 +60,11 @@ public class Placeholders {
      * @return ParseFormat object
      */
     public Placeholders copy(@NotNull Placeholders placeholders) {
-        placeholders.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
-        this.context.add(placeholders.getContext());
         placeholders.getDynamicPlaceholders().forEach(this.dynamicPlaceholders::put);
         this.parsers.addAll(placeholders.getParsers());
+
+        placeholders.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
+        this.context.add(placeholders.getContext());
         return this;
     }
 
@@ -136,6 +138,11 @@ public class Placeholders {
 
     public Placeholders addContext(Object... objects) {
         Arrays.asList(objects).forEach(this.context::add);
+        return this;
+    }
+
+    public Placeholders clearContext() {
+        this.context.clear();
         return this;
     }
 

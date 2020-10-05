@@ -57,6 +57,7 @@ public class MenuBuilder {
         this.slots = builder.getSlots();
         this.title = builder.getTitle();
         this.items = builder.getItems();
+
         this.buildMatrix = builder.getBuildMatrix();
         this.clickDelay = builder.getClickDelay();
 
@@ -85,8 +86,6 @@ public class MenuBuilder {
 
         int required = buildMatrix.length * 9;
         if (required > this.slots) this.slots = required;
-
-        ConsoleOutput.getInstance().debug("Slots: " + this.slots);
 
         // Title
 
@@ -139,12 +138,13 @@ public class MenuBuilder {
     public Menu build() {
 
         // Menu has to be at least once constructed
-        if (!constructed) construct();
+        if (!constructed)
+            construct();
 
         // Fill items
 
         for (Map.Entry<Integer, MenuItem> item : this.items.entrySet()) {
-            inventory.setItem(item.getKey(), item.getValue().getItemBuilder().parseWith(placeholders).build());
+            inventory.setItem(item.getKey(), item.getValue().getItemBuilder().build());
         }
 
         Menu menu = new Menu(name, this);

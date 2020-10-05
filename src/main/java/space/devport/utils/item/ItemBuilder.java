@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
 
@@ -175,8 +176,7 @@ public class ItemBuilder {
      * @return ItemBuilder object
      */
     public ItemBuilder parseWith(@NotNull Placeholders placeholders) {
-        displayName.parseWith(placeholders).parse();
-        lore.parseWith(placeholders).parse();
+        this.placeholders = this.placeholders.copy(placeholders);
         return this;
     }
 
@@ -200,20 +200,15 @@ public class ItemBuilder {
 
         // Apply lore
         if (!lore.isEmpty()) {
-            lore.parseWith(placeholders)
-                    .color();
+            //TODO Placeholders.parseWith(Placeholders).parse() acted weirdly. Most likely the new context system.
+            List<String> lore = StringUtil.color(placeholders.parse(this.lore.getMessage()));
 
-            meta.setLore(lore.getMessage());
-
-            lore.pull();
+            meta.setLore(lore);
         }
 
         // Apply display name
         if (!displayName.isEmpty()) {
-            meta.setDisplayName(displayName.setPlaceholders(placeholders)
-                    .parse()
-                    .color()
-                    .toString());
+            meta.setDisplayName(StringUtil.color(placeholders.parse(this.displayName.toString())));
 
             displayName.pull();
         }
