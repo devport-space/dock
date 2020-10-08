@@ -24,7 +24,6 @@ import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.region.Region;
 import space.devport.utils.struct.Conditions;
 import space.devport.utils.struct.Rewards;
-import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.message.Message;
 import space.devport.utils.utility.LocationUtil;
@@ -582,134 +581,10 @@ public class Configuration {
      * @param path String path to ItemBuilder
      * @return ItemBuilder object
      */
-    @NotNull
-    public ItemBuilder getItemBuilder(@Nullable String path, @NotNull ItemBuilder defaultValue) {
+    public ItemBuilder getItemBuilder(@Nullable String path, @Nullable ItemBuilder defaultValue) {
 
-        // Parse format for the default
-        Placeholders format = new Placeholders()
-                .add("{message}", "Invalid path");
-
-        // Check path
-        if (!Strings.isNullOrEmpty(path))
-            // Try to load
-            try {
-                ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
-
-                if (section == null) {
-                    ConsoleOutput.getInstance().warn("Could not find section for item on path " + path + ", using default.");
-                    return defaultValue;
-                }
-
-                String type = section.getString(SubPath.ITEM_TYPE.toString());
-
-                if (Strings.isNullOrEmpty(type)) {
-                    ConsoleOutput.getInstance().err("Invalid material on path " + path + ", returning default.");
-                    return defaultValue;
-                }
-
-                XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
-
-                if (xMaterial == null || xMaterial.parseMaterial() == null) {
-                    ConsoleOutput.getInstance().err("Invalid material on path " + path + ", returning default.");
-                    return defaultValue;
-                }
-
-                Material material = xMaterial.parseMaterial();
-
-                if (material == null) {
-                    ConsoleOutput.getInstance().err("Invalid material on path " + path + ", returning default.");
-                    return defaultValue;
-                }
-
-                // Data
-                short data = (short) (section.contains(SubPath.ITEM_DATA.toString()) ? section.getInt(SubPath.ITEM_DATA.toString()) : 0);
-
-                ItemBuilder b = new ItemBuilder(material).damage(data);
-
-                // Display name
-                if (section.contains(SubPath.ITEM_NAME.toString()))
-                    b.displayName(section.getString(SubPath.ITEM_NAME.toString()));
-
-                // Amount
-                if (section.contains(SubPath.ITEM_AMOUNT.toString()))
-                    b.amount(getAmount(section.getCurrentPath() + "." + SubPath.ITEM_AMOUNT.toString(), new Amount(1)));
-
-                // Glow
-                if (section.contains(SubPath.ITEM_GLOW.toString()))
-                    b.glow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
-
-                // Lore
-                if (section.contains(SubPath.ITEM_LORE.toString()))
-                    b.lore(section.getStringList(SubPath.ITEM_LORE.toString()));
-
-                // Enchants
-                if (section.contains(SubPath.ITEM_ENCHANTS.toString())) {
-                    List<String> dataList = section.getStringList(SubPath.ITEM_ENCHANTS.toString());
-
-                    for (String dataString : dataList) {
-                        int level = 1;
-
-                        if (dataString.contains(SubPath.ITEM_ENCHANT_DELIMITER.toString())) {
-                            level = Integer.parseInt(dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[1]);
-                            dataString = dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
-                        }
-
-                        XEnchantment xEnchantment = XEnchantment.matchXEnchantment(dataString).orElse(null);
-
-                        if (xEnchantment == null) {
-                            ConsoleOutput.getInstance().warn("Could not parse enchantment " + dataString);
-                            continue;
-                        }
-
-                        Enchantment enchantment = xEnchantment.parseEnchantment();
-
-                        if (enchantment == null) {
-                            ConsoleOutput.getInstance().warn("Enchantment " + xEnchantment.name() + " is not valid on this version, skipping it");
-                            continue;
-                        }
-
-                        b.addEnchant(enchantment, level);
-                    }
-                }
-
-                // Item Flags
-                if (section.contains(SubPath.ITEM_FLAGS.toString()))
-                    for (String flagName : section.getStringList(SubPath.ITEM_FLAGS.toString())) {
-                        ItemFlag flag = ItemFlag.valueOf(flagName);
-
-                        b.addFlag(flag);
-                    }
-
-                // NBT
-                if (section.contains(SubPath.ITEM_NBT.toString()))
-                    for (String nbtString : section.getStringList(SubPath.ITEM_NBT.toString()))
-                        if (nbtString.contains(SubPath.ITEM_NBT_DELIMITER.toString())) {
-                            String[] arr = nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString());
-                            b.addNBT(arr[0], arr.length > 1 ? arr[1] : "");
-                        }
-
-                return b;
-            } catch (Exception e) {
-                if (ConsoleOutput.getInstance().isDebug())
-                    e.printStackTrace();
-                format.add("{message}", e.getMessage());
-            }
-
-        ConsoleOutput.getInstance().warn("Could not load item on path " + path + ", using default.");
-        return defaultValue;
-    }
-
-    /**
-     * Loads an ItemBuilder from given path.
-     *
-     * @param path String path to ItemBuilder
-     * @return ItemBuilder object
-     */
-    @Nullable
-    public ItemBuilder getItemBuilder(@Nullable String path) {
-
-        // Check path
-        if (Strings.isNullOrEmpty(path)) return null;
+        /// Check path
+        if (Strings.isNullOrEmpty(path)) return defaultValue;
 
         // Try to load
         try {
@@ -717,28 +592,28 @@ public class Configuration {
 
             if (section == null) {
                 ConsoleOutput.getInstance().debug("Invalid section - path " + path + ", returning null.");
-                return null;
+                return defaultValue;
             }
 
             String type = section.getString(SubPath.ITEM_TYPE.toString());
 
             if (Strings.isNullOrEmpty(type)) {
                 ConsoleOutput.getInstance().debug("Invalid material on path " + path + ", returning null.");
-                return null;
+                return defaultValue;
             }
 
             XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
 
             if (xMaterial == null) {
                 ConsoleOutput.getInstance().debug("Invalid material on path " + path + ", returning null.");
-                return null;
+                return defaultValue;
             }
 
             Material material = xMaterial.parseMaterial();
 
             if (material == null) {
                 ConsoleOutput.getInstance().debug("Invalid material on path " + path + ", returning null.");
-                return null;
+                return defaultValue;
             }
 
             // Data
@@ -818,7 +693,18 @@ public class Configuration {
                 e.printStackTrace();
         }
 
-        return null;
+        return defaultValue;
+    }
+
+    /**
+     * Loads an ItemBuilder from given path.
+     *
+     * @param path String path to ItemBuilder
+     * @return ItemBuilder object
+     */
+    @Nullable
+    public ItemBuilder getItemBuilder(@Nullable String path) {
+        return getItemBuilder(path, null);
     }
 
     /**
