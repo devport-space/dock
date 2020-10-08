@@ -111,7 +111,7 @@ public class SkullData {
             str = str.replace("owner:", "");
             return new SkullData(str, null);
         } else if (str.toLowerCase().startsWith("token:")) {
-            str = str.replace("owner:", "");
+            str = str.replace("token:", "");
             return new SkullData(null, str);
         } else
             return new SkullData(str, null);
