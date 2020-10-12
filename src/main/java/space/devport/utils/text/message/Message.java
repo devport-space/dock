@@ -14,6 +14,9 @@ import space.devport.utils.text.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -274,5 +277,20 @@ public class Message {
             String message = StringUtil.color((prefix == null ? "" : prefix) + toString());
             sender.sendMessage(message == null ? "" : message);
         }
+    }
+
+    public Message map(Function<String, String> action) {
+        this.message = this.message.stream().map(action).collect(Collectors.toList());
+        return this;
+    }
+
+    public Message forEach(Consumer<String> action) {
+        this.message.forEach(action);
+        return this;
+    }
+
+    public Message filter(Predicate<String> action) {
+        this.message.removeIf(action);
+        return this;
     }
 }
