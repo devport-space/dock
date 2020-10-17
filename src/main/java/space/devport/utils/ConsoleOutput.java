@@ -167,7 +167,7 @@ public class ConsoleOutput {
     public void toListeners(String message) {
         final String finalMessage = StringUtil.color(message);
         if (finalMessage != null)
-            listeners.forEach(c -> c.sendMessage(finalMessage));
+            new ArrayList<>(listeners).forEach(c -> c.sendMessage(finalMessage));
     }
 
     public void setPrefix(String prefix) {

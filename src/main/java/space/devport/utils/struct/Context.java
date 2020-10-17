@@ -60,4 +60,12 @@ public class Context {
             add(offlinePlayer.getPlayer());
         return add(offlinePlayer);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder(getClass().getSimpleName() + "[");
+        for (Object o : getValues())
+            builder.append(", ").append(o.toString());
+        return builder.append("]").toString();
+    }
 }
