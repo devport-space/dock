@@ -169,12 +169,12 @@ public class Rewards implements Cloneable {
 
     // Execute command as console
     private void executeConsole(String cmd) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim());
+        Bukkit.getScheduler().runTask(DevportPlugin.getInstance(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim()));
     }
 
     // Execute command as player
     private void executePlayer(String cmd, Player player) {
-        player.performCommand(cmd.trim());
+        Bukkit.getScheduler().runTask(DevportPlugin.getInstance(), () -> player.performCommand(cmd.trim()));
     }
 
     // Execute as player with op
@@ -188,7 +188,7 @@ public class Rewards implements Cloneable {
 
         // Give op and take after command is executed
         player.setOp(true);
-        player.performCommand(cmd.trim());
+        executePlayer(cmd, player);
         player.setOp(false);
     }
 
