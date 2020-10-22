@@ -9,6 +9,15 @@ import space.devport.utils.item.Amount;
 @UtilityClass
 public class ParseUtil {
 
+    @Nullable
+    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz) {
+        try {
+            return E.valueOf(clazz, str);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return null;
+        }
+    }
+
     public double parseDouble(String str, double defaultValue, boolean... silent) {
         try {
             return Double.parseDouble(str.trim());
