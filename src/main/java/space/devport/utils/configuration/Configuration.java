@@ -738,7 +738,7 @@ public class Configuration {
 
         if (!builder.getEnchants().isEmpty()) {
             List<String> enchants = new ArrayList<>();
-            builder.getEnchants().forEach((e, l) -> enchants.add(e.getVanillaName() + SubPath.ITEM_ENCHANT_DELIMITER + l));
+            builder.getEnchants().forEach((e, l) -> enchants.add(e.name() + SubPath.ITEM_ENCHANT_DELIMITER + l));
             section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
         }
 
