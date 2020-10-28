@@ -72,8 +72,10 @@ public class Rewards implements Cloneable {
     // Reward a player
     public void give(@Nullable Player player, boolean... broadcast) {
 
+        placeholders.copy(DevportPlugin.getInstance().getGlobalPlaceholders());
+
         if (player != null) {
-            placeholders.add("%player%", player.getName());
+            placeholders.addContext(player);
 
             // Tokens - TokenManager
             giveTokens(player);
@@ -88,7 +90,7 @@ public class Rewards implements Cloneable {
             inform.setPlaceholders(placeholders).send(player);
         }
 
-        if (broadcast.length > 0 && broadcast[0])
+        if (broadcast.length < 1 || broadcast[0])
             sendBroadcast();
 
         parseCommands(player);
