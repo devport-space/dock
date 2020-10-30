@@ -1,15 +1,17 @@
 package space.devport.utils.struct;
 
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class Context {
 
-    private final Set<Object> values = new HashSet<>();
+    private final Map<Class<?>, Object> values = new HashMap<>();
 
     public Context() {
     }
@@ -26,9 +28,20 @@ public class Context {
         add(context);
     }
 
+    /**
+     * Get a context object stored here by class.
+     */
+    @Nullable
+    public <T> T get(@NotNull Class<T> clazz) {
+        for (Object o : this.getValues()) {
+            if (clazz.isAssignableFrom(o.getClass()))
+                return clazz.cast(o);
+        }
+        return null;
+    }
+
     public Context add(Context context) {
-        this.values.addAll(context.getValues());
-        return this;
+        return add(context.getValues());
     }
 
     public Context set(Context context) {
@@ -38,12 +51,13 @@ public class Context {
     }
 
     public Context add(Object object) {
-        this.values.add(object);
+        this.values.put(object.getClass(), object);
         return this;
     }
 
     public Context add(Object... objects) {
-        this.values.addAll(Arrays.asList(objects));
+        for (Object o : objects)
+            this.values.put(o.getClass(), o);
         return this;
     }
 
@@ -52,7 +66,7 @@ public class Context {
     }
 
     public Set<Object> getValues() {
-        return Collections.unmodifiableSet(values);
+        return new HashSet<>(values.values());
     }
 
     public Context fromPlayer(OfflinePlayer offlinePlayer) {
