@@ -57,8 +57,10 @@ public class GsonHelper {
     public CompletableFuture<ByteBuffer> read(@NotNull final Path path) {
 
         AsynchronousFileChannel channel;
+        long size;
         try {
             channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
+            size = channel.size();
         } catch (IOException e) {
             ConsoleOutput.getInstance().err("Could not open an asynchronous file channel.");
             if (ConsoleOutput.getInstance().isDebug())
@@ -68,7 +70,13 @@ public class GsonHelper {
             });
         }
 
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        if (size > Integer.MAX_VALUE) {
+            return CompletableFuture.supplyAsync(() -> {
+                throw new CompletionException(new IllegalStateException("File is too big for the reader."));
+            });
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate((int) size);
 
         CompletableFuture<ByteBuffer> future = new CompletableFuture<>();
         channel.read(buffer, 0, future, new CompletionHandler<Integer, CompletableFuture<ByteBuffer>>() {
