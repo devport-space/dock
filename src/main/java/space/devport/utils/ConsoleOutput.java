@@ -11,6 +11,7 @@ import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Class to handle logging and plugin console output.
@@ -42,6 +43,10 @@ public class ConsoleOutput {
     @Setter
     private boolean colors = false;
 
+    @Getter
+    @Setter
+    private boolean bukkit = true;
+
     @Setter
     private ConsoleCommandSender console = null;
 
@@ -71,6 +76,13 @@ public class ConsoleOutput {
         console.sendMessage(StringUtil.color(msg));
     }
 
+    public void log(String str, Consumer<String> bukkitLogger) {
+        if (bukkit)
+            bukkitLogger.accept(str);
+        else
+            System.out.println(str);
+    }
+
     /**
      * Sends a debug message to console, also to cmdSender if not null.
      *
@@ -81,7 +93,7 @@ public class ConsoleOutput {
             final String finalMsg = prefix + "&eDEBUG: " + msg;
 
             if (colors) colored(finalMsg);
-            else Bukkit.getLogger().info(StringUtil.stripColor(finalMsg));
+            else log(msg, str -> Bukkit.getLogger().info(StringUtil.stripColor(finalMsg)));
 
             toListeners(finalMsg);
         }
@@ -110,7 +122,7 @@ public class ConsoleOutput {
         final String finalMsg = prefix + "&4ERROR: " + msg;
 
         if (colors) colored(finalMsg);
-        else Bukkit.getLogger().severe(StringUtil.stripColor(finalMsg));
+        else log(msg, str -> Bukkit.getLogger().severe(StringUtil.stripColor(finalMsg)));
 
         toListeners(finalMsg);
     }
@@ -124,7 +136,7 @@ public class ConsoleOutput {
         final String finalMsg = prefix + "&7INFO: " + msg;
 
         if (colors) colored(finalMsg);
-        else Bukkit.getLogger().info(StringUtil.stripColor(finalMsg));
+        else log(msg, str -> Bukkit.getLogger().info(StringUtil.stripColor(finalMsg)));
 
         toListeners(finalMsg);
     }
@@ -139,7 +151,7 @@ public class ConsoleOutput {
         final String finalMsg = prefix + "&cWARN: " + msg;
 
         if (colors) colored(finalMsg);
-        else Bukkit.getLogger().warning(StringUtil.stripColor(finalMsg));
+        else log(msg, str -> Bukkit.getLogger().warning(StringUtil.stripColor(finalMsg)));
 
         toListeners(finalMsg);
     }
@@ -165,6 +177,9 @@ public class ConsoleOutput {
     }
 
     public void toListeners(String message) {
+        if (!bukkit)
+            return;
+
         final String finalMessage = StringUtil.color(message);
         if (finalMessage != null)
             new ArrayList<>(listeners).forEach(c -> c.sendMessage(finalMessage));
