@@ -206,8 +206,6 @@ public class GsonHelper {
         CompletableFuture.runAsync(() -> {
             String jsonString = gson.toJson(input, type);
 
-            ConsoleOutput.getInstance().debug("JSON: " + jsonString);
-
             ByteBuffer buffer = ByteBuffer.allocate(jsonString.getBytes().length);
             buffer.put(jsonString.getBytes(StandardCharsets.UTF_8));
             buffer.flip();
