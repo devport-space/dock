@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
 
 import java.io.IOException;
@@ -35,6 +36,19 @@ public class GsonHelper {
 
     public GsonHelper() {
         this(false);
+    }
+
+    public static <T> Type mapList(Class<T> innerType) {
+        return TypeToken.getParameterized(List.class, innerType).getType();
+    }
+
+    public static <K, V> Type mapMap(Class<K> keyType, Class<V> valueType) {
+        return TypeToken.getParameterized(Map.class, keyType, valueType).getType();
+    }
+
+    public static <T> Type map(Class<T> clazz) {
+        return new TypeToken<T>() {
+        }.getType();
     }
 
     /**
@@ -71,20 +85,13 @@ public class GsonHelper {
         return future;
     }
 
-    public static <T> Type mapList(Class<T> innerType) {
-        return TypeToken.getParameterized(List.class, innerType).getType();
-    }
-
-    public static <K, V> Type mapMap(Class<K> keyType, Class<V> valueType) {
-        return TypeToken.getParameterized(Map.class, keyType, valueType).getType();
-    }
-
-    public static <T> Type map(Class<T> clazz) {
-        return new TypeToken<T>() {
-        }.getType();
-    }
-
-    public <T> T load(String dataPath, Type type) {
+    /**
+     * Load and parse json from a file.
+     *
+     * @return Parsed output or null.
+     */
+    @Nullable
+    public <T> T load(@NotNull String dataPath, @NotNull Type type) {
 
         Path path = Paths.get(dataPath);
 
@@ -108,13 +115,13 @@ public class GsonHelper {
      *
      * @return CompletableFuture with the parsed output or null
      */
-    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, Class<T> inner) {
+    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Class<T> clazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
             return null;
 
-        Type type = map(inner);
+        Type type = map(clazz);
 
         return read(path).thenApplyAsync(buffer -> {
             String output = new String(buffer.array(), StandardCharsets.UTF_8);
@@ -126,7 +133,12 @@ public class GsonHelper {
         });
     }
 
-    public <T> CompletableFuture<List<T>> loadListAsync(@NotNull final String dataPath, Class<T> innerClazz) {
+    /**
+     * Asynchronously load a List<T> from a file.
+     *
+     * @return CompletableFuture with the resulting list or null.
+     */
+    public <T> CompletableFuture<List<T>> loadListAsync(@NotNull final String dataPath, @NotNull Class<T> innerClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -144,7 +156,12 @@ public class GsonHelper {
         });
     }
 
-    public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(@NotNull final String dataPath, Class<K> keyClazz, Class<V> valueClazz) {
+    /**
+     * Asynchronously load a Map<K, V> from a json file.
+     *
+     * @return CompletableFuture with the resulting map or null.
+     */
+    public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(@NotNull final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
