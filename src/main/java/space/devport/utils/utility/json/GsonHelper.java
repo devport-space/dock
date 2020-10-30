@@ -28,7 +28,8 @@ public class GsonHelper {
     private final Gson gson;
 
     public GsonHelper(boolean prettyPrinting) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .setLenient();
         if (prettyPrinting)
             gsonBuilder.setPrettyPrinting();
         this.gson = gsonBuilder.create();
@@ -167,7 +168,7 @@ public class GsonHelper {
         if (!Files.exists(path))
             return null;
 
-        Type type = mapMap(keyClazz, valueClazz);
+        final Type type = mapMap(keyClazz, valueClazz);
 
         return read(path).thenApplyAsync(buffer -> {
             String output = new String(buffer.array(), StandardCharsets.UTF_8);
