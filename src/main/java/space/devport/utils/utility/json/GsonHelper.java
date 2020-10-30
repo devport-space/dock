@@ -28,8 +28,7 @@ public class GsonHelper {
     private final Gson gson;
 
     public GsonHelper(boolean prettyPrinting) {
-        GsonBuilder gsonBuilder = new GsonBuilder()
-                .setLenient();
+        GsonBuilder gsonBuilder = new GsonBuilder();
         if (prettyPrinting)
             gsonBuilder.setPrettyPrinting();
         this.gson = gsonBuilder.create();
@@ -106,7 +105,8 @@ public class GsonHelper {
             return null;
         }
 
-        if (Strings.isNullOrEmpty(input)) return null;
+        if (Strings.isNullOrEmpty(input))
+            return null;
 
         return gson.fromJson(input, type);
     }
@@ -125,7 +125,7 @@ public class GsonHelper {
         Type type = map(clazz);
 
         return read(path).thenApplyAsync(buffer -> {
-            String output = new String(buffer.array(), StandardCharsets.UTF_8);
+            String output = new String(buffer.array(), StandardCharsets.UTF_8).trim();
 
             if (Strings.isNullOrEmpty(output))
                 return null;
@@ -148,7 +148,7 @@ public class GsonHelper {
         Type type = mapList(innerClazz);
 
         return read(path).thenApplyAsync(buffer -> {
-            String output = new String(buffer.array(), StandardCharsets.UTF_8);
+            String output = new String(buffer.array(), StandardCharsets.UTF_8).trim();
 
             if (Strings.isNullOrEmpty(output))
                 return null;
@@ -171,7 +171,7 @@ public class GsonHelper {
         final Type type = mapMap(keyClazz, valueClazz);
 
         return read(path).thenApplyAsync(buffer -> {
-            String output = new String(buffer.array(), StandardCharsets.UTF_8);
+            String output = new String(buffer.array(), StandardCharsets.UTF_8).trim();
 
             if (Strings.isNullOrEmpty(output))
                 return null;
@@ -205,7 +205,7 @@ public class GsonHelper {
 
         CompletableFuture<Void> future = new CompletableFuture<>();
         CompletableFuture.runAsync(() -> {
-            String jsonString = gson.toJson(input, type);
+            String jsonString = gson.toJson(input, type).trim();
 
             ByteBuffer buffer = ByteBuffer.allocate(jsonString.getBytes().length);
             buffer.put(jsonString.getBytes(StandardCharsets.UTF_8));
