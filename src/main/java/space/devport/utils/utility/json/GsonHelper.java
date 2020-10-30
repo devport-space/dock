@@ -38,15 +38,15 @@ public class GsonHelper {
         this(false);
     }
 
-    public static <T> Type mapList(Class<T> innerType) {
+    public static <T> Type mapList(@NotNull Class<T> innerType) {
         return TypeToken.getParameterized(List.class, innerType).getType();
     }
 
-    public static <K, V> Type mapMap(Class<K> keyType, Class<V> valueType) {
+    public static <K, V> Type mapMap(@NotNull Class<K> keyType, @NotNull Class<V> valueType) {
         return TypeToken.getParameterized(Map.class, keyType, valueType).getType();
     }
 
-    public static <T> Type map(Class<T> clazz) {
+    public static <T> Type map(@NotNull Class<T> clazz) {
         return new TypeToken<T>() {
         }.getType();
     }
@@ -74,12 +74,12 @@ public class GsonHelper {
         channel.read(buffer, 0, future, new CompletionHandler<Integer, CompletableFuture<ByteBuffer>>() {
             @Override
             public void completed(Integer result, CompletableFuture<ByteBuffer> attachment) {
-                attachment.complete(buffer);
+                future.complete(buffer);
             }
 
             @Override
             public void failed(Throwable exc, CompletableFuture<ByteBuffer> attachment) {
-                attachment.completeExceptionally(exc);
+                future.completeExceptionally(exc);
             }
         });
         return future;
@@ -184,7 +184,7 @@ public class GsonHelper {
      *
      * @return CompletableFuture with the number of bytes written
      */
-    public <T> CompletableFuture<Integer> save(@NotNull final T input, @NotNull final String dataPath) {
+    public <T> CompletableFuture<Void> save(@NotNull final T input, @NotNull final String dataPath) {
 
         Path path = Paths.get(dataPath);
 
@@ -200,27 +200,30 @@ public class GsonHelper {
             });
         }
 
-        CompletableFuture<Integer> future = new CompletableFuture<>();
-        CompletableFuture.supplyAsync(() -> {
+        final Type type = map(input.getClass());
 
-            String jsonString = gson.toJson(input, new TypeToken<T>() {
-            }.getType());
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        CompletableFuture.runAsync(() -> {
+            String jsonString = gson.toJson(input, type);
+
+            ConsoleOutput.getInstance().debug("JSON: " + jsonString);
 
             ByteBuffer buffer = ByteBuffer.allocate(jsonString.getBytes().length);
             buffer.put(jsonString.getBytes(StandardCharsets.UTF_8));
+            buffer.flip();
 
-            return buffer;
-        }).thenAcceptAsync(buffer -> channel.write(buffer, 0, future, new CompletionHandler<Integer, CompletableFuture<Integer>>() {
-            @Override
-            public void completed(Integer result, CompletableFuture<Integer> attachment) {
-                attachment.complete(result);
-            }
+            channel.write(buffer, 0, buffer, new CompletionHandler<Integer, ByteBuffer>() {
+                @Override
+                public void completed(Integer result, ByteBuffer attachment) {
+                    future.complete(null);
+                }
 
-            @Override
-            public void failed(Throwable exc, CompletableFuture<Integer> attachment) {
-                future.completeExceptionally(exc);
-            }
-        }));
+                @Override
+                public void failed(Throwable exc, ByteBuffer attachment) {
+                    future.completeExceptionally(exc);
+                }
+            });
+        });
         return future;
     }
 }
