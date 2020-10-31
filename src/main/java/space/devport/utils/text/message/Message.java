@@ -248,7 +248,9 @@ public class Message {
     }
 
     public void send(CommandSender sender, Context context) {
+        Context oldContext = new Context(this.placeholders.getContext());
         this.context(context).send(sender);
+        this.placeholders.setContext(oldContext);
     }
 
     /**
