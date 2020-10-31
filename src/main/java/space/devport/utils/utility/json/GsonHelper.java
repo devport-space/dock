@@ -54,6 +54,7 @@ public class GsonHelper {
     /**
      * Asynchronously read ByteBuffer from a file.
      */
+    @NotNull
     public CompletableFuture<ByteBuffer> read(@NotNull final Path path) {
 
         AsynchronousFileChannel channel;
@@ -124,11 +125,12 @@ public class GsonHelper {
      *
      * @return CompletableFuture with the parsed output or null
      */
+    @NotNull
     public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Class<T> clazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
-            return null;
+            return new CompletableFuture<>();
 
         final Type type = map(clazz);
 
@@ -147,11 +149,12 @@ public class GsonHelper {
      *
      * @return CompletableFuture with the resulting list or null.
      */
+    @NotNull
     public <T> CompletableFuture<List<T>> loadListAsync(@NotNull final String dataPath, @NotNull Class<T> innerClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
-            return null;
+            return new CompletableFuture<>();
 
         final Type type = mapList(innerClazz);
 
@@ -170,11 +173,12 @@ public class GsonHelper {
      *
      * @return CompletableFuture with the resulting map or null.
      */
+    @NotNull
     public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(@NotNull final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
-            return null;
+            return new CompletableFuture<>();
 
         final Type type = mapMap(keyClazz, valueClazz);
 
@@ -193,6 +197,7 @@ public class GsonHelper {
      *
      * @return CompletableFuture with the number of bytes written
      */
+    @NotNull
     public <T> CompletableFuture<Void> save(@NotNull final T input, @NotNull final String dataPath) {
 
         Path path = Paths.get(dataPath);
