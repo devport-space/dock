@@ -12,6 +12,7 @@ import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
 import space.devport.utils.utility.DependencyUtil;
 
@@ -37,10 +38,10 @@ public class Rewards implements Cloneable {
     private List<ItemBuilder> items = new ArrayList<>();
 
     @Getter
-    private Message inform = new Message();
+    private CachedMessage inform = new CachedMessage();
 
     @Getter
-    private Message broadcast = new Message();
+    private CachedMessage broadcast = new CachedMessage();
 
     @Getter
     private List<String> commands = new ArrayList<>();
@@ -56,8 +57,8 @@ public class Rewards implements Cloneable {
         this.tokens = rewards.getTokens();
         this.money = rewards.getMoney();
         this.items = new ArrayList<>(rewards.getItems());
-        this.inform = new Message(rewards.getInform());
-        this.broadcast = new Message(rewards.getBroadcast());
+        this.inform = new CachedMessage(rewards.getInform());
+        this.broadcast = new CachedMessage(rewards.getBroadcast());
         this.commands = new ArrayList<>(rewards.getCommands());
         this.placeholders = new Placeholders(rewards.getPlaceholders());
     }
@@ -88,6 +89,7 @@ public class Rewards implements Cloneable {
 
             // Inform - to player
             inform.setPlaceholders(placeholders).send(player);
+            inform.pull();
         }
 
         if (broadcast.length < 1 || broadcast[0])
@@ -100,6 +102,7 @@ public class Rewards implements Cloneable {
         // Broadcast - to all players
         broadcast.setPlaceholders(placeholders);
         Bukkit.getOnlinePlayers().forEach(broadcast::send);
+        broadcast.pull();
     }
 
     public void giveTokens(@Nullable Player player) {
@@ -226,12 +229,12 @@ public class Rewards implements Cloneable {
     }
 
     public Rewards inform(Message message) {
-        this.inform = new Message(message);
+        this.inform = new CachedMessage(message);
         return this;
     }
 
     public Rewards broadcast(Message message) {
-        this.broadcast = new Message(message);
+        this.broadcast = new CachedMessage(message);
         return this;
     }
 

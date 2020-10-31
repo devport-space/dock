@@ -85,7 +85,7 @@ public class Context {
     public String toString() {
         StringBuilder builder = new StringBuilder(getClass().getSimpleName() + "[");
         for (Object o : getValues())
-            builder.append(", ").append(o.toString());
+            builder.append(", ").append(o.getClass().getSimpleName()).append(":").append(o.toString());
         return builder.append("]").toString();
     }
 }

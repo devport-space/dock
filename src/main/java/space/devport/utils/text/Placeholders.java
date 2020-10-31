@@ -163,7 +163,7 @@ public class Placeholders {
 
     public <T> Placeholders addParser(PlaceholderParser<T> parser, Class<T> type) {
         this.parsers.add((o, str) -> {
-            if (o != null && str != null && type.isAssignableFrom(o.getClass())) {
+            if (o != null && !Strings.isNullOrEmpty(str) && type.isAssignableFrom(o.getClass())) {
                 T t = type.cast(o);
                 str = parser.parse(str, t);
             }

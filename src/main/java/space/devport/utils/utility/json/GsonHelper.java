@@ -130,7 +130,7 @@ public class GsonHelper {
         if (!Files.exists(path))
             return null;
 
-        Type type = map(clazz);
+        final Type type = map(clazz);
 
         return read(path).thenApplyAsync(buffer -> {
             String output = new String(buffer.array(), StandardCharsets.UTF_8).trim();
@@ -153,7 +153,7 @@ public class GsonHelper {
         if (!Files.exists(path))
             return null;
 
-        Type type = mapList(innerClazz);
+        final Type type = mapList(innerClazz);
 
         return read(path).thenApplyAsync(buffer -> {
             String output = new String(buffer.array(), StandardCharsets.UTF_8).trim();
