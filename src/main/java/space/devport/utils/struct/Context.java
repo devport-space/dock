@@ -4,6 +4,7 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -47,6 +48,11 @@ public class Context {
     public Context set(Context context) {
         this.values.clear();
         add(context);
+        return this;
+    }
+
+    public Context add(Collection<Object> objects) {
+        objects.forEach(o -> values.put(o.getClass(), o));
         return this;
     }
 

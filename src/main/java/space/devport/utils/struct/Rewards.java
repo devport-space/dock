@@ -75,7 +75,7 @@ public class Rewards implements Cloneable {
         placeholders.copy(DevportPlugin.getInstance().getGlobalPlaceholders());
 
         if (player != null) {
-            placeholders.addContext(player);
+            placeholders.addContext(new Context().fromPlayer(player));
 
             // Tokens - TokenManager
             giveTokens(player);
