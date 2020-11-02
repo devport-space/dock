@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>1.18.16</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
@@ -147,10 +147,11 @@
             <version>3.2.5</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Latest XSeries from github -->
         <dependency>
-            <groupId>com.github.cryptomorin</groupId>
+            <groupId>com.github.CryptoMorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>7.5.4</version>
+            <version>6c8dd127b6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
