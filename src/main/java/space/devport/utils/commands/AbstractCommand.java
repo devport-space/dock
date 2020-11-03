@@ -126,6 +126,9 @@ public abstract class AbstractCommand {
             return;
         }
 
+        if (!this.preconditions.checkAdditional(sender, false))
+            return;
+
         perform(sender, label, args).getMessage()
                 .parseWith(commandPlaceholders)
                 .send(sender);
