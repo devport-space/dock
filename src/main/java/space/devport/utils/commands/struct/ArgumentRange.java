@@ -4,7 +4,7 @@ import lombok.Getter;
 
 /**
  * Determines either a dynamic ( min and max ), or fixed command argument length.
- * Always works with a cut-out version ( without the sub command argument ).
+ * Doesn't count the subcommand argument.
  */
 public class ArgumentRange {
 

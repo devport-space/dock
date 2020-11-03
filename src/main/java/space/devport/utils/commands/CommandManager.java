@@ -1,7 +1,11 @@
 package space.devport.utils.commands;
 
 import com.google.common.base.Strings;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportManager;
@@ -44,7 +48,7 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
     }
 
     /**
-     * Execute a registered command for a sender.
+     * Execute registered commands directly.
      */
     public void executeCommand(@Nullable CommandSender sender, @Nullable String command) {
 
@@ -61,23 +65,26 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
         // Register commands
         for (MainCommand mainCommand : this.registeredCommands) {
             if (!plugin.getDescription().getCommands().containsKey(mainCommand.getName())) {
-                plugin.getConsoleOutput().warn("Command " + mainCommand.getName() + " is not in plugin.yml");
+                plugin.getConsoleOutput().warn("Command " + mainCommand.getName() + " is not in plugin.yml.");
                 continue;
             }
 
-            PluginCommand cmd = plugin.getCommand(mainCommand.getName());
+            PluginCommand command = plugin.getCommand(mainCommand.getName());
 
-            if (cmd == null) continue;
+            if (command == null)
+                continue;
 
-            mainCommand.setAliases(cmd.getAliases().toArray(new String[0]));
+            mainCommand.setAliases(command.getAliases().toArray(new String[0]));
 
-            cmd.setExecutor(this);
+            command.setExecutor(this);
 
             if (mainCommand.registerTabCompleter()) {
-                cmd.setTabCompleter(this);
+                command.setTabCompleter(this);
             }
 
-            plugin.getConsoleOutput().debug("Added command " + cmd.getName() + " with aliases [" + String.join(", ", mainCommand.getAliases()) + "]" + (mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
+            mainCommand.addLanguage();
+
+            plugin.getConsoleOutput().debug("Added command " + command.getName() + " with aliases [" + String.join(", ", mainCommand.getAliases()) + "]" + (mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
         }
     }
 

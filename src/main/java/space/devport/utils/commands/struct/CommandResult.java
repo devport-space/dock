@@ -11,7 +11,7 @@ import space.devport.utils.text.message.Message;
 
 /**
  * Various results of a command execution.
- * Makes it easier and way faster to create command execution.
+ * Makes it easier and way faster to code command executions.
  */
 @NoArgsConstructor
 public enum CommandResult {
