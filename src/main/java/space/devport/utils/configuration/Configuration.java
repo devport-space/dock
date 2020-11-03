@@ -88,40 +88,36 @@ public class Configuration {
     /**
      * Loads the Yaml configuration from a file.
      */
-    public void load() {
+    public void load(boolean... silent) {
         file = new File(plugin.getDataFolder(), path);
 
         if (!file.exists()) {
 
             // Ensure folder structure
-            file.getParentFile().mkdirs();
+            if (!file.getParentFile().mkdirs())
+                if (silent.length > 0 && !silent[0])
+                    ConsoleOutput.getInstance().err("Could not create " + path);
 
             try {
                 plugin.saveResource(path, false);
-                ConsoleOutput.getInstance().debug("Created new " + path);
+                if (silent.length > 0 && !silent[0]) ConsoleOutput.getInstance().debug("Created new " + path);
             } catch (Exception e) {
                 try {
                     if (!file.createNewFile()) {
-                        ConsoleOutput.getInstance().err("Could not create " + path);
+                        if (silent.length > 0 && !silent[0])
+                            ConsoleOutput.getInstance().err("Could not create file at " + file.getAbsolutePath());
                         return;
                     }
                 } catch (IOException e1) {
-                    ConsoleOutput.getInstance().err("Could not create " + path);
+                    if (silent.length > 0 && !silent[0])
+                        ConsoleOutput.getInstance().err("Could not create file at " + file.getAbsolutePath());
                     return;
                 }
             }
         }
 
         fileConfiguration = YamlConfiguration.loadConfiguration(file);
-        ConsoleOutput.getInstance().info("Loaded " + path + "...");
-    }
-
-    /**
-     * Reloads the yaml, checks if file exists and loads/creates it again.
-     */
-    @Deprecated
-    public void reload() {
-        load();
+        if (silent.length > 0 && !silent[0]) ConsoleOutput.getInstance().info("Loaded " + path + "...");
     }
 
     /**
@@ -202,7 +198,8 @@ public class Configuration {
 
     @NotNull
     public ConfigurationSection section(String path) {
-        return fileConfiguration.getConfigurationSection(path) != null ? fileConfiguration.getConfigurationSection(path) : fileConfiguration.createSection(path);
+        ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
+        return section != null ? section : fileConfiguration.createSection(path);
     }
 
     /**
@@ -215,8 +212,7 @@ public class Configuration {
     @Nullable
     public String getColoredString(@Nullable String path) {
         if (Strings.isNullOrEmpty(path)) return null;
-        return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ?
-                null : fileConfiguration.getString(path));
+        return StringUtil.color(Strings.isNullOrEmpty(fileConfiguration.getString(path)) ? null : fileConfiguration.getString(path));
     }
 
     /**

@@ -2,8 +2,11 @@ package space.devport.utils.utility.reflection;
 
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 @UtilityClass
@@ -47,6 +50,35 @@ public class Reflection {
             return m;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Nullable
+    public <T> T obtainInstance(Class<T> clazz, Class<?>[] args, Object[] params) {
+        Constructor<T> constructor = getConstructor(clazz, args);
+
+        if (constructor == null)
+            return null;
+
+        try {
+            return constructor.newInstance(params);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    public <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... args) {
+
+        if (clazz == null)
+            return null;
+
+        try {
+            Constructor<T> constructor = clazz.getConstructor(args);
+            constructor.setAccessible(true);
+            return constructor;
+        } catch (NoSuchMethodException e) {
             return null;
         }
     }

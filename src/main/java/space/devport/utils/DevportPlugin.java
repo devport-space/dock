@@ -23,6 +23,7 @@ import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.DependencyUtil;
+import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 
@@ -218,11 +219,29 @@ public abstract class DevportPlugin extends JavaPlugin {
         DevportManager manager = this.managers.get(clazz);
 
         if (manager == null) {
-            consoleOutput.err("Tried to access a manager with class " + clazz.getSimpleName() + " that's not registered.");
+
+            T instancedManager = Reflection.obtainInstance(clazz, new Class[]{DevportPlugin.class}, new Object[]{this});
+
+            if (instancedManager == null) {
+                consoleOutput.err("Tried to access a manager " + clazz.getSimpleName() + " that's not and cannot be registered.");
+                return null;
+            }
+
+            consoleOutput.warn("Tried to access a manager " + clazz.getSimpleName() + " that was not registered. Registered and loaded it.");
+            registerManager(instancedManager);
+            return instancedManager;
+        }
+
+        if (!clazz.isAssignableFrom(manager.getClass())) {
+            consoleOutput.err("A different manager that expected was stored. Failing to retrieve it gracefully.");
             return null;
         }
 
-        return (T) manager;
+        return clazz.cast(manager);
+    }
+
+    public void registerManager(DevportManager devportManager) {
+        this.managers.put(devportManager.getClass(), devportManager);
     }
 
     public boolean isRegistered(Class<? extends DevportManager> clazz) {
@@ -259,7 +278,7 @@ public abstract class DevportPlugin extends JavaPlugin {
     }
 
     public ChatColor getColor() {
-        return ChatColor.AQUA;
+        return ChatColor.BLUE;
     }
 
     public PluginManager getPluginManager() {
@@ -270,14 +289,8 @@ public abstract class DevportPlugin extends JavaPlugin {
         getPluginManager().registerEvents(listener, this);
     }
 
-    public void registerManager(DevportManager devportManager) {
-        this.managers.put(devportManager.getClass(), devportManager);
-    }
-
     public MainCommand addMainCommand(MainCommand mainCommand) {
-        if (use(UsageFlag.COMMANDS))
-            getManager(CommandManager.class).registeredCommands.add(mainCommand);
-        else consoleOutput.err("Attempted to register a command when command manager is not registered.");
+        getManager(CommandManager.class).registeredCommands.add(mainCommand);
         return mainCommand;
     }
 }
