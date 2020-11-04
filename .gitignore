@@ -2,3 +2,5 @@
 .idea/
 target/
 *.iml
+/test-data.json
+/dependency-reduced-pom.xml
