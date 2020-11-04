@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.text.Placeholders;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.struct.Context;
-import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;

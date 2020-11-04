@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.item.ItemBuilder;
-import space.devport.utils.menu.item.MatrixItem;
-import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
+import space.devport.utils.ConsoleOutput;
+import space.devport.utils.menu.item.MatrixItem;
+import space.devport.utils.menu.item.MenuItem;
 
 import java.util.HashMap;
 import java.util.Map;

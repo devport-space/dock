@@ -49,6 +49,7 @@ public class MenuItem {
     public MenuItem(@NotNull MenuItem item) {
         this.name = item.getName();
         this.slot = item.getSlot();
+        this.clickable = item.isClickable();
 
         this.itemBuilder = new ItemBuilder(item.getItemBuilder());
 

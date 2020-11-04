@@ -8,9 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.struct.Context;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerVersion;
+import space.devport.utils.struct.Context;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

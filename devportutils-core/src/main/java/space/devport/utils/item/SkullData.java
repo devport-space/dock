@@ -12,9 +12,9 @@ import org.bukkit.craftbukkit.libs.org.apache.commons.codec.binary.Base64;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.utility.reflection.ServerVersion;
+import space.devport.utils.ConsoleOutput;
 
 import java.lang.reflect.Field;
 import java.util.Collection;

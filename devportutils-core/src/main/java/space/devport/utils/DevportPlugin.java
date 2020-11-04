@@ -20,13 +20,13 @@ import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.holograms.HologramManager;
 import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.Placeholders;
-import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.DependencyUtil;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 import space.devport.utils.version.VersionManager;
+import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
