@@ -63,6 +63,9 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Getter
     private final Placeholders globalPlaceholders = new Placeholders();
 
+    @Getter
+    private final ChatColor color = getPluginColor();
+
     public abstract void onPluginEnable();
 
     public abstract void onPluginDisable();
@@ -131,7 +134,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Print header
         consoleOutput.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
-        consoleOutput.info("&" + getColor().getChar() + "~~~~~~~~~~~~ &7Devport &" + getColor().getChar() + "~~~~~~~~~~~~");
+        consoleOutput.info(getColor() + "~~~~~~~~~~~~ &7Devport " + getColor() + "~~~~~~~~~~~~");
 
         //TODO Maybe move to load to allow debugging in #onLoad().
         if (use(UsageFlag.CONFIGURATION)) {
@@ -142,7 +145,7 @@ public abstract class DevportPlugin extends JavaPlugin {
             StringUtil.compilePattern();
 
             consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
-            prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
+            prefix = getColor() + configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
         globalPlaceholders.add("%prefix%", prefix)
@@ -157,7 +160,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::afterEnable);
 
-        consoleOutput.info("&" + getColor().getChar() + "~~~~~~~~~~~~ &7/////// &" + getColor().getChar() + "~~~~~~~~~~~~");
+        consoleOutput.info(getColor() + "~~~~~~~~~~~~ &7/////// " + getColor() + "~~~~~~~~~~~~");
         consoleOutput.info("Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
 
         // Set the prefix as the last thing, startup looks cooler without it.
@@ -277,8 +280,8 @@ public abstract class DevportPlugin extends JavaPlugin {
         return configuration.getFileConfiguration();
     }
 
-    public ChatColor getColor() {
-        return ChatColor.BLUE;
+    public ChatColor getPluginColor() {
+        return StringUtil.getRandomColor();
     }
 
     public PluginManager getPluginManager() {
