@@ -61,8 +61,8 @@ public abstract class MainCommand extends AbstractCommand {
     @Override
     public @NotNull Message getUsage() {
         if (plugin.use(UsageFlag.LANGUAGE))
-            return new Message(getDefaultUsage());
-        return language.get("Commands.Help." + getName() + ".Usage");
+            return language.get("Commands.Help." + getName() + ".Usage");
+        return new Message(getDefaultUsage());
     }
 
     @Override

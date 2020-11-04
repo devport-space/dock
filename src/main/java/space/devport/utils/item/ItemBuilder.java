@@ -359,7 +359,7 @@ public class ItemBuilder {
      * @param lore Lore to set in Array
      * @return ItemBuilder object
      */
-    public ItemBuilder lore(@NotNull String[] lore) {
+    public ItemBuilder lore(@NotNull String... lore) {
         return lore(new CachedMessage(new ArrayList<>(Arrays.asList(lore))));
     }
 

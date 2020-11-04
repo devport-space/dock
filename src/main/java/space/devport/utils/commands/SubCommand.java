@@ -38,8 +38,8 @@ public abstract class SubCommand extends AbstractCommand {
     @Override
     public @NotNull Message getUsage() {
         if (plugin.use(UsageFlag.LANGUAGE))
-            return new Message(getDefaultUsage());
-        return this.getParent() != null ? language.get("Commands.Help." + this.getParent().getName() + "." + getName() + ".Usage") : new Message();
+            return this.getParent() != null ? language.get("Commands.Help." + this.getParent().getName() + "." + getName() + ".Usage") : new Message();
+        return new Message(getDefaultUsage());
     }
 
     @NotNull
