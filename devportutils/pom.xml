@@ -43,7 +43,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
                 <configuration>
-                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
                     <createDependencyReducedPom>true</createDependencyReducedPom>
                     <minimizeJar>false</minimizeJar>
                     <relocations>
@@ -116,8 +116,14 @@
         <!-- Modules -->
         <dependency>
             <groupId>space.devport.utils</groupId>
-            <artifactId>devportutils-version</artifactId>
-            <version>3.6.0-SNAPSHOT</version>
+            <artifactId>api</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_16_R2</artifactId>
+            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

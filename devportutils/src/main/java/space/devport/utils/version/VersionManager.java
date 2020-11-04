@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportManager;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerVersion;
 import space.devport.utils.version.api.ICompoundFactory;
@@ -17,9 +18,19 @@ public class VersionManager extends DevportManager {
     @Getter
     private ICompoundFactory compoundFactory;
 
+    private VersionManager(DevportPlugin plugin) {
+        super(plugin);
+        instance = this;
+    }
+
     private VersionManager() {
         super();
         instance = this;
+        load();
+    }
+
+    public static VersionManager getInstance(DevportPlugin plugin) {
+        return instance == null ? new VersionManager(plugin) : instance;
     }
 
     public static VersionManager getInstance() {
@@ -31,7 +42,7 @@ public class VersionManager extends DevportManager {
     }
 
     @Override
-    public void onLoad() {
+    public void preEnable() {
         load();
     }
 
@@ -46,7 +57,9 @@ public class VersionManager extends DevportManager {
      */
     private <T> boolean load(@NotNull String packageVersion, @NotNull String subClassName, @NotNull Class<T> interfaceClazz, @NotNull Consumer<T> store) {
         try {
-            Class<?> clazz = Class.forName(getClass().getPackage().getName() + "." + packageVersion + "." + subClassName);
+            String path = getClass().getPackage().getName() + "." + packageVersion + "." + subClassName;
+            ConsoleOutput.getInstance().debug(path);
+            Class<?> clazz = Class.forName(path);
 
             if (!interfaceClazz.isAssignableFrom(clazz)) {
                 ConsoleOutput.getInstance().err("Subclass " + subClassName + " is not an implementation of " + interfaceClazz.getSimpleName() + ", cannot use it.");
@@ -59,12 +72,13 @@ public class VersionManager extends DevportManager {
             store.accept(t);
             return true;
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
             return false;
         }
     }
 
     private boolean load(String packageVersion) {
-        return load(packageVersion, "CompoundClass", ICompoundFactory.class, factory -> this.compoundFactory = factory);
+        return load(packageVersion, "CompoundFactory", ICompoundFactory.class, factory -> this.compoundFactory = factory);
     }
 
     private void load() {

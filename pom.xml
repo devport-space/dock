@@ -13,7 +13,6 @@
 
     <modules>
         <module>devportutils</module>
-        <module>devportutils-version</module>
         <module>devportutils-version/api</module>
         <module>devportutils-version/v1_16_R2</module>
     </modules>

@@ -88,7 +88,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         consoleOutput.debug("Usage flags: " + usageFlags.toString());
 
         if (use(UsageFlag.NMS)) {
-            VersionManager versionManager = VersionManager.getInstance();
+            VersionManager versionManager = VersionManager.getInstance(this);
             registerManager(versionManager);
         }
 
