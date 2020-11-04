@@ -42,6 +42,7 @@ public class MatrixItem {
 
     public MatrixItem(MatrixItem item) {
         this.character = item.getCharacter();
+        this.index = 0;
 
         if (item.getFiller() != null)
             this.filler = new MenuItem(item.getFiller());

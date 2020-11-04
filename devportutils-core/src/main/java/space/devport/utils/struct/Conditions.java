@@ -46,8 +46,7 @@ public class Conditions {
 
         // Health
         if (health.getInt() != 0)
-            if (player.getHealth() > health.getHighValue() || player.getHealth() < health.getLowValue())
-                return false;
+            return !(player.getHealth() > health.getHighValue()) && !(player.getHealth() < health.getLowValue());
 
         return true;
     }
