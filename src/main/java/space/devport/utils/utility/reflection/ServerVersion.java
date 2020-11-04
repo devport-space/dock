@@ -6,27 +6,44 @@ import lombok.Setter;
 
 public enum ServerVersion {
 
-    v1_7(0),
-    v1_8(1),
-    v1_9(2),
-    v1_10(3),
-    v1_11(4),
-    v1_12(5),
-    v1_13(6),
-    v1_14(7),
-    v1_15(8),
-    v1_16(9),
-    v1_17(10);
+    v1_7,
+    v1_8,
+    v1_9,
+    v1_10,
+    v1_11,
+    v1_12,
+    v1_13,
+    v1_14,
+    v1_15,
+    v1_16("v1_16_R2"),
+    v1_17;
+
+    @Getter
+    private final String nmsFallbackVersion;
+
+    ServerVersion() {
+        this.nmsFallbackVersion = "v1_12_R2";
+    }
+
+    ServerVersion(String nmsFallbackVersion) {
+        this.nmsFallbackVersion = nmsFallbackVersion;
+    }
 
     private static ServerVersion currentVersion;
+
+    @Getter
+    private static String nmsVersion = "v1_12_R2";
 
     @Setter
     public static ServerVersion defaultVersion = v1_12;
 
     public static void loadServerVersion() {
+        ServerVersion.nmsVersion = SpigotHelper.extractNMSVersion(false);
+
         String nmsVersion = SpigotHelper.extractNMSVersion(true);
 
-        if (Strings.isNullOrEmpty(nmsVersion)) return;
+        if (Strings.isNullOrEmpty(nmsVersion))
+            return;
 
         try {
             currentVersion = valueOf(nmsVersion);
@@ -38,26 +55,19 @@ public enum ServerVersion {
         return currentVersion != null ? currentVersion : defaultVersion;
     }
 
-    @Getter
-    private final int value;
-
-    ServerVersion(int value) {
-        this.value = value;
-    }
-
     public boolean isAbove(ServerVersion version) {
-        return this.value >= version.getValue();
+        return this.ordinal() >= version.ordinal();
     }
 
     public boolean isBelow(ServerVersion version) {
-        return this.value <= version.getValue();
+        return this.ordinal() <= version.ordinal();
     }
 
     public static boolean isCurrentAbove(ServerVersion version) {
-        return currentVersion.getValue() >= version.getValue();
+        return currentVersion.ordinal() >= version.ordinal();
     }
 
     public static boolean isCurrentBelow(ServerVersion version) {
-        return currentVersion.getValue() <= version.getValue();
+        return currentVersion.ordinal() <= version.ordinal();
     }
 }

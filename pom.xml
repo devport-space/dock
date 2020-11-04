@@ -9,7 +9,7 @@
     <artifactId>DevportUtils</artifactId>
     <version>3.5.0</version>
 
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <distributionManagement>
         <downloadUrl>http://play.pvpcraft.cz:8081/repository/devport/</downloadUrl>
@@ -109,6 +109,14 @@
     </repositories>
 
     <dependencies>
+        <!-- Modules -->
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>devportutils-version</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Spigot -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
@@ -184,6 +192,12 @@
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>api</artifactId>
+            <version>3.5.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

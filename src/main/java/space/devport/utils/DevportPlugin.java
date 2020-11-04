@@ -26,6 +26,7 @@ import space.devport.utils.utility.DependencyUtil;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
+import space.devport.utils.version.VersionManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +86,11 @@ public abstract class DevportPlugin extends JavaPlugin {
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
 
         consoleOutput.debug("Usage flags: " + usageFlags.toString());
+
+        if (use(UsageFlag.NMS)) {
+            VersionManager versionManager = new VersionManager(this);
+            registerManager(versionManager);
+        }
 
         if (use(UsageFlag.COMMANDS)) {
             CommandManager commandManager = new CommandManager(this);
@@ -245,6 +251,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public void registerManager(DevportManager devportManager) {
         this.managers.put(devportManager.getClass(), devportManager);
+
+        devportManager.onLoad();
     }
 
     public boolean isRegistered(Class<? extends DevportManager> clazz) {

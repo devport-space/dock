@@ -8,6 +8,7 @@ public enum UsageFlag {
     LANGUAGE,
     CONFIGURATION,
     HOLOGRAMS,
+    NMS,
     //TODO temporary, replace with a standalone Dependency + Currency system
     ECONOMY
 }
