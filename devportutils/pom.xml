@@ -3,15 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>DevportUtils</artifactId>
+        <artifactId>devportutils-parent</artifactId>
         <groupId>space.devport.utils</groupId>
-        <version>3.6.0</version>
+        <version>3.6.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>devportutils-core</artifactId>
+    <artifactId>devportutils</artifactId>
 
     <packaging>jar</packaging>
+
+    <name>devportutils</name>
 
     <build>
         <defaultGoal>clean install</defaultGoal>
@@ -41,7 +43,7 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>
                 <configuration>
-                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                    <shadedArtifactAttached>true</shadedArtifactAttached>
                     <createDependencyReducedPom>true</createDependencyReducedPom>
                     <minimizeJar>false</minimizeJar>
                     <relocations>
@@ -84,7 +86,7 @@
                         </goals>
                         <configuration>
                             <groupId>space.devport.utils</groupId>
-                            <artifactId>DevportUtils</artifactId>
+                            <artifactId>devportutils</artifactId>
                             <processAllModules>true</processAllModules>
                             <processProject>true</processProject>
                             <oldVersion>${project.version}</oldVersion>
@@ -115,8 +117,14 @@
         <dependency>
             <groupId>space.devport.utils</groupId>
             <artifactId>devportutils-version</artifactId>
-            <version>3.6.0</version>
+            <version>3.6.0-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.16.3</version>
+            <scope>provided</scope>
         </dependency>
         <!-- External deps -->
         <dependency>

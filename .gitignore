@@ -3,7 +3,5 @@
 target/
 *.iml
 /test-data.json
-/dependency-reduced-pom.xml
-/pom.xml.versionsBackup
-/devportutils-version/v1_16_R2/dependency-reduced-pom.xml
-/devportutils-core/dependency-reduced-pom.xml
+*.versionsBackup
+*-reduced-pom.xml
