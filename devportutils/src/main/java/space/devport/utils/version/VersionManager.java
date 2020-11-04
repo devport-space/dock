@@ -19,6 +19,7 @@ public class VersionManager extends DevportManager {
 
     private VersionManager() {
         super();
+        instance = this;
     }
 
     public static VersionManager getInstance() {
