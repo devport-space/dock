@@ -15,7 +15,8 @@ public enum ServerVersion {
     v1_13(6),
     v1_14(7),
     v1_15(8),
-    v1_16(9);
+    v1_16(9),
+    v1_17(10);
 
     private static ServerVersion currentVersion;
 
@@ -52,11 +53,11 @@ public enum ServerVersion {
         return this.value <= version.getValue();
     }
 
-    public static boolean isAboveCurrent(ServerVersion version) {
+    public static boolean isCurrentAbove(ServerVersion version) {
         return currentVersion.getValue() >= version.getValue();
     }
 
-    public static boolean isBelowCurrent(ServerVersion version) {
+    public static boolean isCurrentBelow(ServerVersion version) {
         return currentVersion.getValue() <= version.getValue();
     }
 }

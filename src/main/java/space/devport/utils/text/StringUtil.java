@@ -65,7 +65,7 @@ public class StringUtil {
 
         if (string == null) return null;
 
-        if (hexPattern != null || ServerVersion.isAboveCurrent(ServerVersion.v1_16)) {
+        if (hexPattern != null || ServerVersion.isCurrentAbove(ServerVersion.v1_16)) {
             Matcher matcher = hexPattern.matcher(string);
             while (matcher.find()) {
                 final ChatColor hexColor = ChatColor.of(matcher.group().substring(1, matcher.group().length() - 1));

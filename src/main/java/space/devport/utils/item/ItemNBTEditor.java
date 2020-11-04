@@ -24,7 +24,7 @@ public class ItemNBTEditor {
 
                 List<String> keys;
 
-                if (ServerVersion.isAboveCurrent(ServerVersion.v1_13))
+                if (ServerVersion.isCurrentAbove(ServerVersion.v1_13))
                     keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("getKeys").invoke(tag));
                 else
                     keys = new ArrayList<>((Set<String>) tag.getClass().getDeclaredMethod("c").invoke(tag));
@@ -176,7 +176,7 @@ public class ItemNBTEditor {
      */
     private static Object getTag(Object nativeItemStack) {
         try {
-            if (ServerVersion.isBelowCurrent(ServerVersion.v1_12)) {
+            if (ServerVersion.isCurrentBelow(ServerVersion.v1_12)) {
                 if (!(boolean) nativeItemStack.getClass().getMethod("hasTag").invoke(nativeItemStack)) {
                     Object compound = Reflection.getNMSClass("NBTTagCompound").getConstructor().newInstance();
                     nativeItemStack.getClass().getMethod("setTag", compound.getClass()).invoke(nativeItemStack, compound);

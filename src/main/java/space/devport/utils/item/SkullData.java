@@ -77,7 +77,7 @@ public class SkullData {
             String owningPlayer = placeholders.parse(this.owningPlayer);
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(owningPlayer);
 
-            if (ServerVersion.isBelowCurrent(ServerVersion.v1_13))
+            if (ServerVersion.isCurrentBelow(ServerVersion.v1_13))
                 skullMeta.setOwner(owningPlayer);
             else
                 skullMeta.setOwningPlayer(offlinePlayer);
