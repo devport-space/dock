@@ -11,7 +11,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>v1_16_R2</artifactId>
+    <artifactId>v1_16_R3</artifactId>
 
     <dependencies>
         <dependency>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.16.2</version>
+            <version>1.16.4</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

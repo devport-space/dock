@@ -1,7 +1,7 @@
-package space.devport.utils.version.v1_16_R2;
+package space.devport.utils.version.v1_16_R3;
 
-import net.minecraft.server.v1_16_R2.ItemStack;
-import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
+import net.minecraft.server.v1_16_R3.ItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import space.devport.utils.version.api.ICompound;
 import space.devport.utils.version.api.ICompoundFactory;
 

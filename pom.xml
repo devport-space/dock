@@ -14,7 +14,7 @@
     <modules>
         <module>devportutils</module>
         <module>devportutils-version/api</module>
-        <module>devportutils-version/v1_16_R2</module>
+        <module>devportutils-version/v1_16_R3</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -39,6 +39,10 @@
         <repository>
             <id>devport</id>
             <url>https://nexus.pvpcraft.cz/repository/devport/</url>
+        </repository>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 

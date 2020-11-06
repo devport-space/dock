@@ -122,14 +122,14 @@
         </dependency>
         <dependency>
             <groupId>space.devport.utils</groupId>
-            <artifactId>v1_16_R2</artifactId>
+            <artifactId>v1_16_R3</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.16.3</version>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- External deps -->

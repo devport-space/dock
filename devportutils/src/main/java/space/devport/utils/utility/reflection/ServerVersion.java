@@ -16,7 +16,7 @@ public enum ServerVersion {
     v1_13,
     v1_14,
     v1_15,
-    v1_16("v1_16_R2"),
+    v1_16("v1_16_R4"),
     v1_17;
 
     @Getter
