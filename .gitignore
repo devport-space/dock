@@ -3,4 +3,5 @@
 target/
 *.iml
 /test-data.json
-/dependency-reduced-pom.xml
+*-reduced-pom.xml
+*.versionsBackup
