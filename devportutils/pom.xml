@@ -26,7 +26,6 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                    <release>8</release>
                 </configuration>
             </plugin>
             <plugin>
@@ -127,9 +126,82 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_16_R2</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_16_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_15_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_14_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_13_R2</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_13_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_12_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_11_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_10_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_9_R2</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_9_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.utils</groupId>
+            <artifactId>v1_8_R3</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Spigot -->
+        <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
+            <artifactId>spigot</artifactId>
+            <version>1.16.4</version>
             <scope>provided</scope>
         </dependency>
         <!-- External deps -->

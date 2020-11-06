@@ -84,13 +84,8 @@ public class VersionManager extends DevportManager {
     private void load() {
         String version = ServerVersion.getNmsVersion();
 
-        if (!load(version) && !ServerVersion.getNmsVersion().equals(ServerVersion.getCurrentVersion().getNmsFallbackVersion())) {
-            ConsoleOutput.getInstance().warn("Could not load version dependent modules for version " + ServerVersion.getNmsVersion() + ", falling back to " + ServerVersion.getCurrentVersion().getNmsFallbackVersion());
-            load(ServerVersion.getCurrentVersion().getNmsFallbackVersion());
-        }
-
-        if (this.compoundFactory != null)
-            ConsoleOutput.getInstance().info("Loaded version dependent modules for " + ServerVersion.getNmsVersion());
+        if (!load(version))
+            ConsoleOutput.getInstance().info("Loaded version dependent modules for " + version);
         else
             ConsoleOutput.getInstance().err("Could not load version dependent modules for this version. Some features might not work.");
     }

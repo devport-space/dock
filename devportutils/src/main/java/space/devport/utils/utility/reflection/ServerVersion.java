@@ -16,18 +16,10 @@ public enum ServerVersion {
     v1_13,
     v1_14,
     v1_15,
-    v1_16("v1_16_R4"),
+    v1_16,
     v1_17;
 
-    @Getter
-    private final String nmsFallbackVersion;
-
     ServerVersion() {
-        this.nmsFallbackVersion = "v1_12_R2";
-    }
-
-    ServerVersion(String nmsFallbackVersion) {
-        this.nmsFallbackVersion = nmsFallbackVersion;
     }
 
     private static ServerVersion currentVersion;
