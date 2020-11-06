@@ -8,6 +8,7 @@ import space.devport.utils.DevportPlugin;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerVersion;
 import space.devport.utils.version.api.ICompoundFactory;
+import space.devport.utils.version.api.IVersionUtility;
 
 import java.util.function.Consumer;
 
@@ -17,6 +18,9 @@ public class VersionManager extends DevportManager {
 
     @Getter
     private ICompoundFactory compoundFactory;
+
+    @Getter
+    private IVersionUtility versionUtility;
 
     private VersionManager(DevportPlugin plugin) {
         super(plugin);
@@ -39,6 +43,10 @@ public class VersionManager extends DevportManager {
 
     public static ICompoundFactory fetchCompoundFactory() {
         return getInstance().getCompoundFactory();
+    }
+
+    public static IVersionUtility fetchVersionUtility() {
+        return getInstance().getVersionUtility();
     }
 
     @Override
@@ -78,7 +86,8 @@ public class VersionManager extends DevportManager {
     }
 
     private boolean load(String packageVersion) {
-        return load(packageVersion, "CompoundFactory", ICompoundFactory.class, factory -> this.compoundFactory = factory);
+        return load(packageVersion, "CompoundFactory", ICompoundFactory.class, factory -> this.compoundFactory = factory) &&
+                load(packageVersion, "VersionUtility", IVersionUtility.class, versionUtility -> this.versionUtility = versionUtility);
     }
 
     private void load() {

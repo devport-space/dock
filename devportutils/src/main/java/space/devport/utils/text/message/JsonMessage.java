@@ -4,71 +4,20 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.utility.reflection.Reflection;
-import space.devport.utils.utility.reflection.ServerVersion;
+import space.devport.utils.ConsoleOutput;
 import space.devport.utils.struct.Context;
+import space.devport.utils.utility.reflection.ServerVersion;
+import space.devport.utils.version.VersionManager;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class JsonMessage extends Message {
 
     private static final Gson gson = new GsonBuilder().create();
-
-    private static boolean enabled = ServerVersion.isCurrentAbove(ServerVersion.v1_8);
-
-    private static Method mc_IChatBaseComponent_ChatSerializer_a;
-    private static Constructor<?> mc_PacketPlayOutChat_new;
-    private static Method cb_craftPlayer_getHandle;
-    private static Field mc_entityPlayer_playerConnection;
-    private static Method mc_playerConnection_sendPacket;
-
-    static {
-        init();
-    }
-
-    static void init() {
-        if (!enabled) return;
-
-        try {
-            Class<?> cb_craftPlayerClazz;
-            Class<?> mc_entityPlayerClazz;
-            Class<?> mc_playerConnectionClazz;
-            Class<?> mc_PacketInterface;
-            Class<?> mc_IChatBaseComponent;
-            Class<?> mc_IChatBaseComponent_ChatSerializer;
-            Class<?> mc_PacketPlayOutChat;
-
-            cb_craftPlayerClazz = Reflection.getCBClass("entity.CraftPlayer");
-            cb_craftPlayer_getHandle = cb_craftPlayerClazz.getDeclaredMethod("getHandle");
-
-            mc_entityPlayerClazz = Reflection.getNMSClass("EntityPlayer");
-            mc_entityPlayer_playerConnection = mc_entityPlayerClazz.getDeclaredField("playerConnection");
-
-            mc_playerConnectionClazz = Reflection.getNMSClass("PlayerConnection");
-            mc_PacketInterface = Reflection.getNMSClass("Packet");
-            mc_playerConnection_sendPacket = mc_playerConnectionClazz.getDeclaredMethod("sendPacket", mc_PacketInterface);
-
-            mc_IChatBaseComponent = Reflection.getNMSClass("IChatBaseComponent");
-            mc_IChatBaseComponent_ChatSerializer = Reflection.getNMSClass("IChatBaseComponent$ChatSerializer");
-            mc_IChatBaseComponent_ChatSerializer_a = mc_IChatBaseComponent_ChatSerializer.getMethod("a", String.class);
-
-            mc_PacketPlayOutChat = Reflection.getNMSClass("PacketPlayOutChat");
-            mc_PacketPlayOutChat_new = mc_PacketPlayOutChat.getConstructor(mc_IChatBaseComponent);
-        } catch (Throwable ex) {
-            Bukkit.getLogger().log(Level.WARNING, "Problem preparing raw chat packets (disabling further packets)", ex);
-            enabled = false;
-        }
-    }
 
     private final List<JsonObject> textList = new ArrayList<>();
 
@@ -247,8 +196,7 @@ public class JsonMessage extends Message {
     }
 
     @Override
-    public void send(Player player) {
-        if (!enabled) return;
+    public void send(@NotNull Player player) {
 
         // Reset context after we add the player.
         Context oldContext = new Context(this.placeholders.getContext());
@@ -258,22 +206,23 @@ public class JsonMessage extends Message {
 
         this.placeholders.setContext(oldContext);
 
-        sendTo(player, content);
+        sendJson(player, content);
     }
 
-    public void sendTo(Player player) {
-        sendTo(player, toString());
+    /**
+     * Send the pure json message to the {@param player}
+     */
+    public void sendJson(@NotNull Player player) {
+        sendJson(player, toString());
     }
 
-    private void sendTo(Player player, String content) {
-        try {
-            Object packet = mc_PacketPlayOutChat_new.newInstance(mc_IChatBaseComponent_ChatSerializer_a.invoke(null, content));
-            Object cbPlayer = cb_craftPlayer_getHandle.invoke(player);
-            Object mcConnection = mc_entityPlayer_playerConnection.get(cbPlayer);
-            mc_playerConnection_sendPacket.invoke(mcConnection, packet);
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Bukkit.getLogger().log(Level.WARNING, "Problem preparing raw chat packets (disabling further packets)", ex);
-            enabled = false;
+    private void sendJson(@NotNull Player player, @NotNull String content) {
+
+        if (ServerVersion.isCurrentBelow(ServerVersion.v1_8)) {
+            ConsoleOutput.getInstance().warn("Json messages are not supported on versions below 1.8");
+            return;
         }
+
+        VersionManager.fetchVersionUtility().sendJsonMessage(player, content);
     }
 }
