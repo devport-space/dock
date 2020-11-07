@@ -110,7 +110,7 @@ public abstract class MainCommand extends AbstractCommand {
 
     private Message constructHelp(CommandSender sender, String label) {
 
-        Message help = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Header") : header).parseWith(plugin.getGlobalPlaceholders());
+        Message help = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Header") : new Message(header)).parseWith(plugin.getGlobalPlaceholders());
 
         String lineFormat = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Sub-Command-Line").color().toString() : getLineFormat());
 

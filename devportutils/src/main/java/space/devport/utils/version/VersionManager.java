@@ -93,7 +93,7 @@ public class VersionManager extends DevportManager {
     private void load() {
         String version = ServerVersion.getNmsVersion();
 
-        if (!load(version))
+        if (load(version))
             ConsoleOutput.getInstance().info("Loaded version dependent modules for " + version);
         else
             ConsoleOutput.getInstance().err("Could not load version dependent modules for this version. Some features might not work.");

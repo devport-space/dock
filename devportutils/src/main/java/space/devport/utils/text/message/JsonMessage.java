@@ -2,51 +2,65 @@ package space.devport.utils.text.message;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.struct.Context;
+import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.StringUtil;
 import space.devport.utils.utility.reflection.ServerVersion;
 import space.devport.utils.version.VersionManager;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 public class JsonMessage extends Message {
 
+    //TODO 1.16+ uses "contents" instead of values
+    //TODO Add proper color tag parsing
+
     private static final Gson gson = new GsonBuilder().create();
 
-    private final List<JsonObject> textList = new ArrayList<>();
+    private boolean newLine = true;
+
+    private final LinkedList<JsonArray> lines = new LinkedList<>();
 
     public void clear() {
-        textList.clear();
+        lines.clear();
     }
 
     /**
      * Serialize ItemStack to SNBT.
      */
     // TODO Serialize rest of the ItemStack
-    public static JsonObject serializeItem(ItemStack item) {
-        JsonObject json = new JsonObject();
-        json.addProperty("count", item.getAmount());
-        json.addProperty("id", item.getType().toString());
-        return json;
+    public static String serializeItem(ItemStack item) {
+        String str = "{%s}";
+        StringBuilder content = new StringBuilder();
+        content.append("id:'").append(item.getType().getKey().toString()).append("'")
+                .append(",Count:").append(item.getAmount());
+        return String.format(str, content);
+    }
+
+    public JsonMessage newLine() {
+        this.newLine = true;
+        return this;
     }
 
     public enum JsonHoverAction {
 
-        SHOW_TEXT((json, extra) -> {
+        SHOW_TEXT((json, placeholders, extra) -> {
             if (extra.length < 1)
                 return json;
 
-            json.addProperty("value", extra[0].toString());
+            json.addProperty("value", StringUtil.color(placeholders.parse(extra[0].toString())));
             return json;
         }),
 
-        SHOW_ITEM((json, extra) -> {
+        SHOW_ITEM((json, placeholders, extra) -> {
             if (extra.length < 1)
                 return json;
 
@@ -55,11 +69,11 @@ public class JsonMessage extends Message {
 
             ItemStack item = (ItemStack) extra[0];
 
-            json.addProperty("value", serializeItem(item).getAsString());
+            json.addProperty("value", serializeItem(item));
             return json;
         }),
 
-        SHOW_ENTITY((json, extra) -> {
+        SHOW_ENTITY((json, placeholders, extra) -> {
             if (extra.length < 1)
                 return json;
 
@@ -101,23 +115,59 @@ public class JsonMessage extends Message {
     }
 
     public interface ExtraParser {
-        JsonObject parse(JsonObject json, Object... extra);
+        JsonObject parse(JsonObject json, Placeholders placeholders, Object... extra);
     }
 
-    private JsonObject addHover(JsonObject json, JsonHoverAction action, Object... extra) {
+    private JsonArray createLine() {
+        JsonArray jsonArray = new JsonArray();
+        this.lines.add(jsonArray);
+        newLine = false;
+        return jsonArray;
+    }
+
+    private JsonObject createText(String text) {
+        JsonObject component = new JsonObject();
+        String content = StringUtil.color(this.placeholders.parse(text));
+        component.addProperty("text", content);
+        return component;
+    }
+
+    private JsonObject attachHover(JsonObject json, JsonHoverAction action, Object... extra) {
         JsonObject hover = new JsonObject();
-        hover.addProperty("action", "show_text");
-        hover = action.parser.parse(hover, extra);
+        hover.addProperty("action", action.toString());
+        hover = action.getParser().parse(hover, this.placeholders, extra);
         json.add("hoverEvent", hover);
         return json;
     }
 
-    private JsonObject addClick(JsonObject json, JsonClickAction action, String value) {
+    private JsonObject attachClick(JsonObject json, JsonClickAction action, String value) {
         JsonObject click = new JsonObject();
         click.addProperty("action", action.toString());
-        click.addProperty("value", value);
+        click.addProperty("value", StringUtil.color(this.placeholders.parse(value)));
         json.add("clickEvent", click);
         return json;
+    }
+
+    /**
+     * Add hover event to previously attached component.
+     */
+    public JsonMessage addHover(JsonHoverAction action, Object... extra) {
+        JsonObject component = getLastComponent();
+        attachHover(component, action, extra);
+        return this;
+    }
+
+    /**
+     * Add click event to previously attached component.
+     */
+    public JsonMessage addClick(JsonClickAction action, String value) {
+        JsonObject component = getLastComponent();
+        attachClick(component, action, value);
+        return this;
+    }
+
+    private JsonObject getLastComponent() {
+        return getCurrentLine().get(getCurrentLine().size() - 1).getAsJsonObject();
     }
 
     /**
@@ -125,10 +175,8 @@ public class JsonMessage extends Message {
      *
      * @param text Text to append
      */
-    public JsonMessage appendText(String text) {
-        JsonObject component = new JsonObject();
-        component.addProperty("text", text);
-        textList.add(component);
+    public JsonMessage append(String text) {
+        getCurrentLine().add(createText(text));
         return this;
     }
 
@@ -140,14 +188,16 @@ public class JsonMessage extends Message {
      * @param extra  Objects to parse for hoverEvent value,
      *               provide an ItemStack for SHOW_ITEM, Entity for SHOW_ENTITY and String for SHOW_TEXT
      */
-    public JsonMessage appendHover(String text, @NotNull JsonHoverAction action, Object... extra) {
-        JsonObject component = new JsonObject();
-        component.addProperty("text", text);
+    public JsonMessage append(String text, @NotNull JsonHoverAction action, Object... extra) {
+        JsonObject component = createText(text);
 
-        addHover(component, action, extra);
-
-        textList.add(component);
+        attachHover(component, action, extra);
+        getCurrentLine().add(component);
         return this;
+    }
+
+    private JsonArray getCurrentLine() {
+        return lines.isEmpty() || newLine ? createLine() : lines.peekLast();
     }
 
     /**
@@ -158,13 +208,12 @@ public class JsonMessage extends Message {
      * @param value  String value to use for the clickEvent - url, clipboard content to copy,
      *               command or file path
      */
-    public JsonMessage appendClick(String text, @NotNull JsonClickAction action, String value) {
-        JsonObject component = new JsonObject();
-        component.addProperty("text", text);
+    public JsonMessage append(String text, @NotNull JsonClickAction action, String value) {
+        JsonObject component = createText(text);
 
-        addClick(component, action, value);
+        attachClick(component, action, value);
 
-        textList.add(component);
+        getCurrentLine().add(component);
         return this;
     }
 
@@ -180,39 +229,22 @@ public class JsonMessage extends Message {
      *                    provide an ItemStack for SHOW_ITEM, Entity for SHOW_ENTITY and String for SHOW_TEXT
      */
     public JsonMessage append(String text, @NotNull JsonHoverAction hoverAction, @NotNull JsonClickAction clickAction, String clickValue, Object... hoverExtra) {
-        JsonObject component = new JsonObject();
-        component.addProperty("text", text);
+        JsonObject component = createText(text);
 
-        addHover(component, hoverAction, hoverExtra);
-        addClick(component, clickAction, clickValue);
+        attachHover(component, hoverAction, hoverExtra);
+        attachClick(component, clickAction, clickValue);
 
-        textList.add(component);
+        getCurrentLine().add(component);
         return this;
     }
 
     @Override
     public String toString() {
-        return gson.toJson(textList);
+        return gson.toJson(lines);
     }
 
     @Override
     public void send(@NotNull Player player) {
-
-        // Reset context after we add the player.
-        Context oldContext = new Context(this.placeholders.getContext());
-        super.context(player);
-
-        String content = this.placeholders.parse(this.toString());
-
-        this.placeholders.setContext(oldContext);
-
-        sendJson(player, content);
-    }
-
-    /**
-     * Send the pure json message to the {@param player}
-     */
-    public void sendJson(@NotNull Player player) {
         sendJson(player, toString());
     }
 
@@ -224,5 +256,29 @@ public class JsonMessage extends Message {
         }
 
         VersionManager.fetchVersionUtility().sendJsonMessage(player, content);
+    }
+
+    @Override
+    public JsonMessage parseWith(Placeholders placeholders) {
+        super.parseWith(placeholders);
+        return this;
+    }
+
+    @Override
+    public JsonMessage context(Object... objects) {
+        super.context(objects);
+        return this;
+    }
+
+    @Override
+    public JsonMessage context(Context context) {
+        super.context(context);
+        return this;
+    }
+
+    @Override
+    public JsonMessage replace(@Nullable String placeholder, @Nullable Object value) {
+        super.replace(placeholder, value);
+        return this;
     }
 }
