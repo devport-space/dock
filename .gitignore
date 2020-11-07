@@ -3,5 +3,5 @@
 target/
 *.iml
 /test-data.json
-*.versionsBackup
 *-reduced-pom.xml
+*.versionsBackup
