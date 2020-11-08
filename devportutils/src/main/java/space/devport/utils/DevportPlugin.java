@@ -107,14 +107,14 @@ public abstract class DevportPlugin extends JavaPlugin {
             registerManager(hologramManager);
         }
 
-        if (use(UsageFlag.LANGUAGE)) {
-            LanguageManager languageManager = new LanguageManager(this);
-            registerManager(languageManager);
-        }
-
         if (use(UsageFlag.COMMANDS)) {
             CommandManager commandManager = new CommandManager(this);
             registerManager(commandManager);
+        }
+
+        if (use(UsageFlag.LANGUAGE)) {
+            LanguageManager languageManager = new LanguageManager(this);
+            registerManager(languageManager);
         }
 
         if (use(UsageFlag.ECONOMY)) {
