@@ -30,8 +30,8 @@ import space.devport.utils.version.VersionManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -44,7 +44,7 @@ public abstract class DevportPlugin extends JavaPlugin {
     private static DevportPlugin instance;
 
     @Getter
-    private final Map<Class<? extends DevportManager>, DevportManager> managers = new HashMap<>();
+    private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
 
     @Getter
     private final Set<UsageFlag> usageFlags = new HashSet<>();
@@ -92,11 +92,6 @@ public abstract class DevportPlugin extends JavaPlugin {
             registerManager(versionManager);
         }
 
-        if (use(UsageFlag.COMMANDS)) {
-            CommandManager commandManager = new CommandManager(this);
-            registerManager(commandManager);
-        }
-
         if (use(UsageFlag.CUSTOMISATION)) {
             CustomisationManager customisationManager = new CustomisationManager(this);
             registerManager(customisationManager);
@@ -115,6 +110,11 @@ public abstract class DevportPlugin extends JavaPlugin {
         if (use(UsageFlag.LANGUAGE)) {
             LanguageManager languageManager = new LanguageManager(this);
             registerManager(languageManager);
+        }
+
+        if (use(UsageFlag.COMMANDS)) {
+            CommandManager commandManager = new CommandManager(this);
+            registerManager(commandManager);
         }
 
         if (use(UsageFlag.ECONOMY)) {
@@ -157,7 +157,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName())
-                .addParser((str, player) -> str.replaceAll("(?i)%player%", player.getName()), OfflinePlayer.class);
+                .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.getOrDefault(player.getName(), "no-name")), OfflinePlayer.class);
 
         callManagerAction(DevportManager::preEnable);
 

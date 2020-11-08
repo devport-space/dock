@@ -67,4 +67,8 @@ public class ParseUtil {
                 y == null ? 0 : y.getDouble(),
                 z == null ? 0 : z.getDouble());
     }
+
+    public <T> T getOrDefault(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
+    }
 }
