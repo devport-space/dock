@@ -1,6 +1,7 @@
 package space.devport.utils.version.v1_14_R1;
 
 import net.minecraft.server.v1_14_R1.ItemStack;
+import net.minecraft.server.v1_14_R1.NBTBase;
 import net.minecraft.server.v1_14_R1.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import space.devport.utils.version.api.ICompound;
@@ -25,6 +26,18 @@ public class Compound implements ICompound {
     @Override
     public boolean has(String key) {
         return compound.hasKey(key);
+    }
+
+    @Override
+    public byte getId(String key) {
+        NBTBase base = compound.get(key);
+        return base == null ? -1 : base.getTypeId();
+    }
+
+    @Override
+    public ICompound remove(String key) {
+        compound.remove(key);
+        return this;
     }
 
     @Override

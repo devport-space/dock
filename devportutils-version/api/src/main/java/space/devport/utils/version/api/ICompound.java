@@ -8,6 +8,10 @@ public interface ICompound {
 
     boolean has(String key);
 
+    byte getId(String key);
+
+    ICompound remove(String key);
+
     Set<String> getKeys();
 
     ICompound withString(String key, String value);

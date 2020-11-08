@@ -28,6 +28,7 @@ import java.util.Map;
  *
  * @author Devport Team
  */
+@Deprecated
 @NoArgsConstructor
 public class ItemBuilder {
 
