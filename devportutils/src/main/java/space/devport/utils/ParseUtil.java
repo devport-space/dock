@@ -87,4 +87,43 @@ public class ParseUtil {
                 y == null ? 0 : y.getDouble(),
                 z == null ? 0 : z.getDouble());
     }
+
+    /**
+     * Attempt to parse an object from String.
+     *
+     * @return Parsed object or {@param input} if the input is {@code null} or empty.
+     */
+    public Object parseNumber(String input) {
+
+        if (Strings.isNullOrEmpty(input))
+            return input;
+
+        final String str = input.trim();
+
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException ignored) {
+            // Not an int
+        }
+
+        try {
+            return Long.parseLong(str);
+        } catch (NumberFormatException ignored) {
+            // Not a long
+        }
+
+        try {
+            return Double.parseDouble(str);
+        } catch (NumberFormatException ignored) {
+            // Not a double
+        }
+
+        try {
+            return Float.parseFloat(str);
+        } catch (NumberFormatException ignored) {
+            // Not a Float
+        }
+
+        return input;
+    }
 }

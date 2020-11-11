@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.ParseUtil;
 import space.devport.utils.item.nbt.NBTContainer;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.text.Placeholders;
@@ -178,7 +179,17 @@ public class ItemPrefab implements Cloneable {
 
             for (Map.Entry<String, NBTContainer> entry : this.nbt.entrySet()) {
                 String key = this.placeholders.parse(entry.getKey());
-                entry.getValue().apply(compound, key);
+
+                NBTContainer container = entry.getValue().clone();
+                Object value = container.getValue();
+
+                if (String.class.isAssignableFrom(value.getClass())) {
+                    String str = (String) value;
+                    str = this.placeholders.parse(str);
+                    container.setValue(ParseUtil.parseNumber(str));
+                }
+
+                container.apply(compound, key);
             }
 
             item = compound.finish();
