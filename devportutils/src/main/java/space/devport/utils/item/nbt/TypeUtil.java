@@ -1,7 +1,6 @@
 package space.devport.utils.item.nbt;
 
 import lombok.experimental.UtilityClass;
-import space.devport.utils.item.nbt.NBTContainer;
 import space.devport.utils.version.api.ICompound;
 
 import java.util.HashMap;

@@ -1,9 +1,6 @@
 package space.devport.utils.item;
 
-import com.cryptomorin.xseries.XEnchantment;
-import com.cryptomorin.xseries.XMaterial;
 import lombok.experimental.UtilityClass;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.version.VersionManager;
@@ -64,23 +61,5 @@ public class ItemUtil {
         ICompound compound = getCompound(item);
         compound.remove(key);
         return compound.finish();
-    }
-
-
-    // ItemPrefab example usage kept here for now.
-    static {
-        ItemPrefab prefab = ItemPrefab.createNew(XMaterial.STICK)
-                .withAmount(1, 5)
-                .withName("&6A cool stick!")
-                .withLore("&7Even cooler with lore.", "&7And more lore!")
-                .addEnchant(XEnchantment.ARROW_FIRE, 1)
-                .addFlags(ItemFlag.HIDE_ATTRIBUTES)
-                .addNBT("my_key", 20)
-                .addBuilder(item -> ItemUtil.setNBT(item, "my_second_key", "A cute message hidden in my ItemStack."));
-
-        ItemStack item = prefab.build();
-
-        ItemPrefab copiedPrefab = ItemPrefab.of(item)
-                .addNBT("my_int_array", new int[]{10, 15});
     }
 }

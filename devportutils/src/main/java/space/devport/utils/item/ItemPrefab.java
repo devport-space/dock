@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.nbt.NBTContainer;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.text.Placeholders;
@@ -24,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ItemPrefab {
+public class ItemPrefab implements Cloneable {
 
     // Some ItemStack parameters are already saved inside other variables.
     // These NBT keys will be ignored in loading so they don't affect those.
@@ -66,11 +67,27 @@ public class ItemPrefab {
     private final Set<PrefabBuilder> builders = new HashSet<>();
 
     public interface PrefabBuilder {
+        /**
+         * Apply additional actions to the resulting ItemStack.
+         */
         ItemStack apply(ItemStack item);
     }
 
     private ItemPrefab(@NotNull XMaterial material) {
         this.material = material;
+        this.placeholders.copy(DevportPlugin.getInstance().getGlobalPlaceholders());
+    }
+
+    private ItemPrefab(ItemPrefab prefab) {
+        this.material = prefab.getMaterial();
+        this.amount = new Amount(prefab.getAmount());
+        this.name = new CachedMessage(prefab.getName());
+        this.lore = new CachedMessage(prefab.getLore());
+        this.enchants.addAll(prefab.getEnchants());
+        this.flags.addAll(prefab.getFlags());
+        this.nbt.putAll(prefab.getNbt());
+        this.skullData = new SkullData(prefab.getSkullData());
+        this.placeholders.copy(prefab.getPlaceholders());
     }
 
     private ItemPrefab(@NotNull ItemStack item) {
@@ -95,6 +112,7 @@ public class ItemPrefab {
         }
 
         this.skullData = SkullData.readSkullTexture(item);
+        this.placeholders.copy(DevportPlugin.getInstance().getGlobalPlaceholders());
     }
 
     public static ItemPrefab createNew(@NotNull XMaterial material) {
@@ -107,6 +125,11 @@ public class ItemPrefab {
 
     public static ItemPrefab of(@NotNull ItemStack item) {
         return new ItemPrefab(item);
+    }
+
+    @Override
+    public ItemPrefab clone() {
+        return new ItemPrefab(this);
     }
 
     public ItemStack build() {

@@ -1,5 +1,6 @@
 package space.devport.utils.item;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
@@ -53,13 +54,24 @@ public class Amount {
         this.fixedValue = fixedValue;
     }
 
+    public Amount(Amount amount) {
+        this.fixed = amount.isFixed();
+        this.fixedValue = amount.getFixedValue();
+        this.highValue = amount.getHighValue();
+        this.lowValue = amount.getLowValue();
+    }
+
     @Nullable
     public static Amount fromString(String str) {
+
+        if (Strings.isNullOrEmpty(str))
+            return null;
+
         if (str.contains("-")) {
             String[] arr = str.split("-");
 
             if (arr.length != 2) {
-                ConsoleOutput.getInstance().warn("Could not parse Amount from " + str + ", incorrect number of parameters in a dynamic syntax.o");
+                ConsoleOutput.getInstance().warn("Could not parse Amount from " + str + ", incorrect number of parameters in a dynamic syntax.");
                 return null;
             }
 
