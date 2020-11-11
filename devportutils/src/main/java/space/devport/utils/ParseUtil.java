@@ -3,18 +3,38 @@ package space.devport.utils;
 import com.google.common.base.Strings;
 import lombok.experimental.UtilityClass;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.item.Amount;
 
 @UtilityClass
 public class ParseUtil {
 
+    /**
+     * Attempt to parse the enum from String {@param str}
+     *
+     * @return Parsed enum or {@code null}
+     */
     @Nullable
     public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz) {
         try {
             return E.valueOf(clazz, str);
         } catch (IllegalArgumentException | NullPointerException e) {
             return null;
+        }
+    }
+
+    /**
+     * Attempt to parse the enum from String {@param str}
+     *
+     * @return Parsed enum or {@param defaultValue}
+     */
+    @NotNull
+    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz, @NotNull E defaultValue) {
+        try {
+            return E.valueOf(clazz, str);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return defaultValue;
         }
     }
 

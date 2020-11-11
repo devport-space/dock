@@ -81,11 +81,14 @@ public class ItemPrefab implements Cloneable {
     private ItemPrefab(ItemPrefab prefab) {
         this.material = prefab.getMaterial();
         this.amount = new Amount(prefab.getAmount());
+
         this.name = new CachedMessage(prefab.getName());
         this.lore = new CachedMessage(prefab.getLore());
+
         this.enchants.addAll(prefab.getEnchants());
         this.flags.addAll(prefab.getFlags());
         this.nbt.putAll(prefab.getNbt());
+
         this.skullData = new SkullData(prefab.getSkullData());
         this.placeholders.copy(prefab.getPlaceholders());
     }
@@ -179,6 +182,11 @@ public class ItemPrefab implements Cloneable {
             }
 
             item = compound.finish();
+        }
+
+        if (skullData != null) {
+            skullData.parseWith(this.placeholders);
+            item = skullData.apply(item);
         }
 
         // Run additional builders
