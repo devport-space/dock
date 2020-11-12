@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.text.Placeholders;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.struct.Context;
+import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
@@ -239,6 +239,16 @@ public class Message {
         return StringUtil.listToString(message, "\n");
     }
 
+    /**
+     * Send without setting context.
+     */
+    public void sendTo(Player player) {
+        send((CommandSender) player);
+    }
+
+    /**
+     * Add player to context and send to him.
+     */
     public void send(Player player) {
         send(player, player);
     }
