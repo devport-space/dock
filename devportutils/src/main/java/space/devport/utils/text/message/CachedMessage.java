@@ -28,7 +28,7 @@ public class CachedMessage extends Message {
     }
 
     public CachedMessage(@Nullable String... message) {
-        this(new ArrayList<>(Arrays.asList(message)));
+        this(Arrays.asList(message));
     }
 
     public CachedMessage(@Nullable List<String> message) {
@@ -41,8 +41,15 @@ public class CachedMessage extends Message {
 
     @Override
     public CachedMessage set(@Nullable List<String> message) {
+
+        if (message == null) {
+            clear();
+            return this;
+        }
+
+        List<String> newContent = new ArrayList<>(message);
         clear();
-        if (message != null) this.original.addAll(message);
+        this.original.addAll(newContent);
         this.message.addAll(original);
         return this;
     }
@@ -69,6 +76,9 @@ public class CachedMessage extends Message {
         return this;
     }
 
+    /**
+     * Append both the working message and the original.
+     */
     @Override
     public CachedMessage append(List<String> toAdd) {
         this.original.addAll(toAdd);

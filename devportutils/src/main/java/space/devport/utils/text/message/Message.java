@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class Message {
 
-    @Getter
     protected List<String> message = new ArrayList<>();
 
     @Getter
@@ -294,5 +293,12 @@ public class Message {
     public Message filter(Predicate<String> action) {
         this.message.removeIf(action);
         return this;
+    }
+
+    /**
+     * Returns a copy of the contained message.
+     */
+    public List<String> getMessage() {
+        return new ArrayList<>(message);
     }
 }
