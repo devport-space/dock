@@ -1,7 +1,6 @@
 package space.devport.utils.text.message;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,13 +17,13 @@ import java.util.List;
 public class CachedMessage extends Message {
 
     @Getter
-    @Setter
-    private List<String> original = new ArrayList<>();
+    private final List<String> original = new ArrayList<>();
 
     public CachedMessage(@NotNull Message message) {
         if (message instanceof CachedMessage) {
-            this.original = ((CachedMessage) message).getOriginal();
-            this.message = message.getMessage();
+            clear();
+            this.original.addAll(((CachedMessage) message).getOriginal());
+            this.message.addAll(message.getMessage());
         } else set(message.getMessage());
     }
 
@@ -42,8 +41,9 @@ public class CachedMessage extends Message {
 
     @Override
     public CachedMessage set(@Nullable List<String> message) {
-        this.original = message != null ? message : new ArrayList<>();
-        this.message = original;
+        clear();
+        if (message != null) this.original.addAll(message);
+        this.message.addAll(original);
         return this;
     }
 
@@ -54,20 +54,25 @@ public class CachedMessage extends Message {
 
     @Override
     public CachedMessage insert(List<String> toAdd) {
+
         List<String> msg = new ArrayList<>(toAdd);
         msg.addAll(this.message);
-        this.message = msg;
+
+        this.message.clear();
+        this.message.addAll(msg);
 
         List<String> org = new ArrayList<>(toAdd);
         org.addAll(this.original);
-        this.original = org;
+
+        this.original.clear();
+        this.original.addAll(org);
         return this;
     }
 
     @Override
     public CachedMessage append(List<String> toAdd) {
-        this.original.addAll(new ArrayList<>(toAdd));
-        this.message.addAll(new ArrayList<>(toAdd));
+        this.original.addAll(toAdd);
+        this.message.addAll(toAdd);
         return this;
     }
 
@@ -86,5 +91,10 @@ public class CachedMessage extends Message {
     public CachedMessage push() {
         set(message);
         return this;
+    }
+
+    public void clear() {
+        this.original.clear();
+        this.message.clear();
     }
 }
