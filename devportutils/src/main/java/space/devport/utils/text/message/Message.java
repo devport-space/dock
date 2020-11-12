@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.text.Placeholders;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.struct.Context;
+import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
@@ -182,7 +182,7 @@ public class Message {
 
     // Add something to the front
     public Message insert(String... toAdd) {
-        return insert(new ArrayList<>(Arrays.asList(toAdd)));
+        return insert(Arrays.asList(toAdd));
     }
 
     public Message insert(Message toAdd) {
@@ -195,7 +195,7 @@ public class Message {
     }
 
     public Message append(String... toAdd) {
-        return append(new ArrayList<>(Arrays.asList(toAdd)));
+        return append(Arrays.asList(toAdd));
     }
 
     public Message append(Message message) {

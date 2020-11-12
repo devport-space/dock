@@ -12,6 +12,7 @@ import space.devport.utils.DevportPlugin;
 import space.devport.utils.ParseUtil;
 import space.devport.utils.item.nbt.NBTContainer;
 import space.devport.utils.item.nbt.TypeUtil;
+import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
@@ -134,6 +135,11 @@ public class ItemPrefab implements Cloneable {
     @Override
     public ItemPrefab clone() {
         return new ItemPrefab(this);
+    }
+
+    public ItemStack build(Context context) {
+        this.placeholders.addContext(context);
+        return build();
     }
 
     public ItemStack build() {
