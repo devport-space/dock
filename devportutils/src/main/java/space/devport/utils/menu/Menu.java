@@ -14,9 +14,14 @@ import space.devport.utils.menu.item.MenuItem;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Menu implements MenuListener {
 
+    @Getter
+    private final UUID uniqueID;
+
+    // Name of the TYPE of the menu.
     @Getter
     public String name;
 
@@ -43,6 +48,7 @@ public class Menu implements MenuListener {
     }
 
     public Menu(String name, MenuBuilder builder) {
+        this.uniqueID = UUID.randomUUID();
         this.name = name;
 
         this.menuBuilder = new MenuBuilder(name, builder);
@@ -148,12 +154,11 @@ public class Menu implements MenuListener {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Menu menu = (Menu) o;
-        return name.equals(menu.name) &&
-                player.equals(menu.player);
+        return uniqueID.equals(menu.uniqueID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, player);
+        return Objects.hash(uniqueID);
     }
 }

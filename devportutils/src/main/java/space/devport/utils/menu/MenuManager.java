@@ -12,12 +12,13 @@ import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.menu.item.MenuItem;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MenuManager extends DevportManager implements Listener {
 
     @Getter
-    private final HashMap<String, Menu> registeredMenus = new HashMap<>();
+    private final Set<Menu> registeredMenus = new HashSet<>();
 
     public MenuManager(DevportPlugin plugin) {
         super(plugin);
@@ -26,6 +27,11 @@ public class MenuManager extends DevportManager implements Listener {
     @Override
     public void afterEnable() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    @Override
+    public void onDisable() {
+        closeAll();
     }
 
     @EventHandler
@@ -39,7 +45,7 @@ public class MenuManager extends DevportManager implements Listener {
 
         Menu menu = null;
 
-        for (Menu menuLoop : registeredMenus.values())
+        for (Menu menuLoop : registeredMenus)
             if (inventory.equals(menuLoop.getInventory()) && menuLoop.getPlayer().equals(player))
                 menu = menuLoop;
 
@@ -84,7 +90,7 @@ public class MenuManager extends DevportManager implements Listener {
     public void onClose(InventoryCloseEvent e) {
         Menu menu = null;
 
-        for (Menu menuLoop : registeredMenus.values())
+        for (Menu menuLoop : registeredMenus)
             if (menuLoop.getInventory().equals(e.getInventory()))
                 menu = menuLoop;
 
@@ -94,15 +100,14 @@ public class MenuManager extends DevportManager implements Listener {
     }
 
     public void addMenu(Menu menu) {
-        registeredMenus.put(menu.getName(), menu);
+        registeredMenus.add(menu);
     }
 
     public void removeMenu(Menu menu) {
-        registeredMenus.remove(menu.getName());
+        registeredMenus.remove(menu);
     }
 
     public void closeAll() {
-        registeredMenus.values().forEach(Menu::close);
-        registeredMenus.clear();
+        new HashSet<>(registeredMenus).forEach(Menu::close);
     }
 }
