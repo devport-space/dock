@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Enchantment and level wrapper for simplified enchant manipulation.
+ */
 public class Enchant {
 
     @Getter

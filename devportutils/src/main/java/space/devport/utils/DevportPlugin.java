@@ -28,23 +28,13 @@ import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 import space.devport.utils.version.VersionManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
-    private static DevportPlugin instance;
-
-    @Getter
-    private final Map<Class<? extends DevportManager>, DevportManager> managers = new HashMap<>();
+    private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
 
     @Getter
     private final Set<UsageFlag> usageFlags = new HashSet<>();
@@ -75,17 +65,17 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public abstract UsageFlag[] usageFlags();
 
+    public static DevportPlugin getInstance() {
+        return getPlugin(DevportPlugin.class);
+    }
+
     @Override
     public void onLoad() {
-        instance = getPlugin(this.getClass());
-
         // Setup Console Output
         consoleOutput = ConsoleOutput.getInstance(this);
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
-
-        consoleOutput.debug("Usage flags: " + usageFlags.toString());
 
         if (use(UsageFlag.NMS)) {
             VersionManager versionManager = VersionManager.getInstance(this);
@@ -112,20 +102,15 @@ public abstract class DevportPlugin extends JavaPlugin {
             registerManager(hologramManager);
         }
 
-        if (use(UsageFlag.LANGUAGE)) {
-            LanguageManager languageManager = new LanguageManager(this);
-            registerManager(languageManager);
-        }
-
         if (use(UsageFlag.ECONOMY)) {
             EconomyManager economyManager = new EconomyManager(this);
             registerManager(economyManager);
         }
-    }
 
-    public void callManagerAction(Consumer<DevportManager> action) {
-        for (DevportManager manager : this.managers.values()) {
-            action.accept(manager);
+        // Register economy manager as last to catch language added elsewhere.
+        if (use(UsageFlag.LANGUAGE)) {
+            LanguageManager languageManager = new LanguageManager(this);
+            registerManager(languageManager);
         }
     }
 
@@ -224,6 +209,16 @@ public abstract class DevportPlugin extends JavaPlugin {
         callManagerAction(DevportManager::onDisable);
     }
 
+    public void registerManager(DevportManager devportManager) {
+        this.managers.put(devportManager.getClass(), devportManager);
+
+        devportManager.onLoad();
+    }
+
+    public boolean isRegistered(Class<? extends DevportManager> clazz) {
+        return this.managers.containsKey(clazz);
+    }
+
     public <T extends DevportManager> T getManager(Class<T> clazz) {
         DevportManager manager = this.managers.get(clazz);
 
@@ -249,28 +244,23 @@ public abstract class DevportPlugin extends JavaPlugin {
         return clazz.cast(manager);
     }
 
-    public void registerManager(DevportManager devportManager) {
-        this.managers.put(devportManager.getClass(), devportManager);
-
-        devportManager.onLoad();
+    public void callManagerAction(Consumer<DevportManager> action) {
+        for (DevportManager manager : this.managers.values()) {
+            action.accept(manager);
+        }
     }
 
-    public boolean isRegistered(Class<? extends DevportManager> clazz) {
-        return this.managers.containsKey(clazz);
+    public void registerListener(Listener listener) {
+        getPluginManager().registerEvents(listener, this);
+    }
+
+    public MainCommand addMainCommand(MainCommand mainCommand) {
+        getManager(CommandManager.class).registeredCommands.add(mainCommand);
+        return mainCommand;
     }
 
     public boolean use(UsageFlag usageFlag) {
         return this.usageFlags.contains(usageFlag);
-    }
-
-    /**
-     * Get the whole dependency list.
-     */
-    public List<String> getDependencies() {
-        List<String> dependencies = new ArrayList<>();
-        dependencies.addAll(getDescription().getDepend());
-        dependencies.addAll(getDescription().getSoftDepend());
-        return dependencies;
     }
 
     @Override
@@ -288,20 +278,21 @@ public abstract class DevportPlugin extends JavaPlugin {
         return configuration.getFileConfiguration();
     }
 
+    /**
+     * Get the whole dependency list.
+     */
+    public List<String> getDependencies() {
+        List<String> dependencies = new ArrayList<>();
+        dependencies.addAll(getDescription().getDepend());
+        dependencies.addAll(getDescription().getSoftDepend());
+        return dependencies;
+    }
+
     public ChatColor getPluginColor() {
         return StringUtil.getRandomColor();
     }
 
     public PluginManager getPluginManager() {
         return getServer().getPluginManager();
-    }
-
-    public void registerListener(Listener listener) {
-        getPluginManager().registerEvents(listener, this);
-    }
-
-    public MainCommand addMainCommand(MainCommand mainCommand) {
-        getManager(CommandManager.class).registeredCommands.add(mainCommand);
-        return mainCommand;
     }
 }

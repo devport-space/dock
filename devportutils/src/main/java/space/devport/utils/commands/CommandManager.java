@@ -25,7 +25,7 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
-        runCommands(sender, label, args);
+        runCommand(sender, label, args);
         return false;
     }
 
@@ -38,9 +38,10 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
         return new ArrayList<>();
     }
 
-    private void runCommands(CommandSender sender, String label, String[] args) {
+    private void runCommand(CommandSender sender, String label, String[] args) {
         for (MainCommand command : registeredCommands) {
-            if (!command.getName().equalsIgnoreCase(label) && !command.getAliases().contains(label)) continue;
+            if (!command.getName().equalsIgnoreCase(label) && !command.getAliases().contains(label))
+                continue;
 
             command.runCommand(sender, label, args);
             break;
@@ -52,12 +53,13 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
      */
     public void executeCommand(@Nullable CommandSender sender, @Nullable String command) {
 
-        if (Strings.isNullOrEmpty(command) || sender == null) return;
+        if (Strings.isNullOrEmpty(command) || sender == null)
+            return;
 
         String[] arr = command.split(" ");
         String label = arr[0].contains("/") ? arr[0].replace("/", "") : arr[0];
         List<String> argList = new ArrayList<>(Arrays.asList(arr).subList(1, arr.length));
-        runCommands(sender, label, argList.toArray(new String[0]));
+        runCommand(sender, label, argList.toArray(new String[0]));
     }
 
     public void registerAll() {

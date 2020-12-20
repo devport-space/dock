@@ -18,13 +18,12 @@ public class NBTContainer implements Cloneable {
         this.value = container.getValue();
     }
 
+    public void apply(ICompound compound, String key) {
+        TypeUtil.setValue(compound, key, value);
+    }
+
     @Override
     public NBTContainer clone() {
         return new NBTContainer(this);
-    }
-
-
-    public void apply(ICompound compound, String key) {
-        TypeUtil.setValue(compound, key, value);
     }
 }
