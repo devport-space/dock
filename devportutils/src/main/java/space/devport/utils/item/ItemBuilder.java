@@ -26,6 +26,8 @@ import java.util.Map;
 /**
  * Class to handle Item construction.
  *
+ * Set to be removed and migrated to ItemPrefab in 4.0.0
+ *
  * @author Devport Team
  */
 @Deprecated

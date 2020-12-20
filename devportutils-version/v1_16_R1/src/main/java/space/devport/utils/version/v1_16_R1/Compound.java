@@ -123,6 +123,39 @@ public class Compound implements ICompound {
     }
 
     @Override
+    public ICompound withByte(String key, byte value) {
+        compound.setByte(key, value);
+        return this;
+    }
+
+    @Override
+    public ICompound withByteArray(String key, byte[] value) {
+        compound.setByteArray(key, value);
+        return this;
+    }
+
+    @Override
+    public ICompound withIntArray(String key, int[] value) {
+        compound.setIntArray(key, value);
+        return this;
+    }
+
+    @Override
+    public byte getByte(String key) {
+        return compound.getByte(key);
+    }
+
+    @Override
+    public byte[] getByteArray(String key) {
+        return compound.getByteArray(key);
+    }
+
+    @Override
+    public int[] getIntArray(String key) {
+        return compound.getIntArray(key);
+    }
+
+    @Override
     public org.bukkit.inventory.ItemStack apply(org.bukkit.inventory.ItemStack itemStack) {
         ItemStack item = CraftItemStack.asNMSCopy(itemStack);
         item.setTag(compound);

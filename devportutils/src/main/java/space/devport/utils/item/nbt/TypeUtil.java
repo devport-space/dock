@@ -1,6 +1,7 @@
 package space.devport.utils.item.nbt;
 
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang.ArrayUtils;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.version.api.ICompound;
 
@@ -23,7 +24,8 @@ public class TypeUtil {
         put((byte) 6, Double.class);
         put((byte) 7, byte[].class);
         put((byte) 8, String.class);
-        put((byte) 9, List.class);
+        // TODO List (de)serialization
+        // put((byte) 9, List.class);
         put((byte) 11, int[].class);
         put((byte) 12, long[].class);
     }};
@@ -38,13 +40,12 @@ public class TypeUtil {
         put(Byte.class, new TypeApplier<Byte>() {
             @Override
             public void apply(ICompound compound, String key, Object value) {
-                //TODO missing ICompound#withByte
+                compound.withByte(key, (byte) value);
             }
 
             @Override
             public Byte query(ICompound compound, String key) {
-                //TODO
-                return 1;
+                return compound.getByte(key);
             }
         });
 
@@ -111,13 +112,12 @@ public class TypeUtil {
         put(byte[].class, new TypeApplier<Byte[]>() {
             @Override
             public void apply(ICompound compound, String key, Object value) {
-                //TODO missing ICompound#withByteArray
+                compound.withByteArray(key, (byte[]) value);
             }
 
             @Override
             public Byte[] query(ICompound compound, String key) {
-                //TODO
-                return new Byte[0];
+                return ArrayUtils.toObject(compound.getByteArray(key));
             }
         });
 
@@ -132,11 +132,6 @@ public class TypeUtil {
                 return compound.getString(key);
             }
         });
-
-        //TODO
-        //TODO missing ICompound#withList
-        //TODO missing ICompound#withIntArray
-        //TODO missing ICompound#withLongArray
     }};
 
     public void setValue(ICompound compound, String key, Object value) {

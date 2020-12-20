@@ -2,6 +2,7 @@ package space.devport.utils.version.api;
 
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
 import java.util.Set;
 
 public interface ICompound {
@@ -28,6 +29,12 @@ public interface ICompound {
 
     ICompound withShort(String key, short value);
 
+    ICompound withByte(String key, byte value);
+
+    ICompound withByteArray(String key, byte[] value);
+
+    ICompound withIntArray(String key, int[] value);
+
     String getString(String key);
 
     boolean getBoolean(String key);
@@ -41,6 +48,12 @@ public interface ICompound {
     float getFloat(String key);
 
     short getShort(String key);
+
+    byte getByte(String key);
+
+    byte[] getByteArray(String key);
+
+    int[] getIntArray(String key);
 
     /**
      * Apply compound changes to ItemStack and return it.
