@@ -49,6 +49,16 @@ public class LanguageManager extends DevportManager {
         load();
     }
 
+    public void addDefault(String path, String... message) {
+        this.defaults.put(path, new Message(message));
+        plugin.getConsoleOutput().debug("Added default " + path);
+    }
+
+    public void addDefaults(LanguageDefaults defaults) {
+        this.languageDefaults.add(defaults);
+        plugin.getConsoleOutput().info("Added language defaults " + defaults.getClass().getSimpleName());
+    }
+
     public void captureDefaults() {
         if (setInternalDefaults) {
             for (CommandResult result : CommandResult.values()) {
@@ -62,16 +72,6 @@ public class LanguageManager extends DevportManager {
             addDefault("Commands.Help.Sub-Command-Line", "&" + plugin.getColor().getChar() + "%usage% &8- &7%description%");
         }
         languageDefaults.forEach(LanguageDefaults::setDefaults);
-    }
-
-    public void addDefault(String path, String... message) {
-        this.defaults.put(path, new Message(message));
-        plugin.getConsoleOutput().debug("Added default " + path);
-    }
-
-    public void addDefaults(LanguageDefaults defaults) {
-        this.languageDefaults.add(defaults);
-        plugin.getConsoleOutput().info("Added language defaults " + defaults.getClass().getSimpleName());
     }
 
     public void load() {

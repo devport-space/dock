@@ -23,6 +23,7 @@ import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.DependencyUtil;
+import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
@@ -32,6 +33,9 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class DevportPlugin extends JavaPlugin {
+
+    @Getter
+    private static DevportPlugin instance;
 
     @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
@@ -65,12 +69,10 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public abstract UsageFlag[] usageFlags();
 
-    public static DevportPlugin getInstance() {
-        return getPlugin(DevportPlugin.class);
-    }
-
     @Override
     public void onLoad() {
+        instance = getPlugin(this.getClass());
+
         // Setup Console Output
         consoleOutput = ConsoleOutput.getInstance(this);
 
@@ -78,7 +80,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
 
         if (use(UsageFlag.NMS)) {
-            VersionManager versionManager = VersionManager.getInstance(this);
+            VersionManager versionManager = new VersionManager(this);
             registerManager(versionManager);
         }
 
@@ -142,7 +144,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName())
-                .addParser((str, player) -> str.replaceAll("(?i)%player%", player.getName()), OfflinePlayer.class);
+                .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.getOrDefault(player::getName, "null")), OfflinePlayer.class);
 
         callManagerAction(DevportManager::preEnable);
 

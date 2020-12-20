@@ -14,43 +14,26 @@ import java.util.function.Consumer;
 
 public class VersionManager extends DevportManager {
 
-    private static VersionManager instance;
-
     @Getter
     private ICompoundFactory compoundFactory;
 
     @Getter
     private IVersionUtility versionUtility;
 
-    private VersionManager(DevportPlugin plugin) {
+    public VersionManager(DevportPlugin plugin) {
         super(plugin);
-        instance = this;
-    }
-
-    private VersionManager() {
-        super();
-        instance = this;
-        load();
-    }
-
-    public static VersionManager getInstance(DevportPlugin plugin) {
-        return instance == null ? new VersionManager(plugin) : instance;
-    }
-
-    public static VersionManager getInstance() {
-        return instance == null ? new VersionManager() : instance;
     }
 
     public static ICompoundFactory fetchCompoundFactory() {
-        return getInstance().getCompoundFactory();
+        return DevportPlugin.getInstance().getManager(VersionManager.class).getCompoundFactory();
     }
 
     public static IVersionUtility fetchVersionUtility() {
-        return getInstance().getVersionUtility();
+        return DevportPlugin.getInstance().getManager(VersionManager.class).getVersionUtility();
     }
 
     @Override
-    public void preEnable() {
+    public void onLoad() {
         load();
     }
 

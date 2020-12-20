@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
-import space.devport.utils.ParseUtil;
+import space.devport.utils.utility.ParseUtil;
 
 import java.util.Random;
 

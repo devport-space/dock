@@ -11,7 +11,7 @@ import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.commands.struct.Preconditions;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.ParseUtil;
+import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.UsageFlag;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.language.LanguageManager;

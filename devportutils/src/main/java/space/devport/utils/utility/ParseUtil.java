@@ -1,11 +1,15 @@
-package space.devport.utils;
+package space.devport.utils.utility;
 
 import com.google.common.base.Strings;
 import lombok.experimental.UtilityClass;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.ConsoleOutput;
 import space.devport.utils.item.Amount;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @UtilityClass
 public class ParseUtil {
@@ -125,5 +129,24 @@ public class ParseUtil {
         }
 
         return input;
+    }
+
+    public <T> T getOrDefault(Supplier<T> supplier, T defaultValue) {
+        try {
+            T t = supplier.get();
+            return t == null ? defaultValue : t;
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+    public <T> T getOrDefault(Supplier<T> supplier, T defaultValue, Consumer<Throwable> exceptionCallback) {
+        try {
+            T t = supplier.get();
+            return t == null ? defaultValue : t;
+        } catch (Exception e) {
+            exceptionCallback.accept(e);
+            return defaultValue;
+        }
     }
 }

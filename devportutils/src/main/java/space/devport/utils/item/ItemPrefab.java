@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.ParseUtil;
+import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.item.nbt.NBTContainer;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.struct.Context;
