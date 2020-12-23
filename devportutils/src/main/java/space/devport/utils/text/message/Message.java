@@ -238,6 +238,16 @@ public class Message {
         return StringUtil.listToString(message, "\n");
     }
 
+    /**
+     * Send without setting context.
+     */
+    public void sendTo(Player player) {
+        send((CommandSender) player);
+    }
+
+    /**
+     * Add player to context and send to him.
+     */
     public void send(Player player) {
         send(player, player);
     }

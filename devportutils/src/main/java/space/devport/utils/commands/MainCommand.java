@@ -4,15 +4,17 @@ import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.UsageFlag;
+import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class MainCommand extends AbstractCommand {
@@ -25,6 +27,9 @@ public abstract class MainCommand extends AbstractCommand {
 
     @Getter
     private Message header;
+
+    @Getter
+    private final Map<String, Message> extraEntries = new LinkedHashMap<>();
 
     @Getter
     private String lineFormat;
@@ -127,6 +132,8 @@ public abstract class MainCommand extends AbstractCommand {
         if (!getUsage().isEmpty() || !getDescription().isEmpty())
             help.append(commandParams.parse(lineFormat));
 
+        this.extraEntries.forEach((key, entry) -> help.append(entry));
+
         for (SubCommand subCommand : this.subCommands) {
             if (subCommand.getUsage().isEmpty() && subCommand.getDescription().isEmpty())
                 continue;
@@ -158,6 +165,11 @@ public abstract class MainCommand extends AbstractCommand {
         return this;
     }
 
+    public MainCommand withExtraEntry(String key, Message entry) {
+        this.extraEntries.put(key, entry);
+        return this;
+    }
+
     public MainCommand withLineFormat(String lineFormat) {
         this.lineFormat = lineFormat;
         return this;
@@ -172,6 +184,7 @@ public abstract class MainCommand extends AbstractCommand {
                 language.addDefault("Commands.Help." + getName() + ".Description", getDefaultDescription());
 
             language.addDefault("Commands.Help.Header", header.toString());
+            this.extraEntries.forEach((key, entry) -> language.addDefault("Commands.Help.Extra." + key, entry.toString()));
             language.addDefault("Commands.Help.Footer", footer.toString());
             language.addDefault("Commands.Help.Line-Format", lineFormat);
         }
