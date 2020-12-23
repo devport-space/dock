@@ -27,6 +27,11 @@ public class HologramManager extends DevportManager {
     }
 
     @Override
+    public void preEnable() {
+        attemptHook();
+    }
+
+    @Override
     public void afterDependencyLoad() {
         attemptHook();
     }
