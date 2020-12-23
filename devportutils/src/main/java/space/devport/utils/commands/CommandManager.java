@@ -1,16 +1,15 @@
 package space.devport.utils.commands;
 
 import com.google.common.base.Strings;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.Bukkit;
+import org.bukkit.command.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,9 +17,17 @@ import java.util.List;
 public class CommandManager extends DevportManager implements CommandExecutor, TabCompleter {
 
     public final List<MainCommand> registeredCommands = new ArrayList<>();
+    private final CommandMap commandMap;
 
     public CommandManager(DevportPlugin plugin) {
         super(plugin);
+        try{
+            Field cMapField = Bukkit.getServer().getClass().getField("commandMap");
+            cMapField.setAccessible(true);
+            commandMap = (CommandMap) cMapField.get(Bukkit.getServer());
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -66,15 +73,15 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
 
         // Register commands
         for (MainCommand mainCommand : this.registeredCommands) {
-            if (!plugin.getDescription().getCommands().containsKey(mainCommand.getName())) {
-                plugin.getConsoleOutput().warn("Command " + mainCommand.getName() + " is not in plugin.yml.");
+
+            PluginCommand command;
+
+            try {
+                command = (PluginCommand) PluginCommand.class.getConstructors()[0].newInstance(mainCommand.getName(),plugin);
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
                 continue;
             }
-
-            PluginCommand command = plugin.getCommand(mainCommand.getName());
-
-            if (command == null)
-                continue;
 
             mainCommand.setAliases(command.getAliases().toArray(new String[0]));
 
@@ -84,9 +91,11 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
                 command.setTabCompleter(this);
             }
 
+            commandMap.register(command.getName(), command);
+
             mainCommand.addLanguage();
 
-            plugin.getConsoleOutput().debug("Added command " + command.getName() + " with aliases [" + String.join(", ", mainCommand.getAliases()) + "]" + (mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
+            plugin.getConsoleOutput().debug(String.format("Added command %s with aliases [%s]%s", command.getName(), String.join(", ", mainCommand.getAliases()), mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
         }
     }
 

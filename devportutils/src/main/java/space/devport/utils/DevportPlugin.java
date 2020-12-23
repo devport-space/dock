@@ -127,7 +127,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Print header
         consoleOutput.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
-        consoleOutput.info(getColor() + "~~~~~~~~~~~~ &7Devport " + getColor() + "~~~~~~~~~~~~");
+        consoleOutput.info(String.format("%s~~~~~~~~~~~~ &7%s %s~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor()));
 
         //TODO Maybe move to load to allow debugging in #onLoad().
         if (use(UsageFlag.CONFIGURATION)) {
