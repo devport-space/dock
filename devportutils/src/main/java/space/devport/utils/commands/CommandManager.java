@@ -3,16 +3,14 @@ package space.devport.utils.commands;
 import com.google.common.base.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.utility.reflection.Reflection;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,9 +23,11 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
     public CommandManager(DevportPlugin plugin) {
         super(plugin);
         try {
-            Field cMapField = Bukkit.getServer().getClass().getField("commandMap");
-            cMapField.setAccessible(true);
-            commandMap = (CommandMap) cMapField.get(Bukkit.getServer());
+            Class<?> serverClazz = Bukkit.getServer().getClass();
+            Field field = serverClazz.getDeclaredField("commandMap");
+            field.setAccessible(true);
+            commandMap = (CommandMap) field.get(Bukkit.getServer());
+            field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -83,12 +83,17 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
                 plugin.getConsoleOutput().debug(String.format("Command %s is not in plugin.yml, injecting.", mainCommand.getName()));
 
                 try {
-                    command = (PluginCommand) PluginCommand.class.getConstructors()[0].newInstance(mainCommand.getName(), plugin);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                    Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
+                    constructor.setAccessible(true);
+                    command = constructor.newInstance(mainCommand.getName(), plugin);
+                    constructor.setAccessible(false);
+                } catch (Exception e) {
                     plugin.getConsoleOutput().err(String.format("Could not inject command %s", mainCommand.getName()));
                     e.printStackTrace();
                     continue;
                 }
+
+                command.setAliases(mainCommand.getAliases());
             }
 
             mainCommand.setAliases(command.getAliases().toArray(new String[0]));
