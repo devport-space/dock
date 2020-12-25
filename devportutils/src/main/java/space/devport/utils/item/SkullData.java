@@ -49,7 +49,8 @@ public class SkullData {
         if (identifier == null)
             return item;
 
-        SkullUtils.applySkin(skullMeta, this.placeholders.parse(identifier));
+        skullMeta = SkullUtils.applySkin(skullMeta, this.placeholders.parse(identifier));
+        item.setItemMeta(skullMeta);
         return item;
     }
 

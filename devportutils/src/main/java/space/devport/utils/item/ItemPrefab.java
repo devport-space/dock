@@ -131,6 +131,7 @@ public class ItemPrefab implements Cloneable {
         return new ItemPrefab(item, devportPlugin);
     }
 
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public ItemPrefab clone() {
         return new ItemPrefab(this);

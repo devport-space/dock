@@ -1,6 +1,21 @@
 # DevportUtils
 Devport spigot utility core.
 
+## Maven
+
+```xml
+<repository>
+  <id>devport<id>
+  <url>https://nexus.pvpcraft.cz/repository/devport/</url>
+</repository>
+
+<dependency>
+  <groupId>space.devport.utils</groupId>
+  <artifactId>devportutils</artifactId>
+  <version>LATEST</version>
+</dependency>
+```
+
 ## Features
 
 ### Commands

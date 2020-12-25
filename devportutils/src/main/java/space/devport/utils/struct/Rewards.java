@@ -92,7 +92,7 @@ public class Rewards implements Cloneable {
             giveItems(player);
 
             // Inform - to player
-            inform.setPlaceholders(placeholders).send(player);
+            inform.setPlaceholders(placeholders).sendTo(player);
             inform.pull();
         }
 
@@ -105,7 +105,7 @@ public class Rewards implements Cloneable {
     public void sendBroadcast() {
         // Broadcast - to all players
         broadcast.setPlaceholders(placeholders);
-        Bukkit.getOnlinePlayers().forEach(broadcast::send);
+        Bukkit.getOnlinePlayers().forEach(broadcast::sendTo);
         broadcast.pull();
     }
 

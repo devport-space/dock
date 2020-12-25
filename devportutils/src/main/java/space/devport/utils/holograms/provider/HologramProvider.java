@@ -13,9 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * In default holograms will not persist and only exist as long as they're registered here.
- */
 public abstract class HologramProvider {
 
     protected final DevportPlugin plugin;
