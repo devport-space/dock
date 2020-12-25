@@ -4,11 +4,9 @@ import com.google.common.base.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.utility.FastUUID;
-import space.devport.utils.utility.LocationUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +38,7 @@ public abstract class HologramProvider {
         else storage.load();
 
         for (String id : storage.getFileConfiguration().getKeys(false)) {
-            Location location = LocationUtil.locationFromString(storage.getFileConfiguration().getString(id));
+            Location location = plugin.getLocationUtil().locationFromString(storage.getFileConfiguration().getString(id));
             addHologram(id, location);
         }
 
@@ -58,12 +56,13 @@ public abstract class HologramProvider {
         purgeNonexistent();
 
         for (String id : registeredHolograms) {
-            String locationString = LocationUtil.locationToString(getLocation(id));
+            String locationString = plugin.getLocationUtil().locationToString(getLocation(id));
 
             if (Strings.isNullOrEmpty(locationString)) {
-                ConsoleOutput.getInstance().warn("Could not save hologram " + id + ", it's location is invalid.");
+                plugin.getConsoleOutput().warn("Could not save hologram " + id + ", it's location is invalid.");
                 continue;
             }
+
 
             storage.getFileConfiguration().set(id, locationString);
         }

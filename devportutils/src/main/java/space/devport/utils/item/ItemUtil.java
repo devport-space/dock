@@ -1,21 +1,26 @@
 package space.devport.utils.item;
 
-import lombok.experimental.UtilityClass;
 import org.bukkit.inventory.ItemStack;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.version.VersionManager;
 import space.devport.utils.version.api.ICompound;
 
 import java.util.Set;
 
-@UtilityClass
 public class ItemUtil {
+
+    private final DevportPlugin plugin;
+
+    public ItemUtil(DevportPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     /**
      * Get ItemStack NBT compound.
      */
     public ICompound getCompound(ItemStack item) {
-        return VersionManager.fetchCompoundFactory().of(item);
+        return plugin.getManager(VersionManager.class).getCompoundFactory().of(item);
     }
 
     /**

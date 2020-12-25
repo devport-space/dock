@@ -2,7 +2,6 @@ package space.devport.utils.commands.struct;
 
 import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,15 +12,9 @@ import space.devport.utils.UsageFlag;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.text.message.Message;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-@NoArgsConstructor
 public class Preconditions {
-
     @Getter
     @Setter
     private boolean operator = false;
@@ -92,16 +85,7 @@ public class Preconditions {
         return this;
     }
 
-    /**
-     * Add a CommandSender additional check.
-     * If the check returned false, send a message from LanguageManager by key {@param errorMessageKey} to sender.
-     */
-    @NotNull
-    public <T extends CommandSender> Preconditions withCheck(@NotNull PreconditionCheck<T> check, @NotNull Class<T> clazz, @NotNull String errorMessageKey) {
-        Message errorMessage = DevportPlugin.getInstance().use(UsageFlag.LANGUAGE) ? DevportPlugin.getInstance().getManager(LanguageManager.class).get(errorMessageKey) : new Message("&cAdditional checks didn't pass.");
-        this.checks.add(new CheckWrapper<>(check, errorMessage, clazz));
-        return this;
-    }
+    private final DevportPlugin plugin;
 
     /**
      * Permissions are checked with an OR scheme ( has to have at least one of them )
@@ -111,20 +95,8 @@ public class Preconditions {
         return this;
     }
 
-    /**
-     * Run through added checks and send a message if set and silent is false.
-     */
-    public boolean checkAdditional(CommandSender sender, boolean... silent) {
-        for (CheckWrapper<?> check : checks) {
-            if (!check.verify(sender)) {
-                if (silent.length > 0 && !silent[0])
-                    check.getErrorMessage()
-                            .parseWith(DevportPlugin.getInstance().getGlobalPlaceholders())
-                            .send(sender);
-                return false;
-            }
-        }
-        return true;
+    public Preconditions(DevportPlugin plugin) {
+        this.plugin = plugin;
     }
 
     /**
@@ -144,4 +116,32 @@ public class Preconditions {
             return !consoleOnly;
         } else return !playerOnly;
     }
+
+    /**
+     * Add a CommandSender additional check.
+     * If the check returned false, send a message from LanguageManager by key {@param errorMessageKey} to sender.
+     */
+    @NotNull
+    public <T extends CommandSender> Preconditions withCheck(@NotNull PreconditionCheck<T> check, @NotNull Class<T> clazz, @NotNull String errorMessageKey) {
+        Message errorMessage = plugin.use(UsageFlag.LANGUAGE) ? plugin.getManager(LanguageManager.class).get(errorMessageKey) : new Message("&cAdditional checks didn't pass.");
+        this.checks.add(new CheckWrapper<>(check, errorMessage, clazz));
+        return this;
+    }
+
+    /**
+     * Run through added checks and send a message if set and silent is false.
+     */
+    public boolean checkAdditional(CommandSender sender, boolean... silent) {
+        for (CheckWrapper<?> check : checks) {
+            if (!check.verify(sender)) {
+                if (silent.length > 0 && !silent[0])
+                    check.getErrorMessage()
+                            .parseWith(plugin.getGlobalPlaceholders())
+                            .send(sender);
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

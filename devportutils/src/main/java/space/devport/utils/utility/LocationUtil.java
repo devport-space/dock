@@ -1,19 +1,27 @@
 package space.devport.utils.utility;
 
 import com.google.common.base.Strings;
-import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
+import space.devport.utils.DevportPlugin;
 
 /**
  * Static util class to assist location related operations.
  */
-@UtilityClass
 public class LocationUtil {
 
     public String LOCATION_DELIMITER = ";";
+    private final ConsoleOutput consoleOutput;
+
+    public LocationUtil(ConsoleOutput consoleOutput) {
+        this.consoleOutput = consoleOutput;
+    }
+
+    public LocationUtil(DevportPlugin devportPlugin) {
+        this.consoleOutput = devportPlugin.getConsoleOutput();
+    }
 
     /**
      * Parses a location to string using the default location delimiter.
@@ -37,12 +45,12 @@ public class LocationUtil {
     public String locationToString(@Nullable Location location, @Nullable String delimiter) {
 
         if (location == null) {
-            ConsoleOutput.getInstance().err("Could not parse location to string, location is null.");
+            consoleOutput.err("Could not parse location to string, location is null.");
             return null;
         }
 
         if (location.getWorld() == null) {
-            ConsoleOutput.getInstance().err("Could not parse location to string, world is null.");
+            consoleOutput.err("Could not parse location to string, world is null.");
             return null;
         }
 
@@ -81,7 +89,7 @@ public class LocationUtil {
         String[] arr = locationString.split(delimiter);
 
         if (arr.length < 4) {
-            ConsoleOutput.getInstance().err("Could not parse a location from " + locationString + ", too few parameters.");
+            consoleOutput.err("Could not parse a location from " + locationString + ", too few parameters.");
             return null;
         }
 
@@ -91,9 +99,9 @@ public class LocationUtil {
             else
                 return new Location(null, Double.parseDouble(arr[1]), Double.parseDouble(arr[2]), Double.parseDouble(arr[3]));
         } catch (NumberFormatException e) {
-            ConsoleOutput.getInstance().err("Could not parse a location from " + locationString + ", parameter not a number.");
+            consoleOutput.err("Could not parse a location from " + locationString + ", parameter not a number.");
         } catch (NullPointerException e1) {
-            ConsoleOutput.getInstance().err("Could not parse a location from " + locationString + ", parameter(s) missing.");
+            consoleOutput.err("Could not parse a location from " + locationString + ", parameter(s) missing.");
         }
 
         return null;

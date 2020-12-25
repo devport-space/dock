@@ -9,23 +9,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.item.nbt.NBTContainer;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
+import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.version.api.ICompound;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ItemPrefab implements Cloneable {
 
@@ -37,6 +30,9 @@ public class ItemPrefab implements Cloneable {
 
     @Getter
     private XMaterial material;
+
+    @Getter
+    private DevportPlugin devportPlugin;
 
     @Getter
     private Amount amount = new Amount(1);
@@ -75,9 +71,10 @@ public class ItemPrefab implements Cloneable {
         ItemStack apply(ItemStack item);
     }
 
-    private ItemPrefab(@NotNull XMaterial material) {
+    private ItemPrefab(@NotNull XMaterial material, DevportPlugin devportPlugin) {
         this.material = material;
-        this.placeholders.copy(DevportPlugin.getInstance().getGlobalPlaceholders());
+        this.devportPlugin = devportPlugin;
+        this.placeholders.copy(devportPlugin.getGlobalPlaceholders());
     }
 
     private ItemPrefab(ItemPrefab prefab) {
@@ -93,9 +90,10 @@ public class ItemPrefab implements Cloneable {
 
         this.skullData = new SkullData(prefab.getSkullData());
         this.placeholders.copy(prefab.getPlaceholders());
+        this.devportPlugin = prefab.getDevportPlugin();
     }
 
-    private ItemPrefab(@NotNull ItemStack item) {
+    private ItemPrefab(@NotNull ItemStack item, DevportPlugin devportPlugin) {
         this.material = XMaterial.matchXMaterial(item.getType());
         this.amount = new Amount(item.getAmount());
 
@@ -110,26 +108,27 @@ public class ItemPrefab implements Cloneable {
         this.enchants.addAll(Enchant.from(meta));
         this.flags.addAll(meta.getItemFlags());
 
-        ICompound compound = ItemUtil.getCompound(item);
+        ICompound compound = devportPlugin.getItemUtil().getCompound(item);
         for (String key : compound.getKeys()) {
             if (!FILTERED_NBT.contains(key))
                 this.nbt.put(key, TypeUtil.containValue(compound, key));
         }
 
         this.skullData = SkullData.readSkullTexture(item);
-        this.placeholders.copy(DevportPlugin.getInstance().getGlobalPlaceholders());
+        this.placeholders.copy(devportPlugin.getGlobalPlaceholders());
+        this.devportPlugin = devportPlugin;
     }
 
-    public static ItemPrefab createNew(@NotNull XMaterial material) {
-        return new ItemPrefab(material);
+    public static ItemPrefab createNew(@NotNull XMaterial material, DevportPlugin devportPlugin) {
+        return new ItemPrefab(material, devportPlugin);
     }
 
-    public static ItemPrefab createNew(@NotNull Material material) {
-        return new ItemPrefab(XMaterial.matchXMaterial(material));
+    public static ItemPrefab createNew(@NotNull Material material, DevportPlugin devportPlugin) {
+        return new ItemPrefab(XMaterial.matchXMaterial(material), devportPlugin);
     }
 
-    public static ItemPrefab of(@NotNull ItemStack item) {
-        return new ItemPrefab(item);
+    public static ItemPrefab of(@NotNull ItemStack item, DevportPlugin devportPlugin) {
+        return new ItemPrefab(item, devportPlugin);
     }
 
     @Override
@@ -181,7 +180,7 @@ public class ItemPrefab implements Cloneable {
 
         // NBT
         if (!this.nbt.isEmpty()) {
-            ICompound compound = ItemUtil.getCompound(item);
+            ICompound compound = devportPlugin.getItemUtil().getCompound(item);
 
             for (Map.Entry<String, NBTContainer> entry : this.nbt.entrySet()) {
                 String key = this.placeholders.parse(entry.getKey());

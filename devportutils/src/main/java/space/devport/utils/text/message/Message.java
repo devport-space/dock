@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.DevportPlugin;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
@@ -267,8 +266,9 @@ public class Message {
     /**
      * Send a message prefixed with the DevportPlugin prefix.
      *
-     * @param sender CommandSender to send to
+     * @param //sender CommandSender to send to
      */
+    /* //FIXME: somehow get plugin here.
     public void sendPrefixed(CommandSender sender) {
 
         if (sender == null) return;
@@ -278,7 +278,7 @@ public class Message {
             String message = StringUtil.color((prefix == null ? "" : prefix) + toString());
             sender.sendMessage(message == null ? "" : message);
         }
-    }
+    }*/
 
     public Message map(Function<String, String> action) {
         this.message = this.message.stream().map(action).collect(Collectors.toList());

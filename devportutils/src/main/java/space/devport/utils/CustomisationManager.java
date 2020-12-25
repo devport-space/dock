@@ -25,12 +25,12 @@ public class CustomisationManager extends DevportManager {
 
     @NotNull
     public MenuBuilder getMenuBuilder(String name) {
-        return this.loadedMenus.getOrDefault(name, new MenuBuilder());
+        return this.loadedMenus.getOrDefault(name, new MenuBuilder(plugin));
     }
 
     @NotNull
     public ItemBuilder getItemBuilder(String name) {
-        return this.loadedItems.getOrDefault(name, new ItemBuilder(Material.AIR));
+        return this.loadedItems.getOrDefault(name, new ItemBuilder(Material.AIR, plugin));
     }
 
     @Override

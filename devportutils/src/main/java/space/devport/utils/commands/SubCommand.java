@@ -4,8 +4,9 @@ import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.commands.struct.ArgumentRange;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
+import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.text.message.Message;
 
@@ -17,8 +18,8 @@ public abstract class SubCommand extends AbstractCommand {
     @Getter
     private MainCommand parent;
 
-    public SubCommand(String name) {
-        super(name);
+    public SubCommand(String name, DevportPlugin plugin) {
+        super(name, plugin);
     }
 
     @Override

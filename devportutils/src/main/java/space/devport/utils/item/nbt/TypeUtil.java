@@ -2,11 +2,9 @@ package space.devport.utils.item.nbt;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang.ArrayUtils;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.version.api.ICompound;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -138,8 +136,6 @@ public class TypeUtil {
         TypeApplier<?> applier = APPLIERS.get(value.getClass());
         if (applier != null)
             applier.apply(compound, key, value);
-        else
-            ConsoleOutput.getInstance().err("Plugin attempted to save unsupported type " + value.getClass().getSimpleName() + " to NBT.");
     }
 
     public <T> T getValue(ICompound compound, String key, Class<T> clazz) {

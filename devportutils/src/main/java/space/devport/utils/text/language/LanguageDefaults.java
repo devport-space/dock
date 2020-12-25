@@ -1,6 +1,5 @@
 package space.devport.utils.text.language;
 
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 
 public abstract class LanguageDefaults {
@@ -9,7 +8,7 @@ public abstract class LanguageDefaults {
 
     public LanguageDefaults(DevportPlugin plugin) {
         if (!plugin.isRegistered(LanguageManager.class)) {
-            ConsoleOutput.getInstance().err("Attempted to register LanguageDefaults when Language is not used.");
+            plugin.getConsoleOutput().err("Attempted to register LanguageDefaults when Language is not used.");
             this.languageManager = null;
             return;
         }

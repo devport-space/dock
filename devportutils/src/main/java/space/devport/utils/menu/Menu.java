@@ -43,8 +43,10 @@ public class Menu implements MenuListener {
     @Getter
     private boolean open = false;
 
-    public Menu(String name) {
-        this(name, new MenuBuilder());
+    private final DevportPlugin devportPlugin;
+
+    public Menu(String name, DevportPlugin devportPlugin) {
+        this(name, new MenuBuilder(devportPlugin));
     }
 
     public Menu(String name, MenuBuilder builder) {
@@ -55,6 +57,7 @@ public class Menu implements MenuListener {
 
         this.items = builder.getItems();
         this.inventory = builder.getInventory();
+        devportPlugin = builder.getDevportPlugin();
     }
 
     // Open the gui for a player
@@ -79,7 +82,7 @@ public class Menu implements MenuListener {
         if (!openEvent.isCancelled()) {
             this.player = player;
 
-            DevportPlugin.getInstance().getManager(MenuManager.class).addMenu(this);
+            devportPlugin.getManager(MenuManager.class).addMenu(this);
 
             player.openInventory(inventory);
 
@@ -119,7 +122,7 @@ public class Menu implements MenuListener {
 
             player.closeInventory();
 
-            DevportPlugin.getInstance().getManager(MenuManager.class).removeMenu(this);
+            devportPlugin.getManager(MenuManager.class).removeMenu(this);
 
             onClose();
 

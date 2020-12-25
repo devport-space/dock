@@ -1,25 +1,27 @@
 package space.devport.utils.menu;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
-import space.devport.utils.item.ItemBuilder;
-import space.devport.utils.text.Placeholders;
-import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.ConsoleOutput;
+import space.devport.utils.DevportPlugin;
+import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.menu.item.MatrixItem;
 import space.devport.utils.menu.item.MenuItem;
+import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.message.CachedMessage;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@NoArgsConstructor
 public class MenuBuilder {
 
     @Getter
     private String name;
+
+    @Getter
+    private DevportPlugin devportPlugin;
 
     @Getter
     private CachedMessage title = new CachedMessage("My Simple GUI");
@@ -51,12 +53,18 @@ public class MenuBuilder {
     public MenuBuilder(String name, MenuBuilder builder) {
         this(builder);
         this.name = name;
+        this.devportPlugin = builder.devportPlugin;
+    }
+
+    public MenuBuilder(DevportPlugin devportPlugin) {
+        this.devportPlugin = devportPlugin;
     }
 
     public MenuBuilder(MenuBuilder builder) {
         this.slots = builder.getSlots();
         this.title = builder.getTitle();
         this.items = builder.getItems();
+        this.devportPlugin = builder.getDevportPlugin();
 
         this.buildMatrix = builder.getBuildMatrix();
         this.clickDelay = builder.getClickDelay();
@@ -81,7 +89,7 @@ public class MenuBuilder {
      * Place items by matrix into the items list.
      */
     public MenuBuilder construct() {
-
+        ConsoleOutput console = devportPlugin.getConsoleOutput();
         // Slots
 
         int required = buildMatrix.length * 9;
@@ -94,7 +102,7 @@ public class MenuBuilder {
 
         if (title.length() > 32) {
             title = title.substring(0, 31);
-            ConsoleOutput.getInstance().warn("Inventory title " + this.title + " is too long, cutting to 32.");
+            console.warn("Inventory title " + this.title + " is too long, cutting to 32.");
         }
 
         inventory = Bukkit.createInventory(null, slots, title);
@@ -102,7 +110,7 @@ public class MenuBuilder {
         // Build scheme
 
         if (buildMatrix.length == 0) {
-            ConsoleOutput.getInstance().err("Could not construct menu " + name + ", there's no matrix.");
+            console.err("Could not construct menu " + name + ", there's no matrix.");
             return null;
         }
 

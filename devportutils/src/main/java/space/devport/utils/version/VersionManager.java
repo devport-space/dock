@@ -2,7 +2,6 @@ package space.devport.utils.version;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.utility.reflection.Reflection;
@@ -24,14 +23,6 @@ public class VersionManager extends DevportManager {
         super(plugin);
     }
 
-    public static ICompoundFactory fetchCompoundFactory() {
-        return DevportPlugin.getInstance().getManager(VersionManager.class).getCompoundFactory();
-    }
-
-    public static IVersionUtility fetchVersionUtility() {
-        return DevportPlugin.getInstance().getManager(VersionManager.class).getVersionUtility();
-    }
-
     @Override
     public void onLoad() {
         load();
@@ -49,11 +40,11 @@ public class VersionManager extends DevportManager {
     private <T> boolean load(@NotNull String packageVersion, @NotNull String subClassName, @NotNull Class<T> interfaceClazz, @NotNull Consumer<T> store) {
         try {
             String path = getClass().getPackage().getName() + "." + packageVersion + "." + subClassName;
-            ConsoleOutput.getInstance().debug(path);
+            consoleOutput.debug(path);
             Class<?> clazz = Class.forName(path);
 
             if (!interfaceClazz.isAssignableFrom(clazz)) {
-                ConsoleOutput.getInstance().err("Subclass " + subClassName + " is not an implementation of " + interfaceClazz.getSimpleName() + ", cannot use it.");
+                consoleOutput.err("Subclass " + subClassName + " is not an implementation of " + interfaceClazz.getSimpleName() + ", cannot use it.");
                 return false;
             }
 
@@ -77,8 +68,8 @@ public class VersionManager extends DevportManager {
         String version = ServerVersion.getNmsVersion();
 
         if (load(version))
-            ConsoleOutput.getInstance().info("Loaded version dependent modules for " + version);
+            consoleOutput.info("Loaded version dependent modules for " + version);
         else
-            ConsoleOutput.getInstance().err("Could not load version dependent modules for this version. Some features might not work.");
+            consoleOutput.err("Could not load version dependent modules for this version. Some features might not work.");
     }
 }

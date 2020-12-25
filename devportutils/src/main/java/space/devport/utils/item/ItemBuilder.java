@@ -3,7 +3,6 @@ package space.devport.utils.item;
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -11,17 +10,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class to handle Item construction.
@@ -31,7 +26,6 @@ import java.util.Map;
  * @author Devport Team
  */
 @Deprecated
-@NoArgsConstructor
 public class ItemBuilder {
 
     @Getter
@@ -73,13 +67,17 @@ public class ItemBuilder {
     @Getter
     private transient Placeholders placeholders = new Placeholders();
 
+    @Getter
+    private final DevportPlugin devportPlugin;
+
     /**
      * Constructor with a material.
      *
      * @param material Material to use
      */
-    public ItemBuilder(@NotNull Material material) {
+    public ItemBuilder(@NotNull Material material, DevportPlugin devportPlugin) {
         this.material = material;
+        this.devportPlugin = devportPlugin;
     }
 
     /**
@@ -99,6 +97,7 @@ public class ItemBuilder {
         this.NBT = new HashMap<>(builder.getNBT());
         this.lore = builder.getLore();
         this.skullData = builder.getSkullData() == null ? null : new SkullData(builder.getSkullData());
+        this.devportPlugin = builder.devportPlugin;
     }
 
     /**
@@ -106,9 +105,10 @@ public class ItemBuilder {
      *
      * @param item Item to convert
      */
-    public ItemBuilder(@NotNull ItemStack item) {
+    public ItemBuilder(@NotNull ItemStack item, DevportPlugin devportPlugin) {
         this.material = item.getType();
         this.damage = (byte) item.getDurability();
+        this.devportPlugin = devportPlugin;
 
         this.amount = new Amount(item.getAmount());
 
@@ -197,7 +197,6 @@ public class ItemBuilder {
         ItemMeta meta = item.getItemMeta();
 
         if (meta == null) {
-            ConsoleOutput.getInstance().err("Could not build Item, there's not ItemMeta on a fresh ItemStack.");
             return item;
         }
 
@@ -245,10 +244,9 @@ public class ItemBuilder {
 
                 ItemStack i = ItemNBTEditor.writeNBT(item, key, NBT.get(key));
 
-                if (i == null)
-                    ConsoleOutput.getInstance().warn("Couldn't write NBT to item.");
-                else
+                if (i != null) {
                     item = i;
+                }
             }
 
         // Skull data

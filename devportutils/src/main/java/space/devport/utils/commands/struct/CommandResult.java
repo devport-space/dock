@@ -51,13 +51,13 @@ public enum CommandResult {
         this.path = path;
     }
 
-    public void sendMessage(CommandSender sender) {
-        getMessage().send(sender);
+    public void sendMessage(CommandSender sender, DevportPlugin devportPlugin) {
+        getMessage(devportPlugin).send(sender);
     }
 
-    public Message getMessage() {
-        if (defaultMessage && message == null && DevportPlugin.getInstance().use(UsageFlag.LANGUAGE)) {
-            message = DevportPlugin.getInstance().getManager(LanguageManager.class).get(path);
+    public Message getMessage(DevportPlugin devportPlugin) {
+        if (defaultMessage && message == null && devportPlugin.use(UsageFlag.LANGUAGE)) {
+            message = devportPlugin.getManager(LanguageManager.class).get(path);
             defaultMessage = false;
         }
         return new Message(message);

@@ -12,7 +12,6 @@ import com.sainttx.holograms.api.line.TextLine;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.holograms.provider.HologramProvider;
 
@@ -27,7 +26,7 @@ public class Holograms extends HologramProvider {
 
         Plugin hologramsPlugin = plugin.getPluginManager().getPlugin("Holograms");
         if (hologramsPlugin == null) {
-            ConsoleOutput.getInstance().err("Tried to hook into Holograms when it's not enabled.");
+            plugin.getConsoleOutput().err("Tried to hook into Holograms when it's not enabled.");
             this.hologramManager = null;
             return;
         }

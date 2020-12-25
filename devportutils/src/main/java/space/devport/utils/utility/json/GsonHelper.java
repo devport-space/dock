@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
+import space.devport.utils.DevportPlugin;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -26,16 +27,20 @@ import java.util.concurrent.CompletionException;
 public class GsonHelper {
 
     private final Gson gson;
+    private final DevportPlugin devportPlugin;
+    private final ConsoleOutput console;
 
-    public GsonHelper(boolean prettyPrinting) {
+    public GsonHelper(boolean prettyPrinting, DevportPlugin devportPlugin) {
+        this.devportPlugin = devportPlugin;
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (prettyPrinting)
             gsonBuilder.setPrettyPrinting();
         this.gson = gsonBuilder.create();
+        this.console = devportPlugin.getConsoleOutput();
     }
 
-    public GsonHelper() {
-        this(false);
+    public GsonHelper(DevportPlugin devportPlugin) {
+        this(false, devportPlugin);
     }
 
     public static <T> Type mapList(@NotNull Class<T> innerType) {
@@ -63,8 +68,8 @@ public class GsonHelper {
             channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
             size = channel.size();
         } catch (IOException e) {
-            ConsoleOutput.getInstance().err("Could not open an asynchronous file channel.");
-            if (ConsoleOutput.getInstance().isDebug())
+            console.err("Could not open an asynchronous file channel.");
+            if (console.isDebug())
                 e.printStackTrace();
             return CompletableFuture.supplyAsync(() -> {
                 throw new CompletionException(e);
@@ -206,8 +211,8 @@ public class GsonHelper {
         try {
             channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
         } catch (IOException e) {
-            ConsoleOutput.getInstance().err("Could not open an asynchronous file channel.");
-            if (ConsoleOutput.getInstance().isDebug())
+            console.err("Could not open an asynchronous file channel.");
+            if (console.isDebug())
                 e.printStackTrace();
             return CompletableFuture.supplyAsync(() -> {
                 throw new CompletionException(e);

@@ -29,7 +29,7 @@ public class MenuItem {
 
     @Getter
     @Setter
-    private Rewards rewards = new Rewards();
+    private Rewards rewards;
 
     @Getter
     @Setter
@@ -44,6 +44,7 @@ public class MenuItem {
 
         this.slot = slot;
         this.itemBuilder = itemBuilder;
+        rewards = new Rewards(itemBuilder.getDevportPlugin());
     }
 
     public MenuItem(@NotNull MenuItem item) {

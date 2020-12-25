@@ -5,10 +5,10 @@ import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.configuration.Configuration;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.commands.struct.CommandResult;
+import space.devport.utils.configuration.Configuration;
 import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class LanguageManager extends DevportManager {
         if (setInternalDefaults) {
             for (CommandResult result : CommandResult.values()) {
                 if (result.isDefaultMessage())
-                    addDefault(result.getPath(), result.getMessage().toString());
+                    addDefault(result.getPath(), result.getMessage(plugin).toString());
             }
 
             addDefault("Commands.Reload", "&7Done... reload took &f%time%&7ms.");

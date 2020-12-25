@@ -18,11 +18,13 @@ import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.holograms.HologramManager;
+import space.devport.utils.item.ItemUtil;
 import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.DependencyUtil;
+import space.devport.utils.utility.LocationUtil;
 import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerType;
@@ -33,9 +35,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public abstract class DevportPlugin extends JavaPlugin {
-
-    @Getter
-    private static DevportPlugin instance;
 
     @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
@@ -56,6 +55,12 @@ public abstract class DevportPlugin extends JavaPlugin {
     private final Random random = new Random();
 
     @Getter
+    private LocationUtil locationUtil;
+
+    @Getter
+    private ParseUtil parseUtil;
+
+    @Getter
     private final Placeholders globalPlaceholders = new Placeholders();
 
     @Getter
@@ -69,12 +74,17 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public abstract UsageFlag[] usageFlags();
 
+    @Getter
+    private ItemUtil itemUtil;
+
     @Override
     public void onLoad() {
-        instance = getPlugin(this.getClass());
 
         // Setup Console Output
-        consoleOutput = ConsoleOutput.getInstance(this);
+        consoleOutput = new ConsoleOutput(this);
+        itemUtil = new ItemUtil(this);
+        locationUtil = new LocationUtil(this);
+        parseUtil = new ParseUtil(this);
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
@@ -144,7 +154,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName())
-                .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.getOrDefault(player::getName, "null")), OfflinePlayer.class);
+                .addParser((str, player) -> str.replaceAll("(?i)%player%", parseUtil.getOrDefault(player::getName, "null")), OfflinePlayer.class);
 
         callManagerAction(DevportManager::preEnable);
 
@@ -220,6 +230,7 @@ public abstract class DevportPlugin extends JavaPlugin {
     public boolean isRegistered(Class<? extends DevportManager> clazz) {
         return this.managers.containsKey(clazz);
     }
+
 
     public <T extends DevportManager> T getManager(Class<T> clazz) {
         DevportManager manager = this.managers.get(clazz);

@@ -22,19 +22,6 @@ public class ConsoleOutput {
 
     private static ConsoleOutput instance;
 
-    @NotNull
-    public static ConsoleOutput getInstance() {
-        return instance == null ? new ConsoleOutput() : instance;
-    }
-
-    @NotNull
-    public static ConsoleOutput getInstance(JavaPlugin plugin) {
-        if (instance != null) {
-            instance.setPlugin(plugin);
-            return instance;
-        } else return new ConsoleOutput(plugin);
-    }
-
     @Getter
     @Setter
     private boolean debug = false;
@@ -60,7 +47,7 @@ public class ConsoleOutput {
         instance = this;
     }
 
-    private ConsoleOutput(JavaPlugin plugin) {
+    ConsoleOutput(JavaPlugin plugin) {
         this();
         setPlugin(plugin);
     }

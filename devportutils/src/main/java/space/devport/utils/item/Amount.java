@@ -4,8 +4,6 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
-import space.devport.utils.utility.ParseUtil;
 
 import java.util.Random;
 
@@ -71,16 +69,15 @@ public class Amount {
             String[] arr = str.split("-");
 
             if (arr.length != 2) {
-                ConsoleOutput.getInstance().warn("Could not parse Amount from " + str + ", incorrect number of parameters in a dynamic syntax.");
                 return null;
             }
 
-            double low = ParseUtil.parseDouble(arr[0]);
-            double high = ParseUtil.parseDouble(arr[1]);
+            double low = Double.parseDouble(arr[0]);
+            double high = Double.parseDouble(arr[1]);
 
             return new Amount(low, high);
         } else {
-            return new Amount(ParseUtil.parseDouble(str));
+            return new Amount(Double.parseDouble(str));
         }
     }
 

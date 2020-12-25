@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
@@ -26,8 +26,13 @@ public class JsonMessage extends Message {
     private static final Gson gson = new GsonBuilder().create();
 
     private boolean newLine = true;
+    private final DevportPlugin devportPlugin;
 
     private final LinkedList<JsonArray> lines = new LinkedList<>();
+
+    public JsonMessage(DevportPlugin devportPlugin) {
+        this.devportPlugin = devportPlugin;
+    }
 
     public void clear() {
         lines.clear();
@@ -251,11 +256,11 @@ public class JsonMessage extends Message {
     private void sendJson(@NotNull Player player, @NotNull String content) {
 
         if (ServerVersion.isCurrentBelow(ServerVersion.v1_8)) {
-            ConsoleOutput.getInstance().warn("Json messages are not supported on versions below 1.8");
+            devportPlugin.getConsoleOutput().warn("Json messages are not supported on versions below 1.8");
             return;
         }
 
-        VersionManager.fetchVersionUtility().sendJsonMessage(player, content);
+        devportPlugin.getManager(VersionManager.class).getVersionUtility().sendJsonMessage(player, content);
     }
 
     @Override

@@ -4,8 +4,9 @@ import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.commands.struct.ArgumentRange;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
+import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.Message;
@@ -29,8 +30,8 @@ public abstract class MainCommand extends AbstractCommand {
     @Getter
     private String lineFormat;
 
-    public MainCommand(String name) {
-        super(name);
+    public MainCommand(String name, DevportPlugin devportPlugin) {
+        super(name, devportPlugin);
 
         this.header = new Message("&8&m        &r " + plugin.getColor() + "%pluginName% &7v&f%version% &8&m        &r");
         this.footer = new Message();

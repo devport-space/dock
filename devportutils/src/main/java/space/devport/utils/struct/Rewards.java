@@ -2,19 +2,18 @@ package space.devport.utils.struct;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import me.realized.tokenmanager.TokenManagerPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportPlugin;
+import space.devport.utils.economy.EconomyManager;
+import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemBuilder;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
 import space.devport.utils.utility.DependencyUtil;
-import space.devport.utils.DevportPlugin;
-import space.devport.utils.economy.EconomyManager;
-import space.devport.utils.item.Amount;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +24,9 @@ import java.util.Random;
  *
  * @author Wertik1206
  */
-@NoArgsConstructor
 public class Rewards implements Cloneable {
 
+    private DevportPlugin devportPlugin;
     @Getter
     private Amount tokens = new Amount(0);
 
@@ -61,6 +60,11 @@ public class Rewards implements Cloneable {
         this.broadcast = new CachedMessage(rewards.getBroadcast());
         this.commands = new ArrayList<>(rewards.getCommands());
         this.placeholders = new Placeholders(rewards.getPlaceholders());
+        this.devportPlugin = rewards.devportPlugin;
+    }
+
+    public Rewards(DevportPlugin devportPlugin) {
+        this.devportPlugin = devportPlugin;
     }
 
     public void giveAll() {
@@ -73,7 +77,7 @@ public class Rewards implements Cloneable {
     // Reward a player
     public void give(@Nullable Player player, boolean... broadcast) {
 
-        placeholders.copy(DevportPlugin.getInstance().getGlobalPlaceholders());
+        placeholders.copy(devportPlugin.getGlobalPlaceholders());
 
         if (player != null) {
             placeholders.addContext(new Context().fromPlayer(player));
@@ -117,8 +121,8 @@ public class Rewards implements Cloneable {
         if (player == null) return;
 
         double money = this.money.getDouble();
-        if (money != 0 && DependencyUtil.isEnabled("Vault") && DevportPlugin.getInstance().isRegistered(EconomyManager.class))
-            DevportPlugin.getInstance().getManager(EconomyManager.class).getEconomy().depositPlayer(player, money);
+        if (money != 0 && DependencyUtil.isEnabled("Vault") && devportPlugin.isRegistered(EconomyManager.class))
+            devportPlugin.getManager(EconomyManager.class).getEconomy().depositPlayer(player, money);
     }
 
     public void giveItems(@Nullable Player player) {
@@ -174,12 +178,12 @@ public class Rewards implements Cloneable {
 
     // Execute command as console
     private void executeConsole(String cmd) {
-        Bukkit.getScheduler().runTask(DevportPlugin.getInstance(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim()));
+        Bukkit.getScheduler().runTask(devportPlugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim()));
     }
 
     // Execute command as player
     private void executePlayer(String cmd, Player player) {
-        Bukkit.getScheduler().runTask(DevportPlugin.getInstance(), () -> player.performCommand(cmd.trim()));
+        Bukkit.getScheduler().runTask(devportPlugin, () -> player.performCommand(cmd.trim()));
     }
 
     // Execute as player with op
