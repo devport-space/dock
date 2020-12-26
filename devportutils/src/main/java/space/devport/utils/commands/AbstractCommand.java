@@ -16,17 +16,10 @@ import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.text.message.Message;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
-
-    protected final DevportPlugin plugin;
-
-    protected final LanguageManager language;
 
     @Getter
     private final String name;
@@ -37,11 +30,16 @@ public abstract class AbstractCommand {
 
     private String[] aliases = new String[]{};
 
+    protected final DevportPlugin plugin;
+
+    protected final LanguageManager language;
+
     public AbstractCommand(DevportPlugin plugin, String name) {
         this.name = name;
+        this.preconditions = new Preconditions(plugin);
+
         this.plugin = plugin;
         this.language = plugin.getManager(LanguageManager.class);
-        preconditions = new Preconditions(plugin);
     }
 
     // This should be overridden by commands and performs the wanted action itself.
@@ -230,5 +228,18 @@ public abstract class AbstractCommand {
                 permission += "." + subCommand.getParent().getName().toLowerCase();
         }
         return permission + "." + this.getName().toLowerCase();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractCommand)) return false;
+        AbstractCommand that = (AbstractCommand) o;
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

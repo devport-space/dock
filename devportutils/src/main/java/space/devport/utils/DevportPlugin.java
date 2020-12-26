@@ -44,13 +44,22 @@ import java.util.function.Consumer;
 public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
+    protected ConsoleOutput consoleOutput;
+
+    @Getter
+    private LocationUtil locationUtil;
+
+    @Getter
+    private ParseUtil parseUtil;
+
+    @Getter
+    private ItemUtil itemUtil;
+
+    @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
 
     @Getter
     private final Set<UsageFlag> usageFlags = new HashSet<>();
-
-    @Getter
-    protected ConsoleOutput consoleOutput;
 
     @Getter
     protected Configuration configuration;
@@ -60,12 +69,6 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
     private final Random random = new Random();
-
-    @Getter
-    private LocationUtil locationUtil;
-
-    @Getter
-    private ParseUtil parseUtil;
 
     @Getter
     private final Placeholders globalPlaceholders = new Placeholders();
@@ -80,9 +83,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     public abstract void onReload();
 
     public abstract UsageFlag[] usageFlags();
-
-    @Getter
-    private ItemUtil itemUtil;
 
     @Override
     public void onLoad() {
@@ -274,8 +274,8 @@ public abstract class DevportPlugin extends JavaPlugin {
         getPluginManager().registerEvents(listener, this);
     }
 
-    public MainCommand addMainCommand(MainCommand mainCommand) {
-        getManager(CommandManager.class).registeredCommands.add(mainCommand);
+    public MainCommand registerMainCommand(MainCommand mainCommand) {
+        getManager(CommandManager.class).registerCommand(mainCommand);
         return mainCommand;
     }
 

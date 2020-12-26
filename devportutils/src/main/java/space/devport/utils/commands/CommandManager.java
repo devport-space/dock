@@ -17,7 +17,7 @@ import java.util.List;
 
 public class CommandManager extends DevportManager implements CommandExecutor, TabCompleter {
 
-    public final List<MainCommand> registeredCommands = new ArrayList<>();
+    private final List<MainCommand> registeredCommands = new ArrayList<>();
     private final CommandMap commandMap;
 
     public CommandManager(DevportPlugin plugin) {
@@ -31,6 +31,14 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void registerCommand(MainCommand command) {
+        registeredCommands.add(command);
+    }
+
+    public boolean unregisterCommand(String name) {
+        return registeredCommands.removeIf(c -> c.getName().equals(name));
     }
 
     @Override
@@ -72,7 +80,10 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
         runCommand(sender, label, argList.toArray(new String[0]));
     }
 
-    public void registerAll() {
+    /**
+     * Register all registered commands to the server.
+     */
+    private void registerAll() {
 
         // Register commands
         for (MainCommand mainCommand : this.registeredCommands) {

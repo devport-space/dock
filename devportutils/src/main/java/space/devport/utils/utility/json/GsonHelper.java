@@ -27,20 +27,21 @@ import java.util.concurrent.CompletionException;
 public class GsonHelper {
 
     private final Gson gson;
-    private final DevportPlugin devportPlugin;
+
     private final ConsoleOutput console;
 
-    public GsonHelper(boolean prettyPrinting, DevportPlugin devportPlugin) {
-        this.devportPlugin = devportPlugin;
+    public GsonHelper(boolean prettyPrinting, DevportPlugin plugin) {
+        this.console = plugin.getConsoleOutput();
+
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (prettyPrinting)
             gsonBuilder.setPrettyPrinting();
+
         this.gson = gsonBuilder.create();
-        this.console = devportPlugin.getConsoleOutput();
     }
 
-    public GsonHelper(DevportPlugin devportPlugin) {
-        this(false, devportPlugin);
+    public GsonHelper(DevportPlugin plugin) {
+        this(false, plugin);
     }
 
     public static <T> Type mapList(@NotNull Class<T> innerType) {
@@ -60,7 +61,9 @@ public class GsonHelper {
      * Asynchronously read ByteBuffer from a file.
      */
     @NotNull
-    public CompletableFuture<ByteBuffer> read(@NotNull final Path path) {
+    public CompletableFuture<ByteBuffer> read(
+            @NotNull
+            final Path path) {
 
         AsynchronousFileChannel channel;
         long size;
@@ -131,7 +134,9 @@ public class GsonHelper {
      * @return CompletableFuture with the parsed output or null
      */
     @NotNull
-    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Class<T> clazz) {
+    public <T> CompletableFuture<T> loadAsync(
+            @NotNull
+            final String dataPath, @NotNull Class<T> clazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -155,7 +160,9 @@ public class GsonHelper {
      * @return CompletableFuture with the resulting list or null.
      */
     @NotNull
-    public <T> CompletableFuture<List<T>> loadListAsync(@NotNull final String dataPath, @NotNull Class<T> innerClazz) {
+    public <T> CompletableFuture<List<T>> loadListAsync(
+            @NotNull
+            final String dataPath, @NotNull Class<T> innerClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -179,7 +186,9 @@ public class GsonHelper {
      * @return CompletableFuture with the resulting map or null.
      */
     @NotNull
-    public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(@NotNull final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
+    public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(
+            @NotNull
+            final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -203,7 +212,11 @@ public class GsonHelper {
      * @return CompletableFuture with the number of bytes written
      */
     @NotNull
-    public <T> CompletableFuture<Void> save(@NotNull final T input, @NotNull final String dataPath) {
+    public <T> CompletableFuture<Void> save(
+            @NotNull
+            final T input,
+            @NotNull
+            final String dataPath) {
 
         Path path = Paths.get(dataPath);
 
