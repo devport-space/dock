@@ -2,16 +2,28 @@ package space.devport.utils.item;
 
 import com.cryptomorin.xseries.SkullUtils;
 import com.google.common.base.Strings;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.text.Placeholders;
 
+import java.lang.reflect.Field;
+
 public class SkullData {
 
+    private static Field blockProfileField;
+
     @Getter
-    private final String identifier;
+    @Setter
+    private String identifier;
 
     @Getter
     private final transient Placeholders placeholders;
@@ -26,16 +38,58 @@ public class SkullData {
         this.placeholders = skullData.getPlaceholders();
     }
 
-    public static String formatUrl(String input) {
-        if (Strings.isNullOrEmpty(input))
-            return input;
-
-        return input.startsWith("https://textures.minecraft.net/texture/") || input.startsWith("http://textures.minecraft.net/texture/") ? input : "https://textures.minecraft.net/texture/" + input;
+    @Nullable
+    public static SkullData fromString(@Nullable String str) {
+        return Strings.isNullOrEmpty(str) ? null : new SkullData(str);
     }
 
-    public SkullData parseWith(Placeholders placeholders) {
-        this.placeholders.copy(placeholders);
-        return this;
+    @Nullable
+    public static SkullData readSkullTexture(ItemStack item) {
+
+        if (item == null || item.getItemMeta() == null || !(item.getItemMeta() instanceof SkullMeta))
+            return null;
+
+        return new SkullData(SkullUtils.getSkinValue(item.getItemMeta()));
+    }
+
+    @Nullable
+    public static SkullData readSkullTexture(Block block) {
+        return block == null ? null : fromString(base64fromBlock(block));
+    }
+
+    @Nullable
+    public static String base64fromBlock(@NotNull Block block) {
+        BlockState state = block.getState();
+
+        if (!(state instanceof Skull))
+            return null;
+
+        Skull skull = (Skull) state;
+        return base64FromBlockState(skull);
+    }
+
+    @Nullable
+    private static String base64FromBlockState(Skull skull) {
+        try {
+            if (blockProfileField == null) {
+                blockProfileField = skull.getClass().getDeclaredField("profile");
+                blockProfileField.setAccessible(true);
+            }
+
+            Object obj = blockProfileField.get(skull);
+
+            if (!(obj instanceof GameProfile))
+                return null;
+
+            GameProfile profile = (GameProfile) obj;
+
+            return profile.getProperties().get("textures").stream()
+                    .filter(p -> p.getName().equals("textures"))
+                    .findAny().map(Property::getValue).orElse(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public ItemStack apply(ItemStack item) {
@@ -54,33 +108,13 @@ public class SkullData {
         return item;
     }
 
-    @Nullable
-    public static SkullData fromString(@Nullable String str) {
-
-        if (Strings.isNullOrEmpty(str))
-            return null;
-
-        if (str.startsWith("token:"))
-            str = formatUrl(str.replace("token:", ""));
-        else if (str.startsWith("url:"))
-            str = str.replace("url:", "");
-        else if (str.startsWith("owner:"))
-            str = str.replace("owner:", "");
-
-        return new SkullData(str);
+    public SkullData parseWith(Placeholders placeholders) {
+        this.placeholders.copy(placeholders);
+        return this;
     }
 
     @Override
     public String toString() {
         return identifier == null ? "" : identifier;
-    }
-
-    @Nullable
-    public static SkullData readSkullTexture(ItemStack item) {
-
-        if (item == null || item.getItemMeta() == null || !(item.getItemMeta() instanceof SkullMeta))
-            return null;
-
-        return new SkullData(SkullUtils.getSkinValue(item.getItemMeta()));
     }
 }
