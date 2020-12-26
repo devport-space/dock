@@ -18,8 +18,8 @@ public abstract class SubCommand extends AbstractCommand {
     @Getter
     private MainCommand parent;
 
-    public SubCommand(String name, DevportPlugin plugin) {
-        super(name, plugin);
+    public SubCommand(DevportPlugin plugin, String name) {
+        super(plugin, name);
     }
 
     @Override

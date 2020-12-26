@@ -31,8 +31,8 @@ public abstract class MainCommand extends AbstractCommand {
     @Getter
     private String lineFormat;
 
-    public MainCommand(String name, DevportPlugin plugin) {
-        super(name, plugin);
+    public MainCommand(DevportPlugin plugin, String name) {
+        super(plugin, name);
 
         this.header = new Message("&8&m        &r " + plugin.getColor() + "%pluginName% &7v&f%version% &8&m        &r");
         this.footer = new Message();

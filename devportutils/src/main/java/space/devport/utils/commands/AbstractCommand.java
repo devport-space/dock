@@ -37,7 +37,7 @@ public abstract class AbstractCommand {
 
     private String[] aliases = new String[]{};
 
-    public AbstractCommand(String name, DevportPlugin plugin) {
+    public AbstractCommand(DevportPlugin plugin, String name) {
         this.name = name;
         this.plugin = plugin;
         this.language = plugin.getManager(LanguageManager.class);
