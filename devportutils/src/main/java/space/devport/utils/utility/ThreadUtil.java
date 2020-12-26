@@ -1,13 +1,15 @@
 package space.devport.utils.utility;
 
+import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.Instant;
 
+@UtilityClass
 public class ThreadUtil {
 
-    public static Thread createThreadWithRepeatingTask(Runnable task, long delayInMillis, @Nullable String name) {
+    public Thread createRepeatingTask(Runnable task, long delayInMillis, @Nullable String name) {
         Thread thread = new Thread(() -> {
             while (true) {
                 Instant start = Instant.now();
@@ -23,8 +25,7 @@ public class ThreadUtil {
         return thread;
     }
 
-    public static Thread createThreadWithRepeatingTask(Runnable task, long delayInMillis) {
-        return createThreadWithRepeatingTask(task, delayInMillis, null);
+    public Thread createRepeatingTask(Runnable task, long delayInMillis) {
+        return createRepeatingTask(task, delayInMillis, null);
     }
-
 }
