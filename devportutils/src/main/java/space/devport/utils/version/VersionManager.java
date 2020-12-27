@@ -40,7 +40,6 @@ public class VersionManager extends DevportManager {
     private <T> boolean load(@NotNull String packageVersion, @NotNull String subClassName, @NotNull Class<T> interfaceClazz, @NotNull Consumer<T> store) {
         try {
             String path = getClass().getPackage().getName() + "." + packageVersion + "." + subClassName;
-            consoleOutput.debug(path);
             Class<?> clazz = Class.forName(path);
 
             if (!interfaceClazz.isAssignableFrom(clazz)) {
