@@ -47,9 +47,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     protected ConsoleOutput consoleOutput;
 
     @Getter
-    private LocationUtil locationUtil;
-
-    @Getter
     private ItemUtil itemUtil;
 
     @Getter
@@ -87,7 +84,6 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Setup Console Output
         this.consoleOutput = new ConsoleOutput(this);
         this.itemUtil = new ItemUtil(this);
-        this.locationUtil = new LocationUtil(this);
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));

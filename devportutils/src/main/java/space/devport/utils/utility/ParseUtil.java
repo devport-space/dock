@@ -6,8 +6,8 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.callbacks.CallbackContent;
 import space.devport.utils.callbacks.ExceptionCallback;
-import space.devport.utils.callbacks.ReasonedCallback;
 import space.devport.utils.item.Amount;
 
 import java.util.function.Supplier;
@@ -47,7 +47,7 @@ public class ParseUtil {
             return E.valueOf(clazz, str.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException e) {
             if (callback != null)
-                callback.call(e);
+                callback.call(CallbackContent.createNew(e, "input", str));
             return defaultValue;
         }
     }
@@ -63,11 +63,12 @@ public class ParseUtil {
      * @return Parsed object or {@param input} if the input is {@code null} or empty.
      */
     @Contract("null,_ -> null")
-    public static Object parseNumber(String str, @Nullable ReasonedCallback callback) {
+    public static Object parseNumber(String str, @Nullable ExceptionCallback callback) {
 
         if (Strings.isNullOrEmpty(str)) {
             if (callback != null)
-                callback.call(ReasonedCallback.CallbackReason.NULL, str);
+                callback.call(CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."),
+                        "input", str));
             return str;
         }
 
@@ -119,7 +120,7 @@ public class ParseUtil {
             return Double.parseDouble(str.trim());
         } catch (NumberFormatException | NullPointerException e) {
             if (callback != null)
-                callback.call(e);
+                callback.call(CallbackContent.createNew(e, "input", str));
             return defaultValue;
         }
     }
@@ -143,7 +144,7 @@ public class ParseUtil {
             return Integer.parseInt(str.trim());
         } catch (NumberFormatException | NullPointerException e) {
             if (callback != null)
-                callback.call(e);
+                callback.call(CallbackContent.createNew(e, "input", str));
             return defaultValue;
         }
     }
@@ -159,11 +160,12 @@ public class ParseUtil {
     }
 
     @Contract("null,null,_ -> null")
-    public Vector parseVector(String str, @Nullable Vector defaultValue, @Nullable ReasonedCallback callback) {
+    public Vector parseVector(String str, @Nullable Vector defaultValue, @Nullable ExceptionCallback callback) {
 
         if (Strings.isNullOrEmpty(str)) {
             if (callback != null)
-                callback.call(ReasonedCallback.CallbackReason.NULL, str);
+                callback.call(CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."),
+                        "input", str));
             return defaultValue;
         }
 
@@ -171,7 +173,8 @@ public class ParseUtil {
 
         if (arr.length != 3) {
             if (callback != null)
-                callback.call(ReasonedCallback.CallbackReason.SPLIT_NOT_ENOUGH, str);
+                callback.call(CallbackContent.createNew(new IllegalArgumentException("Not enough arguments."),
+                        "input", str));
             return defaultValue;
         }
 
@@ -194,7 +197,7 @@ public class ParseUtil {
             return t == null ? defaultValue : t;
         } catch (Exception e) {
             if (callback != null)
-                callback.call(e);
+                callback.call(CallbackContent.createNew(e, "input"));
             return defaultValue;
         }
     }

@@ -4,5 +4,5 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ExceptionCallback {
 
-    void call(@NotNull Throwable throwable);
+    void call(@NotNull CallbackContent content);
 }

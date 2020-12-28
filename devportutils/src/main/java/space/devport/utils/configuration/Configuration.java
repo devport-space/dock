@@ -61,7 +61,6 @@ public class Configuration {
     private boolean autoSave = false;
 
     private final ConsoleOutput console;
-    private final LocationUtil locationUtil;
 
     /**
      * Initializes this class, creates file and loads yaml from path.
@@ -86,7 +85,6 @@ public class Configuration {
         this.path = file.getPath();
 
         this.console = plugin.getConsoleOutput();
-        this.locationUtil = plugin.getLocationUtil();
     }
 
     /**
@@ -436,8 +434,8 @@ public class Configuration {
      */
     @Nullable
     public Region getRegion(@Nullable String path) {
-        Location min = locationUtil.locationFromString(fileConfiguration.getString(path + "." + SubPath.REGION_MIN));
-        Location max = locationUtil.locationFromString(fileConfiguration.getString(path + "." + SubPath.REGION_MAX));
+        Location min = LocationUtil.parseLocation(fileConfiguration.getString(path + "." + SubPath.REGION_MIN));
+        Location max = LocationUtil.parseLocation(fileConfiguration.getString(path + "." + SubPath.REGION_MAX));
 
         if (min == null) {
             console.err("Could not get a Region from " + composePath(path) + ", minimum location didn't load.");
@@ -474,8 +472,8 @@ public class Configuration {
 
         ConfigurationSection section = fileConfiguration.createSection(path);
 
-        section.set(SubPath.REGION_MIN.toString(), locationUtil.locationToString(region.getMin()));
-        section.set(SubPath.REGION_MAX.toString(), locationUtil.locationToString(region.getMax()));
+        section.set(SubPath.REGION_MIN.toString(), LocationUtil.composeString(region.getMin()));
+        section.set(SubPath.REGION_MAX.toString(), LocationUtil.composeString(region.getMax()));
 
         if (autoSave)
             save();

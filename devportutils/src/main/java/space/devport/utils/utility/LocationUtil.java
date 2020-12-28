@@ -1,27 +1,22 @@
 package space.devport.utils.utility;
 
 import com.google.common.base.Strings;
+import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
-import space.devport.utils.DevportPlugin;
+import space.devport.utils.callbacks.CallbackContent;
+import space.devport.utils.callbacks.ExceptionCallback;
+import space.devport.utils.text.StringUtil;
 
 /**
  * Static util class to assist location related operations.
  */
+@UtilityClass
 public class LocationUtil {
 
-    public String LOCATION_DELIMITER = ";";
-    private final ConsoleOutput consoleOutput;
-
-    public LocationUtil(ConsoleOutput consoleOutput) {
-        this.consoleOutput = consoleOutput;
-    }
-
-    public LocationUtil(DevportPlugin devportPlugin) {
-        this.consoleOutput = devportPlugin.getConsoleOutput();
-    }
+    public final String LOCATION_DELIMITER = ";";
 
     /**
      * Parses a location to string using the default location delimiter.
@@ -30,8 +25,19 @@ public class LocationUtil {
      * @return parsed location String
      */
     @Nullable
-    public String locationToString(@Nullable Location location) {
-        return locationToString(location, LOCATION_DELIMITER);
+    @Contract("null -> null")
+    public String composeString(Location location) {
+        return composeString(location, LOCATION_DELIMITER, null);
+    }
+
+    @Contract("null,_ -> null")
+    public String composeString(Location location, @Nullable ExceptionCallback callback) {
+        return composeString(location, LOCATION_DELIMITER, callback);
+    }
+
+    @Contract("null,_ -> null;_,null -> null")
+    public String composeString(Location location, String delimiter) {
+        return composeString(location, delimiter, null);
     }
 
     /**
@@ -39,69 +45,101 @@ public class LocationUtil {
      *
      * @param location  Location to parse
      * @param delimiter String delimiter to use
-     * @return parse location String
+     * @return Parsed location string
      */
     @Nullable
-    public String locationToString(@Nullable Location location, @Nullable String delimiter) {
+    @Contract("null,_,_ -> null;_,null,_ -> null")
+    public String composeString(Location location, String delimiter, @Nullable ExceptionCallback callback) {
+
+        if (delimiter == null) {
+            if (callback != null)
+                callback.call(CallbackContent.createNew(new IllegalArgumentException("Delimiter cannot be null."), "delimiter"));
+            return null;
+        }
 
         if (location == null) {
-            consoleOutput.err("Could not parse location to string, location is null.");
+            if (callback != null)
+                callback.call(CallbackContent.createNew(new IllegalArgumentException("Location cannot be null."), "location"));
             return null;
         }
 
-        if (location.getWorld() == null) {
-            consoleOutput.err("Could not parse location to string, world is null.");
-            return null;
-        }
+        boolean world = location.getWorld() != null;
 
-        return location.getWorld().getName() + delimiter +
-                location.getX() + delimiter +
-                location.getY() + delimiter +
-                location.getZ();
+        return StringUtil.join(delimiter,
+                world ? location.getWorld().getName() : "",
+                location.getX(),
+                location.getY(),
+                location.getZ());
     }
 
-    /**
-     * Parses a location from string.
-     *
-     * @param locationString String to parse location from
-     * @return parsed Location
-     */
-    @Nullable
-    public Location locationFromString(@Nullable String locationString) {
-        return locationFromString(locationString, LOCATION_DELIMITER);
+    @Contract("null -> null")
+    public Location parseLocation(String str) {
+        return parseLocation(str, LOCATION_DELIMITER, true, null);
+    }
+
+    @Contract("null,_ -> null")
+    public Location parseLocation(String str, boolean useWorld) {
+        return parseLocation(str, LOCATION_DELIMITER, useWorld, null);
+    }
+
+    @Contract("null,_ -> null")
+    public Location parseLocation(String str, @Nullable ExceptionCallback callback) {
+        return parseLocation(str, LOCATION_DELIMITER, true, callback);
+    }
+
+    @Contract("null,_,_ -> null")
+    public Location parseLocation(String str, boolean useWorld, @Nullable ExceptionCallback callback) {
+        return parseLocation(str, LOCATION_DELIMITER, useWorld, callback);
+    }
+
+    @Contract("null,_,_ -> null")
+    public Location parseLocation(String str, String delimiter, @Nullable ExceptionCallback callback) {
+        return parseLocation(str, delimiter, true, callback);
+    }
+
+    @Contract("null,_,_ -> null")
+    public Location parseLocation(String str, String delimiter, boolean useWorld) {
+        return parseLocation(str, delimiter, useWorld, null);
     }
 
     /**
      * Parses a location from String using given String delimiter.
      *
-     * @param locationString String to parse location from
-     * @param delimiter      String delimiter to use
-     * @param useWorld       Optional boolean, whether to parse a world or not
+     * @param str       String to parse location from
+     * @param delimiter String delimiter to use
+     * @param useWorld  Optional boolean, whether to parse a world or not
      * @return parsed Location
      */
     @Nullable
-    public Location locationFromString(@Nullable String locationString, @Nullable String delimiter, boolean... useWorld) {
-        if (Strings.isNullOrEmpty(locationString) || Strings.isNullOrEmpty(delimiter))
+    public Location parseLocation(@Nullable String str, @Nullable String delimiter, boolean useWorld, ExceptionCallback callback) {
+
+        if (Strings.isNullOrEmpty(str)) {
+            callback.call(CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null."),
+                    "input", str));
             return null;
+        }
 
-        boolean world = useWorld.length == 0 || useWorld[0];
+        if (Strings.isNullOrEmpty(delimiter)) {
+            callback.call(CallbackContent.createNew(new IllegalArgumentException("Delimiter cannot be null."),
+                    "delimiter", delimiter));
+            return null;
+        }
 
-        String[] arr = locationString.split(delimiter);
+        String[] arr = str.split(delimiter);
 
         if (arr.length < 4) {
-            consoleOutput.err("Could not parse a location from " + locationString + ", too few parameters.");
+            callback.call(CallbackContent.createNew(new IllegalArgumentException("Not enough arguments."),
+                    "input", str));
             return null;
         }
 
         try {
-            if (world)
-                return new Location(Bukkit.getWorld(arr[0]), Double.parseDouble(arr[1]), Double.parseDouble(arr[2]), Double.parseDouble(arr[3]));
-            else
-                return new Location(null, Double.parseDouble(arr[1]), Double.parseDouble(arr[2]), Double.parseDouble(arr[3]));
-        } catch (NumberFormatException e) {
-            consoleOutput.err("Could not parse a location from " + locationString + ", parameter not a number.");
-        } catch (NullPointerException e1) {
-            consoleOutput.err("Could not parse a location from " + locationString + ", parameter(s) missing.");
+            return new Location(useWorld ? Bukkit.getWorld(arr[0]) : null,
+                    Double.parseDouble(arr[1]),
+                    Double.parseDouble(arr[2]),
+                    Double.parseDouble(arr[3]));
+        } catch (NumberFormatException | NullPointerException e) {
+            callback.call(CallbackContent.createNew(e, "input", str));
         }
 
         return null;

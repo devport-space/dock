@@ -7,11 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.utility.reflection.ServerVersion;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -163,5 +159,12 @@ public class StringUtil {
 
     public List<String> replace(List<String> list, String key, Object value) {
         return list.stream().map(l -> l.replace(key, value.toString())).collect(Collectors.toList());
+    }
+
+    public String join(String delimiter, Object... params) {
+        return Arrays.stream(params)
+                .map(String::valueOf)
+                .filter(Strings::isNullOrEmpty)
+                .collect(Collectors.joining(delimiter));
     }
 }
