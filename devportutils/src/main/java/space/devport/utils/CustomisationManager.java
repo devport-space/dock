@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.configuration.Configuration;
-import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.menu.MenuBuilder;
 
 import java.util.Collections;
@@ -17,20 +17,20 @@ public class CustomisationManager extends DevportManager {
     private Configuration customisation;
 
     private final Map<String, MenuBuilder> loadedMenus = new HashMap<>();
-    private final Map<String, ItemBuilder> loadedItems = new HashMap<>();
+    private final Map<String, ItemPrefab> loadedItems = new HashMap<>();
 
     public CustomisationManager(DevportPlugin plugin) {
         super(plugin);
     }
 
     @NotNull
-    public MenuBuilder getMenuBuilder(String name) {
-        return this.loadedMenus.getOrDefault(name, new MenuBuilder(plugin));
+    public MenuBuilder getMenu(String name) {
+        return loadedMenus.containsKey(name) ? loadedMenus.get(name) : new MenuBuilder(plugin);
     }
 
     @NotNull
-    public ItemBuilder getItemBuilder(String name) {
-        return this.loadedItems.getOrDefault(name, new ItemBuilder(Material.AIR, plugin));
+    public ItemPrefab getItem(String name) {
+        return loadedItems.containsKey(name) ? loadedItems.get(name) : ItemPrefab.createNew(Material.AIR, plugin);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class CustomisationManager extends DevportManager {
 
         plugin.getConsoleOutput().debug("Loading items...");
         for (String name : customisation.section("items").getKeys(false)) {
-            ItemBuilder itemBuilder = customisation.getItemBuilder("items.".concat(name));
+            ItemPrefab itemBuilder = customisation.getItem("items.".concat(name));
 
             if (itemBuilder == null) {
                 consoleOutput.warn("Could not load item preset " + name);
@@ -82,7 +82,7 @@ public class CustomisationManager extends DevportManager {
         return Collections.unmodifiableMap(loadedMenus);
     }
 
-    public Map<String, ItemBuilder> getItems() {
+    public Map<String, ItemPrefab> getItems() {
         return Collections.unmodifiableMap(loadedItems);
     }
 }

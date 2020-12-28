@@ -32,9 +32,6 @@ public class ItemPrefab implements Cloneable {
     private XMaterial material;
 
     @Getter
-    private DevportPlugin devportPlugin;
-
-    @Getter
     private Amount amount = new Amount(1);
 
     @Getter
@@ -58,23 +55,22 @@ public class ItemPrefab implements Cloneable {
     private SkullData skullData;
 
     @Getter
+    private ItemDamage damage;
+
+    @Getter
     private final Placeholders placeholders = new Placeholders();
 
     // Additional builders
 
     private final Set<PrefabBuilder> builders = new HashSet<>();
 
-    public interface PrefabBuilder {
-        /**
-         * Apply additional actions to the resulting ItemStack.
-         */
-        ItemStack apply(ItemStack item);
-    }
+    @Getter
+    private DevportPlugin devportPlugin;
 
     private ItemPrefab(@NotNull XMaterial material, DevportPlugin devportPlugin) {
         this.material = material;
         this.devportPlugin = devportPlugin;
-        this.placeholders.copy(devportPlugin.getGlobalPlaceholders());
+        placeholders.copy(devportPlugin.getGlobalPlaceholders());
     }
 
     private ItemPrefab(ItemPrefab prefab) {
@@ -89,6 +85,8 @@ public class ItemPrefab implements Cloneable {
         this.nbt.putAll(prefab.getNbt());
 
         this.skullData = new SkullData(prefab.getSkullData());
+        this.damage = new ItemDamage(prefab.getDamage());
+
         this.placeholders.copy(prefab.getPlaceholders());
         this.devportPlugin = prefab.getDevportPlugin();
     }
@@ -111,10 +109,11 @@ public class ItemPrefab implements Cloneable {
         ICompound compound = devportPlugin.getItemUtil().getCompound(item);
         for (String key : compound.getKeys()) {
             if (!FILTERED_NBT.contains(key))
-                this.nbt.put(key, TypeUtil.containValue(compound, key));
+                nbt.put(key, TypeUtil.containValue(compound, key));
         }
 
         this.skullData = SkullData.readSkullTexture(item);
+        this.damage = ItemDamage.from(item);
         this.placeholders.copy(devportPlugin.getGlobalPlaceholders());
         this.devportPlugin = devportPlugin;
     }
@@ -131,6 +130,10 @@ public class ItemPrefab implements Cloneable {
         return new ItemPrefab(item, devportPlugin);
     }
 
+    public static ItemPrefab of(@NotNull ItemPrefab prefab) {
+        return new ItemPrefab(prefab);
+    }
+
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public ItemPrefab clone() {
@@ -144,7 +147,7 @@ public class ItemPrefab implements Cloneable {
 
     public ItemStack build() {
 
-        if (this.material == null)
+        if (material == null)
             return null;
 
         ItemStack item = material.parseItem();
@@ -159,14 +162,17 @@ public class ItemPrefab implements Cloneable {
         if (meta == null)
             return null;
 
+        if (hasDamage())
+            item = damage.apply(item);
+
         // Name
-        String displayName = this.name.parseWith(this.placeholders).parse().color().toString();
+        String name = this.name.parseWith(placeholders).parse().color().toString();
         this.name.pull();
 
-        meta.setDisplayName(displayName);
+        meta.setDisplayName(name);
 
         // Lore
-        List<String> lore = this.lore.parseWith(this.placeholders).parse().color().getMessage();
+        List<String> lore = this.lore.parseWith(placeholders).parse().color().getMessage();
         this.lore.pull();
 
         meta.setLore(lore);
@@ -180,18 +186,18 @@ public class ItemPrefab implements Cloneable {
         item.setItemMeta(meta);
 
         // NBT
-        if (!this.nbt.isEmpty()) {
+        if (!nbt.isEmpty()) {
             ICompound compound = devportPlugin.getItemUtil().getCompound(item);
 
-            for (Map.Entry<String, NBTContainer> entry : this.nbt.entrySet()) {
-                String key = this.placeholders.parse(entry.getKey());
+            for (Map.Entry<String, NBTContainer> entry : nbt.entrySet()) {
+                String key = placeholders.parse(entry.getKey());
 
                 NBTContainer container = entry.getValue().clone();
                 Object value = container.getValue();
 
                 if (String.class.isAssignableFrom(value.getClass())) {
                     String str = (String) value;
-                    str = this.placeholders.parse(str);
+                    str = placeholders.parse(str);
                     container.setValue(ParseUtil.parseNumber(str));
                 }
 
@@ -202,12 +208,12 @@ public class ItemPrefab implements Cloneable {
         }
 
         if (skullData != null) {
-            skullData.parseWith(this.placeholders);
+            skullData.parseWith(placeholders);
             item = skullData.apply(item);
         }
 
         // Run additional builders
-        for (PrefabBuilder builder : this.builders)
+        for (PrefabBuilder builder : builders)
             item = builder.apply(item);
 
         return item;
@@ -321,6 +327,16 @@ public class ItemPrefab implements Cloneable {
         return this;
     }
 
+    public ItemPrefab withDamage(ItemDamage damage) {
+        this.damage = damage;
+        return this;
+    }
+
+    public ItemPrefab withDamage(int damage) {
+        this.damage = new ItemDamage(damage);
+        return this;
+    }
+
     public ItemPrefab parseWith(Placeholders placeholders) {
         this.placeholders.copy(placeholders);
         return this;
@@ -383,5 +399,9 @@ public class ItemPrefab implements Cloneable {
 
     public <T> boolean hasNBTValue(String key, T value) {
         return this.nbt.get(key).getValue().equals(value);
+    }
+
+    public boolean hasDamage() {
+        return damage != null && damage.hasDamage();
     }
 }

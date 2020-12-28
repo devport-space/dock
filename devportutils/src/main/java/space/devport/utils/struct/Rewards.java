@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.item.Amount;
-import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
@@ -34,7 +34,7 @@ public class Rewards implements Cloneable {
     private Amount money = new Amount(0);
 
     @Getter
-    private List<ItemBuilder> items = new ArrayList<>();
+    private List<ItemPrefab> items = new ArrayList<>();
 
     @Getter
     private CachedMessage inform = new CachedMessage();
@@ -128,7 +128,7 @@ public class Rewards implements Cloneable {
     public void giveItems(@Nullable Player player) {
         if (player == null) return;
 
-        for (ItemBuilder item : items) {
+        for (ItemPrefab item : items) {
             player.getInventory().addItem(item
                     .parseWith(placeholders)
                     .build());
@@ -247,12 +247,12 @@ public class Rewards implements Cloneable {
         return this;
     }
 
-    public Rewards addItem(ItemBuilder itemBuilder) {
-        this.items.add(new ItemBuilder(itemBuilder));
+    public Rewards addItem(ItemPrefab prefab) {
+        this.items.add(ItemPrefab.of(prefab));
         return this;
     }
 
-    public Rewards items(List<ItemBuilder> items) {
+    public Rewards items(List<ItemPrefab> items) {
         this.items = items;
         return this;
     }

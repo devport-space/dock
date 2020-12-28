@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.menu.events.ItemClick;
 import space.devport.utils.struct.Rewards;
 
@@ -21,7 +21,7 @@ public class MenuItem {
 
     @Getter
     @Setter
-    private ItemBuilder itemBuilder;
+    private ItemPrefab prefab;
 
     @Getter
     @Setter
@@ -39,23 +39,23 @@ public class MenuItem {
     @Setter
     private boolean clickable = true;
 
-    public MenuItem(@NotNull ItemBuilder itemBuilder, @NotNull String name, int slot) {
+    public MenuItem(@NotNull ItemPrefab prefab, @NotNull String name, int slot) {
         this.name = name;
 
         this.slot = slot;
-        this.itemBuilder = itemBuilder;
-        rewards = new Rewards(itemBuilder.getDevportPlugin());
+        this.prefab = prefab;
+        this.rewards = new Rewards(prefab.getDevportPlugin());
     }
 
-    public MenuItem(@NotNull MenuItem item) {
-        this.name = item.getName();
-        this.slot = item.getSlot();
-        this.clickable = item.isClickable();
+    public MenuItem(@NotNull MenuItem menuItem) {
+        this.name = menuItem.getName();
+        this.slot = menuItem.getSlot();
+        this.clickable = menuItem.isClickable();
 
-        this.itemBuilder = new ItemBuilder(item.getItemBuilder());
+        this.prefab = ItemPrefab.of(menuItem.getPrefab());
 
-        this.rewards = item.getRewards();
-        this.cancelClick = item.isCancelClick();
-        this.clickAction = item.getClickAction();
+        this.rewards = menuItem.getRewards();
+        this.cancelClick = menuItem.isCancelClick();
+        this.clickAction = menuItem.getClickAction();
     }
 }

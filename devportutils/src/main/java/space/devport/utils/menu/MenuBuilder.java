@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.menu.item.MatrixItem;
 import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.text.Placeholders;
@@ -152,7 +152,7 @@ public class MenuBuilder {
         // Fill items
 
         for (Map.Entry<Integer, MenuItem> item : this.items.entrySet()) {
-            inventory.setItem(item.getKey(), item.getValue().getItemBuilder().build());
+            inventory.setItem(item.getKey(), item.getValue().getPrefab().build());
         }
 
         Menu menu = new Menu(name, this);
@@ -207,12 +207,12 @@ public class MenuBuilder {
         return this;
     }
 
-    public MenuBuilder setItem(ItemBuilder itemBuilder, String name, int slot) {
-        return setItem(new MenuItem(itemBuilder, name, slot));
+    public MenuBuilder setItem(ItemPrefab prefab, String name, int slot) {
+        return setItem(new MenuItem(prefab, name, slot));
     }
 
-    public MenuBuilder addItem(ItemBuilder item, String name) {
-        MenuItem menuItem = new MenuItem(item, name, nextFree());
+    public MenuBuilder addItem(ItemPrefab prefab, String name) {
+        MenuItem menuItem = new MenuItem(prefab, name, nextFree());
         return setItem(menuItem);
     }
 

@@ -5,19 +5,19 @@ import com.cryptomorin.xseries.XMaterial;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import me.realized.tokenmanager.util.inventory.ItemBuilder;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.Amount;
-import space.devport.utils.item.ItemBuilder;
+import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.item.SkullData;
 import space.devport.utils.menu.MenuBuilder;
 import space.devport.utils.menu.item.MenuItem;
@@ -555,15 +555,15 @@ public class Configuration {
         }
 
         // Load ItemBuilder
-        ItemBuilder itemBuilder = getItemBuilder(path);
+        ItemPrefab itemPrefab = getItem(path);
 
         String itemName = path.contains(".") ? path.split("\\.")[path.split("\\.").length - 1] : path;
 
         int slot = fileConfiguration.getInt(path + "." + SubPath.MENU_ITEM_SLOT, -1);
 
-        if (itemBuilder == null) return null;
+        if (itemPrefab == null) return null;
 
-        MenuItem item = new MenuItem(itemBuilder, itemName, slot);
+        MenuItem item = new MenuItem(itemPrefab, itemName, slot);
 
         item.setCancelClick(fileConfiguration.getBoolean(path + "." + SubPath.MENU_ITEM_CANCEL_CLICK, true));
 
@@ -575,15 +575,16 @@ public class Configuration {
     }
 
     /**
-     * Loads an ItemBuilder from given path.
+     * Loads an ItemPrefab from given path.
      *
      * @param path String path to ItemBuilder
      * @return ItemBuilder object
      */
-    public ItemBuilder getItemBuilder(@Nullable String path, @Nullable ItemBuilder defaultValue) {
+    public ItemPrefab getItem(@Nullable String path, @Nullable ItemPrefab defaultValue) {
 
         /// Check path
-        if (Strings.isNullOrEmpty(path)) return defaultValue;
+        if (Strings.isNullOrEmpty(path))
+            return defaultValue;
 
         // Try to load
         try {
@@ -618,23 +619,23 @@ public class Configuration {
             // Data
             short data = (short) (section.contains(SubPath.ITEM_DATA.toString()) ? section.getInt(SubPath.ITEM_DATA.toString()) : 0);
 
-            ItemBuilder b = new ItemBuilder(material, plugin).damage(data);
+            ItemPrefab b = ItemPrefab.createNew(material, plugin);
 
             // Display name
             if (section.contains(SubPath.ITEM_NAME.toString()))
-                b.displayName(section.getString(SubPath.ITEM_NAME.toString()));
+                b.withName(section.getString(SubPath.ITEM_NAME.toString()));
 
             // Amount
             if (section.contains(SubPath.ITEM_AMOUNT.toString()))
-                b.amount(getAmount(section.getCurrentPath() + "." + SubPath.ITEM_AMOUNT.toString(), new Amount(1)));
+                b.withAmount(getAmount(section.getCurrentPath() + "." + SubPath.ITEM_AMOUNT.toString(), new Amount(1)));
 
-            // Glow
-            if (section.contains(SubPath.ITEM_GLOW.toString()))
-                b.glow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
+            // TODO: Glow
+            // if (section.contains(SubPath.ITEM_GLOW.toString()))
+            //    b.glow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
 
             // Lore
             if (section.contains(SubPath.ITEM_LORE.toString()))
-                b.lore(section.getStringList(SubPath.ITEM_LORE.toString()));
+                b.withLore(section.getStringList(SubPath.ITEM_LORE.toString()));
 
             // Enchants
             if (section.contains(SubPath.ITEM_ENCHANTS.toString())) {
@@ -655,14 +656,7 @@ public class Configuration {
                         continue;
                     }
 
-                    Enchantment enchantment = xEnchantment.parseEnchantment();
-
-                    if (enchantment == null) {
-                        console.warn("Enchantment " + xEnchantment.name() + " is not valid on this version, skipping it");
-                        continue;
-                    }
-
-                    b.addEnchant(enchantment, level);
+                    b.addEnchant(xEnchantment, level);
                 }
             }
 
@@ -671,12 +665,12 @@ public class Configuration {
                 for (String flagName : section.getStringList(SubPath.ITEM_FLAGS.toString())) {
                     ItemFlag flag = ItemFlag.valueOf(flagName);
 
-                    b.addFlag(flag);
+                    b.withFlags(flag);
                 }
 
             // Skull data
             if (section.contains(SubPath.ITEM_SKULL_DATA.toString()))
-                b.skullData(SkullData.fromString(section.getString(SubPath.ITEM_SKULL_DATA.toString())));
+                b.withSkullData(SkullData.fromString(section.getString(SubPath.ITEM_SKULL_DATA.toString())));
 
             // NBT
             if (section.contains(SubPath.ITEM_NBT.toString()))
@@ -702,17 +696,17 @@ public class Configuration {
      * @return ItemBuilder object
      */
     @Nullable
-    public ItemBuilder getItemBuilder(@Nullable String path) {
-        return getItemBuilder(path, null);
+    public ItemPrefab getItem(@Nullable String path) {
+        return getItem(path, null);
     }
 
     /**
-     * Set an ItemBuilder object to a yaml file under a given path.
+     * Set an ItemPrefab object to a yaml file under a given path.
      *
      * @param path    Path to save it under
-     * @param builder ItemBuilder to save.
+     * @param builder ItemPrefab to save.
      */
-    public void setItemBuilder(@Nullable String path, @NotNull ItemBuilder builder) {
+    public void setItemBuilder(@Nullable String path, @NotNull ItemPrefab builder) {
 
         if (Strings.isNullOrEmpty(path)) {
             console.err("Could not save ItemBuilder, path null.");
@@ -723,35 +717,36 @@ public class Configuration {
 
         section.set(SubPath.ITEM_TYPE.toString(), builder.getMaterial().toString());
 
-        if (builder.getDamage() != 0)
-            section.set(SubPath.ITEM_DATA.toString(), builder.getDamage());
+        if (builder.hasDamage())
+            section.set(SubPath.ITEM_DATA.toString(), builder.getDamage().toString());
 
         if (!(builder.getAmount().isFixed() && builder.getAmount().getFixedValue() == 1))
             section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().isFixed() ? (int) builder.getAmount().getFixedValue() : builder.getAmount().toString());
 
-        if (!builder.getDisplayName().isEmpty())
-            section.set(SubPath.ITEM_NAME.toString(), builder.getDisplayName().toString());
+        if (!builder.getName().isEmpty())
+            section.set(SubPath.ITEM_NAME.toString(), builder.getName().toString());
 
         if (!builder.getLore().isEmpty())
             section.set(SubPath.ITEM_LORE.toString(), builder.getLore().getMessage());
 
         if (!builder.getEnchants().isEmpty()) {
             List<String> enchants = new ArrayList<>();
-            builder.getEnchants().forEach((e, l) -> enchants.add(e.name() + SubPath.ITEM_ENCHANT_DELIMITER + l));
+            builder.getEnchants().forEach(e -> enchants.add(e.getEnchantment().name() + SubPath.ITEM_ENCHANT_DELIMITER + e.getLevel().toString()));
             section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
         }
 
         if (!builder.getFlags().isEmpty())
             section.set(SubPath.ITEM_FLAGS.toString(), builder.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
 
-        if (!builder.getNBT().isEmpty()) {
+        if (!builder.getNbt().isEmpty()) {
             List<String> nbt = new ArrayList<>();
-            builder.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v));
+            builder.getNbt().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v.toString()));
             section.set(SubPath.ITEM_NBT.toString(), nbt);
         }
 
-        if (builder.isGlow())
-            section.set(SubPath.ITEM_GLOW.toString(), builder.isGlow());
+        // TODO: Glow
+        // if (builder.isGlow())
+        //section.set(SubPath.ITEM_GLOW.toString(), builder.isGlow());
 
         if (builder.getSkullData() != null)
             section.set(SubPath.ITEM_SKULL_DATA.toString(), builder.getSkullData().toString());
@@ -893,7 +888,7 @@ public class Configuration {
         if (itemsSection == null) return rewards;
 
         for (String name : itemsSection.getKeys(false)) {
-            ItemBuilder itemBuilder = getItemBuilder(path + ".items." + name);
+            ItemPrefab itemBuilder = getItem(path + ".items." + name);
 
             if (itemBuilder != null)
                 rewards.addItem(itemBuilder);
