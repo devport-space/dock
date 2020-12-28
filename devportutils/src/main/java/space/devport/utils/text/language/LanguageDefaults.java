@@ -1,14 +1,16 @@
 package space.devport.utils.text.language;
 
+import lombok.extern.java.Log;
 import space.devport.utils.DevportPlugin;
 
+@Log
 public abstract class LanguageDefaults {
 
     private final LanguageManager languageManager;
 
     public LanguageDefaults(DevportPlugin plugin) {
         if (!plugin.isRegistered(LanguageManager.class)) {
-            plugin.getConsoleOutput().err("Attempted to register LanguageDefaults when Language is not used.");
+            log.severe("Attempted to register LanguageDefaults when Language is not used.");
             this.languageManager = null;
             return;
         }

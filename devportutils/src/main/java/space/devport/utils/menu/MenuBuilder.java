@@ -1,6 +1,7 @@
 package space.devport.utils.menu;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.logging.ConsoleOutput;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Log
 public class MenuBuilder {
 
     @Getter
@@ -88,7 +90,7 @@ public class MenuBuilder {
      * Place items by matrix into the items list.
      */
     public MenuBuilder construct() {
-        ConsoleOutput console = plugin.getConsoleOutput();
+
         // Slots
 
         int required = buildMatrix.length * 9;
@@ -101,7 +103,7 @@ public class MenuBuilder {
 
         if (title.length() > 32) {
             title = title.substring(0, 31);
-            console.warn("Inventory title " + this.title + " is too long, cutting to 32.");
+            log.warning("Inventory title " + this.title + " is too long, cutting to 32.");
         }
 
         inventory = Bukkit.createInventory(null, slots, title);
@@ -109,7 +111,7 @@ public class MenuBuilder {
         // Build scheme
 
         if (buildMatrix.length == 0) {
-            console.err("Could not construct menu " + name + ", there's no matrix.");
+            log.severe("Could not construct menu " + name + ", there's no matrix.");
             return null;
         }
 

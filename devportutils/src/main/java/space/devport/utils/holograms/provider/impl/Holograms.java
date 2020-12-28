@@ -9,6 +9,7 @@ import com.sainttx.holograms.api.line.AnimatedItemLine;
 import com.sainttx.holograms.api.line.AnimatedTextLine;
 import com.sainttx.holograms.api.line.ItemLine;
 import com.sainttx.holograms.api.line.TextLine;
+import lombok.extern.java.Log;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -17,6 +18,7 @@ import space.devport.utils.holograms.provider.HologramProvider;
 
 import java.util.List;
 
+@Log
 public class Holograms extends HologramProvider {
 
     private final HologramManager hologramManager;
@@ -26,7 +28,7 @@ public class Holograms extends HologramProvider {
 
         Plugin hologramsPlugin = plugin.getPluginManager().getPlugin("Holograms");
         if (hologramsPlugin == null) {
-            plugin.getConsoleOutput().err("Tried to hook into Holograms when it's not enabled.");
+            log.severe("Tried to hook into Holograms when it's not enabled.");
             this.hologramManager = null;
             return;
         }

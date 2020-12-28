@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import lombok.extern.java.Log;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +19,7 @@ import space.devport.utils.version.VersionManager;
 
 import java.util.LinkedList;
 
+@Log
 public class JsonMessage extends Message {
 
     //TODO 1.16+ uses "contents" instead of values
@@ -26,12 +28,13 @@ public class JsonMessage extends Message {
     private static final Gson gson = new GsonBuilder().create();
 
     private boolean newLine = true;
-    private final DevportPlugin devportPlugin;
 
     private final LinkedList<JsonArray> lines = new LinkedList<>();
 
-    public JsonMessage(DevportPlugin devportPlugin) {
-        this.devportPlugin = devportPlugin;
+    private final DevportPlugin plugin;
+
+    public JsonMessage(DevportPlugin plugin) {
+        this.plugin = plugin;
     }
 
     public void clear() {
@@ -256,11 +259,11 @@ public class JsonMessage extends Message {
     private void sendJson(@NotNull Player player, @NotNull String content) {
 
         if (ServerVersion.isCurrentBelow(ServerVersion.v1_8)) {
-            devportPlugin.getConsoleOutput().warn("Json messages are not supported on versions below 1.8");
+            log.warning("Json messages are not supported on versions below 1.8");
             return;
         }
 
-        devportPlugin.getManager(VersionManager.class).getVersionUtility().sendJsonMessage(player, content);
+        plugin.getManager(VersionManager.class).getVersionUtility().sendJsonMessage(player, content);
     }
 
     @Override

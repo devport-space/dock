@@ -4,10 +4,9 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.logging.ConsoleOutput;
-import space.devport.utils.DevportPlugin;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -24,15 +23,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
+@Log
 public class GsonHelper {
 
     private final Gson gson;
 
-    private final ConsoleOutput console;
-
-    public GsonHelper(boolean prettyPrinting, DevportPlugin plugin) {
-        this.console = plugin.getConsoleOutput();
-
+    public GsonHelper(boolean prettyPrinting) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         if (prettyPrinting)
             gsonBuilder.setPrettyPrinting();
@@ -40,8 +36,8 @@ public class GsonHelper {
         this.gson = gsonBuilder.create();
     }
 
-    public GsonHelper(DevportPlugin plugin) {
-        this(false, plugin);
+    public GsonHelper() {
+        this(false);
     }
 
     public static <T> Type mapList(@NotNull Class<T> innerType) {
@@ -61,7 +57,9 @@ public class GsonHelper {
      * Asynchronously read ByteBuffer from a file.
      */
     @NotNull
-    public CompletableFuture<ByteBuffer> read(@NotNull final Path path) {
+    public CompletableFuture<ByteBuffer> read(
+            @NotNull
+            final Path path) {
 
         AsynchronousFileChannel channel;
         long size;
@@ -69,9 +67,8 @@ public class GsonHelper {
             channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
             size = channel.size();
         } catch (IOException e) {
-            console.err("Could not open an asynchronous file channel.");
-            if (console.isDebug())
-                e.printStackTrace();
+            log.severe("Could not open an asynchronous file channel.");
+            e.printStackTrace();
             return CompletableFuture.supplyAsync(() -> {
                 throw new CompletionException(e);
             });
@@ -132,7 +129,9 @@ public class GsonHelper {
      * @return CompletableFuture with the parsed output or null
      */
     @NotNull
-    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Class<T> clazz) {
+    public <T> CompletableFuture<T> loadAsync(
+            @NotNull
+            final String dataPath, @NotNull Class<T> clazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -156,7 +155,9 @@ public class GsonHelper {
      * @return CompletableFuture with the resulting list or null.
      */
     @NotNull
-    public <T> CompletableFuture<List<T>> loadListAsync(@NotNull final String dataPath, @NotNull Class<T> innerClazz) {
+    public <T> CompletableFuture<List<T>> loadListAsync(
+            @NotNull
+            final String dataPath, @NotNull Class<T> innerClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -180,7 +181,9 @@ public class GsonHelper {
      * @return CompletableFuture with the resulting map or null.
      */
     @NotNull
-    public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(@NotNull final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
+    public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(
+            @NotNull
+            final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -204,7 +207,11 @@ public class GsonHelper {
      * @return CompletableFuture with the number of bytes written
      */
     @NotNull
-    public <T> CompletableFuture<Void> save(@NotNull final T input, @NotNull final String dataPath) {
+    public <T> CompletableFuture<Void> save(
+            @NotNull
+            final T input,
+            @NotNull
+            final String dataPath) {
 
         Path path = Paths.get(dataPath);
 
@@ -212,9 +219,8 @@ public class GsonHelper {
         try {
             channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
         } catch (IOException e) {
-            console.err("Could not open an asynchronous file channel.");
-            if (console.isDebug())
-                e.printStackTrace();
+            log.severe("Could not open an asynchronous file channel.");
+            e.printStackTrace();
             return CompletableFuture.supplyAsync(() -> {
                 throw new CompletionException(e);
             });

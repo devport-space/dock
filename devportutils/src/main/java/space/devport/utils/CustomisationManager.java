@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.item.ItemPrefab;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.menu.MenuBuilder;
 
 import java.util.Collections;
@@ -50,7 +51,7 @@ public class CustomisationManager extends DevportManager {
 
         customisation.load();
 
-        plugin.getConsoleOutput().debug("Loading menus...");
+        log.log(DebugLevel.DEBUG, "Loading menus...");
         for (String name : customisation.section("menus").getKeys(false)) {
             MenuBuilder menuBuilder = customisation.getMenuBuilder("menus.".concat(name));
 
@@ -63,9 +64,9 @@ public class CustomisationManager extends DevportManager {
         }
 
         if (!this.loadedMenus.isEmpty())
-            plugin.getConsoleOutput().info("Loaded " + this.loadedMenus.size() + " menu preset(s)...");
+            log.info("Loaded " + this.loadedMenus.size() + " menu preset(s)...");
 
-        plugin.getConsoleOutput().debug("Loading items...");
+        log.log(DebugLevel.DEBUG, "Loading items...");
         for (String name : customisation.section("items").getKeys(false)) {
             ItemPrefab itemBuilder = customisation.getItem("items.".concat(name));
 
@@ -78,7 +79,7 @@ public class CustomisationManager extends DevportManager {
         }
 
         if (!this.loadedItems.isEmpty())
-            plugin.getConsoleOutput().info("Loaded " + this.loadedItems.size() + " item preset(s)...");
+            log.info("Loaded " + this.loadedItems.size() + " item preset(s)...");
     }
 
     public Map<String, MenuBuilder> getMenus() {
