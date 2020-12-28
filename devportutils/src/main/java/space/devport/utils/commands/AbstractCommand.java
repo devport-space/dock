@@ -33,14 +33,11 @@ public abstract class AbstractCommand {
 
     protected final DevportPlugin plugin;
 
-    protected final LanguageManager language;
-
     public AbstractCommand(DevportPlugin plugin, String name) {
         this.name = name;
         this.preconditions = new Preconditions(plugin);
 
         this.plugin = plugin;
-        this.language = plugin.getManager(LanguageManager.class);
     }
 
     // This should be overridden by commands and performs the wanted action itself.
@@ -66,7 +63,10 @@ public abstract class AbstractCommand {
 
     @NotNull
     public Message getDescription() {
-        if (!plugin.use(UsageFlag.LANGUAGE)) return new Message(getDefaultDescription());
+        if (!plugin.use(UsageFlag.LANGUAGE))
+            return new Message(getDefaultDescription());
+
+        LanguageManager language = plugin.getManager(LanguageManager.class);
 
         if (this instanceof SubCommand) {
             return ((SubCommand) this).getParent() != null ? language.get("Commands.Help." + ((SubCommand) this).getParent().getName() + "." + getName() + ".Description") : new Message();
@@ -170,7 +170,7 @@ public abstract class AbstractCommand {
      */
     @Nullable
     protected <T> T parse(@NotNull CommandSender sender, String arg, @NotNull ArgumentParser<T> parser, @NotNull String errorMessageKey) {
-        return parse(sender, arg, parser, language.getPrefixed(errorMessageKey));
+        return parse(sender, arg, parser, plugin.use(UsageFlag.LANGUAGE) ? plugin.getManager(LanguageManager.class).getPrefixed(errorMessageKey) : new Message());
     }
 
     /**
