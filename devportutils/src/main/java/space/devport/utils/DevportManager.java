@@ -9,9 +9,6 @@ public abstract class DevportManager {
 
     protected ConsoleOutput consoleOutput;
 
-    public DevportManager() {
-    }
-
     public DevportManager(DevportPlugin plugin) {
         this.plugin = plugin;
         this.consoleOutput = plugin.getConsoleOutput();

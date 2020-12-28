@@ -20,8 +20,6 @@ import java.util.function.Consumer;
  */
 public class ConsoleOutput {
 
-    private static ConsoleOutput instance;
-
     @Getter
     @Setter
     private boolean debug = false;
@@ -43,12 +41,7 @@ public class ConsoleOutput {
     @Getter
     private final List<CommandSender> listeners = new ArrayList<>();
 
-    private ConsoleOutput() {
-        instance = this;
-    }
-
     ConsoleOutput(JavaPlugin plugin) {
-        this();
         setPlugin(plugin);
     }
 
@@ -60,7 +53,10 @@ public class ConsoleOutput {
     public void colored(String msg) {
         if (!colors || console == null) return;
 
-        console.sendMessage(StringUtil.color(msg));
+        String message = StringUtil.color(msg);
+
+        if (message != null)
+            console.sendMessage(message);
     }
 
     public void log(String str, Consumer<String> bukkitLogger) {

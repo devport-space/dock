@@ -9,6 +9,7 @@ import java.time.Instant;
 @UtilityClass
 public class ThreadUtil {
 
+    @SuppressWarnings("BusyWait")
     public Thread createRepeatingTask(Runnable task, long delayInMillis, @Nullable String name) {
         Thread thread = new Thread(() -> {
             while (true) {
