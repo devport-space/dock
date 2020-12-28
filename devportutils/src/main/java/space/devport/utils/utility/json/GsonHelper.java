@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
+import space.devport.utils.logging.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 
 import java.io.IOException;

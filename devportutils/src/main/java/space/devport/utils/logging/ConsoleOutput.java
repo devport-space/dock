@@ -1,4 +1,4 @@
-package space.devport.utils;
+package space.devport.utils.logging;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,8 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * Class to handle logging and plugin console output.
@@ -41,7 +44,7 @@ public class ConsoleOutput {
     @Getter
     private final List<CommandSender> listeners = new ArrayList<>();
 
-    ConsoleOutput(JavaPlugin plugin) {
+    public ConsoleOutput(JavaPlugin plugin) {
         setPlugin(plugin);
     }
 

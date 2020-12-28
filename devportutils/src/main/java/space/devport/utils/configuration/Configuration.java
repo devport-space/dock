@@ -13,7 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
+import space.devport.utils.logging.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemDamage;

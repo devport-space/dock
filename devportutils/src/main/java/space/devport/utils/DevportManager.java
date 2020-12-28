@@ -1,5 +1,7 @@
 package space.devport.utils;
 
+import space.devport.utils.logging.ConsoleOutput;
+
 /**
  * DevportCore manager module.
  */

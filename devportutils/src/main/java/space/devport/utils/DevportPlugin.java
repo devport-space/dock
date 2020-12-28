@@ -1,6 +1,7 @@
 package space.devport.utils;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,13 +19,14 @@ import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.holograms.HologramManager;
-import space.devport.utils.item.ItemUtil;
+import space.devport.utils.logging.ConsoleOutput;
+import space.devport.utils.logging.DebugLevel;
+import space.devport.utils.logging.DevportLogger;
 import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.utility.DependencyUtil;
-import space.devport.utils.utility.LocationUtil;
 import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerType;
@@ -41,6 +43,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 
+@Log
 public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
@@ -80,6 +83,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         // Setup Console Output
         this.consoleOutput = new ConsoleOutput(this);
+
+        DevportLogger.setup(this);
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
@@ -130,9 +135,9 @@ public abstract class DevportPlugin extends JavaPlugin {
         ServerType.loadServerType();
 
         // Print header
-        consoleOutput.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
-        consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
-        consoleOutput.info(String.format("%s~~~~~~~~~~~~ &7%s %s~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor()));
+        log.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
+        log.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
+        log.info(String.format("%s~~~~~~~~~~~~ &7%s %s~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor()));
 
         if (use(UsageFlag.CONFIGURATION)) {
             this.configuration = new Configuration(this, "config");
@@ -159,8 +164,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::afterEnable);
 
-        consoleOutput.info(getColor() + "~~~~~~~~~~~~ &7/////// " + getColor() + "~~~~~~~~~~~~");
-        consoleOutput.info("Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
+        log.info(getColor() + "~~~~~~~~~~~~ &7/////// " + getColor() + "~~~~~~~~~~~~");
+        log.info("Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
 
         // Set the prefix as the last thing, startup looks cooler without it.
         consoleOutput.setPrefix(prefix);
