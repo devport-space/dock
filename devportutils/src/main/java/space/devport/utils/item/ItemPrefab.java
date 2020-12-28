@@ -90,6 +90,8 @@ public class ItemPrefab implements Cloneable {
         this.skullData = new SkullData(prefab.getSkullData());
         this.damage = new ItemDamage(prefab.getDamage());
 
+        this.glow = prefab.isGlow();
+
         this.placeholders.copy(prefab.getPlaceholders());
         this.devportPlugin = prefab.getDevportPlugin();
     }
@@ -109,7 +111,7 @@ public class ItemPrefab implements Cloneable {
         this.enchants.addAll(Enchant.from(meta));
         this.flags.addAll(meta.getItemFlags());
 
-        ICompound compound = devportPlugin.getItemUtil().getCompound(item);
+        ICompound compound = ItemUtil.getCompound(item);
         for (String key : compound.getKeys()) {
             if (!FILTERED_NBT.contains(key))
                 nbt.put(key, TypeUtil.containValue(compound, key));
@@ -190,7 +192,7 @@ public class ItemPrefab implements Cloneable {
 
         // NBT
         if (!nbt.isEmpty()) {
-            ICompound compound = devportPlugin.getItemUtil().getCompound(item);
+            ICompound compound = ItemUtil.getCompound(item);
 
             for (Map.Entry<String, NBTContainer> entry : nbt.entrySet()) {
                 String key = placeholders.parse(entry.getKey());

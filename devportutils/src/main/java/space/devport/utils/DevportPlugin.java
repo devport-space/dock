@@ -47,9 +47,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     protected ConsoleOutput consoleOutput;
 
     @Getter
-    private ItemUtil itemUtil;
-
-    @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
 
     @Getter
@@ -83,7 +80,6 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         // Setup Console Output
         this.consoleOutput = new ConsoleOutput(this);
-        this.itemUtil = new ItemUtil(this);
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
