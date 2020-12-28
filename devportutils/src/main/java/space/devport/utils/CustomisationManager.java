@@ -31,7 +31,7 @@ public class CustomisationManager extends DevportManager {
 
     @NotNull
     public ItemPrefab getItem(String name) {
-        return loadedItems.containsKey(name) ? loadedItems.get(name) : ItemPrefab.createNew(Material.AIR, plugin);
+        return loadedItems.containsKey(name) ? loadedItems.get(name) : ItemPrefab.createNew(Material.AIR);
     }
 
     @Override

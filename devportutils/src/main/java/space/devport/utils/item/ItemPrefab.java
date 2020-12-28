@@ -8,7 +8,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.nbt.NBTContainer;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.struct.Context;
@@ -67,13 +66,8 @@ public class ItemPrefab implements Cloneable {
 
     private final Set<PrefabBuilder> builders = new HashSet<>();
 
-    @Getter
-    private DevportPlugin devportPlugin;
-
-    private ItemPrefab(@NotNull XMaterial material, DevportPlugin devportPlugin) {
+    private ItemPrefab(@NotNull XMaterial material) {
         this.material = material;
-        this.devportPlugin = devportPlugin;
-        placeholders.copy(devportPlugin.getGlobalPlaceholders());
     }
 
     private ItemPrefab(ItemPrefab prefab) {
@@ -93,10 +87,9 @@ public class ItemPrefab implements Cloneable {
         this.glow = prefab.isGlow();
 
         this.placeholders.copy(prefab.getPlaceholders());
-        this.devportPlugin = prefab.getDevportPlugin();
     }
 
-    private ItemPrefab(@NotNull ItemStack item, DevportPlugin devportPlugin) {
+    private ItemPrefab(@NotNull ItemStack item) {
         this.material = XMaterial.matchXMaterial(item.getType());
         this.amount = new Amount(item.getAmount());
 
@@ -119,20 +112,14 @@ public class ItemPrefab implements Cloneable {
 
         this.skullData = SkullData.readSkullTexture(item);
         this.damage = ItemDamage.from(item);
-        this.placeholders.copy(devportPlugin.getGlobalPlaceholders());
-        this.devportPlugin = devportPlugin;
     }
 
-    public static ItemPrefab createNew(@NotNull XMaterial material, DevportPlugin devportPlugin) {
-        return new ItemPrefab(material, devportPlugin);
+    public static ItemPrefab createNew(@NotNull XMaterial material) {
+        return new ItemPrefab(material);
     }
 
-    public static ItemPrefab createNew(@NotNull Material material, DevportPlugin devportPlugin) {
-        return new ItemPrefab(XMaterial.matchXMaterial(material), devportPlugin);
-    }
-
-    public static ItemPrefab of(@NotNull ItemStack item, DevportPlugin devportPlugin) {
-        return new ItemPrefab(item, devportPlugin);
+    public static ItemPrefab createNew(@NotNull Material material) {
+        return new ItemPrefab(XMaterial.matchXMaterial(material));
     }
 
     public static ItemPrefab of(@NotNull ItemPrefab prefab) {

@@ -612,7 +612,7 @@ public class Configuration {
                 return defaultValue;
             }
 
-            ItemPrefab prefab = ItemPrefab.createNew(material, plugin);
+            ItemPrefab prefab = ItemPrefab.createNew(material);
 
             // Damage
             if (section.contains(SubPath.ITEM_DAMAGE.toString()))
