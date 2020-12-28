@@ -559,7 +559,7 @@ public class Configuration {
 
         if (itemPrefab == null) return null;
 
-        MenuItem item = new MenuItem(itemPrefab, itemName, slot);
+        MenuItem item = new MenuItem(plugin, itemPrefab, itemName, slot);
 
         item.setCancelClick(fileConfiguration.getBoolean(path + "." + SubPath.MENU_ITEM_CANCEL_CLICK, true));
 

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.menu.events.ItemClick;
 import space.devport.utils.struct.Rewards;
@@ -39,12 +40,12 @@ public class MenuItem {
     @Setter
     private boolean clickable = true;
 
-    public MenuItem(@NotNull ItemPrefab prefab, @NotNull String name, int slot) {
+    public MenuItem(DevportPlugin plugin, @NotNull ItemPrefab prefab, @NotNull String name, int slot) {
         this.name = name;
 
         this.slot = slot;
         this.prefab = prefab;
-        this.rewards = new Rewards(prefab.getDevportPlugin());
+        this.rewards = new Rewards(plugin);
     }
 
     public MenuItem(@NotNull MenuItem menuItem) {

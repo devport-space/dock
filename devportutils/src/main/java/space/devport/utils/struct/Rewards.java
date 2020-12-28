@@ -26,7 +26,6 @@ import java.util.Random;
  */
 public class Rewards implements Cloneable {
 
-    private DevportPlugin devportPlugin;
     @Getter
     private Amount tokens = new Amount(0);
 
@@ -50,6 +49,13 @@ public class Rewards implements Cloneable {
 
     private final transient Random random = new Random();
 
+    @Getter
+    private transient DevportPlugin plugin;
+
+    public Rewards(DevportPlugin plugin) {
+        this.plugin = plugin;
+    }
+
     public Rewards(Rewards rewards) {
         if (rewards == null) return;
 
@@ -60,11 +66,7 @@ public class Rewards implements Cloneable {
         this.broadcast = new CachedMessage(rewards.getBroadcast());
         this.commands = new ArrayList<>(rewards.getCommands());
         this.placeholders = new Placeholders(rewards.getPlaceholders());
-        this.devportPlugin = rewards.devportPlugin;
-    }
-
-    public Rewards(DevportPlugin devportPlugin) {
-        this.devportPlugin = devportPlugin;
+        this.plugin = rewards.getPlugin();
     }
 
     public void giveAll() {
@@ -77,7 +79,7 @@ public class Rewards implements Cloneable {
     // Reward a player
     public void give(@Nullable Player player, boolean... broadcast) {
 
-        placeholders.copy(devportPlugin.getGlobalPlaceholders());
+        placeholders.copy(plugin.getGlobalPlaceholders());
 
         if (player != null) {
             placeholders.addContext(new Context().fromPlayer(player));
@@ -121,8 +123,8 @@ public class Rewards implements Cloneable {
         if (player == null) return;
 
         double money = this.money.getDouble();
-        if (money != 0 && DependencyUtil.isEnabled("Vault") && devportPlugin.isRegistered(EconomyManager.class))
-            devportPlugin.getManager(EconomyManager.class).getEconomy().depositPlayer(player, money);
+        if (money != 0 && DependencyUtil.isEnabled("Vault") && plugin.isRegistered(EconomyManager.class))
+            plugin.getManager(EconomyManager.class).getEconomy().depositPlayer(player, money);
     }
 
     public void giveItems(@Nullable Player player) {
@@ -178,12 +180,12 @@ public class Rewards implements Cloneable {
 
     // Execute command as console
     private void executeConsole(String cmd) {
-        Bukkit.getScheduler().runTask(devportPlugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim()));
+        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim()));
     }
 
     // Execute command as player
     private void executePlayer(String cmd, Player player) {
-        Bukkit.getScheduler().runTask(devportPlugin, () -> player.performCommand(cmd.trim()));
+        Bukkit.getScheduler().runTask(plugin, () -> player.performCommand(cmd.trim()));
     }
 
     // Execute as player with op

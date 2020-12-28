@@ -21,9 +21,6 @@ public class MenuBuilder {
     private String name;
 
     @Getter
-    private DevportPlugin devportPlugin;
-
-    @Getter
     private CachedMessage title = new CachedMessage("My Simple GUI");
 
     @Getter
@@ -50,21 +47,22 @@ public class MenuBuilder {
     @Getter
     private final HashMap<Character, MatrixItem> itemMatrix = new HashMap<>();
 
+    @Getter
+    private final DevportPlugin plugin;
+
     public MenuBuilder(String name, MenuBuilder builder) {
         this(builder);
         this.name = name;
-        this.devportPlugin = builder.devportPlugin;
     }
 
-    public MenuBuilder(DevportPlugin devportPlugin) {
-        this.devportPlugin = devportPlugin;
+    public MenuBuilder(DevportPlugin plugin) {
+        this.plugin = plugin;
     }
 
     public MenuBuilder(MenuBuilder builder) {
         this.slots = builder.getSlots();
         this.title = builder.getTitle();
         this.items = builder.getItems();
-        this.devportPlugin = builder.getDevportPlugin();
 
         this.buildMatrix = builder.getBuildMatrix();
         this.clickDelay = builder.getClickDelay();
@@ -73,6 +71,7 @@ public class MenuBuilder {
             itemMatrix.put(matrixItem.getCharacter(), new MatrixItem(matrixItem));
 
         this.placeholders = new Placeholders(builder.getPlaceholders());
+        this.plugin = builder.getPlugin();
     }
 
     public MenuBuilder clear() {
@@ -89,7 +88,7 @@ public class MenuBuilder {
      * Place items by matrix into the items list.
      */
     public MenuBuilder construct() {
-        ConsoleOutput console = devportPlugin.getConsoleOutput();
+        ConsoleOutput console = plugin.getConsoleOutput();
         // Slots
 
         int required = buildMatrix.length * 9;
@@ -208,11 +207,11 @@ public class MenuBuilder {
     }
 
     public MenuBuilder setItem(ItemPrefab prefab, String name, int slot) {
-        return setItem(new MenuItem(prefab, name, slot));
+        return setItem(new MenuItem(plugin, prefab, name, slot));
     }
 
     public MenuBuilder addItem(ItemPrefab prefab, String name) {
-        MenuItem menuItem = new MenuItem(prefab, name, nextFree());
+        MenuItem menuItem = new MenuItem(plugin, prefab, name, nextFree());
         return setItem(menuItem);
     }
 
