@@ -2,17 +2,17 @@ package space.devport.utils.logging;
 
 import space.devport.utils.DevportPlugin;
 
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DevportLogger {
 
-    public static void setup(DevportPlugin plugin) {
-        Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    public static String LOGGER_KEY = "space.devport";
 
-        Logger rootLogger = LogManager.getLogManager().getLogger("");
-        for (Handler handler : rootLogger.getHandlers())
-            if (handler instanceof ConsoleHandler)
-                rootLogger.removeHandler(handler);
+    public static void setup(DevportPlugin plugin) {
+        Logger logger = Logger.getLogger(LOGGER_KEY);
+
+        logger.setUseParentHandlers(false);
 
         logger.setLevel(Level.INFO);
         logger.addHandler(new DevportLogHandler(plugin));
