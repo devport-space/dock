@@ -627,9 +627,8 @@ public class Configuration {
             if (section.contains(SubPath.ITEM_AMOUNT.toString()))
                 b.withAmount(getAmount(section.getCurrentPath() + "." + SubPath.ITEM_AMOUNT.toString(), new Amount(1)));
 
-            // TODO: Glow
-            // if (section.contains(SubPath.ITEM_GLOW.toString()))
-            //    b.glow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
+            if (section.contains(SubPath.ITEM_GLOW.toString()))
+                b.withGlow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
 
             // Lore
             if (section.contains(SubPath.ITEM_LORE.toString()))
@@ -742,9 +741,8 @@ public class Configuration {
             section.set(SubPath.ITEM_NBT.toString(), nbt);
         }
 
-        // TODO: Glow
-        // if (builder.isGlow())
-        //section.set(SubPath.ITEM_GLOW.toString(), builder.isGlow());
+        if (builder.isGlow())
+            section.set(SubPath.ITEM_GLOW.toString(), builder.isGlow());
 
         if (builder.getSkullData() != null)
             section.set(SubPath.ITEM_SKULL_DATA.toString(), builder.getSkullData().toString());

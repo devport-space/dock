@@ -58,6 +58,9 @@ public class ItemPrefab implements Cloneable {
     private ItemDamage damage;
 
     @Getter
+    private boolean glow;
+
+    @Getter
     private final Placeholders placeholders = new Placeholders();
 
     // Additional builders
@@ -337,6 +340,15 @@ public class ItemPrefab implements Cloneable {
         return this;
     }
 
+    public ItemPrefab withGlow() {
+        return withGlow(true);
+    }
+
+    public ItemPrefab withGlow(boolean b) {
+        this.glow = b;
+        return this;
+    }
+
     public ItemPrefab parseWith(Placeholders placeholders) {
         this.placeholders.copy(placeholders);
         return this;
@@ -377,6 +389,10 @@ public class ItemPrefab implements Cloneable {
     public ItemPrefab clearNBT() {
         this.nbt.clear();
         return this;
+    }
+
+    public ItemPrefab clearGlow() {
+        return withGlow(false);
     }
 
     // --------------- Boolean terminal operations ---------------
