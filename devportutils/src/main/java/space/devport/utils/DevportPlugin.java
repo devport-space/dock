@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
-    private DevportLogger logger;
+    private DevportLogger devportLogger;
 
     @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
@@ -73,8 +73,8 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
 
-        this.logger = new DevportLogger(this);
-        logger.setup();
+        this.devportLogger = new DevportLogger(this);
+        devportLogger.setup();
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
@@ -160,7 +160,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         log.info(String.format("Done... startup took &f%s&7ms.", (System.currentTimeMillis() - start)));
 
         // Set the prefix as the last thing, startup looks cooler without it.
-        logger.getConsoleOutput().setPrefix(prefix);
+        devportLogger.getConsoleOutput().setPrefix(prefix);
 
         Bukkit.getScheduler().runTask(this, () -> {
 
@@ -176,7 +176,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         long start = System.currentTimeMillis();
 
         if (!(sender instanceof ConsoleCommandSender))
-            logger.getConsoleOutput().addListener(sender);
+            devportLogger.getConsoleOutput().addListener(sender);
 
         if (use(UsageFlag.CONFIGURATION)) {
             configuration.load();
@@ -186,7 +186,7 @@ public abstract class DevportPlugin extends JavaPlugin {
                 StringUtil.compilePattern();
             }
 
-            logger.getConsoleOutput().setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
+            devportLogger.getConsoleOutput().setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
             this.prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
@@ -200,7 +200,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::afterReload);
 
-        logger.getConsoleOutput().removeListener(sender);
+        devportLogger.getConsoleOutput().removeListener(sender);
 
         if (use(UsageFlag.LANGUAGE))
             getManager(LanguageManager.class).getPrefixed("Commands.Reload")
@@ -237,7 +237,7 @@ public abstract class DevportPlugin extends JavaPlugin {
                 return null;
             }
 
-            log.warning("Tried to access a manager " + clazz.getSimpleName() + " that was not registered. Registered and loaded it.");
+            // log.warning("Tried to access a manager " + clazz.getSimpleName() + " that was not registered. Registered and loaded it.");
             registerManager(instancedManager);
             return instancedManager;
         }
