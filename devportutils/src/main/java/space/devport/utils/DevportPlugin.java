@@ -20,7 +20,6 @@ import space.devport.utils.configuration.Configuration;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.holograms.HologramManager;
 import space.devport.utils.logging.ConsoleOutput;
-import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.logging.DevportLogger;
 import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.Placeholders;
@@ -33,14 +32,7 @@ import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
 import space.devport.utils.version.VersionManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Log
@@ -135,8 +127,8 @@ public abstract class DevportPlugin extends JavaPlugin {
         ServerType.loadServerType();
 
         // Print header
-        log.info("Starting up " + getDescription().getName() + " " + getDescription().getVersion());
-        log.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
+        log.info(String.format("Starting up %s %s", getDescription().getName(), getDescription().getVersion()));
+        log.info(String.format("Running on %s %S", ServerType.getCurrentServerType().getName(), ServerVersion.getCurrentVersion().toString()));
         log.info(String.format("%s~~~~~~~~~~~~ &7%s %s~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor()));
 
         if (use(UsageFlag.CONFIGURATION)) {
@@ -149,7 +141,7 @@ public abstract class DevportPlugin extends JavaPlugin {
             StringUtil.compilePattern();
 
             consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
-            prefix = getColor() + configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
+            this.prefix = getColor() + configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
         globalPlaceholders.add("%prefix%", prefix)
@@ -164,8 +156,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::afterEnable);
 
-        log.info(getColor() + "~~~~~~~~~~~~ &7/////// " + getColor() + "~~~~~~~~~~~~");
-        log.info("Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
+        log.info(String.format("%s~~~~~~~~~~~~ &7/////// %s~~~~~~~~~~~~", getColor(), getColor()));
+        log.info(String.format("Done... startup took &f%s&7ms.", (System.currentTimeMillis() - start)));
 
         // Set the prefix as the last thing, startup looks cooler without it.
         consoleOutput.setPrefix(prefix);
@@ -195,7 +187,7 @@ public abstract class DevportPlugin extends JavaPlugin {
             }
 
             consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
-            prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
+            this.prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
         globalPlaceholders.add("%prefix%", prefix)
@@ -241,17 +233,17 @@ public abstract class DevportPlugin extends JavaPlugin {
             T instancedManager = Reflection.obtainInstance(clazz, new Class[]{DevportPlugin.class}, new Object[]{this});
 
             if (instancedManager == null) {
-                consoleOutput.err("Tried to access a manager " + clazz.getSimpleName() + " that's not and cannot be registered.");
+                log.severe("Tried to access a manager " + clazz.getSimpleName() + " that's not and cannot be registered.");
                 return null;
             }
 
-            consoleOutput.warn("Tried to access a manager " + clazz.getSimpleName() + " that was not registered. Registered and loaded it.");
+            log.warning("Tried to access a manager " + clazz.getSimpleName() + " that was not registered. Registered and loaded it.");
             registerManager(instancedManager);
             return instancedManager;
         }
 
         if (!clazz.isAssignableFrom(manager.getClass())) {
-            consoleOutput.err("A different manager that expected was stored. Failing to retrieve it gracefully.");
+            log.severe("A different manager that expected was stored. Failing to retrieve it gracefully.");
             return null;
         }
 

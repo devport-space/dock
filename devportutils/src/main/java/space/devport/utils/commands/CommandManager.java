@@ -1,6 +1,7 @@
 package space.devport.utils.commands;
 
 import com.google.common.base.Strings;
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.plugin.Plugin;
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.logging.DebugLevel;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Log
 public class CommandManager extends DevportManager implements CommandExecutor, TabCompleter {
 
     private final List<MainCommand> registeredCommands = new ArrayList<>();
@@ -91,7 +94,7 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
             PluginCommand command = plugin.getCommand(mainCommand.getName());
 
             if (command == null) {
-                plugin.getConsoleOutput().debug(String.format("Command %s is not in plugin.yml, injecting.", mainCommand.getName()));
+                log.log(DebugLevel.DEBUG, String.format("Command %s is not in plugin.yml, injecting.", mainCommand.getName()));
 
                 try {
                     Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
@@ -99,7 +102,7 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
                     command = constructor.newInstance(mainCommand.getName(), plugin);
                     constructor.setAccessible(false);
                 } catch (Exception e) {
-                    plugin.getConsoleOutput().err(String.format("Could not inject command %s", mainCommand.getName()));
+                    log.severe(String.format("Could not inject command %s", mainCommand.getName()));
                     e.printStackTrace();
                     continue;
                 }
@@ -119,7 +122,7 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
 
             mainCommand.addLanguage();
 
-            plugin.getConsoleOutput().debug(String.format("Added command %s with aliases [%s]%s", command.getName(), String.join(", ", mainCommand.getAliases()), mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
+            log.log(DebugLevel.DEBUG, String.format("Added command %s with aliases [%s]%s", command.getName(), String.join(", ", mainCommand.getAliases()), mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
         }
     }
 

@@ -1,6 +1,7 @@
 package space.devport.utils.holograms;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportManager;
@@ -9,11 +10,13 @@ import space.devport.utils.holograms.provider.HologramProvider;
 import space.devport.utils.holograms.provider.impl.CMIHolograms;
 import space.devport.utils.holograms.provider.impl.Holograms;
 import space.devport.utils.holograms.provider.impl.HolographicDisplays;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.utility.DependencyUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Log
 public class HologramManager extends DevportManager {
 
     @Getter
@@ -56,25 +59,25 @@ public class HologramManager extends DevportManager {
 
         if (DependencyUtil.isEnabled("Holograms")) {
             hologramProvider = new Holograms(plugin);
-            plugin.getConsoleOutput().info("Using &aHolograms &7as the HologramsProvider.");
+            log.info("Using &aHolograms &7as the HologramsProvider.");
         } else if (DependencyUtil.isEnabled("HolographicDisplays")) {
             hologramProvider = new HolographicDisplays(plugin);
-            plugin.getConsoleOutput().info("Using &aHolographicDisplays &7as the HologramsProvider.");
+            log.info("Using &aHolographicDisplays &7as the HologramsProvider.");
         } else if (DependencyUtil.isEnabled("CMI")) {
             hologramProvider = new CMIHolograms(plugin);
-            plugin.getConsoleOutput().info("Using &aCMI &7as the HologramsProvider.");
+            log.info("Using &aCMI &7as the HologramsProvider.");
         }
 
         hooked = hologramProvider != null;
 
         if (!hooked)
-            plugin.getConsoleOutput().info("Found no HologramsProvider installed.");
+            log.info("Found no HologramsProvider installed.");
         else hologramProvider.load();
     }
 
     private boolean checkHooked() {
         if (!hooked) {
-            plugin.getConsoleOutput().debug("There was a request for a hologram provider, but it's not registered.");
+            log.log(DebugLevel.DEBUG, "There was a request for a hologram provider, but it's not registered.");
             return false;
         } else return true;
     }

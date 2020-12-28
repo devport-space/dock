@@ -2,6 +2,7 @@ package space.devport.utils.text.language;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,7 @@ import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.text.message.Message;
 
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log
 public class LanguageManager extends DevportManager {
 
     @Getter
@@ -52,12 +55,12 @@ public class LanguageManager extends DevportManager {
 
     public void addDefault(String path, String... message) {
         this.defaults.put(path, new Message(message));
-        plugin.getConsoleOutput().debug("Added default " + path);
+        log.log(DebugLevel.DEBUG, "Added default " + path);
     }
 
     public void addDefaults(LanguageDefaults defaults) {
         this.languageDefaults.add(defaults);
-        plugin.getConsoleOutput().info("Added language defaults " + defaults.getClass().getSimpleName());
+        log.info("Added language defaults " + defaults.getClass().getSimpleName());
     }
 
     public void captureDefaults() {
@@ -99,7 +102,7 @@ public class LanguageManager extends DevportManager {
         if (save)
             language.save();
 
-        consoleOutput.info("Loaded " + this.cache.size() + " " + (added != 0 ? "and added " + added + " new " : "") + "message(s)...");
+        log.info("Loaded " + this.cache.size() + " " + (added != 0 ? "and added " + added + " new " : "") + "message(s)...");
     }
 
     public Message get(@NotNull String path) {

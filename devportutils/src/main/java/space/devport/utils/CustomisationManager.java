@@ -1,6 +1,7 @@
 package space.devport.utils;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.configuration.Configuration;
@@ -11,10 +12,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log
 public class CustomisationManager extends DevportManager {
 
     @Getter
-    private Configuration customisation;
+    private final Configuration customisation;
 
     private final Map<String, MenuBuilder> loadedMenus = new HashMap<>();
     private final Map<String, ItemPrefab> loadedItems = new HashMap<>();
@@ -53,7 +55,7 @@ public class CustomisationManager extends DevportManager {
             MenuBuilder menuBuilder = customisation.getMenuBuilder("menus.".concat(name));
 
             if (menuBuilder == null) {
-                consoleOutput.warn("Could not load menu preset " + name);
+                log.warning("Could not load menu preset " + name);
                 continue;
             }
 
@@ -68,7 +70,7 @@ public class CustomisationManager extends DevportManager {
             ItemPrefab itemBuilder = customisation.getItem("items.".concat(name));
 
             if (itemBuilder == null) {
-                consoleOutput.warn("Could not load item preset " + name);
+                log.warning("Could not load item preset " + name);
                 continue;
             }
 

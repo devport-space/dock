@@ -1,6 +1,7 @@
 package space.devport.utils.version;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
@@ -12,6 +13,7 @@ import space.devport.utils.version.api.IVersionUtility;
 
 import java.util.function.Consumer;
 
+@Log
 public class VersionManager extends DevportManager {
 
     @Getter
@@ -45,7 +47,7 @@ public class VersionManager extends DevportManager {
             Class<?> clazz = Class.forName(path);
 
             if (!interfaceClazz.isAssignableFrom(clazz)) {
-                consoleOutput.err("Subclass " + subClassName + " is not an implementation of " + interfaceClazz.getSimpleName() + ", cannot use it.");
+                log.severe("Subclass " + subClassName + " is not an implementation of " + interfaceClazz.getSimpleName() + ", cannot use it.");
                 return false;
             }
 
@@ -69,8 +71,8 @@ public class VersionManager extends DevportManager {
         String version = ServerVersion.getNmsVersion();
 
         if (load(version))
-            consoleOutput.info("Loaded version dependent modules for " + version);
+            log.info("Loaded version dependent modules for " + version);
         else
-            consoleOutput.err("Could not load version dependent modules for this version. Some features might not work.");
+            log.severe("Could not load version dependent modules for this version. Some features might not work.");
     }
 }

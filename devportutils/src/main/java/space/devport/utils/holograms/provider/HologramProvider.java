@@ -2,6 +2,7 @@ package space.devport.utils.holograms.provider;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+@Log
 public abstract class HologramProvider {
 
     protected final DevportPlugin plugin;
@@ -36,13 +38,13 @@ public abstract class HologramProvider {
 
         for (String id : storage.getFileConfiguration().getKeys(false)) {
             Location location = LocationUtil.parseLocation(storage.getFileConfiguration().getString(id),
-                    e -> plugin.getConsoleOutput().err("Could not parse location from " + e.getInput() + ": " + e.getThrowable().getMessage()));
+                    e -> log.severe("Could not parse location from " + e.getInput() + ": " + e.getThrowable().getMessage()));
 
             if (location != null)
                 addHologram(id, location);
         }
 
-        plugin.getConsoleOutput().info("Loaded " + registeredHolograms.size() + " hologram(s)...");
+        log.info("Loaded " + registeredHolograms.size() + " hologram(s)...");
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this::purgeNonexistent, 40);
     }
@@ -59,7 +61,7 @@ public abstract class HologramProvider {
             String locationString = LocationUtil.composeString(getLocation(id));
 
             if (Strings.isNullOrEmpty(locationString)) {
-                plugin.getConsoleOutput().warn("Could not save hologram " + id + ", it's location is invalid.");
+                log.warning("Could not save hologram " + id + ", it's location is invalid.");
                 continue;
             }
 

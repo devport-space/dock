@@ -1,12 +1,14 @@
 package space.devport.utils.economy;
 
 import lombok.Getter;
+import lombok.extern.java.Log;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 
+@Log
 public class EconomyManager extends DevportManager {
 
     @Getter
@@ -24,21 +26,25 @@ public class EconomyManager extends DevportManager {
     private void setupEconomy() {
 
         if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
-            if (economy != null) economy = null;
+            if (economy != null)
+                this.economy = null;
             return;
         }
 
         RegisteredServiceProvider<Economy> rsp = plugin.getServer().getServicesManager().getRegistration(Economy.class);
 
         if (rsp == null) {
-            if (economy != null) economy = null;
-            consoleOutput.info("Found Vault, but no economy manager.");
+            if (economy != null)
+                this.economy = null;
+
+            log.info("Found Vault, but no economy manager.");
             return;
         }
 
-        if (economy != null) return;
+        if (economy != null)
+            return;
 
-        economy = rsp.getProvider();
-        consoleOutput.info("Found Vault, using economy.");
+        this.economy = rsp.getProvider();
+        log.info("Found Vault, using economy.");
     }
 }
