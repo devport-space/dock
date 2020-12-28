@@ -37,7 +37,7 @@ public abstract class AbstractCommand {
 
     public AbstractCommand(DevportPlugin plugin, String name) {
         this.name = name;
-        this.preconditions = new Preconditions(plugin);
+        this.preconditions = new Preconditions();
 
         this.plugin = plugin;
         this.language = plugin.getManager(LanguageManager.class);
