@@ -126,6 +126,10 @@ public class ItemPrefab implements Cloneable {
         return new ItemPrefab(prefab);
     }
 
+    public static ItemPrefab of(@NotNull ItemStack item) {
+        return new ItemPrefab(item);
+    }
+
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     @Override
     public ItemPrefab clone() {
