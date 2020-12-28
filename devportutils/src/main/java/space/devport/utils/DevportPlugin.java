@@ -88,10 +88,10 @@ public abstract class DevportPlugin extends JavaPlugin {
     public void onLoad() {
 
         // Setup Console Output
-        consoleOutput = new ConsoleOutput(this);
-        itemUtil = new ItemUtil(this);
-        locationUtil = new LocationUtil(this);
-        parseUtil = new ParseUtil(this);
+        this.consoleOutput = new ConsoleOutput(this);
+        this.itemUtil = new ItemUtil(this);
+        this.locationUtil = new LocationUtil(this);
+        this.parseUtil = new ParseUtil(this);
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
@@ -146,7 +146,6 @@ public abstract class DevportPlugin extends JavaPlugin {
         consoleOutput.info("Running on " + ServerType.getCurrentServerType().getName() + " " + ServerVersion.getCurrentVersion().toString());
         consoleOutput.info(String.format("%s~~~~~~~~~~~~ &7%s %s~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor()));
 
-        //TODO Maybe move to load to allow debugging in #onLoad().
         if (use(UsageFlag.CONFIGURATION)) {
             this.configuration = new Configuration(this, "config");
 
