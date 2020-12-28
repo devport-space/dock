@@ -15,6 +15,7 @@ import space.devport.utils.commands.struct.Preconditions;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.text.message.Message;
+import space.devport.utils.utility.ParseUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -151,7 +152,7 @@ public abstract class AbstractCommand {
      * If something went wrong, fetch a message from LanguageManager by {@param errorMessageKey} and send it to the sender.
      */
     protected <E extends Enum<E>> E parseEnum(@NotNull CommandSender sender, String arg, @NotNull Class<E> enumClazz, @NotNull String errorMessageKey) {
-        return parse(sender, arg, str -> plugin.getParseUtil().parseEnum(arg, enumClazz), errorMessageKey);
+        return parse(sender, arg, str -> ParseUtil.parseEnum(arg, enumClazz), errorMessageKey);
     }
 
     /**
@@ -160,7 +161,7 @@ public abstract class AbstractCommand {
      * Replace placeholder '%param%' with attempted argument.
      */
     protected <E extends Enum<E>> E parseEnum(@NotNull CommandSender sender, String arg, @NotNull Class<E> enumClazz, @NotNull Message errorMessage) {
-        return parse(sender, arg, str -> plugin.getParseUtil().parseEnum(arg, enumClazz), errorMessage);
+        return parse(sender, arg, str -> ParseUtil.parseEnum(arg, enumClazz), errorMessage);
     }
 
     /**

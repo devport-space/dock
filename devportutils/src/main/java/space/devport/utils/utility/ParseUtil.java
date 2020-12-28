@@ -1,27 +1,19 @@
 package space.devport.utils.utility;
 
 import com.google.common.base.Strings;
+import lombok.experimental.UtilityClass;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.utils.ConsoleOutput;
-import space.devport.utils.DevportPlugin;
+import space.devport.utils.callbacks.ExceptionCallback;
+import space.devport.utils.callbacks.ReasonedCallback;
 import space.devport.utils.item.Amount;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@UtilityClass
 public class ParseUtil {
-
-    private final ConsoleOutput output;
-
-    public ParseUtil(ConsoleOutput output) {
-        this.output = output;
-    }
-
-    public ParseUtil(DevportPlugin devportPlugin) {
-        this(devportPlugin.getConsoleOutput());
-    }
 
     /**
      * Attempt to parse the enum from String {@param str}
@@ -29,12 +21,19 @@ public class ParseUtil {
      * @return Parsed enum or {@code null}
      */
     @Nullable
+    @Contract("null,_ -> null")
     public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz) {
-        try {
-            return E.valueOf(clazz, str);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            return null;
-        }
+        return parseEnum(str, clazz, null, null);
+    }
+
+    @Contract("null,_,_ -> null")
+    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz, @Nullable ExceptionCallback callback) {
+        return parseEnum(str, clazz, null, callback);
+    }
+
+    @Contract("null,_,_ -> param3")
+    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz, E defaultValue) {
+        return parseEnum(str, clazz, defaultValue, null);
     }
 
     /**
@@ -42,13 +41,20 @@ public class ParseUtil {
      *
      * @return Parsed enum or {@param defaultValue}
      */
-    @NotNull
-    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz, @NotNull E defaultValue) {
+    @Contract("null,_,null,_ -> null")
+    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz, @Nullable E defaultValue, @Nullable ExceptionCallback callback) {
         try {
-            return E.valueOf(clazz, str);
+            return E.valueOf(clazz, str.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException e) {
+            if (callback != null)
+                callback.call(e);
             return defaultValue;
         }
+    }
+
+    @Contract("null -> null")
+    public static Object parseNumber(String str) {
+        return parseNumber(str, null);
     }
 
     /**
@@ -56,33 +62,37 @@ public class ParseUtil {
      *
      * @return Parsed object or {@param input} if the input is {@code null} or empty.
      */
-    public static Object parseNumber(String input) {
+    @Contract("null,_ -> null")
+    public static Object parseNumber(String str, @Nullable ReasonedCallback callback) {
 
-        if (Strings.isNullOrEmpty(input))
-            return input;
+        if (Strings.isNullOrEmpty(str)) {
+            if (callback != null)
+                callback.call(ReasonedCallback.CallbackReason.NULL, str);
+            return str;
+        }
 
-        final String str = input.trim();
+        final String input = str.trim();
 
         try {
-            return Integer.parseInt(str);
+            return Integer.parseInt(input);
         } catch (NumberFormatException ignored) {
             // Not an int
         }
 
         try {
-            return Long.parseLong(str);
+            return Long.parseLong(input);
         } catch (NumberFormatException ignored) {
             // Not a long
         }
 
         try {
-            return Double.parseDouble(str);
+            return Double.parseDouble(input);
         } catch (NumberFormatException ignored) {
             // Not a double
         }
 
         try {
-            return Float.parseFloat(str);
+            return Float.parseFloat(input);
         } catch (NumberFormatException ignored) {
             // Not a Float
         }
@@ -90,45 +100,79 @@ public class ParseUtil {
         return input;
     }
 
-    public double parseDouble(String str, boolean... silent) {
-        return parseDouble(str, 0, silent);
+    public double parseDouble(String str) {
+        return parseDouble(str, 0, null);
     }
 
-    public double parseDouble(String str, double defaultValue, boolean... silent) {
+    public double parseDouble(String str, @Nullable ExceptionCallback callback) {
+        return parseDouble(str, 0, callback);
+    }
+
+    @Contract("null,_ -> param2")
+    public double parseDouble(String str, double defaultValue) {
+        return parseDouble(str, defaultValue, null);
+    }
+
+    @Contract("null,_,_ -> param2")
+    public double parseDouble(String str, double defaultValue, @Nullable ExceptionCallback callback) {
         try {
             return Double.parseDouble(str.trim());
-        } catch (NumberFormatException e) {
-            if (silent.length < 1 || !silent[0])
-                output.warn("Could not parse double from " + str + ", using " + defaultValue + " as default.");
+        } catch (NumberFormatException | NullPointerException e) {
+            if (callback != null)
+                callback.call(e);
             return defaultValue;
         }
     }
 
-    public int parseInteger(String str, boolean... silent) {
-        return parseInteger(str, 0, silent);
+    public int parseInteger(String str) {
+        return parseInteger(str, 0, null);
     }
 
-    public int parseInteger(String str, int defaultValue, boolean... silent) {
+    public int parseInteger(String str, @Nullable ExceptionCallback callback) {
+        return parseInteger(str, 0, callback);
+    }
+
+    @Contract("null,_ -> param2")
+    public int parseInteger(String str, int defaultValue) {
+        return parseInteger(str, defaultValue, null);
+    }
+
+    @Contract("null,_,_ -> param2")
+    public int parseInteger(String str, int defaultValue, @Nullable ExceptionCallback callback) {
         try {
             return Integer.parseInt(str.trim());
-        } catch (NumberFormatException e) {
-            if (silent.length < 1 || !silent[0])
-                output.warn("Could not parse int from " + str + ", using " + defaultValue + " as default.");
+        } catch (NumberFormatException | NullPointerException e) {
+            if (callback != null)
+                callback.call(e);
             return defaultValue;
         }
     }
 
-    public Vector parseVector(@Nullable String str) {
+    @Contract("null -> null")
+    public Vector parseVector(String str) {
+        return parseVector(str, null, null);
+    }
+
+    @Contract("null,null -> null")
+    public Vector parseVector(String str, Vector defaultValue) {
+        return parseVector(str, defaultValue, null);
+    }
+
+    @Contract("null,null,_ -> null")
+    public Vector parseVector(String str, @Nullable Vector defaultValue, @Nullable ReasonedCallback callback) {
 
         if (Strings.isNullOrEmpty(str)) {
-            return new Vector();
+            if (callback != null)
+                callback.call(ReasonedCallback.CallbackReason.NULL, str);
+            return defaultValue;
         }
 
         String[] arr = str.split(";");
 
         if (arr.length != 3) {
-            output.warn("Could not parse vector from " + str + ", invalid number of parameters.");
-            return new Vector();
+            if (callback != null)
+                callback.call(ReasonedCallback.CallbackReason.SPLIT_NOT_ENOUGH, str);
+            return defaultValue;
         }
 
         Amount x = Amount.fromString(arr[0]);
@@ -140,21 +184,17 @@ public class ParseUtil {
                 z == null ? 0 : z.getDouble());
     }
 
-    public <T> T getOrDefault(Supplier<T> supplier, T defaultValue) {
-        try {
-            T t = supplier.get();
-            return t == null ? defaultValue : t;
-        } catch (Exception e) {
-            return defaultValue;
-        }
+    public <T> T getOrDefault(@NotNull Supplier<T> supplier, T defaultValue) {
+        return getOrDefault(supplier, defaultValue, null);
     }
 
-    public <T> T getOrDefault(Supplier<T> supplier, T defaultValue, Consumer<Throwable> exceptionCallback) {
+    public <T> T getOrDefault(Supplier<T> supplier, T defaultValue, @Nullable ExceptionCallback callback) {
         try {
             T t = supplier.get();
             return t == null ? defaultValue : t;
         } catch (Exception e) {
-            exceptionCallback.accept(e);
+            if (callback != null)
+                callback.call(e);
             return defaultValue;
         }
     }

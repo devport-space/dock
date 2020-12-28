@@ -50,9 +50,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     private LocationUtil locationUtil;
 
     @Getter
-    private ParseUtil parseUtil;
-
-    @Getter
     private ItemUtil itemUtil;
 
     @Getter
@@ -91,7 +88,6 @@ public abstract class DevportPlugin extends JavaPlugin {
         this.consoleOutput = new ConsoleOutput(this);
         this.itemUtil = new ItemUtil(this);
         this.locationUtil = new LocationUtil(this);
-        this.parseUtil = new ParseUtil(this);
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
@@ -162,7 +158,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName())
-                .addParser((str, player) -> str.replaceAll("(?i)%player%", parseUtil.getOrDefault(player::getName, "null")), OfflinePlayer.class);
+                .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.getOrDefault(player::getName, "null")), OfflinePlayer.class);
 
         callManagerAction(DevportManager::preEnable);
 

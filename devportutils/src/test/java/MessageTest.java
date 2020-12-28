@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class MessageTests {
+public class MessageTest {
 
     @Test
     public void cachedMessageShouldAppendCorrectly() {
