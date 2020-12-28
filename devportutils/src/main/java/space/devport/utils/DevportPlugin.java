@@ -19,7 +19,7 @@ import space.devport.utils.commands.MainCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.holograms.HologramManager;
-import space.devport.utils.logging.ConsoleOutput;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.logging.DevportLogger;
 import space.devport.utils.menu.MenuManager;
 import space.devport.utils.text.Placeholders;
@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
-    protected ConsoleOutput consoleOutput;
+    private DevportLogger logger;
 
     @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
@@ -73,10 +73,8 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
 
-        // Setup Console Output
-        this.consoleOutput = new ConsoleOutput(this);
-
-        DevportLogger.setup(this);
+        this.logger = new DevportLogger(this);
+        logger.setup();
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
@@ -140,7 +138,9 @@ public abstract class DevportPlugin extends JavaPlugin {
                 StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
             StringUtil.compilePattern();
 
-            consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
+            if (configuration.getFileConfiguration().getBoolean("debug-enabled", false))
+                log.setLevel(DebugLevel.DEBUG);
+
             this.prefix = getColor() + configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
@@ -160,7 +160,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         log.info(String.format("Done... startup took &f%s&7ms.", (System.currentTimeMillis() - start)));
 
         // Set the prefix as the last thing, startup looks cooler without it.
-        consoleOutput.setPrefix(prefix);
+        logger.getConsoleOutput().setPrefix(prefix);
 
         Bukkit.getScheduler().runTask(this, () -> {
 
@@ -176,7 +176,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         long start = System.currentTimeMillis();
 
         if (!(sender instanceof ConsoleCommandSender))
-            consoleOutput.addListener(sender);
+            logger.getConsoleOutput().addListener(sender);
 
         if (use(UsageFlag.CONFIGURATION)) {
             configuration.load();
@@ -186,7 +186,7 @@ public abstract class DevportPlugin extends JavaPlugin {
                 StringUtil.compilePattern();
             }
 
-            consoleOutput.setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
+            logger.getConsoleOutput().setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
             this.prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
@@ -200,7 +200,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::afterReload);
 
-        consoleOutput.removeListener(sender);
+        logger.getConsoleOutput().removeListener(sender);
 
         if (use(UsageFlag.LANGUAGE))
             getManager(LanguageManager.class).getPrefixed("Commands.Reload")
