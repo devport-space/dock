@@ -69,6 +69,7 @@ public class HologramManager extends DevportManager {
 
         if (!hooked)
             plugin.getConsoleOutput().info("Found no HologramsProvider installed.");
+        else hologramProvider.load();
     }
 
     private boolean checkHooked() {

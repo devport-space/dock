@@ -1,6 +1,7 @@
 package space.devport.utils.holograms.provider;
 
 import com.google.common.base.Strings;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -19,20 +20,18 @@ public abstract class HologramProvider {
 
     protected final List<String> registeredHolograms = new ArrayList<>();
 
-    private Configuration storage;
+    @Getter
+    private final Configuration storage;
 
     public HologramProvider(DevportPlugin plugin) {
         this.plugin = plugin;
-
-        load();
+        this.storage = new Configuration(plugin, "holograms");
     }
 
     public void load() {
         registeredHolograms.clear();
 
-        if (storage == null)
-            storage = new Configuration(plugin, "holograms");
-        else storage.load();
+        storage.load();
 
         for (String id : storage.getFileConfiguration().getKeys(false)) {
             Location location = plugin.getLocationUtil().locationFromString(storage.getFileConfiguration().getString(id));

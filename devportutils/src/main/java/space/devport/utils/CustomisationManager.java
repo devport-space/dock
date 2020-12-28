@@ -21,6 +21,7 @@ public class CustomisationManager extends DevportManager {
 
     public CustomisationManager(DevportPlugin plugin) {
         super(plugin);
+        this.customisation = new Configuration(plugin, "customisation");
     }
 
     @NotNull
@@ -45,7 +46,7 @@ public class CustomisationManager extends DevportManager {
 
     public void load() {
 
-        this.customisation = new Configuration(plugin, "customisation");
+        customisation.load();
 
         plugin.getConsoleOutput().debug("Loading menus...");
         for (String name : customisation.section("menus").getKeys(false)) {

@@ -148,7 +148,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         //TODO Maybe move to load to allow debugging in #onLoad().
         if (use(UsageFlag.CONFIGURATION)) {
-            configuration = new Configuration(this, "config");
+            this.configuration = new Configuration(this, "config");
+
+            configuration.load();
 
             if (configuration.getFileConfiguration().contains("hex-pattern"))
                 StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");

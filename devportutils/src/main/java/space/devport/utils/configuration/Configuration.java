@@ -5,7 +5,6 @@ import com.cryptomorin.xseries.XMaterial;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
-import me.realized.tokenmanager.util.inventory.ItemBuilder;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -59,6 +58,7 @@ public class Configuration {
     @Getter
     @Setter
     private boolean autoSave = false;
+
     private final ConsoleOutput console;
     private final LocationUtil locationUtil;
 
@@ -83,9 +83,9 @@ public class Configuration {
         this.plugin = plugin;
         this.file = file;
         this.path = file.getPath();
-        console = plugin.getConsoleOutput();
-        locationUtil = plugin.getLocationUtil();
-        load();
+
+        this.console = plugin.getConsoleOutput();
+        this.locationUtil = plugin.getLocationUtil();
     }
 
     /**
@@ -342,7 +342,6 @@ public class Configuration {
      * @param path String path to an Array.toString output
      * @return Array of integers.
      */
-    @Nullable
     public int[] getInts(@Nullable String path) {
         String str = getString(path);
 
@@ -365,7 +364,6 @@ public class Configuration {
      * @param defaultValue Default value to return if there's nothing on path
      * @return Array of integers.
      */
-    @Nullable
     public int[] getInts(@Nullable String path, int[] defaultValue) {
         String str = getString(path);
 
@@ -442,12 +440,12 @@ public class Configuration {
         Location max = locationUtil.locationFromString(fileConfiguration.getString(path + "." + SubPath.REGION_MAX));
 
         if (min == null) {
-            console.err("Could not load a region at path " + path + ", minimum location didn't load.");
+            console.err("Could not get a Region from " + composePath(path) + ", minimum location didn't load.");
             return null;
         }
 
         if (max == null) {
-            console.err("Could not load a region at path " + path + ", maximum location didn't load.");
+            console.err("Could not get a Region from " + composePath(path) + ", maximum location didn't load.");
             return null;
         }
 
@@ -464,13 +462,13 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            console.err("Could not save region to path " + path + ", path is invalid.");
+            console.err("Could not set Region to " + composePath(path) + ", path is invalid.");
             return;
         }
 
         // Check region
         if (region == null) {
-            console.err("Could not save region to path " + path + ", region is null.");
+            console.err("Could not set Region to " + composePath(path) + ", region is null.");
             return;
         }
 
@@ -494,7 +492,7 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            console.err("Could not load MenuBuilder at path " + path + ", path is invalid.");
+            console.err("Could not get MenuBuilder from " + composePath(path) + ", path is invalid.");
             return null;
         }
 
@@ -503,7 +501,7 @@ public class Configuration {
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
         if (section == null) {
-            console.err("Could not load MenuBuilder at path " + path + ", path is invalid.");
+            console.err("Could not get MenuBuilder from " + composePath(path) + ", path is invalid.");
             return null;
         }
 
@@ -550,7 +548,7 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            console.err("Could not load MenuItem at path " + path + ", path is invalid.");
+            console.err("Could not get MenuItem from " + composePath(path) + ", path is invalid.");
             return null;
         }
 
@@ -591,28 +589,28 @@ public class Configuration {
             ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
             if (section == null) {
-                console.debug("Invalid section - path " + path + ", returning null.");
+                console.debug("Invalid section at " + composePath(path) + ", returning null.");
                 return defaultValue;
             }
 
             String type = section.getString(SubPath.ITEM_TYPE.toString());
 
             if (Strings.isNullOrEmpty(type)) {
-                console.debug("Invalid material on path " + path + ", returning null.");
+                console.warn("Could not parse material from " + composePath(path) + ", returning null.");
                 return defaultValue;
             }
 
             XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
 
             if (xMaterial == null) {
-                console.debug("Invalid material on path " + path + ", returning null.");
+                console.warn("Could not parse material from " + type + " at " + composePath(path) + ", returning null.");
                 return defaultValue;
             }
 
             Material material = xMaterial.parseMaterial();
 
             if (material == null) {
-                console.debug("Invalid material on path " + path + ", returning null.");
+                console.warn("Could not parse material from " + type + " at " + composePath(path) + ", returning null.");
                 return defaultValue;
             }
 
@@ -652,7 +650,7 @@ public class Configuration {
                     XEnchantment xEnchantment = XEnchantment.matchXEnchantment(dataString).orElse(null);
 
                     if (xEnchantment == null) {
-                        console.warn("Could not parse enchantment " + dataString);
+                        console.warn("Could not parse enchantment " + dataString + " at " + composePath(path));
                         continue;
                     }
 
@@ -706,10 +704,10 @@ public class Configuration {
      * @param path    Path to save it under
      * @param builder ItemPrefab to save.
      */
-    public void setItemBuilder(@Nullable String path, @NotNull ItemPrefab builder) {
+    public void setItem(@Nullable String path, @NotNull ItemPrefab builder) {
 
         if (Strings.isNullOrEmpty(path)) {
-            console.err("Could not save ItemBuilder, path null.");
+            console.err("Could not set ItemPrefab to " + composePath(path) + ", path null.");
             return;
         }
 
@@ -757,7 +755,7 @@ public class Configuration {
 
     public void setMessage(@Nullable String path, @NotNull Message message) {
         if (Strings.isNullOrEmpty(path)) {
-            console.err("Could not save Message, path null.");
+            console.err("Could not set Message to " + composePath(path) + ", path is invalid.");
             return;
         }
 
@@ -786,7 +784,7 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            console.err("Could not load Amount at path " + path + ", path is invalid.");
+            console.err("Could not load Amount from " + composePath(path) + ", path is invalid.");
             return defaultValue;
         }
 
@@ -822,9 +820,8 @@ public class Configuration {
     @Nullable
     public Amount getAmount(@Nullable String path) {
 
-        // Check path
         if (Strings.isNullOrEmpty(path)) {
-            console.err("Could not load Amount at path " + path + ", path is invalid.");
+            console.err("Could not load Amount from " + composePath(path) + ", path is invalid.");
             return null;
         }
 
@@ -898,7 +895,9 @@ public class Configuration {
     }
 
     public void setRewards(String path, Rewards rewards) {
-        if (Strings.isNullOrEmpty(path)) return;
+
+        if (Strings.isNullOrEmpty(path))
+            return;
 
         ConfigurationSection section = section(path);
 
@@ -914,10 +913,14 @@ public class Configuration {
             section.set("commands", rewards.getCommands());
 
         for (int i = 0; i < rewards.getItems().size(); i++) {
-            setItemBuilder(path + ".items." + i, rewards.getItems().get(i));
+            setItem(path + ".items." + i, rewards.getItems().get(i));
         }
 
         if (autoSave)
             save();
+    }
+
+    public String composePath(String path) {
+        return Strings.isNullOrEmpty(path) ? String.format("file:%s", file.getName()) : String.format("file:%s@%s", file.getName(), path);
     }
 }

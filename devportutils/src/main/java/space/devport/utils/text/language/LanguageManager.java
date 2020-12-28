@@ -28,7 +28,7 @@ public class LanguageManager extends DevportManager {
     private final List<LanguageDefaults> languageDefaults = new ArrayList<>();
 
     @Getter
-    private Configuration language;
+    private final Configuration language;
 
     @Getter
     @Setter
@@ -36,6 +36,7 @@ public class LanguageManager extends DevportManager {
 
     public LanguageManager(DevportPlugin plugin) {
         super(plugin);
+        this.language = new Configuration(plugin, "language");
     }
 
     @Override
@@ -76,10 +77,7 @@ public class LanguageManager extends DevportManager {
 
     public void load() {
 
-        if (this.language == null)
-            this.language = new Configuration(plugin, "language");
-        else
-            this.language.load();
+        language.load();
 
         boolean save = false;
         int added = 0;
