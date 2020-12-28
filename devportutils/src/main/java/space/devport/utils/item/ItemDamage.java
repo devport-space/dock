@@ -1,5 +1,6 @@
 package space.devport.utils.item;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -36,7 +37,11 @@ public class ItemDamage {
     }
 
     @Nullable
-    public static ItemDamage fromString(String str) {
+    public static ItemDamage fromString(@Nullable String str) {
+
+        if (Strings.isNullOrEmpty(str))
+            return null;
+
         try {
             return new ItemDamage(Integer.parseInt(str.trim()));
         } catch (NumberFormatException e) {

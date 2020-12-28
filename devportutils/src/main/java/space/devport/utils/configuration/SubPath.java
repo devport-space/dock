@@ -40,7 +40,7 @@ public enum SubPath {
      */
 
     ITEM_TYPE("type"),
-    ITEM_DATA("data"),
+    ITEM_DAMAGE("data"),
     ITEM_NAME("name"),
     ITEM_AMOUNT("amount"),
     ITEM_LORE("lore"),

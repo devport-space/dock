@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.utils.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.Amount;
+import space.devport.utils.item.ItemDamage;
 import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.item.SkullData;
 import space.devport.utils.menu.MenuBuilder;
@@ -226,7 +227,6 @@ public class Configuration {
      * @param defaultValue Optional String, default value to return
      * @return String with Bukkit color codes
      */
-    @NotNull
     public String getColoredString(@Nullable String path, @NotNull String defaultValue) {
         return StringUtil.color(getString(path, defaultValue));
     }
@@ -614,25 +614,26 @@ public class Configuration {
                 return defaultValue;
             }
 
-            // Data
-            short data = (short) (section.contains(SubPath.ITEM_DATA.toString()) ? section.getInt(SubPath.ITEM_DATA.toString()) : 0);
+            ItemPrefab prefab = ItemPrefab.createNew(material, plugin);
 
-            ItemPrefab b = ItemPrefab.createNew(material, plugin);
+            // Damage
+            if (section.contains(SubPath.ITEM_DAMAGE.toString()))
+                prefab.withDamage(ItemDamage.fromString(section.getString(SubPath.ITEM_DAMAGE.toString())));
 
             // Display name
             if (section.contains(SubPath.ITEM_NAME.toString()))
-                b.withName(section.getString(SubPath.ITEM_NAME.toString()));
+                prefab.withName(section.getString(SubPath.ITEM_NAME.toString()));
 
             // Amount
             if (section.contains(SubPath.ITEM_AMOUNT.toString()))
-                b.withAmount(getAmount(section.getCurrentPath() + "." + SubPath.ITEM_AMOUNT.toString(), new Amount(1)));
+                prefab.withAmount(getAmount(section.getCurrentPath() + "." + SubPath.ITEM_AMOUNT.toString(), new Amount(1)));
 
             if (section.contains(SubPath.ITEM_GLOW.toString()))
-                b.withGlow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
+                prefab.withGlow(section.getBoolean(SubPath.ITEM_GLOW.toString()));
 
             // Lore
             if (section.contains(SubPath.ITEM_LORE.toString()))
-                b.withLore(section.getStringList(SubPath.ITEM_LORE.toString()));
+                prefab.withLore(section.getStringList(SubPath.ITEM_LORE.toString()));
 
             // Enchants
             if (section.contains(SubPath.ITEM_ENCHANTS.toString())) {
@@ -653,7 +654,7 @@ public class Configuration {
                         continue;
                     }
 
-                    b.addEnchant(xEnchantment, level);
+                    prefab.addEnchant(xEnchantment, level);
                 }
             }
 
@@ -662,22 +663,22 @@ public class Configuration {
                 for (String flagName : section.getStringList(SubPath.ITEM_FLAGS.toString())) {
                     ItemFlag flag = ItemFlag.valueOf(flagName);
 
-                    b.withFlags(flag);
+                    prefab.withFlags(flag);
                 }
 
             // Skull data
             if (section.contains(SubPath.ITEM_SKULL_DATA.toString()))
-                b.withSkullData(SkullData.fromString(section.getString(SubPath.ITEM_SKULL_DATA.toString())));
+                prefab.withSkullData(SkullData.fromString(section.getString(SubPath.ITEM_SKULL_DATA.toString())));
 
             // NBT
             if (section.contains(SubPath.ITEM_NBT.toString()))
                 for (String nbtString : section.getStringList(SubPath.ITEM_NBT.toString()))
                     if (nbtString.contains(SubPath.ITEM_NBT_DELIMITER.toString())) {
                         String[] arr = nbtString.split(SubPath.ITEM_NBT_DELIMITER.toString());
-                        b.addNBT(arr[0], arr.length > 1 ? arr[1] : "");
+                        prefab.addNBT(arr[0], arr.length > 1 ? arr[1] : "");
                     }
 
-            return b;
+            return prefab;
         } catch (Exception e) {
             if (console.isDebug())
                 e.printStackTrace();
@@ -715,7 +716,7 @@ public class Configuration {
         section.set(SubPath.ITEM_TYPE.toString(), builder.getMaterial().toString());
 
         if (builder.hasDamage())
-            section.set(SubPath.ITEM_DATA.toString(), builder.getDamage().toString());
+            section.set(SubPath.ITEM_DAMAGE.toString(), builder.getDamage().toString());
 
         if (!(builder.getAmount().isFixed() && builder.getAmount().getFixedValue() == 1))
             section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().isFixed() ? (int) builder.getAmount().getFixedValue() : builder.getAmount().toString());
