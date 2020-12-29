@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.item.nbt.NBTContainer;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.struct.Context;
@@ -45,7 +46,6 @@ public class ItemPrefab implements Cloneable {
     @Getter
     private final Set<ItemFlag> flags = new HashSet<>();
 
-    @Getter
     private final Map<String, NBTContainer> nbt = new HashMap<>();
 
     // Extra data
@@ -79,7 +79,7 @@ public class ItemPrefab implements Cloneable {
 
         this.enchants.addAll(prefab.getEnchants());
         this.flags.addAll(prefab.getFlags());
-        this.nbt.putAll(prefab.getNbt());
+        this.nbt.putAll(prefab.getNBT());
 
         this.skullData = new SkullData(prefab.getSkullData());
         this.damage = new ItemDamage(prefab.getDamage());
@@ -224,6 +224,11 @@ public class ItemPrefab implements Cloneable {
 
     public ItemPrefab withAmount(Amount amount) {
         this.amount = amount;
+        return this;
+    }
+
+    public ItemPrefab withAmount(double value) {
+        this.amount = new Amount(value);
         return this;
     }
 
@@ -402,7 +407,7 @@ public class ItemPrefab implements Cloneable {
         return !this.nbt.isEmpty();
     }
 
-    public boolean hasNBTKey(String key) {
+    public boolean hasNBT(String key) {
         return this.nbt.containsKey(key);
     }
 
@@ -410,7 +415,21 @@ public class ItemPrefab implements Cloneable {
         return this.nbt.get(key).getValue().equals(value);
     }
 
+    @Nullable
+    public <T> T getNBTValue(String key, Class<T> clazz) {
+        NBTContainer container = getNBT().get(key);
+
+        if (container == null || clazz == null || !clazz.isAssignableFrom(container.getValue().getClass()))
+            return null;
+
+        return clazz.cast(container.getValue());
+    }
+
     public boolean hasDamage() {
         return damage != null && damage.hasDamage();
+    }
+
+    public Map<String, NBTContainer> getNBT() {
+        return nbt;
     }
 }

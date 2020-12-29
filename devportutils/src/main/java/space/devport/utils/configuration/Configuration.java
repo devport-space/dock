@@ -730,9 +730,9 @@ public class Configuration {
         if (!builder.getFlags().isEmpty())
             section.set(SubPath.ITEM_FLAGS.toString(), builder.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
 
-        if (!builder.getNbt().isEmpty()) {
+        if (!builder.getNBT().isEmpty()) {
             List<String> nbt = new ArrayList<>();
-            builder.getNbt().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v.toString()));
+            builder.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v.toString()));
             section.set(SubPath.ITEM_NBT.toString(), nbt);
         }
 
