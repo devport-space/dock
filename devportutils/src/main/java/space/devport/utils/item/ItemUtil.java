@@ -22,7 +22,7 @@ public class ItemUtil {
      */
     @Contract("null -> null")
     public ICompound getCompound(ItemStack item) {
-        return item == null ? null : versionManager.getCompoundFactory().of(item);
+        return item == null || versionManager == null ? null : versionManager.getCompoundFactory().of(item);
     }
 
     /**

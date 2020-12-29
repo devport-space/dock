@@ -106,10 +106,11 @@ public class ItemPrefab implements Cloneable {
         this.flags.addAll(meta.getItemFlags());
 
         ICompound compound = ItemUtil.getCompound(item);
-        for (String key : compound.getKeys()) {
-            if (!FILTERED_NBT.contains(key))
-                nbt.put(key, TypeUtil.containValue(compound, key));
-        }
+        if (compound != null)
+            for (String key : compound.getKeys()) {
+                if (!FILTERED_NBT.contains(key))
+                    nbt.put(key, TypeUtil.containValue(compound, key));
+            }
 
         this.skullData = SkullData.readSkullTexture(item);
         this.damage = ItemDamage.from(item);
