@@ -45,8 +45,8 @@ public class Menu implements MenuListener {
 
     private final DevportPlugin devportPlugin;
 
-    public Menu(String name, DevportPlugin devportPlugin) {
-        this(name, new MenuBuilder(devportPlugin));
+    public Menu(String name, DevportPlugin plugin) {
+        this(name, new MenuBuilder(plugin));
     }
 
     public Menu(String name, MenuBuilder builder) {

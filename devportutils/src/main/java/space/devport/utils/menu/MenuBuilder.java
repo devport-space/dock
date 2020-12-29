@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
-import space.devport.utils.logging.ConsoleOutput;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.menu.item.MatrixItem;
