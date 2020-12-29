@@ -3,10 +3,13 @@ package space.devport.utils.item;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.utility.ParseUtil;
 
 import java.util.Random;
 
+@Log
 public class Amount {
 
     private final transient Random random = new Random();
@@ -72,12 +75,15 @@ public class Amount {
                 return null;
             }
 
-            double low = Double.parseDouble(arr[0]);
-            double high = Double.parseDouble(arr[1]);
+            double low = ParseUtil.parseDouble(arr[0],
+                    c -> log.warning("Failed to parse double from " + c.getInput() + ", using 0 as default."));
+            double high = ParseUtil.parseDouble(arr[1],
+                    c -> log.warning("Failed to parse double from " + c.getInput() + ", using 0 as default."));
 
             return new Amount(low, high);
         } else {
-            return new Amount(Double.parseDouble(str));
+            return new Amount(ParseUtil.parseDouble(str,
+                    c -> log.warning("Failed to parse double from " + c.getInput() + ", using 0 as default.")));
         }
     }
 

@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class CallbackContent {
 
-    @Getter
     private final String input;
     @Getter
     private final Throwable throwable;
@@ -26,6 +25,11 @@ public class CallbackContent {
     @NotNull
     public static CallbackContent createNew(Throwable throwable, String variable) {
         return new CallbackContent(throwable, variable, null);
+    }
+
+    @NotNull
+    public String getInput() {
+        return input == null ? "null" : input;
     }
 
     public void printStackTrace() {
