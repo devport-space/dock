@@ -26,17 +26,17 @@ public enum ServerVersion {
 
     @Getter
     @NotNull
-    private static String nmsVersion = "v1_12_R2";
+    private static String nmsVersion = "v1_16_R3";
 
     @Setter
     @NotNull
-    public static ServerVersion defaultVersion = v1_12;
+    public static ServerVersion defaultVersion = v1_16;
 
     public static void loadServerVersion() {
         ServerVersion.nmsVersion = SpigotHelper.extractNMSVersion(false);
 
         if (Strings.isNullOrEmpty(nmsVersion))
-            nmsVersion = "v1_12_R2";
+            nmsVersion = "v1_16_R3";
 
         String nmsVersion = SpigotHelper.extractNMSVersion(true);
 
@@ -44,7 +44,7 @@ public enum ServerVersion {
             return;
 
         try {
-            currentVersion = valueOf(nmsVersion);
+            ServerVersion.currentVersion = valueOf(nmsVersion);
         } catch (IllegalArgumentException ignored) {
         }
     }
