@@ -1,6 +1,7 @@
 package space.devport.utils.logging;
 
 import lombok.Getter;
+import org.bukkit.command.CommandSender;
 import space.devport.utils.DevportPlugin;
 
 import java.util.logging.Level;
@@ -24,5 +25,13 @@ public class DevportLogger {
 
         logger.setLevel(Level.INFO);
         logger.addHandler(new DevportLogHandler(consoleOutput));
+    }
+
+    public void addListener(CommandSender listener) {
+        consoleOutput.addListener(listener);
+    }
+
+    public void removeListener(CommandSender listener) {
+        consoleOutput.removeListener(listener);
     }
 }
