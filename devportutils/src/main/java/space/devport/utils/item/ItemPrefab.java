@@ -81,8 +81,8 @@ public class ItemPrefab implements Cloneable {
         this.flags.addAll(prefab.getFlags());
         this.nbt.putAll(prefab.getNBT());
 
-        this.skullData = new SkullData(prefab.getSkullData());
-        this.damage = new ItemDamage(prefab.getDamage());
+        this.skullData = SkullData.of(prefab.getSkullData());
+        this.damage = ItemDamage.of(prefab.getDamage());
 
         this.glow = prefab.isGlow();
 
@@ -324,7 +324,7 @@ public class ItemPrefab implements Cloneable {
     }
 
     public ItemPrefab withSkullData(String identifier) {
-        this.skullData = SkullData.fromString(identifier);
+        this.skullData = SkullData.of(identifier);
         return this;
     }
 

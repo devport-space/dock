@@ -663,7 +663,7 @@ public class Configuration {
 
             // Skull data
             if (section.contains(SubPath.ITEM_SKULL_DATA.toString()))
-                prefab.withSkullData(SkullData.fromString(section.getString(SubPath.ITEM_SKULL_DATA.toString())));
+                prefab.withSkullData(SkullData.of(section.getString(SubPath.ITEM_SKULL_DATA.toString())));
 
             // NBT
             if (section.contains(SubPath.ITEM_NBT.toString()))

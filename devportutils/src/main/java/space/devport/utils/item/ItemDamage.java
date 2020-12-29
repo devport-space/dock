@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemDamage {
@@ -18,8 +19,13 @@ public class ItemDamage {
         setDamage(damage);
     }
 
-    public ItemDamage(ItemDamage damage) {
+    private ItemDamage(ItemDamage damage) {
         setDamage(damage.getDamage());
+    }
+
+    @Contract("null -> null")
+    public static ItemDamage of(ItemDamage damage) {
+        return damage == null ? null : new ItemDamage(damage);
     }
 
     @Nullable

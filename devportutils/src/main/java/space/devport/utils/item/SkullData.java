@@ -11,6 +11,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.text.Placeholders;
@@ -28,19 +29,24 @@ public class SkullData {
     @Getter
     private final transient Placeholders placeholders;
 
-    public SkullData(String identifier) {
+    private SkullData(String identifier) {
         this.identifier = identifier;
         this.placeholders = new Placeholders();
     }
 
-    public SkullData(SkullData skullData) {
+    private SkullData(SkullData skullData) {
         this.identifier = skullData.getIdentifier();
         this.placeholders = skullData.getPlaceholders();
     }
 
     @Nullable
-    public static SkullData fromString(@Nullable String str) {
-        return Strings.isNullOrEmpty(str) ? null : new SkullData(str);
+    public static SkullData of(@Nullable String identifier) {
+        return Strings.isNullOrEmpty(identifier) ? null : new SkullData(identifier);
+    }
+
+    @Contract("null -> null")
+    public static SkullData of(SkullData skullData) {
+        return skullData == null ? null : new SkullData(skullData);
     }
 
     @Nullable
@@ -49,12 +55,12 @@ public class SkullData {
         if (item == null || item.getItemMeta() == null || !(item.getItemMeta() instanceof SkullMeta))
             return null;
 
-        return new SkullData(SkullUtils.getSkinValue(item.getItemMeta()));
+        return SkullData.of(SkullUtils.getSkinValue(item.getItemMeta()));
     }
 
     @Nullable
     public static SkullData readSkullTexture(Block block) {
-        return block == null ? null : fromString(base64fromBlock(block));
+        return block == null ? null : of(base64fromBlock(block));
     }
 
     @Nullable
