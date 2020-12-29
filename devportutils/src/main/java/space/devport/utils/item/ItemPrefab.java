@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.item.nbt.NBTContainer;
@@ -114,20 +115,24 @@ public class ItemPrefab implements Cloneable {
         this.damage = ItemDamage.from(item);
     }
 
-    public static ItemPrefab createNew(@NotNull XMaterial material) {
-        return new ItemPrefab(material);
+    @Contract("null -> null")
+    public static ItemPrefab createNew(XMaterial material) {
+        return material == null ? null : new ItemPrefab(material);
     }
 
-    public static ItemPrefab createNew(@NotNull Material material) {
-        return new ItemPrefab(XMaterial.matchXMaterial(material));
+    @Contract("null -> null")
+    public static ItemPrefab createNew(Material material) {
+        return material == null ? null : new ItemPrefab(XMaterial.matchXMaterial(material));
     }
 
-    public static ItemPrefab of(@NotNull ItemPrefab prefab) {
-        return new ItemPrefab(prefab);
+    @Contract("null -> null")
+    public static ItemPrefab of(ItemPrefab prefab) {
+        return prefab == null ? null : new ItemPrefab(prefab);
     }
 
-    public static ItemPrefab of(@NotNull ItemStack item) {
-        return new ItemPrefab(item);
+    @Contract("null -> null")
+    public static ItemPrefab of(ItemStack item) {
+        return item == null ? null : new ItemPrefab(item);
     }
 
     @SuppressWarnings("MethodDoesntCallSuperMethod")

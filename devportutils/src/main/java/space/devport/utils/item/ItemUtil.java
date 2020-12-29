@@ -3,6 +3,7 @@ package space.devport.utils.item;
 import lombok.Setter;
 import lombok.experimental.UtilityClass;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.version.VersionManager;
 import space.devport.utils.version.api.ICompound;
@@ -19,8 +20,9 @@ public class ItemUtil {
     /**
      * Get ItemStack NBT compound.
      */
+    @Contract("null -> null")
     public ICompound getCompound(ItemStack item) {
-        return versionManager.getCompoundFactory().of(item);
+        return item == null ? null : versionManager.getCompoundFactory().of(item);
     }
 
     /**
