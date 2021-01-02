@@ -50,7 +50,8 @@ public class HologramManager extends DevportManager {
 
     @Override
     public void onDisable() {
-        hologramProvider.save();
+        if (isHooked())
+            hologramProvider.save();
     }
 
     public void attemptHook() {
