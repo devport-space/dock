@@ -29,6 +29,10 @@ public enum LogLevel {
                 .findAny();
     }
 
+    public static void forward(Level level, ConsoleOutput output, String message) {
+        fromLevel(level).ifPresent(l -> l.forward(output, message));
+    }
+
     public void forward(ConsoleOutput consoleOutput, String message) {
         forwarder.forward(consoleOutput, message);
     }

@@ -25,10 +25,6 @@ public class ConsoleOutput {
 
     @Getter
     @Setter
-    private boolean debug = false;
-
-    @Getter
-    @Setter
     private boolean colors = false;
 
     @Getter
@@ -75,14 +71,12 @@ public class ConsoleOutput {
      * @param msg Message to send, can contain color codes.
      */
     public void debug(String msg) {
-        if (debug) {
-            final String finalMsg = prefix + "&eDEBUG: " + msg;
+        final String finalMsg = prefix + "&eDEBUG: " + msg;
 
-            if (colors) colored(finalMsg);
-            else log(msg, str -> Bukkit.getLogger().info(StringUtil.stripColor(finalMsg)));
+        if (colors) colored(finalMsg);
+        else log(msg, str -> Bukkit.getLogger().info(StringUtil.stripColor(finalMsg)));
 
-            toListeners(finalMsg);
-        }
+        toListeners(finalMsg);
     }
 
     /**
@@ -92,11 +86,9 @@ public class ConsoleOutput {
      * @param origin CommanderSender who caused the message
      */
     public void debug(String msg, CommandSender origin) {
-        if (debug) {
-            addListener(origin);
-            debug(msg);
-            removeListener(origin);
-        }
+        addListener(origin);
+        debug(msg);
+        removeListener(origin);
     }
 
     /**

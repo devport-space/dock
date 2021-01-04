@@ -13,7 +13,7 @@ public class DevportLogHandler extends Handler {
 
     @Override
     public void publish(LogRecord record) {
-        LogLevel.fromLevel(record.getLevel()).ifPresent(l -> l.forward(consoleOutput, record.getMessage()));
+        LogLevel.forward(record.getLevel(), consoleOutput, record.getMessage());
     }
 
     @Override

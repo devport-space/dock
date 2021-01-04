@@ -1,7 +1,9 @@
 package space.devport.utils.logging;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.Contract;
 import space.devport.utils.DevportPlugin;
 
 import java.util.logging.Level;
@@ -11,6 +13,8 @@ public class DevportLogger {
 
     public static String LOGGER_KEY = "space.devport";
 
+    private final Logger parentLogger = Logger.getLogger(LOGGER_KEY);
+
     @Getter
     private final ConsoleOutput consoleOutput;
 
@@ -19,12 +23,22 @@ public class DevportLogger {
     }
 
     public void setup() {
-        Logger logger = Logger.getLogger(LOGGER_KEY);
+        parentLogger.setUseParentHandlers(false);
 
-        logger.setUseParentHandlers(false);
+        setLevel(Level.INFO);
+        parentLogger.addHandler(new DevportLogHandler(consoleOutput));
+    }
 
-        logger.setLevel(Level.INFO);
-        logger.addHandler(new DevportLogHandler(consoleOutput));
+    public void setLevel(Level level) {
+        parentLogger.setLevel(level);
+    }
+
+    @Contract("null -> fail")
+    public void setLevel(String name) {
+        if (!Strings.isNullOrEmpty(name)) {
+            Level level = Level.parse(name);
+            setLevel(level);
+        }
     }
 
     public void addListener(CommandSender listener) {

@@ -139,7 +139,9 @@ public abstract class DevportPlugin extends JavaPlugin {
             StringUtil.compilePattern();
 
             if (configuration.getFileConfiguration().getBoolean("debug-enabled", false))
-                log.setLevel(DebugLevel.DEBUG);
+                devportLogger.setLevel(DebugLevel.DEBUG);
+            else
+                devportLogger.setLevel(configuration.getFileConfiguration().getString("debug-level", "INFO"));
 
             this.prefix = getColor() + configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
@@ -186,7 +188,11 @@ public abstract class DevportPlugin extends JavaPlugin {
                 StringUtil.compilePattern();
             }
 
-            devportLogger.getConsoleOutput().setDebug(configuration.getFileConfiguration().getBoolean("debug-enabled", false));
+            if (configuration.getFileConfiguration().getBoolean("debug-enabled", false))
+                devportLogger.setLevel(DebugLevel.DEBUG);
+            else
+                devportLogger.setLevel(configuration.getFileConfiguration().getString("debug-level", "INFO"));
+
             this.prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
