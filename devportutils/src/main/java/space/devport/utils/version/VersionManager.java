@@ -54,7 +54,7 @@ public class VersionManager extends DevportManager {
             T t = Reflection.obtainInstance(factoryClazz, null, null);
             store.accept(t);
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             e.printStackTrace();
             return false;
         }

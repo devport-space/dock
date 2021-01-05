@@ -88,6 +88,10 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
 
+        // Load version
+        ServerVersion.loadServerVersion();
+        ServerType.loadServerType();
+
         if (use(UsageFlag.NMS)) {
             VersionManager versionManager = new VersionManager(this);
             registerManager(versionManager);
@@ -128,10 +132,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
-
-        // Load version
-        ServerVersion.loadServerVersion();
-        ServerType.loadServerType();
 
         // Print header
         log.info(String.format("Starting up %s %s", getDescription().getName(), getDescription().getVersion()));
