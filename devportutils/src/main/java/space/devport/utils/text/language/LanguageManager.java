@@ -10,13 +10,12 @@ import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.configuration.Configuration;
-import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.text.message.Message;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @Log
 public class LanguageManager extends DevportManager {
@@ -25,10 +24,10 @@ public class LanguageManager extends DevportManager {
     private final Map<String, Message> cache = new HashMap<>();
 
     @Getter
-    protected final Map<String, Message> defaults = new HashMap<>();
+    private final Map<String, Message> defaults = new HashMap<>();
 
     @Getter
-    private final List<LanguageDefaults> languageDefaults = new ArrayList<>();
+    private final Set<LanguageDefaults> languageDefaults = new HashSet<>();
 
     @Getter
     private final Configuration language;
@@ -55,7 +54,6 @@ public class LanguageManager extends DevportManager {
 
     public void addDefault(String path, String... message) {
         this.defaults.put(path, new Message(message));
-        log.log(DebugLevel.DEBUG, "Added default " + path);
     }
 
     public void addDefaults(LanguageDefaults defaults) {
@@ -63,7 +61,7 @@ public class LanguageManager extends DevportManager {
         log.info("Added language defaults " + defaults.getClass().getSimpleName());
     }
 
-    public void captureDefaults() {
+    private void captureDefaults() {
         if (setInternalDefaults) {
             for (CommandResult result : CommandResult.values()) {
                 if (result.isDefaultMessage())
@@ -75,10 +73,11 @@ public class LanguageManager extends DevportManager {
             addDefault("Commands.Help.Header", "&8&m        &r &" + plugin.getColor().getChar() + "%pluginName% &7v&f%version% &8&m        ");
             addDefault("Commands.Help.Sub-Command-Line", "&" + plugin.getColor().getChar() + "%usage% &8- &7%description%");
         }
+
         languageDefaults.forEach(LanguageDefaults::setDefaults);
     }
 
-    public void load() {
+    private void load() {
 
         language.load();
 
@@ -87,46 +86,77 @@ public class LanguageManager extends DevportManager {
 
         for (Map.Entry<String, Message> entry : defaults.entrySet()) {
 
+            String path = entry.getKey();
+
             Message message;
-            if (!language.getFileConfiguration().contains(entry.getKey())) {
-                language.setMessage(entry.getKey(), entry.getValue());
-                message = defaults.get(entry.getKey());
+            if (!language.getFileConfiguration().contains(path)) {
+                language.setMessage(path, entry.getValue());
+                message = defaults.get(path);
                 added++;
                 save = true;
             } else
-                message = language.getMessage(entry.getKey(), new Message());
+                message = language.getMessage(path, new Message());
 
-            cache.put(entry.getKey(), message);
+            cache.put(path, message);
         }
 
         if (save)
             language.save();
 
-        log.info("Loaded " + this.cache.size() + " " + (added != 0 ? "and added " + added + " new " : "") + "message(s)...");
+        log.info(String.format("Loaded %d%s message(s)...", cache.size(), added == 0 ? "" : String.format(" and added %d", added)));
     }
 
+    /**
+     * Get a new Message instance from {@param path}
+     * Sets the message to parse with the global plugin placeholders.
+     *
+     * @param path Path of the message to get
+     * @return Message instance, empty if path is invalid
+     */
     public Message get(@NotNull String path) {
-        Message msg = new Message(cache.get(path));
-        msg.parseWith(plugin.getGlobalPlaceholders());
-        return msg;
+        Message message = new Message(cache.get(path));
+        message.parseWith(plugin.getGlobalPlaceholders());
+        return message;
     }
 
+    /**
+     * Get a new Message instance from {@param path} and prefix it with %prefix%.
+     * Sets the message to parse with the global plugin placeholders.
+     *
+     * @param path Path of the message to get
+     * @return Message instance, empty if path is invalid
+     */
     public Message getPrefixed(@NotNull String path) {
-        Message msg = get(path);
+        Message message = get(path);
 
-        if (msg.isEmpty()) return msg;
+        if (message.isEmpty())
+            return message;
 
-        msg.prefix("%prefix%");
-        msg.parseWith(plugin.getGlobalPlaceholders());
+        message.prefix("%prefix%");
+        message.parseWith(plugin.getGlobalPlaceholders());
 
-        return msg;
+        return message;
     }
 
+    /**
+     * Send a message from {@param path} to {@param sender}
+     *
+     * @param sender CommandSender to send the message to
+     * @param path   Path of the message to send
+     */
     public void send(@Nullable CommandSender sender, @NotNull String path) {
-        if (sender == null) return;
+        if (sender == null)
+            return;
+
         get(path).send(sender);
     }
 
+    /**
+     * Get a Message instance by {@code #getPrefixed(String path)} and send it to {@param sender}
+     *
+     * @param sender CommandSender to send the message to
+     * @param path   Path of the message to send
+     */
     public void sendPrefixed(@Nullable CommandSender sender, @NotNull String path) {
         if (sender == null) return;
         getPrefixed(path).send(sender);
