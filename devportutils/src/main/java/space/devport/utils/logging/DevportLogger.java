@@ -3,7 +3,6 @@ package space.devport.utils.logging;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.Contract;
 import space.devport.utils.DevportPlugin;
 
 import java.util.logging.Level;
@@ -33,7 +32,6 @@ public class DevportLogger {
         parentLogger.setLevel(level);
     }
 
-    @Contract("null -> fail")
     public void setLevel(String name) {
         if (!Strings.isNullOrEmpty(name)) {
             Level level = Level.parse(name);
