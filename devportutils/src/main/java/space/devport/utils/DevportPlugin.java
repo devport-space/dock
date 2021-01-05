@@ -14,8 +14,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import space.devport.utils.commands.build.BuildableMainCommand;
 import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
+import space.devport.utils.commands.build.BuildableSubCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.holograms.HologramManager;
@@ -269,6 +271,16 @@ public abstract class DevportPlugin extends JavaPlugin {
     public MainCommand registerMainCommand(MainCommand mainCommand) {
         getManager(CommandManager.class).registerCommand(mainCommand);
         return mainCommand;
+    }
+
+    public BuildableMainCommand buildMainCommand(String name) {
+        BuildableMainCommand mainCommand = new BuildableMainCommand(this, name);
+        registerMainCommand(mainCommand);
+        return mainCommand;
+    }
+
+    public BuildableSubCommand buildSubCommand(String name) {
+        return new BuildableSubCommand(this, name);
     }
 
     public boolean use(UsageFlag usageFlag) {

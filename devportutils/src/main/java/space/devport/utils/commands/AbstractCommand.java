@@ -35,6 +35,8 @@ public abstract class AbstractCommand {
 
     protected final LanguageManager language;
 
+    private CommandExecutor executor;
+
     public AbstractCommand(DevportPlugin plugin, String name) {
         this.name = name;
         this.preconditions = new Preconditions();
@@ -44,7 +46,8 @@ public abstract class AbstractCommand {
     }
 
     // This should be overridden by commands and performs the wanted action itself.
-    protected abstract CommandResult perform(CommandSender sender, String label, String[] args);
+    @NotNull
+    protected abstract CommandResult perform(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args);
 
     @Nullable
     public abstract ArgumentRange getRange();
@@ -131,7 +134,13 @@ public abstract class AbstractCommand {
         if (!this.preconditions.checkAdditional(sender, false))
             return;
 
-        perform(sender, label, args).getMessage(plugin)
+        CommandResult result;
+        if (executor != null)
+            result = executor.execute(sender, label, args);
+        else
+            result = perform(sender, label, args);
+
+        result.getMessage(plugin)
                 .parseWith(commandPlaceholders)
                 .send(sender);
     }
@@ -232,6 +241,11 @@ public abstract class AbstractCommand {
                 permission += "." + subCommand.getParent().getName().toLowerCase();
         }
         return permission + "." + this.getName().toLowerCase();
+    }
+
+    public AbstractCommand withExecutor(CommandExecutor executor) {
+        this.executor = executor;
+        return this;
     }
 
     @Override

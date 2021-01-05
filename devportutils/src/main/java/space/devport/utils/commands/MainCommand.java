@@ -68,7 +68,7 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     @Override
-    protected CommandResult perform(CommandSender sender, String label, String[] args) {
+    protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
 
         if (args.length == 0) {
             constructHelp(sender, label).send(sender);
@@ -152,6 +152,23 @@ public abstract class MainCommand extends AbstractCommand {
         return help.parseWith(commandParams);
     }
 
+    public void addLanguage() {
+        if (plugin.use(UsageFlag.LANGUAGE)) {
+
+            if (getDefaultUsage() != null)
+                language.addDefault("Commands.Help." + getName() + ".Usage", getDefaultUsage());
+            if (getDefaultDescription() != null)
+                language.addDefault("Commands.Help." + getName() + ".Description", getDefaultDescription());
+
+            language.addDefault("Commands.Help.Header", header.toString());
+            this.extraEntries.forEach((key, entry) -> language.addDefault("Commands.Help.Extra." + key, entry.toString()));
+            language.addDefault("Commands.Help.Footer", footer.toString());
+            language.addDefault("Commands.Help.Line-Format", lineFormat);
+        }
+
+        this.subCommands.forEach(SubCommand::addLanguage);
+    }
+
     public MainCommand withFooter(Message footer) {
         this.footer = footer;
         return this;
@@ -172,26 +189,15 @@ public abstract class MainCommand extends AbstractCommand {
         return this;
     }
 
-    public void addLanguage() {
-        if (plugin.use(UsageFlag.LANGUAGE)) {
-
-            if (getDefaultUsage() != null)
-                language.addDefault("Commands.Help." + getName() + ".Usage", getDefaultUsage());
-            if (getDefaultDescription() != null)
-                language.addDefault("Commands.Help." + getName() + ".Description", getDefaultDescription());
-
-            language.addDefault("Commands.Help.Header", header.toString());
-            this.extraEntries.forEach((key, entry) -> language.addDefault("Commands.Help.Extra." + key, entry.toString()));
-            language.addDefault("Commands.Help.Footer", footer.toString());
-            language.addDefault("Commands.Help.Line-Format", lineFormat);
-        }
-
-        this.subCommands.forEach(SubCommand::addLanguage);
-    }
-
-    public MainCommand addSubCommand(SubCommand subCommand) {
+    public MainCommand withSubCommand(SubCommand subCommand) {
         this.subCommands.add(subCommand);
         subCommand.withParent(this);
+        return this;
+    }
+
+    @Override
+    public MainCommand withExecutor(CommandExecutor executor) {
+        super.withExecutor(executor);
         return this;
     }
 }

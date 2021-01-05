@@ -23,7 +23,7 @@ public abstract class SubCommand extends AbstractCommand {
     }
 
     @Override
-    protected CommandResult perform(CommandSender sender, String label, String[] args) {
+    protected @NotNull CommandResult perform(@NotNull CommandSender sender, @NotNull String label, String[] args) {
         return CommandResult.FAILURE;
     }
 

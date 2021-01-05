@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
