@@ -3,6 +3,7 @@ package space.devport.utils.text;
 import com.google.common.base.Strings;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.utility.reflection.ServerVersion;
@@ -38,9 +39,10 @@ public class StringUtil {
         hexPattern = Pattern.compile(HEX_PATTERN);
     }
 
-    // Strip colors from String
-    public String stripColor(String msg) {
-        return msg != null ? ChatColor.stripColor(msg) : null;
+    @Contract("null -> null;!null -> !null")
+    @Nullable
+    public String stripColor(@Nullable String msg) {
+        return ChatColor.stripColor(msg);
     }
 
     /**
@@ -49,8 +51,8 @@ public class StringUtil {
      * @param msg Default string
      * @return String with Bukkit color codes
      */
-    @Nullable
-    public String color(@Nullable String msg) {
+    @Contract("null -> null")
+    public String color(String msg) {
         return color(msg, '&');
     }
 
@@ -61,8 +63,8 @@ public class StringUtil {
      * @param colorChar Color character to parse colors with
      * @return String with Bukkit color codes
      */
-    @Nullable
-    public String color(@Nullable String msg, char colorChar) {
+    @Contract("null,_ -> null")
+    public String color(String msg, char colorChar) {
         return msg == null ? null : hexColor(msg, colorChar);
     }
 
@@ -126,9 +128,10 @@ public class StringUtil {
      * @param delimiter Line delimiter to use
      * @return String with line separators.
      */
+    @Contract("null,_ -> null;_,null -> null")
     @Nullable
-    public String listToString(@Nullable List<String> list, @NotNull String delimiter) {
-        return list == null ? null : String.join(delimiter, list);
+    public String listToString(@Nullable List<String> list, @Nullable String delimiter) {
+        return list == null || delimiter == null ? null : String.join(delimiter, list);
     }
 
     /**

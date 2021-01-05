@@ -569,7 +569,7 @@ public class Configuration {
      * @param path String path to ItemBuilder
      * @return ItemBuilder object
      */
-    public ItemPrefab getItem(@Nullable String path, @Nullable ItemPrefabImpl defaultValue) {
+    public ItemPrefab getItem(@Nullable String path, @Nullable ItemPrefab defaultValue) {
 
         /// Check path
         if (Strings.isNullOrEmpty(path))

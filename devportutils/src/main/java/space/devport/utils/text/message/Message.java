@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
@@ -107,12 +107,13 @@ public class Message {
      * @return MessageBuilder object
      */
     public Message set(@Nullable Collection<String> message) {
-        this.message = message != null ? new ArrayList<>(message) : new ArrayList<>();
+        this.message = message == null ? new ArrayList<>() : new ArrayList<>(message);
         return this;
     }
 
     public Message set(@Nullable Message message) {
-        if (message == null) return set(new ArrayList<>());
+        if (message == null)
+            return set((Collection<String>) null);
         return set(message.getMessage());
     }
 
@@ -223,8 +224,9 @@ public class Message {
      * @param delimiter Optional String, delimiter to use
      * @return Parsed String
      */
-    @NotNull
-    public String toString(@NotNull String delimiter) {
+    @Contract("null -> null")
+    @Nullable
+    public String toString(@Nullable String delimiter) {
         return StringUtil.listToString(message, delimiter);
     }
 
@@ -274,12 +276,12 @@ public class Message {
         sender.sendMessage(parse().color().toString());
     }
 
-    /**
+    /*/**
      * Send a message prefixed with the DevportPlugin prefix.
      *
      * @param //sender CommandSender to send to
-     */
-    /* //FIXME: somehow get plugin here.
+     *
+     //FIXME: somehow get plugin here.
     public void sendPrefixed(CommandSender sender) {
 
         if (sender == null) return;
