@@ -82,15 +82,15 @@ public abstract class DevportPlugin extends JavaPlugin {
         this.devportLogger = new DevportLogger(this);
         devportLogger.setup();
 
+        // Load version
+        ServerVersion.loadServerVersion();
+        ServerType.loadServerType();
+
         this.factories.add(new PrefabFactory(this));
         this.factories.add(new CompoundFactory(this));
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
-
-        // Load version
-        ServerVersion.loadServerVersion();
-        ServerType.loadServerType();
 
         if (use(UsageFlag.NMS)) {
             VersionManager versionManager = new VersionManager(this);

@@ -3,6 +3,7 @@ package space.devport.utils.version;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.IFactory;
+import space.devport.utils.UsageFlag;
 import space.devport.utils.version.api.ICompound;
 import space.devport.utils.version.api.ICompoundFactory;
 
@@ -11,7 +12,8 @@ public class CompoundFactory implements IFactory {
     private static ICompoundFactory compoundFactory;
 
     public CompoundFactory(DevportPlugin plugin) {
-        CompoundFactory.compoundFactory = plugin.getManager(VersionManager.class).getCompoundFactory();
+        if (plugin.use(UsageFlag.NMS))
+            CompoundFactory.compoundFactory = plugin.getManager(VersionManager.class).getCompoundFactory();
     }
 
     public void destroy() {

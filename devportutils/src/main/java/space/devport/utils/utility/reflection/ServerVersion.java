@@ -1,7 +1,6 @@
 package space.devport.utils.utility.reflection;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,13 +23,17 @@ public enum ServerVersion {
 
     private static ServerVersion currentVersion;
 
-    @Getter
-    @NotNull
-    private static String nmsVersion = "v1_16_R3";
+    private static String nmsVersion;
 
     @Setter
     @NotNull
     public static ServerVersion defaultVersion = v1_16;
+
+    public static String getNmsVersion() {
+        if (nmsVersion == null)
+            loadServerVersion();
+        return nmsVersion;
+    }
 
     public static void loadServerVersion() {
         ServerVersion.nmsVersion = SpigotHelper.extractNMSVersion(false);
