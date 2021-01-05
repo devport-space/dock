@@ -6,6 +6,7 @@ import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.ItemPrefab;
+import space.devport.utils.item.PrefabFactory;
 import space.devport.utils.menu.events.ItemClick;
 import space.devport.utils.struct.Rewards;
 
@@ -53,7 +54,7 @@ public class MenuItem {
         this.slot = menuItem.getSlot();
         this.clickable = menuItem.isClickable();
 
-        this.prefab = ItemPrefab.of(menuItem.getPrefab());
+        this.prefab = PrefabFactory.of(menuItem.getPrefab());
 
         this.rewards = menuItem.getRewards();
         this.cancelClick = menuItem.isCancelClick();

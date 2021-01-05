@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,10 +14,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.item.Amount;
-import space.devport.utils.item.ItemDamage;
-import space.devport.utils.item.ItemPrefab;
-import space.devport.utils.item.SkullData;
+import space.devport.utils.item.*;
 import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.menu.MenuBuilder;
 import space.devport.utils.menu.item.MenuItem;
@@ -573,7 +569,7 @@ public class Configuration {
      * @param path String path to ItemBuilder
      * @return ItemBuilder object
      */
-    public ItemPrefab getItem(@Nullable String path, @Nullable ItemPrefab defaultValue) {
+    public ItemPrefab getItem(@Nullable String path, @Nullable ItemPrefabImpl defaultValue) {
 
         /// Check path
         if (Strings.isNullOrEmpty(path))
@@ -602,14 +598,7 @@ public class Configuration {
                 return defaultValue;
             }
 
-            Material material = xMaterial.parseMaterial();
-
-            if (material == null) {
-                log.warning("Could not parse material from " + type + " at " + composePath(path) + ", returning null.");
-                return defaultValue;
-            }
-
-            ItemPrefab prefab = ItemPrefab.createNew(material);
+            ItemPrefab prefab = PrefabFactory.createNew(xMaterial);
 
             // Damage
             if (section.contains(SubPath.ITEM_DAMAGE.toString()))
@@ -695,10 +684,10 @@ public class Configuration {
     /**
      * Set an ItemPrefab object to a yaml file under a given path.
      *
-     * @param path    Path to save it under
-     * @param builder ItemPrefab to save.
+     * @param path   Path to save it under
+     * @param prefab ItemPrefab to save.
      */
-    public void setItem(@Nullable String path, @NotNull ItemPrefab builder) {
+    public void setItem(@Nullable String path, @NotNull ItemPrefab prefab) {
 
         if (Strings.isNullOrEmpty(path)) {
             log.severe("Could not set ItemPrefab to " + composePath(path) + ", path null.");
@@ -707,40 +696,40 @@ public class Configuration {
 
         ConfigurationSection section = section(path);
 
-        section.set(SubPath.ITEM_TYPE.toString(), builder.getMaterial().toString());
+        section.set(SubPath.ITEM_TYPE.toString(), prefab.getMaterial().toString());
 
-        if (builder.hasDamage())
-            section.set(SubPath.ITEM_DAMAGE.toString(), builder.getDamage().toString());
+        if (prefab.hasDamage())
+            section.set(SubPath.ITEM_DAMAGE.toString(), prefab.getDamage().toString());
 
-        if (!(builder.getAmount().isFixed() && builder.getAmount().getFixedValue() == 1))
-            section.set(SubPath.ITEM_AMOUNT.toString(), builder.getAmount().isFixed() ? (int) builder.getAmount().getFixedValue() : builder.getAmount().toString());
+        if (!(prefab.getAmount().isFixed() && prefab.getAmount().getFixedValue() == 1))
+            section.set(SubPath.ITEM_AMOUNT.toString(), prefab.getAmount().isFixed() ? (int) prefab.getAmount().getFixedValue() : prefab.getAmount().toString());
 
-        if (!builder.getName().isEmpty())
-            section.set(SubPath.ITEM_NAME.toString(), builder.getName().toString());
+        if (!prefab.getName().isEmpty())
+            section.set(SubPath.ITEM_NAME.toString(), prefab.getName().toString());
 
-        if (!builder.getLore().isEmpty())
-            section.set(SubPath.ITEM_LORE.toString(), builder.getLore().getMessage());
+        if (!prefab.getLore().isEmpty())
+            section.set(SubPath.ITEM_LORE.toString(), prefab.getLore().getMessage());
 
-        if (!builder.getEnchants().isEmpty()) {
+        if (!prefab.getEnchants().isEmpty()) {
             List<String> enchants = new ArrayList<>();
-            builder.getEnchants().forEach(e -> enchants.add(e.getEnchantment().name() + SubPath.ITEM_ENCHANT_DELIMITER + e.getLevel().toString()));
+            prefab.getEnchants().forEach(e -> enchants.add(e.getEnchantment().name() + SubPath.ITEM_ENCHANT_DELIMITER + e.getLevel().toString()));
             section.set(SubPath.ITEM_ENCHANTS.toString(), enchants);
         }
 
-        if (!builder.getFlags().isEmpty())
-            section.set(SubPath.ITEM_FLAGS.toString(), builder.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
+        if (!prefab.getFlags().isEmpty())
+            section.set(SubPath.ITEM_FLAGS.toString(), prefab.getFlags().stream().map(ItemFlag::name).collect(Collectors.toList()));
 
-        if (!builder.getNBT().isEmpty()) {
+        if (!prefab.getNBT().isEmpty()) {
             List<String> nbt = new ArrayList<>();
-            builder.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v.toString()));
+            prefab.getNBT().forEach((k, v) -> nbt.add(k + SubPath.ITEM_NBT_DELIMITER + v.toString()));
             section.set(SubPath.ITEM_NBT.toString(), nbt);
         }
 
-        if (builder.isGlow())
-            section.set(SubPath.ITEM_GLOW.toString(), builder.isGlow());
+        if (prefab.isGlow())
+            section.set(SubPath.ITEM_GLOW.toString(), prefab.isGlow());
 
-        if (builder.getSkullData() != null)
-            section.set(SubPath.ITEM_SKULL_DATA.toString(), builder.getSkullData().toString());
+        if (prefab.getSkullData() != null)
+            section.set(SubPath.ITEM_SKULL_DATA.toString(), prefab.getSkullData().toString());
 
         if (autoSave)
             save();
@@ -878,10 +867,10 @@ public class Configuration {
         if (itemsSection == null) return rewards;
 
         for (String name : itemsSection.getKeys(false)) {
-            ItemPrefab itemBuilder = getItem(path + ".items." + name);
+            ItemPrefab prefab = getItem(path + ".items." + name);
 
-            if (itemBuilder != null)
-                rewards.addItem(itemBuilder);
+            if (prefab != null)
+                rewards.addItem(prefab);
         }
 
         return rewards;

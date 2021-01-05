@@ -5,7 +5,7 @@ import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.item.ItemPrefab;
+import space.devport.utils.item.ItemPrefabImpl;
 import space.devport.utils.menu.item.MatrixItem;
 import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.text.Placeholders;
@@ -207,11 +207,11 @@ public class MenuBuilder {
         return this;
     }
 
-    public MenuBuilder setItem(ItemPrefab prefab, String name, int slot) {
+    public MenuBuilder setItem(ItemPrefabImpl prefab, String name, int slot) {
         return setItem(new MenuItem(plugin, prefab, name, slot));
     }
 
-    public MenuBuilder addItem(ItemPrefab prefab, String name) {
+    public MenuBuilder addItem(ItemPrefabImpl prefab, String name) {
         MenuItem menuItem = new MenuItem(plugin, prefab, name, nextFree());
         return setItem(menuItem);
     }

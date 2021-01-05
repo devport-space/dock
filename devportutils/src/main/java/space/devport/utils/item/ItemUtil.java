@@ -1,11 +1,10 @@
 package space.devport.utils.item;
 
-import lombok.Setter;
 import lombok.experimental.UtilityClass;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import space.devport.utils.item.nbt.TypeUtil;
-import space.devport.utils.version.VersionManager;
+import space.devport.utils.version.CompoundFactory;
 import space.devport.utils.version.api.ICompound;
 
 import java.util.Set;
@@ -13,16 +12,12 @@ import java.util.Set;
 @UtilityClass
 public class ItemUtil {
 
-    //TODO: Replace with a non-static
-    @Setter
-    private VersionManager versionManager;
-
     /**
      * Get ItemStack NBT compound.
      */
     @Contract("null -> null")
     public ICompound getCompound(ItemStack item) {
-        return item == null || versionManager == null ? null : versionManager.getCompoundFactory().of(item);
+        return item == null ? null : CompoundFactory.of(item);
     }
 
     /**

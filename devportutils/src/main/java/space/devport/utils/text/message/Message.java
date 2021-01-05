@@ -12,6 +12,7 @@ import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -105,7 +106,7 @@ public class Message {
      * @param message Message to set to in a List
      * @return MessageBuilder object
      */
-    public Message set(@Nullable List<String> message) {
+    public Message set(@Nullable Collection<String> message) {
         this.message = message != null ? new ArrayList<>(message) : new ArrayList<>();
         return this;
     }
@@ -289,7 +290,6 @@ public class Message {
             sender.sendMessage(message == null ? "" : message);
         }
     }*/
-
     public Message map(Function<String, String> action) {
         this.message = this.message.stream().map(action).collect(Collectors.toList());
         return this;

@@ -10,6 +10,7 @@ import space.devport.utils.DevportPlugin;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.item.Amount;
 import space.devport.utils.item.ItemPrefab;
+import space.devport.utils.item.PrefabFactory;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
@@ -250,7 +251,7 @@ public class Rewards implements Cloneable {
     }
 
     public Rewards addItem(ItemPrefab prefab) {
-        this.items.add(ItemPrefab.of(prefab));
+        this.items.add(PrefabFactory.of(prefab));
         return this;
     }
 
