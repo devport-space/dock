@@ -223,11 +223,10 @@
             <version>3.2.5</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Latest XSeries from github -->
         <dependency>
             <groupId>com.github.CryptoMorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>6c8dd127b6</version>
+            <version>7.8.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
