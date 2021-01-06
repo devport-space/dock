@@ -99,12 +99,12 @@ public class GsonHelper {
      * Load and parse json from a file.
      *
      * @param <T>      Type signature of loaded json content.
-     * @param clazz    Class defining {@code <T>}.
+     * @param type     Type of the loaded class.
      * @param dataPath Path to load from.
      * @return Parsed output {@code null}.
      */
     @Nullable
-    public <T> T load(@NotNull String dataPath, @NotNull Class<T> clazz) {
+    public <T> T load(@NotNull String dataPath, @NotNull Type type) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -121,25 +121,23 @@ public class GsonHelper {
         if (Strings.isNullOrEmpty(input))
             return null;
 
-        return gson.fromJson(input, map(clazz));
+        return gson.fromJson(input, type);
     }
 
     /**
      * Asynchronously load and parse json from a file.
      *
      * @param <T>      Type signature of loaded json content.
-     * @param clazz    Class defining {@code <T>}.
+     * @param type     Type of loaded class.
      * @param dataPath Path to load from.
      * @return CompletableFuture supplying parsed output or supplying {@code null}.
      */
     @NotNull
-    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Class<T> clazz) {
+    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Type type) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
             return new CompletableFuture<>();
-
-        final Type type = map(clazz);
 
         return read(path).thenApplyAsync(buffer -> {
             String output = new String(buffer.array(), StandardCharsets.UTF_8).trim();
@@ -189,8 +187,7 @@ public class GsonHelper {
      * @return CompletableFuture supplying parsed map output or supplying {@code null}.
      */
     @NotNull
-    public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(
-            @NotNull final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
+    public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(@NotNull final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
