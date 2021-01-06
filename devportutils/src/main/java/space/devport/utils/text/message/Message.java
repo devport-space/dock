@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
@@ -221,8 +222,8 @@ public class Message {
      * Parse message to string.
      * Multiple lines are separated by given delimiter, or default.
      *
-     * @param delimiter Optional String, delimiter to use
-     * @return Parsed String
+     * @param delimiter Delimiter to divide lines by.
+     * @return Parsed String or null if delimiter is null.
      */
     @Contract("null -> null")
     @Nullable
@@ -232,15 +233,18 @@ public class Message {
 
     /**
      * Parse message to string.
+     * <p>
+     * Equivalent to {@link Message#toString(String)} passed ("\n").
      *
-     * @return Parsed String
+     * @return Parsed String.
+     * @see Message#toString(String)
      */
     @Override
     public String toString() {
         return StringUtil.listToString(message, "\n");
     }
 
-    /**
+    /*
      * Send without setting context.
      */
     public void sendTo(Player player) {
@@ -248,9 +252,16 @@ public class Message {
     }
 
     /**
-     * Add player to context and send to him.
+     * Add {@link Player} to {@link Placeholders} {@link Context} and send him this {@link Message}.
+     * <p>
+     * Parses attached {@link Placeholders} and colors using {@link #color()} before sending.
+     *
+     * @param player {@link Player} to send this message to.
+     * @see Placeholders
+     * @see Context
+     * @see Player
      */
-    public void send(Player player) {
+    public void send(@NotNull Player player) {
         send(player, player);
     }
 
@@ -265,13 +276,18 @@ public class Message {
     }
 
     /**
-     * Parse placeholders, color the message and send.
+     * Send this message to {@link CommandSender}.
+     * <p>
+     * Parses attached {@link Placeholders} and colors using {@link #color()} before sending.
+     * <p>
+     * Doesn't proceed to send the message if {@link Message#isEmpty()} returns true or sender is {@code null}.
      *
-     * @param sender CommandSender to send to
+     * @param sender {@link CommandSender} to send this message to.
      */
     public void send(@Nullable CommandSender sender) {
 
-        if (sender == null || isEmpty()) return;
+        if (sender == null || isEmpty())
+            return;
 
         sender.sendMessage(parse().color().toString());
     }
@@ -281,6 +297,10 @@ public class Message {
      * Note: Requires Message to be parsed using global placeholders.
      *
      * @param sender CommandSender to send to
+     * @see space.devport.utils.text.language.LanguageManager#getPrefixed(String)
+     * @see space.devport.utils.text.language.LanguageManager#send(CommandSender, String)
+     * @deprecated Will be removed upon 4.x release as it is essentially useless.
+     * Use {@link space.devport.utils.text.language.LanguageManager#getPrefixed(String)} to send a prefixed message properly.
      */
     public void sendPrefixed(CommandSender sender) {
 
@@ -309,7 +329,7 @@ public class Message {
         return this;
     }
 
-    /**
+    /*
      * Returns a copy of the contained message.
      */
     public List<String> getMessage() {

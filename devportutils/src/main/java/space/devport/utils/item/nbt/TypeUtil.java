@@ -142,7 +142,7 @@ public class TypeUtil {
         return clazz.cast(APPLIERS.get(clazz).query(compound, key));
     }
 
-    /**
+    /*
      * Get a value from compound and contain it inside an NBTContainer.
      */
     public NBTContainer containValue(ICompound compound, String key) {

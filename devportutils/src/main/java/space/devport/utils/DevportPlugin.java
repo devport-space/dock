@@ -63,7 +63,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Getter
     private final Random random = new Random();
 
-    @Getter
     private final Placeholders globalPlaceholders = new Placeholders();
 
     @Getter
@@ -312,7 +311,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         return configuration.getFileConfiguration();
     }
 
-    /**
+    /*
      * Get the whole dependency list.
      */
     public List<String> getDependencies() {
@@ -328,5 +327,9 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public PluginManager getPluginManager() {
         return getServer().getPluginManager();
+    }
+
+    public Placeholders getGlobalPlaceholders() {
+        return globalPlaceholders;
     }
 }

@@ -1,11 +1,14 @@
 package space.devport.utils.version;
 
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
 import space.devport.utils.factory.IFactory;
 import space.devport.utils.version.api.ICompound;
 import space.devport.utils.version.api.ICompoundFactory;
+
+import java.util.Objects;
 
 public class CompoundFactory implements IFactory {
 
@@ -37,25 +40,28 @@ public class CompoundFactory implements IFactory {
     }
 
     /**
-     * Create a new Compound.
+     * Create a new {@link ICompound}.
      *
-     * @return New Compound object
+     * @return New ICompound object.
      * @throws IllegalStateException when the CompoundFactory is not initialized.
      */
+    @NotNull
     public static ICompound create() {
         checkInitialized();
         return compoundFactory.create();
     }
 
     /**
-     * Create compound from {@param item}
+     * Create an {@link ICompound} from {@link ItemStack}.
      *
-     * @param item ItemStack to get Compound from
-     * @return Compound object
+     * @param item {@link ItemStack} to get {@link ICompound} from.
+     * @return {@link ICompound} object from item.
      * @throws IllegalStateException when the CompoundFactory is not initialized.
      */
-    public static ICompound of(ItemStack item) {
+    @NotNull
+    public static ICompound of(@NotNull ItemStack item) {
         checkInitialized();
+        Objects.requireNonNull(item);
         return compoundFactory.of(item);
     }
 }

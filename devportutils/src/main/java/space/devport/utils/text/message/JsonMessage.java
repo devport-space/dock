@@ -41,11 +41,11 @@ public class JsonMessage extends Message {
         lines.clear();
     }
 
-    /**
+    /*
      * Serialize ItemStack to SNBT.
      */
     // TODO Serialize rest of the ItemStack
-    public static String serializeItem(ItemStack item) {
+    private static String serializeItem(ItemStack item) {
         String str = "{%s}";
         StringBuilder content = new StringBuilder();
         content.append("id:'").append(item.getType().getKey().toString()).append("'")
@@ -133,30 +133,28 @@ public class JsonMessage extends Message {
         return jsonArray;
     }
 
-    private JsonObject createText(String text) {
+    private JsonObject createText(@NotNull String text) {
         JsonObject component = new JsonObject();
         String content = StringUtil.color(this.placeholders.parse(text));
         component.addProperty("text", content);
         return component;
     }
 
-    private JsonObject attachHover(JsonObject json, JsonHoverAction action, Object... extra) {
+    private void attachHover(@NotNull JsonObject json, JsonHoverAction action, Object... extra) {
         JsonObject hover = new JsonObject();
         hover.addProperty("action", action.toString());
         hover = action.getParser().parse(hover, this.placeholders, extra);
         json.add("hoverEvent", hover);
-        return json;
     }
 
-    private JsonObject attachClick(JsonObject json, JsonClickAction action, String value) {
+    private void attachClick(@NotNull JsonObject json, JsonClickAction action, String value) {
         JsonObject click = new JsonObject();
         click.addProperty("action", action.toString());
         click.addProperty("value", StringUtil.color(this.placeholders.parse(value)));
         json.add("clickEvent", click);
-        return json;
     }
 
-    /**
+    /*
      * Add hover event to previously attached component.
      */
     public JsonMessage addHover(JsonHoverAction action, Object... extra) {
@@ -165,7 +163,7 @@ public class JsonMessage extends Message {
         return this;
     }
 
-    /**
+    /*
      * Add click event to previously attached component.
      */
     public JsonMessage addClick(JsonClickAction action, String value) {
@@ -178,25 +176,33 @@ public class JsonMessage extends Message {
         return getCurrentLine().get(getCurrentLine().size() - 1).getAsJsonObject();
     }
 
+    private JsonArray getCurrentLine() {
+        return lines.isEmpty() || newLine ? createLine() : lines.peekLast();
+    }
+
     /**
-     * Append a text component to this message.
+     * Append text to this message.
      *
-     * @param text Text to append
+     * @param text String text to append.
+     * @return This JsonMessage.
      */
-    public JsonMessage append(String text) {
+    @NotNull
+    public JsonMessage append(@NotNull String text) {
         getCurrentLine().add(createText(text));
         return this;
     }
 
     /**
-     * Append a text component with a hoverEvent to this message.
+     * Append text with a hoverEvent to this message.
      *
-     * @param text   Text to append
-     * @param action Action to assign the hoverEvent
+     * @param text   Text to append,
+     * @param action Action to assign the hoverEvent.
      * @param extra  Objects to parse for hoverEvent value,
      *               provide an ItemStack for SHOW_ITEM, Entity for SHOW_ENTITY and String for SHOW_TEXT
+     * @return This JsonMessage.
      */
-    public JsonMessage append(String text, @NotNull JsonHoverAction action, Object... extra) {
+    @NotNull
+    public JsonMessage append(@NotNull String text, @NotNull JsonHoverAction action, Object... extra) {
         JsonObject component = createText(text);
 
         attachHover(component, action, extra);
@@ -204,19 +210,17 @@ public class JsonMessage extends Message {
         return this;
     }
 
-    private JsonArray getCurrentLine() {
-        return lines.isEmpty() || newLine ? createLine() : lines.peekLast();
-    }
-
     /**
-     * Append a text component with a clickEvent to this message.
+     * Append text with a clickEvent to this message.
      *
-     * @param text   Text to append
-     * @param action Action to assign the clickEvent
+     * @param text   Text to append.
+     * @param action Action to assign the clickEvent.
      * @param value  String value to use for the clickEvent - url, clipboard content to copy,
-     *               command or file path
+     *               command or file path.
+     * @return This JsonMessage.
      */
-    public JsonMessage append(String text, @NotNull JsonClickAction action, String value) {
+    @NotNull
+    public JsonMessage append(@NotNull String text, @NotNull JsonClickAction action, String value) {
         JsonObject component = createText(text);
 
         attachClick(component, action, value);
@@ -235,6 +239,7 @@ public class JsonMessage extends Message {
      *                    command or file path
      * @param hoverExtra  Objects to parse for hoverEvent value,
      *                    provide an ItemStack for SHOW_ITEM, Entity for SHOW_ENTITY and String for SHOW_TEXT
+     * @return This JsonMessage.
      */
     public JsonMessage append(String text, @NotNull JsonHoverAction hoverAction, @NotNull JsonClickAction clickAction, String clickValue, Object... hoverExtra) {
         JsonObject component = createText(text);
@@ -259,7 +264,7 @@ public class JsonMessage extends Message {
     private void sendJson(@NotNull Player player, @NotNull String content) {
 
         if (ServerVersion.isCurrentBelow(ServerVersion.v1_8)) {
-            log.warning("Json messages are not supported on versions below 1.8");
+            log.severe("Json messages are not supported on versions below 1.8");
             return;
         }
 

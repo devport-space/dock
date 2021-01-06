@@ -70,7 +70,7 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
         }
     }
 
-    /**
+    /*
      * Execute registered commands directly.
      */
     public void executeCommand(@Nullable CommandSender sender, @Nullable String command) {

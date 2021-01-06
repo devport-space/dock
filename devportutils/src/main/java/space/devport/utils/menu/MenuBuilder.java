@@ -86,7 +86,7 @@ public class MenuBuilder {
         return this;
     }
 
-    /**
+    /*
      * Place items by matrix into the items list.
      */
     public MenuBuilder construct() {

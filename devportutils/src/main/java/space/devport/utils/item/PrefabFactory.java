@@ -14,8 +14,8 @@ public class PrefabFactory implements IFactory {
     /**
      * Initialize a new PrefabFactory.
      *
-     * @param plugin DevportPlugin reference
-     * @throws IllegalStateException when it's already initialized.
+     * @param plugin DevportPlugin reference.
+     * @throws IllegalStateException if it's already initialized.
      */
     public PrefabFactory(DevportPlugin plugin) {
         if (PrefabFactory.plugin != null)
@@ -35,11 +35,11 @@ public class PrefabFactory implements IFactory {
     }
 
     /**
-     * Create a new {@code ItemPrefab} object with {@param material}
+     * Create a new {@link ItemPrefab} object with {@link XMaterial}.
      *
-     * @param material Material to create the item with
-     * @return ItemPrefab object with given material
-     * @throws IllegalStateException when the PrefabFactory is not initialized.
+     * @param material {@link XMaterial} to create the prefab with.
+     * @return {@link ItemPrefab} object with given material.
+     * @throws IllegalStateException if the PrefabFactory is not initialized.
      */
     @Contract("null -> null")
     public static ItemPrefab createNew(XMaterial material) {
@@ -48,11 +48,11 @@ public class PrefabFactory implements IFactory {
     }
 
     /**
-     * Create a new {@code ItemPrefab} object with {@param material}
+     * Create a new {@link ItemPrefab} object with {@link Material}.
      *
-     * @param material Material to create the item with
-     * @return ItemPrefab object with given material
-     * @throws IllegalStateException when the PrefabFactory is not initialized.
+     * @param material {@link Material} to create the item with.
+     * @return {@link ItemPrefab} object with given material.
+     * @throws IllegalStateException if the PrefabFactory is not initialized.
      */
     @Contract("null -> null")
     public static ItemPrefab createNew(Material material) {
@@ -61,11 +61,11 @@ public class PrefabFactory implements IFactory {
     }
 
     /**
-     * Creates a copy of {@param prefab}
+     * Creates a copy of {@link ItemPrefab}.
      *
-     * @param prefab ItemPrefab to copy
-     * @return Copied ItemPrefab object
-     * @throws IllegalStateException when the PrefabFactory is not initialized.
+     * @param prefab {@link ItemPrefab} to copy.
+     * @return Copied {@link ItemPrefab} object.
+     * @throws IllegalStateException if the PrefabFactory is not initialized.
      */
     @Contract("null -> null")
     public static ItemPrefab of(ItemPrefab prefab) {
@@ -74,11 +74,11 @@ public class PrefabFactory implements IFactory {
     }
 
     /**
-     * Create a new {@code ItemPrefab} from given {@param item}
+     * Create a new {@link ItemPrefab} from given {@link ItemStack}.
      *
-     * @param item ItemStack to create the prefab from
-     * @return ItemPrefab object from given ItemStack
-     * @throws IllegalStateException when the PrefabFactory is not initialized.
+     * @param item {@link ItemStack} to create the prefab from.
+     * @return {@link ItemPrefab} object from given {@link ItemStack}.
+     * @throws IllegalStateException if the PrefabFactory is not initialized.
      */
     @Contract("null -> null")
     public static ItemPrefab of(ItemStack item) {

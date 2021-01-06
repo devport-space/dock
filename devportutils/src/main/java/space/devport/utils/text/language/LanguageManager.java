@@ -107,26 +107,31 @@ public class LanguageManager extends DevportManager {
     }
 
     /**
-     * Get a new Message instance from {@param path}
-     * Sets the message to parse with the global plugin placeholders.
+     * Get a new {@link Message} instance from path.
+     * <p>
+     * Sets the message to parse with the global plugin {@link space.devport.utils.text.Placeholders}.
      *
-     * @param path Path of the message to get
-     * @return Message instance, empty if path is invalid
+     * @param path Path of the message to get.
+     * @return {@link Message} instance, empty if path is invalid.
+     * @see DevportPlugin#getGlobalPlaceholders()
      */
-    public Message get(@NotNull String path) {
+    @NotNull
+    public Message get(@Nullable String path) {
         Message message = new Message(cache.get(path));
         message.parseWith(plugin.getGlobalPlaceholders());
         return message;
     }
 
     /**
-     * Get a new Message instance from {@param path} and prefix it with %prefix%.
-     * Sets the message to parse with the global plugin placeholders.
+     * Get a new {@link Message} instance from path and prefix it with %prefix%.
+     * <p>
+     * Sets the message to parse with the global plugin {@link space.devport.utils.text.Placeholders}.
      *
-     * @param path Path of the message to get
-     * @return Message instance, empty if path is invalid
+     * @param path Path of the message to get.
+     * @return Message instance, empty (without prefix) if path is invalid.
+     * @see DevportPlugin#getGlobalPlaceholders()
      */
-    public Message getPrefixed(@NotNull String path) {
+    public Message getPrefixed(@Nullable String path) {
         Message message = get(path);
 
         if (message.isEmpty())
@@ -139,12 +144,17 @@ public class LanguageManager extends DevportManager {
     }
 
     /**
-     * Send a message from {@param path} to {@param sender}
+     * Send a message from path to sender.
+     * <p>
+     * Doesn't proceed to send the message if it's empty -- if path is {@code null}.
      *
-     * @param sender CommandSender to send the message to
-     * @param path   Path of the message to send
+     * @param sender {@link CommandSender} to send the message to.
+     * @param path   Path of the message to send.
+     * @see Message#isEmpty()
+     * @see Message#send(CommandSender)
+     * @see LanguageManager#get(String)
      */
-    public void send(@Nullable CommandSender sender, @NotNull String path) {
+    public void send(@Nullable CommandSender sender, @Nullable String path) {
         if (sender == null)
             return;
 
@@ -152,10 +162,12 @@ public class LanguageManager extends DevportManager {
     }
 
     /**
-     * Get a Message instance by {@code #getPrefixed(String path)} and send it to {@param sender}
+     * Get a Message instance with {@link #getPrefixed(String)} and send it to sender.
+     * <p>
+     * Doesn't proceed to send the message if it's empty -- if path is {@code null}.
      *
-     * @param sender CommandSender to send the message to
-     * @param path   Path of the message to send
+     * @param sender CommandSender to send the message to.
+     * @param path   Path of the message to send.
      */
     public void sendPrefixed(@Nullable CommandSender sender, @NotNull String path) {
         if (sender == null) return;

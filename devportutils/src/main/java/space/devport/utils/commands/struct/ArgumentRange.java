@@ -27,6 +27,7 @@ public class ArgumentRange {
     /**
      * Compare our Range to an argument length.
      *
+     * @param num Length of arguments to compare
      * @return 1 if the argument length is too much, -1 if it's not enough, 0 if it's right on spot.
      */
     public int compare(int num) {

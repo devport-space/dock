@@ -53,7 +53,7 @@ public abstract class AbstractCommand {
     @Nullable
     public abstract ArgumentRange getRange();
 
-    /**
+    /*
      * Usage and description here are only taken as defaults, they're added to language by their name.
      */
 

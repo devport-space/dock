@@ -45,6 +45,7 @@ public class LocationUtil {
      *
      * @param location  Location to parse
      * @param delimiter String delimiter to use
+     * @param callback  {@link ExceptionCallback} to call on failure.
      * @return Parsed location string
      */
     @Nullable
@@ -108,6 +109,7 @@ public class LocationUtil {
      * @param str       String to parse location from
      * @param delimiter String delimiter to use
      * @param useWorld  Optional boolean, whether to parse a world or not
+     * @param callback  {@link ExceptionCallback} to call on failure.
      * @return parsed Location
      */
     @Nullable

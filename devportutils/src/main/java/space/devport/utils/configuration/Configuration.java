@@ -11,10 +11,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemFlag;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.item.*;
+import space.devport.utils.item.ItemPrefab;
+import space.devport.utils.item.PrefabFactory;
 import space.devport.utils.item.data.Amount;
 import space.devport.utils.item.data.ItemDamage;
 import space.devport.utils.item.data.SkullData;
@@ -33,15 +35,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * Class to handle Configuration files and custom object loading.
- * Only supports the Yml format.
- *
- * @author Devport Team
- */
-@SuppressWarnings("DuplicatedCode")
 @Log
 public class Configuration {
 
@@ -62,21 +58,28 @@ public class Configuration {
     private boolean autoSave = false;
 
     /**
-     * Initializes this class, creates file and loads yaml from path.
-     * Yml is assigned automatically at the end.
+     * Creates a File from path and initializes a new Configuration with it.
+     * <p>
+     * Note: Does not load the Configuration upon initialization.
      *
-     * @param plugin Main plugin instance
-     * @param path   Path to config file
+     * @param plugin DevportPlugin instance.
+     * @param path   String path to File.
+     * @see Configuration#load()
+     * @see Configuration#load(boolean)
      */
     public Configuration(@NotNull DevportPlugin plugin, @NotNull String path) {
-        this(plugin, new File(path.contains(".yml") ? path : path + ".yml"));
+        this(plugin, createFile(path));
     }
 
     /**
-     * Initializes this class from file and loads yaml.
+     * Initialize a new Configuration with given file.
+     * <p>
+     * Note: Does not load the Configuration upon initialization.
      *
-     * @param plugin Java plugin instance
-     * @param file   File to load from
+     * @param plugin DevportPlugin instance.
+     * @param file   File to create Configuration from.
+     * @see Configuration#load()
+     * @see Configuration#load(boolean)
      */
     public Configuration(DevportPlugin plugin, @NotNull File file) {
         this.plugin = plugin;
@@ -84,76 +87,125 @@ public class Configuration {
         this.path = file.getPath();
     }
 
-    /**
-     * Loads the Yaml configuration from a file.
-     */
-    public void load(boolean... silent) {
-        file = new File(plugin.getDataFolder(), path);
+    private static File createFile(String path) {
+        return new File(path.contains(".yml") ? path : String.format("%s.yml", path));
+    }
 
-        if (!file.exists()) {
+    private boolean create(boolean silent) {
 
-            // Ensure folder structure
-            if (!file.getParentFile().mkdirs())
-                if (silent.length > 0 && !silent[0])
-                    log.severe("Could not create " + path);
+        if (file.exists())
+            return true;
 
+        // Ensure folder structure
+        if (!file.getParentFile().mkdirs())
+            if (!silent)
+                log.severe("Could not create " + path);
+
+        try {
+            plugin.saveResource(path, false);
+            log.log(DebugLevel.DEBUG, "Created new " + path);
+        } catch (Exception e) {
             try {
-                plugin.saveResource(path, false);
-                if (silent.length > 0 && !silent[0]) log.log(DebugLevel.DEBUG, "Created new " + path);
-            } catch (Exception e) {
-                try {
-                    if (!file.createNewFile()) {
-                        if (silent.length > 0 && !silent[0])
-                            log.severe("Could not create file at " + file.getAbsolutePath());
-                        return;
-                    }
-                } catch (IOException e1) {
-                    if (silent.length > 0 && !silent[0])
+                if (!file.createNewFile()) {
+                    if (!silent)
                         log.severe("Could not create file at " + file.getAbsolutePath());
-                    return;
+                    return false;
                 }
+            } catch (IOException e1) {
+                if (!silent)
+                    log.severe("Could not create file at " + file.getAbsolutePath());
+                e1.printStackTrace();
+                return false;
             }
         }
-
-        fileConfiguration = YamlConfiguration.loadConfiguration(file);
-        if (silent.length > 0 && !silent[0]) log.info("Loaded " + path + "...");
+        return true;
     }
 
     /**
-     * Saves the configuration to file.
+     * Loads {@link YamlConfiguration} from {@link File}.
+     * <p>
+     * Ensures the file and it's folder structure exist, attempts to save from resources if not.
+     * <p>
+     * Equivalent to {@link #load(boolean)}
      *
-     * @return boolean Whether we were successful or not
+     * @return True if the load was successful, false otherwise.
+     */
+    public boolean load() {
+        return load(false);
+    }
+
+    /**
+     * Loads {@link YamlConfiguration} from {@link File}.
+     * <p>
+     * Ensures the file and it's folder structure exist, attempts to save from resources if not.
+     *
+     * @param silent Doesn't print visible log messages if true.
+     * @return True if the load was successful, false otherwise.
+     */
+    public boolean load(boolean silent) {
+        file = new File(plugin.getDataFolder(), path);
+
+        if (!create(silent))
+            return false;
+
+        this.fileConfiguration = YamlConfiguration.loadConfiguration(file);
+        if (!silent)
+            log.info(String.format("Loaded %s...", path));
+        return true;
+    }
+
+    /**
+     * Save this configuration to file.
+     *
+     * @return True if the save was successful, false if not.
      */
     public boolean save() {
         try {
             fileConfiguration.save(file);
             return true;
-        } catch (IOException e) {
-            log.severe("Could not save " + path);
+        } catch (IOException | NullPointerException e) {
+            log.severe(String.format("Could not save %s...", path));
+            e.printStackTrace();
             return false;
         }
     }
 
     /**
-     * Saves current FileConfiguration to a different file.
+     * Saves this Configuration to a different {@link File}.
      *
-     * @param file File to save to
-     * @param set  Whether to set the file as default or not
+     * @param file File to save to.
+     * @param set  If true sets file as the default.
+     * @return True if the save was successful, false if not.
      */
-    public void saveToFile(@NotNull File file, boolean... set) {
-        if (set.length > 0)
-            if (set[0]) {
-                this.file = file;
-                save();
-                return;
-            }
+    public boolean saveToFile(@NotNull File file, boolean set) {
+        if (set) {
+            this.file = file;
+            return save();
+        }
 
         try {
             this.fileConfiguration.save(file);
-        } catch (IOException e) {
-            log.severe("Could not save " + path);
+            return true;
+        } catch (IOException | NullPointerException e) {
+            log.severe(String.format("Could not save %s...", path));
             e.printStackTrace();
+            return false;
         }
+    }
+
+    /**
+     * Saves this Configuration to a different {@link File}.
+     * <p>
+     * Equivalent to {@link Configuration#saveToFile(File, boolean)} passed (file, false).
+     *
+     * @param file File to save to.
+     * @return True if the save was successful, false if not.
+     * @throws NullPointerException If file is null.
+     * @see Configuration#saveToFile(File, boolean)
+     */
+    public boolean saveToFile(@NotNull File file) {
+        Objects.requireNonNull(file);
+        return saveToFile(file, false);
     }
 
     /**
@@ -161,37 +213,53 @@ public class Configuration {
      *
      * @param path Path to save to
      * @param set  Whether to set the file as default or not
+     * @return True if the save was successful, false otherwise.
+     * @throws NullPointerException If path is null.
      */
-    public void saveToFile(@Nullable String path, boolean... set) {
-        if (Strings.isNullOrEmpty(path)) {
-            log.warning("Could not save " + this.path + " to another location, other path is null.");
-            return;
-        }
+    public boolean saveToFile(@NotNull String path, boolean set) {
+        Objects.requireNonNull(path);
+        return saveToFile(createFile(path), set);
+    }
 
-        File file = new File(path.contains(".yml") ? path : path + ".yml");
-        saveToFile(file, set);
+    /**
+     * Saves current FileConfiguration to a different file by path.
+     * <p>
+     * Equivalent to {@link Configuration#saveToFile(String, boolean)} passed (path, false).
+     *
+     * @param path Path to save to
+     * @return True if the save was successful, false otherwise.
+     * @throws NullPointerException If path is null.
+     * @see Configuration#saveToFile(String, boolean)
+     */
+    public boolean saveToFile(String path) {
+        return saveToFile(path, false);
     }
 
     /**
      * Deletes the file.
+     * <p>
+     * Note: Only deletes the file on system. Does not remove loaded Configuration.
      *
-     * @return boolean Whether we were successful or not
+     * @return True if the deletion was successful, false otherwise.
      */
     public boolean delete() {
-        if (file.delete())
+        if (file.delete()) {
             return true;
-        else {
-            log.severe("Could not delete file " + path);
+        } else {
+            log.severe(String.format("Could not delete file %s", path));
             return false;
         }
     }
 
     /**
      * Deletes file and loads it again.
+     * <p>
+     * Equivalent to {@link Configuration#delete()} and {@link Configuration#load()}.
+     *
+     * @return True if both {@link Configuration#delete()} and {@link Configuration#load()} were successful, false otherwise.
      */
-    public void clear() {
-        if (file.delete())
-            load();
+    public boolean clear() {
+        return delete() && load();
     }
 
     @NotNull
@@ -230,32 +298,35 @@ public class Configuration {
         return path != null ? fileConfiguration.getString(path) : null;
     }
 
-    /**
-     * A replacement for FileConfiguration.getString(String, String), as it doesn't have the functionality we want.
+    /*
+     * A replacement for FileConfiguration.getString(String, String),
+     * as it doesn't have correct annotations.
      */
-    @NotNull
+    @Contract("null,_ -> param2;_,!null -> !null")
     public String getString(@Nullable String path, String defaultValue) {
-        if (path == null) return defaultValue;
+        if (path == null)
+            return defaultValue;
+
         String str = fileConfiguration.getString(path);
-        return str != null ? str : defaultValue;
+        return str == null ? defaultValue : str;
     }
 
     @Nullable
     public List<String> getStringList(@Nullable String path) {
-        return path != null ? fileConfiguration.getStringList(path) : null;
+        return path == null ? null : fileConfiguration.getStringList(path);
     }
 
     /**
      * Returns a list of strings.
      *
-     * @param path        Path to list of strings in config file
-     * @param defaultList Default value
-     * @return List of strings
+     * @param path        Path to list of strings in config file.
+     * @param defaultList Default value.
+     * @return List of strings.
      */
     @NotNull
     public List<String> getStringList(@Nullable String path, @NotNull List<String> defaultList) {
         if (Strings.isNullOrEmpty(path)) return defaultList;
-        return !fileConfiguration.getStringList(path).isEmpty() ? fileConfiguration.getStringList(path) : defaultList;
+        return fileConfiguration.getStringList(path).isEmpty() ? defaultList : fileConfiguration.getStringList(path);
     }
 
     /**
@@ -267,15 +338,15 @@ public class Configuration {
     @Nullable
     public final List<String> getColoredList(@Nullable String path) {
         Message msg = getMessage(path);
-        return msg != null ? msg.color().getMessage() : null;
+        return msg == null ? null : msg.color().getMessage();
     }
 
     /**
      * Returns colored string list retrieved from config.
      *
-     * @param path        Path to list of strings in config file
-     * @param defaultList Default list to return when there's nothing on path
-     * @return List of strings with Bukkit color codes
+     * @param path        Path to list of strings in config file.
+     * @param defaultList Default list to return when there's nothing on path.
+     * @return List of strings with Bukkit color codes.
      */
     @NotNull
     public final List<String> getColoredList(@Nullable String path, @NotNull List<String> defaultList) {
@@ -285,8 +356,8 @@ public class Configuration {
     /**
      * Returns a colored message from either a String of a List.
      *
-     * @param path Path to list of strings in config file
-     * @return Multi-line colored string
+     * @param path Path to list of strings in config file.
+     * @return Multi-line colored string.
      */
     @NotNull
     public String getColoredMessage(@Nullable String path) {
@@ -307,39 +378,40 @@ public class Configuration {
     /**
      * Returns an array from yaml parsed from String using given delimiter.
      *
-     * @param path      Path to look at
-     * @param delimiter Delimiter to use
-     * @return String array
+     * @param path      Path to look at.
+     * @param delimiter Delimiter to use.
+     * @return String array.
      */
     @NotNull
     public String[] getArray(@Nullable String path, @NotNull String delimiter) {
         String str = getString(path);
-        return str != null ? str.split(delimiter) : new String[0];
+        return str == null ? new String[0] : str.split(delimiter);
     }
 
     /**
      * Returns a character from the yaml.
      * Returns given default when null.
      *
-     * @param path         Path to look at
-     * @param defaultValue Default to use
-     * @return char
+     * @param path         Path to look at.
+     * @param defaultValue Default to use.
+     * @return char.
      */
     public char getChar(@Nullable String path, char defaultValue) {
         String str = getString(path);
-        return str != null ? str.toCharArray()[0] : defaultValue;
+        return Strings.isNullOrEmpty(str) ? defaultValue : str.toCharArray()[0];
     }
 
     /**
      * Returns an array of integers parsed from string.
      *
-     * @param path String path to an Array.toString output
+     * @param path String path to an Array.toString output.
      * @return Array of integers.
      */
     public int[] getInts(@Nullable String path) {
         String str = getString(path);
 
-        if (str == null) return new int[]{};
+        if (str == null)
+            return new int[]{};
 
         str = str.replace("[", "").replace("]", "")
                 .replace(" ", "");
@@ -354,65 +426,59 @@ public class Configuration {
     /**
      * Returns an array of integers parsed from string.
      *
-     * @param path         String path to an Array.toString output
-     * @param defaultValue Default value to return if there's nothing on path
+     * @param path         String path to an Array.toString output.
+     * @param defaultValue Default value to return if there's nothing on path.
      * @return Array of integers.
      */
+    @Contract("null,_ -> param2")
     public int[] getInts(@Nullable String path, int[] defaultValue) {
         String str = getString(path);
 
-        if (str == null) return defaultValue;
+        if (Strings.isNullOrEmpty(str))
+            return defaultValue;
 
         str = str.replace("[", "").replace("]", "")
                 .replace(" ", "");
 
-        if (Strings.isNullOrEmpty(str)) return new int[]{};
+        if (Strings.isNullOrEmpty(str))
+            return new int[]{};
 
         return Arrays.stream(str.split(","))
                 .mapToInt(Integer::parseInt)
                 .toArray();
     }
 
-    // --------------------------------- Advanced Load/Save Methods -----------------------------------
-
     /**
      * Get a Message from the Configuration.
      *
-     * @param path Path to the Message
+     * @param path Path to the Message.
      * @return null if the message is completely absent. Return a blank one otherwise.
      */
     @Nullable
     public Message getMessage(@Nullable String path) {
-        if (Strings.isNullOrEmpty(path)) return null;
-
-        if (fileConfiguration.isString(path)) {
-            String msg = fileConfiguration.getString(path);
-            if (Strings.isNullOrEmpty(msg)) return new Message();
-            return new Message(msg);
-        } else if (fileConfiguration.isList(path)) {
-            List<String> msg = fileConfiguration.getStringList(path);
-            return new Message(msg);
-        }
-
-        return null;
+        return getMessage(path, null);
     }
 
     /**
      * Loads a message builder either from String or from a list of strings.
      * Returns a default from Default.java when missing.
      *
-     * @param path         Path to the Message
+     * @param path         Path to the Message.
      * @param defaultValue Default Message to return.
      * @return Message on the path.
      */
-    @NotNull
-    public Message getMessage(@Nullable String path, @NotNull Message defaultValue) {
+    @Contract("null,null -> null;null,_ -> param2")
+    public Message getMessage(@Nullable String path, @Nullable Message defaultValue) {
 
-        if (Strings.isNullOrEmpty(path)) return defaultValue;
+        if (Strings.isNullOrEmpty(path))
+            return defaultValue;
 
         if (fileConfiguration.isString(path)) {
             String msg = fileConfiguration.getString(path);
-            if (Strings.isNullOrEmpty(msg)) return new Message();
+
+            if (Strings.isNullOrEmpty(msg))
+                return new Message();
+
             return new Message(msg);
         } else if (fileConfiguration.isList(path)) {
             List<String> msg = fileConfiguration.getStringList(path);
@@ -425,8 +491,8 @@ public class Configuration {
     /**
      * Loads a region from given path.
      *
-     * @param path Path to the Region
-     * @return Region object
+     * @param path Path to the Region.
+     * @return Region object.
      */
     @Nullable
     public Region getRegion(@Nullable String path) {
@@ -449,8 +515,8 @@ public class Configuration {
     /**
      * Saves a region to given path.
      *
-     * @param path   String path to save to
-     * @param region Region to save
+     * @param path   String path to save to.
+     * @param region Region to save.
      */
     public void setRegion(@Nullable String path, @Nullable Region region) {
 
@@ -478,8 +544,8 @@ public class Configuration {
     /**
      * Loads a MenuBuilder from given path.
      *
-     * @param path String path to load from
-     * @return MenuBuilder object
+     * @param path String path to load from.
+     * @return MenuBuilder object.
      */
     @Nullable
     public MenuBuilder getMenuBuilder(@Nullable String path) {
@@ -534,8 +600,8 @@ public class Configuration {
     /**
      * Loads a MenuItem from given path.
      *
-     * @param path String path to the item
-     * @return MenuItem object
+     * @param path String path to the item.
+     * @return MenuItem object.
      */
     @Nullable
     public MenuItem getMenuItem(@Nullable String path) {
@@ -569,9 +635,11 @@ public class Configuration {
     /**
      * Loads an ItemPrefab from given path.
      *
-     * @param path String path to ItemBuilder
-     * @return ItemBuilder object
+     * @param path         String path to ItemBuilder.
+     * @param defaultValue Default value.
+     * @return ItemBuilder object.
      */
+    @Contract("null,_ -> param2")
     public ItemPrefab getItem(@Nullable String path, @Nullable ItemPrefab defaultValue) {
 
         /// Check path
@@ -676,8 +744,8 @@ public class Configuration {
     /**
      * Loads an ItemBuilder from given path.
      *
-     * @param path String path to ItemBuilder
-     * @return ItemBuilder object
+     * @param path String path to ItemBuilder.
+     * @return ItemBuilder object.
      */
     @Nullable
     public ItemPrefab getItem(@Nullable String path) {
@@ -687,7 +755,7 @@ public class Configuration {
     /**
      * Set an ItemPrefab object to a yaml file under a given path.
      *
-     * @param path   Path to save it under
+     * @param path   Path to save it under.
      * @param prefab ItemPrefab to save.
      */
     public void setItem(@Nullable String path, @NotNull ItemPrefab prefab) {
@@ -760,9 +828,9 @@ public class Configuration {
     /**
      * Load an Amount from given path.
      *
-     * @param path         String path to Amount
-     * @param defaultValue Optional Amount, default to return
-     * @return Amount object
+     * @param path         String path to Amount.
+     * @param defaultValue Optional Amount, default to return.
+     * @return Amount object.
      */
     @NotNull
     public Amount getAmount(@Nullable String path, @NotNull Amount defaultValue) {
@@ -799,8 +867,8 @@ public class Configuration {
     /**
      * Load an Amount from given path.
      *
-     * @param path String path to Amount
-     * @return Amount object
+     * @param path String path to Amount.
+     * @return Amount object.
      */
     @Nullable
     public Amount getAmount(@Nullable String path) {
@@ -810,29 +878,7 @@ public class Configuration {
             return null;
         }
 
-        if (fileConfiguration.isDouble(path)) {
-            double fixed = fileConfiguration.getDouble(path);
-            return new Amount(fixed);
-        }
-
-        String dataStr = fileConfiguration.getString(path);
-
-        if (Strings.isNullOrEmpty(dataStr) ||
-                !dataStr.contains("-"))
-            return null;
-
-        dataStr = dataStr.replace(" ", "");
-
-        try {
-            String[] arr = dataStr.split("-");
-
-            double low = Double.parseDouble(arr[0]);
-            double high = Double.parseDouble(arr[1]);
-
-            return new Amount(low, high);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+        return Amount.fromString(fileConfiguration.getString(path));
     }
 
     @NotNull

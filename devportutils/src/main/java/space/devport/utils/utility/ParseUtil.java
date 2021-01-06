@@ -15,39 +15,39 @@ import java.util.function.Supplier;
 @UtilityClass
 public class ParseUtil {
 
-    /**
-     * Attempt to parse the enum from String {@param str}
-     *
-     * @return Parsed enum or {@code null}
-     */
     @Nullable
     @Contract("null,_ -> null")
-    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz) {
-        return parseEnum(str, clazz, null, null);
+    public <E extends Enum<E>> E parseEnum(String input, Class<E> clazz) {
+        return parseEnum(input, clazz, null, null);
     }
 
     @Contract("null,_,_ -> null")
-    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz, @Nullable ExceptionCallback callback) {
-        return parseEnum(str, clazz, null, callback);
+    public <E extends Enum<E>> E parseEnum(String input, Class<E> clazz, @Nullable ExceptionCallback callback) {
+        return parseEnum(input, clazz, null, callback);
     }
 
     @Contract("null,_,_ -> param3")
-    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz, E defaultValue) {
-        return parseEnum(str, clazz, defaultValue, null);
+    public <E extends Enum<E>> E parseEnum(String input, Class<E> clazz, E defaultValue) {
+        return parseEnum(input, clazz, defaultValue, null);
     }
 
     /**
-     * Attempt to parse the enum from String {@param str}
+     * Attempt to parse an enum from {@link String}.
      *
-     * @return Parsed enum or {@param defaultValue}
+     * @param <E>          Enum type signature.
+     * @param input        String to parse.
+     * @param clazz        Enum class to parse.
+     * @param defaultValue Default value to return on failure.
+     * @param callback     {@link ExceptionCallback} to call on failure.
+     * @return Parsed enum of {@code <E>} or defaultValue.
      */
     @Contract("null,_,null,_ -> null")
-    public <E extends Enum<E>> E parseEnum(String str, Class<E> clazz, @Nullable E defaultValue, @Nullable ExceptionCallback callback) {
+    public <E extends Enum<E>> E parseEnum(String input, Class<E> clazz, @Nullable E defaultValue, @Nullable ExceptionCallback callback) {
         try {
-            return E.valueOf(clazz, str.toUpperCase());
+            return E.valueOf(clazz, input.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException e) {
             if (callback != null)
-                callback.call(CallbackContent.createNew(e, "input", str));
+                callback.call(CallbackContent.createNew(e, "input", input));
             return defaultValue;
         }
     }
@@ -58,47 +58,49 @@ public class ParseUtil {
     }
 
     /**
-     * Attempt to parse an object from String.
+     * Attempt to parse a {@link Number} from {@link String}.
      *
-     * @return Parsed object or {@param input} if the input is {@code null} or empty.
+     * @param input    String to parse.
+     * @param callback {@link ExceptionCallback} to call on failure.
+     * @return Parsed object or input if the input is {@code null} or empty.
      */
     @Contract("null,_ -> null")
-    public static Object parseNumber(String str, @Nullable ExceptionCallback callback) {
+    public static Object parseNumber(String input, @Nullable ExceptionCallback callback) {
 
-        if (Strings.isNullOrEmpty(str)) {
+        if (Strings.isNullOrEmpty(input)) {
             if (callback != null)
                 callback.call(CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."),
-                        "input", str));
-            return str;
+                        "input", input));
+            return input;
         }
 
-        final String input = str.trim();
+        final String str = input.trim();
 
         try {
-            return Integer.parseInt(input);
+            return Integer.parseInt(str);
         } catch (NumberFormatException ignored) {
             // Not an int
         }
 
         try {
-            return Long.parseLong(input);
+            return Long.parseLong(str);
         } catch (NumberFormatException ignored) {
             // Not a long
         }
 
         try {
-            return Double.parseDouble(input);
+            return Double.parseDouble(str);
         } catch (NumberFormatException ignored) {
             // Not a double
         }
 
         try {
-            return Float.parseFloat(input);
+            return Float.parseFloat(str);
         } catch (NumberFormatException ignored) {
             // Not a Float
         }
 
-        return input;
+        return str;
     }
 
     public double parseDouble(String str) {

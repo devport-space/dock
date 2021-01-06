@@ -27,18 +27,19 @@ import java.util.Set;
 public interface ItemPrefab extends Cloneable {
 
     /**
-     * Build the ItemPrefab into an {@code ItemStack}.
-     * ItemPrefab placeholders will be fed the {@param context}
+     * Build the {@link ItemPrefab} into an {@link ItemStack}.
+     * <p>
+     * {@link ItemPrefab} {@link Placeholders} will be fed given context.
      *
-     * @param context Context to use.
-     * @return Built {@code ItemStack}
+     * @param context {@link Context} to use.
+     * @return Built {@link ItemStack}.
      */
     @Nullable ItemStack build(@NotNull Context context);
 
     /**
-     * Build the ItemPrefab into an {@code ItemStack}.
+     * Build the ItemPrefab into an {@link ItemStack}.
      *
-     * @return Built {@code ItemStack}
+     * @return Built {@link ItemStack}.
      */
     @Nullable ItemStack build();
 
@@ -108,7 +109,7 @@ public interface ItemPrefab extends Cloneable {
     /**
      * Set the lore of the Prefab.
      *
-     * @param lore Collection<String> to set.
+     * @param lore {@code Collection<String>} to set as lore.
      * @return Edited ItemPrefab.
      */
     default @NotNull ItemPrefab withLore(@Nullable Collection<String> lore) {
@@ -198,6 +199,7 @@ public interface ItemPrefab extends Cloneable {
     /**
      * Add NBT to Prefab.
      *
+     * @param <T>   Type signature.
      * @param key   String key
      * @param value Value to set
      * @return Edited ItemPrefab.
@@ -349,46 +351,47 @@ public interface ItemPrefab extends Cloneable {
     }
 
     /**
-     * Check for an Enchantment on the Prefab.
+     * Check for an enchantment on this Prefab.
      *
-     * @param enchantment XEnchantment to look for
+     * @param enchantment {@link XEnchantment} to look for
      * @return true if prefab has this enchantment,
-     * false if not or {@param enchantment} is null
+     * false if not or enchantment is null.
      */
     boolean hasEnchantment(XEnchantment enchantment);
 
     /**
-     * Check for an ItemFlag on the Prefab.
+     * Check for an {@link ItemFlag} on this Prefab.
      *
-     * @param flag ItemFlag to look for
+     * @param flag {@link ItemFlag} to look for
      * @return true if prefab has this flag,
-     * false if not or {@param flag} is null
+     * false if not or flag is null.
      */
     boolean hasFlag(ItemFlag flag);
 
     /**
-     * Check for NBT on the Prefab.
+     * Check for NBT on this Prefab.
      *
      * @return true if prefab has NBT, false if not
      */
     boolean hasNBT();
 
     /**
-     * Check for an NBT key on the Prefab.
+     * Check for an NBT key on this Prefab.
      *
      * @param key NBT key to look for
      * @return true if prefab has an NBT entry with this key,
-     * false if not or {@param key} is null
+     * false if not or key is null
      */
     boolean hasNBT(String key);
 
     /**
-     * Check for an NBT entry on the Prefab.
+     * Check for an NBT entry on this Prefab.
      *
+     * @param <T>   Type signature.
      * @param key   NBT key to look for
      * @param value Value to check
-     * @return true if prefab has this NBT key and it's value is equal to {@param value},
-     * false if not or {@param key} is null
+     * @return true if prefab has this NBT key and it's value is equal to value,
+     * false if not or key is null
      */
     <T> boolean hasNBTValue(String key, T value);
 
@@ -398,13 +401,13 @@ public interface ItemPrefab extends Cloneable {
      * @param key   NBT key to query
      * @param clazz Value class to parse
      * @param <T>   Type signature
-     * @return value of the key cast to {@param <T>} or null if absent or
-     * value under {@param key} has value of a different type
+     * @return value of the key cast to {@code <T>} or null if absent or
+     * value under key has value of a different type
      */
     <T> T getNBTValue(String key, @NotNull Class<T> clazz);
 
     /**
-     * Check for damage on the Prefab.
+     * Check for damage on this Prefab.
      *
      * @return true if the prefab has any damage applied to it
      */

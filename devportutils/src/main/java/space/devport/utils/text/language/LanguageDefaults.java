@@ -15,7 +15,7 @@ public abstract class LanguageDefaults {
     }
 
     /**
-     * Add all the defaults to LanguageManager using {@code #addDefault(String, String...)} when called.
+     * Add all the defaults to LanguageManager using {@link #addDefault(String, String...)} when called.
      */
     public abstract void setDefaults();
 

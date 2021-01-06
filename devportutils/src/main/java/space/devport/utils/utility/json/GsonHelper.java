@@ -53,13 +53,11 @@ public class GsonHelper {
         }.getType();
     }
 
-    /**
+    /*
      * Asynchronously read ByteBuffer from a file.
      */
     @NotNull
-    public CompletableFuture<ByteBuffer> read(
-            @NotNull
-            final Path path) {
+    private CompletableFuture<ByteBuffer> read(@NotNull final Path path) {
 
         AsynchronousFileChannel channel;
         long size;
@@ -100,14 +98,17 @@ public class GsonHelper {
     /**
      * Load and parse json from a file.
      *
-     * @return Parsed output or null.
+     * @param <T>      Type signature of loaded json content.
+     * @param clazz    Class defining {@code <T>}.
+     * @param dataPath Path to load from.
+     * @return Parsed output {@code null}.
      */
     @Nullable
-    public <T> T load(@NotNull String dataPath, @NotNull Type type) {
-
+    public <T> T load(@NotNull String dataPath, @NotNull Class<T> clazz) {
         Path path = Paths.get(dataPath);
 
-        if (!Files.exists(path)) return null;
+        if (!Files.exists(path))
+            return null;
 
         String input;
         try {
@@ -120,18 +121,19 @@ public class GsonHelper {
         if (Strings.isNullOrEmpty(input))
             return null;
 
-        return gson.fromJson(input, type);
+        return gson.fromJson(input, map(clazz));
     }
 
     /**
      * Asynchronously load and parse json from a file.
      *
-     * @return CompletableFuture with the parsed output or null
+     * @param <T>      Type signature of loaded json content.
+     * @param clazz    Class defining {@code <T>}.
+     * @param dataPath Path to load from.
+     * @return CompletableFuture supplying parsed output or supplying {@code null}.
      */
     @NotNull
-    public <T> CompletableFuture<T> loadAsync(
-            @NotNull
-            final String dataPath, @NotNull Class<T> clazz) {
+    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Class<T> clazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -150,14 +152,15 @@ public class GsonHelper {
     }
 
     /**
-     * Asynchronously load a List<T> from a file.
+     * Asynchronously load and parse list from a json file.
      *
-     * @return CompletableFuture with the resulting list or null.
+     * @param <T>        Type signature of list key.
+     * @param innerClazz Class defining {@code <T>}.
+     * @param dataPath   Path to load from.
+     * @return CompletableFuture supplying parsed output list or supplying {@code null}.
      */
     @NotNull
-    public <T> CompletableFuture<List<T>> loadListAsync(
-            @NotNull
-            final String dataPath, @NotNull Class<T> innerClazz) {
+    public <T> CompletableFuture<List<T>> loadListAsync(@NotNull final String dataPath, @NotNull Class<T> innerClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -176,14 +179,18 @@ public class GsonHelper {
     }
 
     /**
-     * Asynchronously load a Map<K, V> from a json file.
+     * Asynchronously load and parse a map from json file.
      *
-     * @return CompletableFuture with the resulting map or null.
+     * @param <K>        Type signature of map key.
+     * @param <V>        Type signature of map value.
+     * @param keyClazz   Class defining {@code <K>}.
+     * @param valueClazz Class defining {@code <V>}.
+     * @param dataPath   Path to load from.
+     * @return CompletableFuture supplying parsed map output or supplying {@code null}.
      */
     @NotNull
     public <K, V> CompletableFuture<Map<K, V>> loadMapAsync(
-            @NotNull
-            final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
+            @NotNull final String dataPath, @NotNull Class<K> keyClazz, @NotNull Class<V> valueClazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -204,14 +211,13 @@ public class GsonHelper {
     /**
      * Asynchronously save data to json.
      *
-     * @return CompletableFuture with the number of bytes written
+     * @param <T>      Type signature of input.
+     * @param input    Input to save.
+     * @param dataPath Path to save to.
+     * @return CompletableFuture supplying the bytes written.
      */
     @NotNull
-    public <T> CompletableFuture<Void> save(
-            @NotNull
-            final T input,
-            @NotNull
-            final String dataPath) {
+    public <T> CompletableFuture<Void> save(@NotNull final T input, @NotNull final String dataPath) {
 
         Path path = Paths.get(dataPath);
 

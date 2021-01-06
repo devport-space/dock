@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Class to handle various player & server rewards.
+ * Class to handle various player and server rewards.
  *
  * @author Wertik1206
  */

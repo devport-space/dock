@@ -44,16 +44,25 @@ public class Preconditions {
     }
 
     /**
-     * Permissions are checked with an OR scheme ( has to have at least one of them )
+     * Set permissions to Preconditions. Permissions are checked with an OR scheme.
+     *
+     * @param permissions String[] permissions to set.
+     * @return This Preconditions instance.
      */
-    public Preconditions permissions(String... permissions) {
+    @NotNull
+    public Preconditions permissions(@NotNull String... permissions) {
         this.permissions.addAll(Arrays.asList(permissions));
         return this;
     }
 
     /**
-     * Add a CommandSender check.
-     * If the precondition doesn't pass, send {@param errorMessage} to sender.
+     * Add an extra check to Preconditions. If the check doesn't pass run errorCallback.
+     *
+     * @param <T>           Type signature.
+     * @param check         Check to add.
+     * @param clazz         Class extending CommandSender defining {@code <T>}.
+     * @param errorCallback ErrorCallback to fire on failure.
+     * @return This Preconditions instance.
      */
     @NotNull
     public <T extends CommandSender> Preconditions withCheck(@NotNull PreconditionCheck<T> check, @NotNull Class<T> clazz, @NotNull Consumer<CommandSender> errorCallback) {
@@ -63,7 +72,11 @@ public class Preconditions {
 
     /**
      * Check all preconditions.
-     * Set {@param silent} to false to disable additional check messages.
+     *
+     * @param sender CommandSender to check for.
+     * @param silent Doesn't fire attached error callbacks if true
+     * @return True if all checks passed, false if any of them failed.
+     * @see Preconditions#withCheck(PreconditionCheck, Class, Consumer)
      */
     public boolean check(@NotNull CommandSender sender, boolean... silent) {
 
@@ -80,7 +93,11 @@ public class Preconditions {
     }
 
     /**
-     * Run through added checks and send a message if set and silent is false.
+     * Run through attached extra checks.
+     *
+     * @param sender CommandSender to check for.
+     * @param silent Doesn't fire attached error callbacks if true.
+     * @return True if all the checks passed, false if any of them failed.
      */
     public boolean checkAdditional(CommandSender sender, boolean... silent) {
         for (CheckWrapper<?> check : checks) {

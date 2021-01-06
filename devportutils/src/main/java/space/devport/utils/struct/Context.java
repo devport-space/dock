@@ -31,6 +31,10 @@ public class Context {
 
     /**
      * Get a context object stored here by class.
+     *
+     * @param clazz Object class
+     * @param <T>   ype signature
+     * @return Context object or null if not present
      */
     @Nullable
     public <T> T get(@NotNull Class<T> clazz) {
