@@ -79,6 +79,9 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public void onLoad() {
 
+        // Load usage flags
+        this.usageFlags.addAll(Arrays.asList(usageFlags()));
+
         this.devportLogger = new DevportLogger(this);
         devportLogger.setup();
 
@@ -88,9 +91,6 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         this.factories.add(new PrefabFactory(this));
         this.factories.add(new CompoundFactory(this));
-
-        // Load usage flags
-        this.usageFlags.addAll(Arrays.asList(usageFlags()));
 
         if (use(UsageFlag.NMS)) {
             VersionManager versionManager = new VersionManager(this);
