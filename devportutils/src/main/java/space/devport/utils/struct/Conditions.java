@@ -2,7 +2,7 @@ package space.devport.utils.struct;
 
 import lombok.Getter;
 import org.bukkit.entity.Player;
-import space.devport.utils.item.Amount;
+import space.devport.utils.item.data.Amount;
 
 import java.util.ArrayList;
 import java.util.List;

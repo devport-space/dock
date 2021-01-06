@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.callbacks.CallbackContent;
 import space.devport.utils.callbacks.ExceptionCallback;
-import space.devport.utils.item.Amount;
+import space.devport.utils.item.data.Amount;
 
 import java.util.function.Supplier;
 

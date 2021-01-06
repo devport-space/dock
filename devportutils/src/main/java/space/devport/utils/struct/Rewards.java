@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.economy.EconomyManager;
-import space.devport.utils.item.Amount;
+import space.devport.utils.item.data.Amount;
 import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.item.PrefabFactory;
 import space.devport.utils.text.Placeholders;
