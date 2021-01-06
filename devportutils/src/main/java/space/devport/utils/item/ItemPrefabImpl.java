@@ -358,16 +358,11 @@ public class ItemPrefabImpl implements ItemPrefab {
         return this;
     }
 
-    @Override
-    public @NotNull ItemPrefab clearGlow() {
-        return withGlow(false);
-    }
-
     // --------------- Boolean terminal operations ---------------
 
     @Override
-    public boolean hasEnchantment(XEnchantment xEnchantment) {
-        return this.enchants.stream().anyMatch(enchant -> enchant.compare(xEnchantment));
+    public boolean hasEnchantment(XEnchantment enchantment) {
+        return this.enchants.stream().anyMatch(enchant -> enchant.compare(enchantment));
     }
 
     @Override
