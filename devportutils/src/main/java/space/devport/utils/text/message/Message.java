@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
@@ -12,6 +12,7 @@ import space.devport.utils.text.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -105,13 +106,14 @@ public class Message {
      * @param message Message to set to in a List
      * @return MessageBuilder object
      */
-    public Message set(@Nullable List<String> message) {
-        this.message = message != null ? new ArrayList<>(message) : new ArrayList<>();
+    public Message set(@Nullable Collection<String> message) {
+        this.message = message == null ? new ArrayList<>() : new ArrayList<>(message);
         return this;
     }
 
     public Message set(@Nullable Message message) {
-        if (message == null) return set(new ArrayList<>());
+        if (message == null)
+            return set((Collection<String>) null);
         return set(message.getMessage());
     }
 
@@ -222,8 +224,9 @@ public class Message {
      * @param delimiter Optional String, delimiter to use
      * @return Parsed String
      */
-    @NotNull
-    public String toString(@NotNull String delimiter) {
+    @Contract("null -> null")
+    @Nullable
+    public String toString(@Nullable String delimiter) {
         return StringUtil.listToString(message, delimiter);
     }
 
@@ -274,21 +277,22 @@ public class Message {
     }
 
     /**
-     * Send a message prefixed with the DevportPlugin prefix.
+     * Send a message starting with %prefix%.
+     * Note: Requires Message to be parsed using global placeholders.
      *
-     * @param //sender CommandSender to send to
+     * @param sender CommandSender to send to
      */
-    /* //FIXME: somehow get plugin here.
     public void sendPrefixed(CommandSender sender) {
 
-        if (sender == null) return;
+        if (sender == null)
+            return;
 
         if (!isEmpty()) {
-            String prefix = DevportPlugin.getInstance().getPrefix();
-            String message = StringUtil.color((prefix == null ? "" : prefix) + toString());
-            sender.sendMessage(message == null ? "" : message);
+            String message = StringUtil.color(placeholders.getPlaceholderCache().containsKey("prefix") ?
+                    placeholders.parse("%prefix%") + toString() : toString());
+            sender.sendMessage(message);
         }
-    }*/
+    }
 
     public Message map(Function<String, String> action) {
         this.message = this.message.stream().map(action).collect(Collectors.toList());

@@ -2,440 +2,496 @@ package space.devport.utils.item;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
-import lombok.Getter;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportPlugin;
+import space.devport.utils.item.data.Amount;
+import space.devport.utils.item.data.Enchant;
+import space.devport.utils.item.data.ItemDamage;
+import space.devport.utils.item.data.SkullData;
 import space.devport.utils.item.nbt.NBTContainer;
-import space.devport.utils.item.nbt.TypeUtil;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
-import space.devport.utils.utility.ParseUtil;
-import space.devport.utils.version.api.ICompound;
 
-import java.util.*;
-
-public class ItemPrefab implements Cloneable {
-
-    // Some ItemStack parameters are already saved inside other variables.
-    // These NBT keys will be ignored in loading so they don't affect those.
-    public static final List<String> FILTERED_NBT = Arrays.asList("Damage", "Enchantments", "display", "HideFlags");
-
-    // Item data
-
-    @Getter
-    private XMaterial material;
-
-    @Getter
-    private Amount amount = new Amount(1);
-
-    @Getter
-    private CachedMessage name = new CachedMessage();
-
-    @Getter
-    private CachedMessage lore = new CachedMessage();
-
-    @Getter
-    private final Set<Enchant> enchants = new HashSet<>();
-
-    @Getter
-    private final Set<ItemFlag> flags = new HashSet<>();
-
-    private final Map<String, NBTContainer> nbt = new HashMap<>();
-
-    // Extra data
-
-    @Getter
-    private SkullData skullData;
-
-    @Getter
-    private ItemDamage damage;
-
-    @Getter
-    private boolean glow;
-
-    @Getter
-    private final Placeholders placeholders = new Placeholders();
-
-    // Additional builders
-
-    private final Set<PrefabBuilder> builders = new HashSet<>();
-
-    private ItemPrefab(@NotNull XMaterial material) {
-        this.material = material;
-    }
-
-    private ItemPrefab(ItemPrefab prefab) {
-        this.material = prefab.getMaterial();
-        this.amount = new Amount(prefab.getAmount());
-
-        this.name = new CachedMessage(prefab.getName());
-        this.lore = new CachedMessage(prefab.getLore());
-
-        this.enchants.addAll(prefab.getEnchants());
-        this.flags.addAll(prefab.getFlags());
-        this.nbt.putAll(prefab.getNBT());
-
-        this.skullData = SkullData.of(prefab.getSkullData());
-        this.damage = ItemDamage.of(prefab.getDamage());
-
-        this.glow = prefab.isGlow();
-
-        this.placeholders.copy(prefab.getPlaceholders());
-    }
-
-    private ItemPrefab(@NotNull ItemStack item) {
-        this.material = XMaterial.matchXMaterial(item.getType());
-        this.amount = new Amount(item.getAmount());
-
-        ItemMeta meta = item.getItemMeta();
-
-        if (meta == null)
-            return;
-
-        this.name = new CachedMessage(meta.getDisplayName());
-        this.lore = new CachedMessage(meta.getLore());
-
-        this.enchants.addAll(Enchant.from(meta));
-        this.flags.addAll(meta.getItemFlags());
-
-        ICompound compound = ItemUtil.getCompound(item);
-        if (compound != null)
-            for (String key : compound.getKeys()) {
-                if (!FILTERED_NBT.contains(key))
-                    nbt.put(key, TypeUtil.containValue(compound, key));
-            }
-
-        this.skullData = SkullData.readSkullTexture(item);
-        this.damage = ItemDamage.from(item);
-    }
-
-    @Contract("null -> null")
-    public static ItemPrefab createNew(XMaterial material) {
-        return material == null ? null : new ItemPrefab(material);
-    }
-
-    @Contract("null -> null")
-    public static ItemPrefab createNew(Material material) {
-        return material == null ? null : new ItemPrefab(XMaterial.matchXMaterial(material));
-    }
-
-    @Contract("null -> null")
-    public static ItemPrefab of(ItemPrefab prefab) {
-        return prefab == null ? null : new ItemPrefab(prefab);
-    }
-
-    @Contract("null -> null")
-    public static ItemPrefab of(ItemStack item) {
-        return item == null ? null : new ItemPrefab(item);
-    }
-
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
-    @Override
-    public ItemPrefab clone() {
-        return new ItemPrefab(this);
-    }
-
-    public ItemStack build(Context context) {
-        this.placeholders.addContext(context);
-        return build();
-    }
-
-    public ItemStack build() {
-
-        if (material == null)
-            return null;
-
-        ItemStack item = material.parseItem();
-
-        if (item == null)
-            return null;
-
-        item.setAmount(amount.getInt());
-
-        ItemMeta meta = item.getItemMeta();
-
-        if (meta == null)
-            return null;
-
-        if (hasDamage())
-            item = damage.apply(item);
-
-        // Name
-        String name = this.name.parseWith(placeholders).parse().color().toString();
-        this.name.pull();
-
-        meta.setDisplayName(name);
-
-        // Lore
-        List<String> lore = this.lore.parseWith(placeholders).parse().color().getMessage();
-        this.lore.pull();
-
-        meta.setLore(lore);
-
-        // Enchants
-        this.enchants.forEach(enchant -> enchant.apply(meta));
-
-        // Flags
-        meta.addItemFlags(flags.toArray(new ItemFlag[0]));
-
-        item.setItemMeta(meta);
-
-        // NBT
-        if (!nbt.isEmpty()) {
-            ICompound compound = ItemUtil.getCompound(item);
-
-            for (Map.Entry<String, NBTContainer> entry : nbt.entrySet()) {
-                String key = placeholders.parse(entry.getKey());
-
-                NBTContainer container = entry.getValue().clone();
-                Object value = container.getValue();
-
-                if (String.class.isAssignableFrom(value.getClass())) {
-                    String str = (String) value;
-                    str = placeholders.parse(str);
-                    container.setValue(ParseUtil.parseNumber(str));
-                }
-
-                container.apply(compound, key);
-            }
-
-            item = compound.finish();
-        }
-
-        if (skullData != null) {
-            skullData.parseWith(placeholders);
-            item = skullData.apply(item);
-        }
-
-        // Run additional builders
-        for (PrefabBuilder builder : builders)
-            item = builder.apply(item);
-
-        return item;
-    }
-
-    // --------------- Builder chain ---------------
-
-    public ItemPrefab withType(XMaterial material) {
-        this.material = material;
-        return this;
-    }
-
-    public ItemPrefab withAmount(Amount amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    public ItemPrefab withAmount(double value) {
-        this.amount = new Amount(value);
-        return this;
-    }
-
-    public ItemPrefab withAmount(double low, double high) {
-        this.amount = new Amount(low, high);
-        return this;
-    }
-
-    public ItemPrefab withName(Message name) {
-        this.name = new CachedMessage(name);
-        return this;
-    }
-
-    public ItemPrefab withName(String name) {
-        this.name = new CachedMessage(name);
-        return this;
-    }
-
-    public ItemPrefab withLore(Message lore) {
-        this.lore = new CachedMessage(lore);
-        return this;
-    }
-
-    public ItemPrefab withLore(Collection<String> lore) {
-        this.lore = new CachedMessage(new ArrayList<>(lore));
-        return this;
-    }
-
-    public ItemPrefab withLore(String... lore) {
-        this.lore = new CachedMessage(lore);
-        return this;
-    }
-
-    public ItemPrefab appendLore(String... lore) {
-        this.lore.append(lore);
-        return this;
-    }
-
-    public ItemPrefab addEnchant(XEnchantment enchantment, int level) {
-        this.enchants.add(new Enchant(enchantment, level));
-        return this;
-    }
-
-    public ItemPrefab addEnchant(Enchant enchant) {
-        this.enchants.add(enchant);
-        return this;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * ItemPrefab is used to effectively build, edit and check items.
+ */
+public interface ItemPrefab extends Cloneable {
+
+    /**
+     * Build the ItemPrefab into an {@code ItemStack}.
+     * ItemPrefab placeholders will be fed the {@param context}
+     *
+     * @param context Context to use.
+     * @return Built {@code ItemStack}
+     */
+    @Nullable ItemStack build(@NotNull Context context);
+
+    /**
+     * Build the ItemPrefab into an {@code ItemStack}.
+     *
+     * @return Built {@code ItemStack}
+     */
+    @Nullable ItemStack build();
+
+    /**
+     * Set the type of the Prefab.
+     *
+     * @param material Material to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withType(@NotNull XMaterial material);
+
+    /**
+     * Set the amount of the Prefab.
+     *
+     * @param amount Amount to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withAmount(@NotNull Amount amount);
+
+    /**
+     * Set the amount of the Prefab,
+     *
+     * @param value Fixed amount to set
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab withAmount(double value) {
+        return withAmount(new Amount(value));
     }
 
     /**
-     * Overwrite the enchants.
+     * Set the dynamic amount of the prefab.
+     *
+     * @param low  Low value to use
+     * @param high High value to use
+     * @return Edited ItemPrefab.
      */
-    public ItemPrefab withEnchants(Collection<Enchant> enchants) {
-        this.enchants.clear();
-        this.enchants.addAll(enchants);
-        return this;
+    default @NotNull ItemPrefab withAmount(double low, double high) {
+        return withAmount(new Amount(low, high));
     }
 
-    public ItemPrefab addFlags(ItemFlag... flags) {
-        this.flags.addAll(Arrays.asList(flags));
-        return this;
+    /**
+     * Set the name of the Prefab.
+     *
+     * @param name Message name to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withName(@Nullable Message name);
+
+    /**
+     * Set the name of the Prefab.
+     *
+     * @param name String name to set
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab withName(@Nullable String name) {
+        return withName(name == null ? new CachedMessage() : new CachedMessage(name));
     }
 
-    public ItemPrefab withFlags(ItemFlag... flags) {
-        this.flags.clear();
-        this.flags.addAll(Arrays.asList(flags));
-        return this;
+    /**
+     * Set the lore of the Prefab.
+     *
+     * @param lore Message lore to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withLore(@Nullable Message lore);
+
+    /**
+     * Set the lore of the Prefab.
+     *
+     * @param lore Collection<String> to set.
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab withLore(@Nullable Collection<String> lore) {
+        return withLore(lore == null ? new CachedMessage() : new CachedMessage(lore));
     }
 
-    public ItemPrefab addNBT(String key, NBTContainer container) {
-        this.nbt.put(key, container);
-        return this;
+    /**
+     * Set the lore of the Prefab.
+     *
+     * @param lore String[] to set
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab withLore(@Nullable String... lore) {
+        return withLore(lore == null ? new CachedMessage() : new CachedMessage(lore));
     }
 
-    public <T> ItemPrefab addNBT(String key, T value) {
-        NBTContainer container = new NBTContainer(value);
-        return addNBT(key, container);
+    /**
+     * Append to the lore of the Prefab.
+     *
+     * @param lore Message lore to append
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab appendLore(@NotNull Message lore);
+
+    /**
+     * Append to the lore of the Prefab.
+     *
+     * @param lore String[] lore to append
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab appendLore(@NotNull String... lore) {
+        return appendLore(new Message(lore));
     }
 
-    public ItemPrefab addNBT(Map<String, NBTContainer> nbt) {
-        this.nbt.putAll(nbt);
-        return this;
+    /**
+     * Add enchant to Prefab.
+     *
+     * @param enchant Enchant to add
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab addEnchant(@NotNull Enchant enchant);
+
+    /**
+     * Add enchant to Prefab.
+     *
+     * @param enchantment Enchantment to add
+     * @param level       Enchantment level
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab addEnchant(@NotNull XEnchantment enchantment, int level) {
+        return addEnchant(new Enchant(enchantment, level));
     }
 
-    public ItemPrefab withNBT(Map<String, NBTContainer> nbt) {
-        this.nbt.clear();
-        this.nbt.putAll(nbt);
-        return this;
+    /**
+     * Set enchants to Prefab.
+     *
+     * @param enchants Enchants to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withEnchants(@NotNull Collection<Enchant> enchants);
+
+    /**
+     * Add flags to Prefab.
+     *
+     * @param flags Flags to add
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab addFlags(@NotNull ItemFlag... flags);
+
+    /**
+     * Set flags of the Prefab.
+     *
+     * @param flags Flags to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withFlags(@NotNull ItemFlag... flags);
+
+    /**
+     * Add NBT to Prefab.
+     *
+     * @param key       String key
+     * @param container Contained value to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab addNBT(@NotNull String key, @NotNull NBTContainer container);
+
+    /**
+     * Add NBT to Prefab.
+     *
+     * @param key   String key
+     * @param value Value to set
+     * @return Edited ItemPrefab.
+     */
+    <T> @NotNull ItemPrefab addNBT(@NotNull String key, @NotNull T value);
+
+    /**
+     * Add NBT to Prefab.
+     *
+     * @param nbt Nbt map to add
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab addNBT(@NotNull Map<String, NBTContainer> nbt);
+
+    /**
+     * Set NBT to Prefab.
+     *
+     * @param nbt NBT map to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withNBT(@NotNull Map<String, NBTContainer> nbt);
+
+    /**
+     * Set SkullData to Prefab.
+     *
+     * @param skullData SkullData to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withSkullData(@Nullable SkullData skullData);
+
+    /**
+     * Set SkullData to Prefab.
+     * Equivalent to #withSkullData(SkullData.fromString(identifier))
+     *
+     * @param identifier Identifier to use
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab withSkullData(@NotNull String identifier) {
+        return withSkullData(SkullData.of(identifier));
     }
 
-    public ItemPrefab withSkullData(SkullData skullData) {
-        this.skullData = skullData;
-        return this;
+    /**
+     * Set Damage to Prefab.
+     *
+     * @param damage ItemDamage to set
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withDamage(@Nullable ItemDamage damage);
+
+    /**
+     * Set Damage to Prefab.
+     * Equivalent to #withDamage(new ItemDamage(damage))
+     *
+     * @param damage Integer damage to set
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab withDamage(int damage) {
+        return withDamage(new ItemDamage(damage));
     }
 
-    public ItemPrefab withSkullData(String identifier) {
-        this.skullData = SkullData.of(identifier);
-        return this;
-    }
-
-    public ItemPrefab withDamage(ItemDamage damage) {
-        this.damage = damage;
-        return this;
-    }
-
-    public ItemPrefab withDamage(int damage) {
-        this.damage = new ItemDamage(damage);
-        return this;
-    }
-
-    public ItemPrefab withGlow() {
+    /**
+     * Set glow to Prefab.
+     * Equivalent to #withGlow(true)
+     *
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab withGlow() {
         return withGlow(true);
     }
 
-    public ItemPrefab withGlow(boolean b) {
-        this.glow = b;
-        return this;
-    }
+    /**
+     * Set glow to Prefab.
+     *
+     * @param b Boolean, true to glow, false to not
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab withGlow(boolean b);
 
-    public ItemPrefab parseWith(Placeholders placeholders) {
-        this.placeholders.copy(placeholders);
-        return this;
-    }
+    /**
+     * Set Placeholders to parse with.
+     *
+     * @param placeholders Placeholders to use
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab parseWith(@NotNull Placeholders placeholders);
 
-    public ItemPrefab addBuilder(PrefabBuilder builder) {
-        this.builders.add(builder);
-        return this;
-    }
+    /**
+     * Add extra builder to Prefab.
+     * PrefabBuilders are applied after the ItemStack is built.
+     *
+     * @param builder PrefabBuilder to add
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab addBuilder(@NotNull PrefabBuilder builder);
 
-    // --------------- Clears and removes ---------------
+    /**
+     * Remove enchant from Prefab.
+     *
+     * @param enchantment Enchantment to remove
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab removeEnchant(@NotNull XEnchantment enchantment);
 
-    public ItemPrefab removeEnchant(XEnchantment enchantment) {
-        this.enchants.removeIf(enchant -> enchant.compare(enchantment));
-        return this;
-    }
+    /**
+     * Clear enchants from Prefab.
+     *
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab clearEnchants();
 
-    public ItemPrefab clearEnchants() {
-        this.enchants.clear();
-        return this;
-    }
+    /**
+     * Remove flag from Prefab.
+     *
+     * @param flag Flag to remove
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab removeFlag(ItemFlag flag);
 
-    public ItemPrefab removeFlag(ItemFlag flag) {
-        this.flags.remove(flag);
-        return this;
-    }
+    /**
+     * Clear flags from Prefab.
+     *
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab clearFlags();
 
-    public ItemPrefab clearFlags() {
-        this.flags.clear();
-        return this;
-    }
+    /**
+     * Remove NBT from Prefab.
+     *
+     * @param key NBT key of the entry to remove
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab removeNBT(String key);
 
-    public ItemPrefab removeNBT(String key) {
-        this.nbt.remove(key);
-        return this;
-    }
+    /**
+     * Clear NBT from Prefab.
+     *
+     * @return Edited ItemPrefab.
+     */
+    @NotNull ItemPrefab clearNBT();
 
-    public ItemPrefab clearNBT() {
-        this.nbt.clear();
-        return this;
-    }
-
-    public ItemPrefab clearGlow() {
+    /**
+     * Remove glow from Prefab.
+     * Equivalent to #withGlow(false)
+     *
+     * @return Edited ItemPrefab.
+     */
+    default @NotNull ItemPrefab clearGlow() {
         return withGlow(false);
     }
 
-    // --------------- Boolean terminal operations ---------------
+    /**
+     * Check for an Enchantment on the Prefab.
+     *
+     * @param enchantment XEnchantment to look for
+     * @return true if prefab has this enchantment,
+     * false if not or {@param enchantment} is null
+     */
+    boolean hasEnchantment(XEnchantment enchantment);
 
-    public boolean hasEnchantment(XEnchantment xEnchantment) {
-        return this.enchants.stream().anyMatch(enchant -> enchant.compare(xEnchantment));
-    }
+    /**
+     * Check for an ItemFlag on the Prefab.
+     *
+     * @param flag ItemFlag to look for
+     * @return true if prefab has this flag,
+     * false if not or {@param flag} is null
+     */
+    boolean hasFlag(ItemFlag flag);
 
-    public boolean hasFlag(ItemFlag flag) {
-        return this.flags.contains(flag);
-    }
+    /**
+     * Check for NBT on the Prefab.
+     *
+     * @return true if prefab has NBT, false if not
+     */
+    boolean hasNBT();
 
-    public boolean hasNBT() {
-        return !this.nbt.isEmpty();
-    }
+    /**
+     * Check for an NBT key on the Prefab.
+     *
+     * @param key NBT key to look for
+     * @return true if prefab has an NBT entry with this key,
+     * false if not or {@param key} is null
+     */
+    boolean hasNBT(String key);
 
-    public boolean hasNBT(String key) {
-        return this.nbt.containsKey(key);
-    }
+    /**
+     * Check for an NBT entry on the Prefab.
+     *
+     * @param key   NBT key to look for
+     * @param value Value to check
+     * @return true if prefab has this NBT key and it's value is equal to {@param value},
+     * false if not or {@param key} is null
+     */
+    <T> boolean hasNBTValue(String key, T value);
 
-    public <T> boolean hasNBTValue(String key, T value) {
-        return this.nbt.get(key).getValue().equals(value);
-    }
+    /**
+     * Get an NBT value from Prefab.
+     *
+     * @param key   NBT key to query
+     * @param clazz Value class to parse
+     * @param <T>   Type signature
+     * @return value of the key cast to {@param <T>} or null if absent or
+     * value under {@param key} has value of a different type
+     */
+    <T> T getNBTValue(String key, @NotNull Class<T> clazz);
 
-    @Nullable
-    public <T> T getNBTValue(String key, Class<T> clazz) {
-        NBTContainer container = getNBT().get(key);
+    /**
+     * Check for damage on the Prefab.
+     *
+     * @return true if the prefab has any damage applied to it
+     */
+    boolean hasDamage();
 
-        if (container == null || clazz == null || !clazz.isAssignableFrom(container.getValue().getClass()))
-            return null;
+    /**
+     * Get NBT of the Prefab.
+     *
+     * @return NBT map
+     */
+    @NotNull Map<String, NBTContainer> getNBT();
 
-        return clazz.cast(container.getValue());
-    }
+    /**
+     * Get material of the Prefab.
+     *
+     * @return XMaterial material
+     */
+    @NotNull XMaterial getMaterial();
 
-    public boolean hasDamage() {
-        return damage != null && damage.hasDamage();
-    }
+    /**
+     * Get amount of the Prefab.
+     *
+     * @return Amount instance
+     */
+    @NotNull Amount getAmount();
 
-    public Map<String, NBTContainer> getNBT() {
-        return nbt;
-    }
+    /**
+     * Get name of the Prefab.
+     *
+     * @return CachedMessage name
+     */
+    @NotNull CachedMessage getName();
+
+    /**
+     * Get lore of the Prefab.
+     *
+     * @return CachedMessage lore
+     */
+    @NotNull CachedMessage getLore();
+
+    /**
+     * Get enchants of the Prefab
+     *
+     * @return Enchants set
+     */
+    @NotNull Set<Enchant> getEnchants();
+
+    /**
+     * Get flags of the Prefab.
+     *
+     * @return Flags set
+     */
+    @NotNull Set<ItemFlag> getFlags();
+
+    /**
+     * Get SkullData of the Prefab.
+     *
+     * @return SkullData instance
+     */
+    @Nullable SkullData getSkullData();
+
+    /**
+     * Get damage of the Prefab.
+     *
+     * @return ItemDamage instance or
+     * {@code null} if the prefab has no damage applied
+     */
+    @Nullable ItemDamage getDamage();
+
+    /**
+     * Get glow value.
+     *
+     * @return Glow value
+     */
+    boolean isGlow();
+
+    /**
+     * Get plugin instance.
+     *
+     * @return DevportPlugin instance
+     */
+    @NotNull DevportPlugin getPlugin();
+
+    /**
+     * Get placeholders used for parsing.
+     *
+     * @return Placeholders instance
+     */
+    @NotNull Placeholders getPlaceholders();
 }

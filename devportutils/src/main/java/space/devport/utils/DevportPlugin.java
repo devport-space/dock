@@ -20,7 +20,9 @@ import space.devport.utils.commands.MainCommand;
 import space.devport.utils.commands.build.BuildableSubCommand;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.economy.EconomyManager;
+import space.devport.utils.factory.IFactory;
 import space.devport.utils.holograms.HologramManager;
+import space.devport.utils.item.PrefabFactory;
 import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.logging.DevportLogger;
 import space.devport.utils.menu.MenuManager;
@@ -32,6 +34,7 @@ import space.devport.utils.utility.ParseUtil;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerType;
 import space.devport.utils.utility.reflection.ServerVersion;
+import space.devport.utils.version.CompoundFactory;
 import space.devport.utils.version.VersionManager;
 
 import java.util.*;
@@ -42,6 +45,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     @Getter
     private DevportLogger devportLogger;
+
+    private final Set<IFactory> factories = new HashSet<>();
 
     @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
@@ -77,6 +82,13 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         this.devportLogger = new DevportLogger(this);
         devportLogger.setup();
+
+        // Load version
+        ServerVersion.loadServerVersion();
+        ServerType.loadServerType();
+
+        this.factories.add(new PrefabFactory(this));
+        this.factories.add(new CompoundFactory(this));
 
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
@@ -121,10 +133,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
-
-        // Load version
-        ServerVersion.loadServerVersion();
-        ServerType.loadServerType();
 
         // Print header
         log.info(String.format("Starting up %s %s", getDescription().getName(), getDescription().getVersion()));
@@ -220,6 +228,8 @@ public abstract class DevportPlugin extends JavaPlugin {
     public void onDisable() {
         onPluginDisable();
         callManagerAction(DevportManager::onDisable);
+
+        this.factories.forEach(IFactory::destroy);
     }
 
     public void registerManager(DevportManager devportManager) {

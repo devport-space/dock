@@ -5,7 +5,6 @@ import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
-import space.devport.utils.item.ItemUtil;
 import space.devport.utils.utility.reflection.Reflection;
 import space.devport.utils.utility.reflection.ServerVersion;
 import space.devport.utils.version.api.ICompoundFactory;
@@ -29,7 +28,6 @@ public class VersionManager extends DevportManager {
     @Override
     public void onLoad() {
         load();
-        ItemUtil.setVersionManager(this);
     }
 
     /**
@@ -56,7 +54,7 @@ public class VersionManager extends DevportManager {
             T t = Reflection.obtainInstance(factoryClazz, null, null);
             store.accept(t);
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
             e.printStackTrace();
             return false;
         }

@@ -1,4 +1,4 @@
-package space.devport.utils.item;
+package space.devport.utils.item.data;
 
 import com.google.common.base.Strings;
 import lombok.Getter;

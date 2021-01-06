@@ -18,6 +18,7 @@ import space.devport.utils.text.message.Message;
 import space.devport.utils.utility.ParseUtil;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
@@ -206,7 +207,11 @@ public abstract class AbstractCommand {
      */
     @Nullable
     protected <T> T parse(String arg, @NotNull ArgumentParser<T> parser) {
-        return parser.parse(arg);
+        try {
+            return parser.parse(arg);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public boolean checkRange() {

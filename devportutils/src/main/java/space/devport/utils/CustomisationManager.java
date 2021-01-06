@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.item.ItemPrefab;
+import space.devport.utils.item.PrefabFactory;
 import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.menu.MenuBuilder;
 
@@ -34,7 +35,7 @@ public class CustomisationManager extends DevportManager {
 
     @NotNull
     public ItemPrefab getItem(String name) {
-        return loadedItems.containsKey(name) ? loadedItems.get(name) : ItemPrefab.createNew(Material.AIR);
+        return loadedItems.containsKey(name) ? loadedItems.get(name) : PrefabFactory.createNew(Material.AIR);
     }
 
     @Override

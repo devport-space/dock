@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class CachedMessage extends Message {
         this(Arrays.asList(message));
     }
 
-    public CachedMessage(@Nullable List<String> message) {
+    public CachedMessage(@Nullable Collection<String> message) {
         set(message);
     }
 
@@ -40,7 +41,7 @@ public class CachedMessage extends Message {
     }
 
     @Override
-    public CachedMessage set(@Nullable List<String> message) {
+    public CachedMessage set(@Nullable Collection<String> message) {
 
         if (message == null) {
             clear();

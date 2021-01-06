@@ -1,4 +1,4 @@
-package space.devport.utils.item;
+package space.devport.utils.item.data;
 
 import com.cryptomorin.xseries.SkullUtils;
 import com.google.common.base.Strings;

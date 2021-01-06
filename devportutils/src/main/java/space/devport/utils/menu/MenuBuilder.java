@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.ItemPrefab;
+import space.devport.utils.item.ItemPrefabImpl;
 import space.devport.utils.menu.item.MatrixItem;
 import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.text.Placeholders;
