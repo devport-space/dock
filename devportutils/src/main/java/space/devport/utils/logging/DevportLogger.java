@@ -3,12 +3,12 @@ package space.devport.utils.logging;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
-import space.devport.utils.DevportPlugin;
+import space.devport.utils.factory.IFactory;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DevportLogger {
+public class DevportLogger implements IFactory {
 
     @Getter
     private final String loggerKey;
@@ -16,20 +16,30 @@ public class DevportLogger {
     private final Logger parentLogger;
 
     @Getter
-    private final ConsoleOutput consoleOutput;
+    private ConsoleOutput consoleOutput;
 
-    public DevportLogger(DevportPlugin plugin, String loggerKey) {
-        this.consoleOutput = new ConsoleOutput(plugin);
+    private DevportLogHandler devportLogHandler;
 
+    public DevportLogger(String loggerKey) {
         this.loggerKey = loggerKey;
         this.parentLogger = Logger.getLogger(loggerKey);
     }
 
-    public void setup() {
+    @Override
+    public void destroy() {
+        parentLogger.removeHandler(devportLogHandler);
+        parentLogger.setUseParentHandlers(true);
+
+        this.consoleOutput = null;
+        this.devportLogHandler = null;
+    }
+
+    public void setup(ConsoleOutput consoleOutput) {
         parentLogger.setUseParentHandlers(false);
 
         setLevel(Level.INFO);
-        parentLogger.addHandler(new DevportLogHandler(consoleOutput));
+        this.devportLogHandler = new DevportLogHandler(consoleOutput);
+        parentLogger.addHandler(devportLogHandler);
     }
 
     public void setLevel(Level level) {

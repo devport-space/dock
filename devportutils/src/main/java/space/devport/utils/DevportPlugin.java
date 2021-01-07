@@ -23,6 +23,7 @@ import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.factory.IFactory;
 import space.devport.utils.holograms.HologramManager;
 import space.devport.utils.item.PrefabFactory;
+import space.devport.utils.logging.ConsoleOutput;
 import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.logging.DevportLogger;
 import space.devport.utils.menu.MenuManager;
@@ -82,8 +83,9 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
 
-        this.devportLogger = new DevportLogger(this, getClass().getPackage().getName());
-        devportLogger.setup();
+        this.devportLogger = new DevportLogger(getClass().getPackage().getName());
+        this.factories.add(devportLogger);
+        devportLogger.setup(new ConsoleOutput(this));
 
         // Load version
         ServerVersion.loadServerVersion();
@@ -227,9 +229,14 @@ public abstract class DevportPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         onPluginDisable();
-        callManagerAction(DevportManager::onDisable);
 
+        // Clean managers
+        callManagerAction(DevportManager::onDisable);
+        this.managers.clear();
+
+        // Destroy factories
         this.factories.forEach(IFactory::destroy);
+        this.factories.clear();
     }
 
     public void registerManager(DevportManager devportManager) {
