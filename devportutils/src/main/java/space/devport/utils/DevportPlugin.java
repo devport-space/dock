@@ -174,7 +174,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         log.info(String.format("Done... startup took &f%s&7ms.", (System.currentTimeMillis() - start)));
 
         // Set the prefix as the last thing, startup looks cooler without it.
-        devportLogger.getConsoleOutput().setPrefix(prefix);
+        devportLogger.setPrefix(prefix);
 
         Bukkit.getScheduler().runTask(this, () -> {
 
@@ -190,7 +190,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         long start = System.currentTimeMillis();
 
         if (!(sender instanceof ConsoleCommandSender))
-            devportLogger.getConsoleOutput().addListener(sender);
+            devportLogger.addListener(sender);
 
         if (use(UsageFlag.CONFIGURATION)) {
             configuration.load();
@@ -218,7 +218,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::afterReload);
 
-        devportLogger.getConsoleOutput().removeListener(sender);
+        devportLogger.removeListener(sender);
 
         if (use(UsageFlag.LANGUAGE))
             getManager(LanguageManager.class).getPrefixed("Commands.Reload")

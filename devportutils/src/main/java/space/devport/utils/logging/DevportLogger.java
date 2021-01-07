@@ -15,7 +15,6 @@ public class DevportLogger implements IFactory {
 
     private final Logger parentLogger;
 
-    @Getter
     private ConsoleOutput consoleOutput;
 
     private DevportLogHandler devportLogHandler;
@@ -35,6 +34,8 @@ public class DevportLogger implements IFactory {
     }
 
     public void setup(ConsoleOutput consoleOutput) {
+        this.consoleOutput = consoleOutput;
+
         parentLogger.setUseParentHandlers(false);
 
         setLevel(Level.INFO);
@@ -53,11 +54,18 @@ public class DevportLogger implements IFactory {
         }
     }
 
+    public void setPrefix(String prefix) {
+        if (consoleOutput != null)
+            consoleOutput.setPrefix(prefix);
+    }
+
     public void addListener(CommandSender listener) {
-        consoleOutput.addListener(listener);
+        if (consoleOutput != null)
+            consoleOutput.addListener(listener);
     }
 
     public void removeListener(CommandSender listener) {
-        consoleOutput.removeListener(listener);
+        if (consoleOutput != null)
+            consoleOutput.removeListener(listener);
     }
 }
