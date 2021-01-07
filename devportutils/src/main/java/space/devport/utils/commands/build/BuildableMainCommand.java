@@ -9,8 +9,8 @@ import space.devport.utils.text.message.Message;
 
 public class BuildableMainCommand extends MainCommand {
 
-    private String defaultUsage = "%label%";
-    private String defaultDescription;
+    private String defaultUsage = "/%label%";
+    private String defaultDescription = "Displays this.";
 
     public BuildableMainCommand(DevportPlugin plugin, String name) {
         super(plugin, name);
