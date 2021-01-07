@@ -97,7 +97,7 @@ public class Configuration {
             return true;
 
         // Ensure folder structure
-        if (!file.getParentFile().mkdirs())
+        if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
             if (!silent)
                 log.severe("Could not create " + path);
 
