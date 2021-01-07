@@ -18,10 +18,10 @@ public class DevportLogger {
     @Getter
     private final ConsoleOutput consoleOutput;
 
-    public DevportLogger(DevportPlugin plugin) {
+    public DevportLogger(DevportPlugin plugin, String loggerKey) {
         this.consoleOutput = new ConsoleOutput(plugin);
 
-        this.loggerKey = plugin.getClass().getName();
+        this.loggerKey = loggerKey;
         this.parentLogger = Logger.getLogger(loggerKey);
     }
 

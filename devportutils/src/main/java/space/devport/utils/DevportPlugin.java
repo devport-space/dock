@@ -82,7 +82,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
 
-        this.devportLogger = new DevportLogger(this);
+        this.devportLogger = new DevportLogger(this, getClass().getPackage().getName());
         devportLogger.setup();
 
         // Load version
