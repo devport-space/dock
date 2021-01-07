@@ -128,12 +128,13 @@ public class GsonHelper {
      * Asynchronously load and parse json from a file.
      *
      * @param <T>      Type signature of loaded json content.
+     * @param clazz    Class of loaded object.
      * @param type     Type of loaded class.
      * @param dataPath Path to load from.
      * @return CompletableFuture supplying parsed output or supplying {@code null}.
      */
     @NotNull
-    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Type type) {
+    public <T> CompletableFuture<T> loadAsync(@NotNull final String dataPath, @NotNull Type type, Class<T> clazz) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
@@ -145,7 +146,12 @@ public class GsonHelper {
             if (Strings.isNullOrEmpty(output))
                 return null;
 
-            return gson.fromJson(output, type);
+            Object obj = gson.fromJson(output, type);
+
+            if (!clazz.isAssignableFrom(obj.getClass()))
+                return null;
+
+            return clazz.cast(obj);
         });
     }
 
