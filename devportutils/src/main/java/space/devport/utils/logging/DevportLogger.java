@@ -10,15 +10,19 @@ import java.util.logging.Logger;
 
 public class DevportLogger {
 
-    public static String LOGGER_KEY = "space.devport";
+    @Getter
+    private final String loggerKey;
 
-    private final Logger parentLogger = Logger.getLogger(LOGGER_KEY);
+    private final Logger parentLogger;
 
     @Getter
     private final ConsoleOutput consoleOutput;
 
     public DevportLogger(DevportPlugin plugin) {
         this.consoleOutput = new ConsoleOutput(plugin);
+
+        this.loggerKey = plugin.getClass().getName();
+        this.parentLogger = Logger.getLogger(loggerKey);
     }
 
     public void setup() {
