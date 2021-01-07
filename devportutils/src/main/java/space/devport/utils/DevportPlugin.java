@@ -90,11 +90,12 @@ public abstract class DevportPlugin extends JavaPlugin {
         ServerType.loadServerType();
 
         this.factories.add(new PrefabFactory(this));
-        this.factories.add(new CompoundFactory(this));
 
         if (use(UsageFlag.NMS)) {
             VersionManager versionManager = new VersionManager(this);
             registerManager(versionManager);
+
+            this.factories.add(new CompoundFactory(versionManager.getCompoundFactory()));
         }
 
         if (use(UsageFlag.COMMANDS)) {

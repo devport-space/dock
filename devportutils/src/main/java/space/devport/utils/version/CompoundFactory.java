@@ -2,8 +2,6 @@ package space.devport.utils.version;
 
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.DevportPlugin;
-import space.devport.utils.UsageFlag;
 import space.devport.utils.factory.IFactory;
 import space.devport.utils.version.api.ICompound;
 import space.devport.utils.version.api.ICompoundFactory;
@@ -17,16 +15,16 @@ public class CompoundFactory implements IFactory {
     /**
      * Initialize a new CompoundFactory.
      *
-     * @param plugin DevportPlugin reference
+     * @param compoundFactory {@link ICompoundFactory} instance.
      * @throws IllegalStateException when it's already initialized.
      */
-    public CompoundFactory(DevportPlugin plugin) {
-        if (plugin.use(UsageFlag.NMS)) {
-            if (compoundFactory != null)
-                throw new IllegalStateException("CompoundFactory already initialized.");
+    public CompoundFactory(@NotNull ICompoundFactory compoundFactory) {
+        if (CompoundFactory.compoundFactory != null)
+            throw new IllegalStateException("CompoundFactory already initialized.");
 
-            CompoundFactory.compoundFactory = plugin.getManager(VersionManager.class).getCompoundFactory();
-        }
+        Objects.requireNonNull(compoundFactory);
+
+        CompoundFactory.compoundFactory = compoundFactory;
     }
 
     @Override
