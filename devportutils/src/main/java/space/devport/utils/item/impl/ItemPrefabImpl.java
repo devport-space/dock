@@ -1,4 +1,4 @@
-package space.devport.utils.item;
+package space.devport.utils.item.impl;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
@@ -8,12 +8,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.item.ItemPrefab;
+import space.devport.utils.item.PrefabBuilder;
 import space.devport.utils.item.data.Amount;
 import space.devport.utils.item.data.Enchant;
 import space.devport.utils.item.data.ItemDamage;
 import space.devport.utils.item.data.SkullData;
 import space.devport.utils.item.nbt.NBTContainer;
-import space.devport.utils.item.nbt.TypeUtil;
+import space.devport.utils.item.nbt.CompoundUtil;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
@@ -23,11 +25,7 @@ import space.devport.utils.version.api.ICompound;
 
 import java.util.*;
 
-public class ItemPrefabImpl implements ItemPrefab {
-
-    // Some ItemStack parameters are already saved inside other variables.
-    // These NBT keys will be ignored in loading so they don't affect those.
-    public static final List<String> FILTERED_NBT = Arrays.asList("Damage", "Enchantments", "display", "HideFlags");
+class ItemPrefabImpl implements ItemPrefab {
 
     private final DevportPlugin plugin;
 
@@ -66,7 +64,9 @@ public class ItemPrefabImpl implements ItemPrefab {
         this.plugin = plugin;
     }
 
-    ItemPrefabImpl(ItemPrefab prefab) {
+    ItemPrefabImpl(@NotNull ItemPrefab prefab) {
+        Objects.requireNonNull(prefab, "ItemPrefab cannot be null.");
+
         this.plugin = prefab.getPlugin();
 
         this.material = prefab.getMaterial();
@@ -88,6 +88,8 @@ public class ItemPrefabImpl implements ItemPrefab {
     }
 
     ItemPrefabImpl(DevportPlugin plugin, @NotNull ItemStack item) {
+        Objects.requireNonNull(item, "ItemStack cannot be null.");
+
         this.plugin = plugin;
 
         this.material = XMaterial.matchXMaterial(item.getType());
@@ -103,13 +105,7 @@ public class ItemPrefabImpl implements ItemPrefab {
 
         this.enchants.addAll(Enchant.from(meta));
         this.flags.addAll(meta.getItemFlags());
-
-        ICompound compound = ItemUtil.getCompound(item);
-        if (compound != null)
-            for (String key : compound.getKeys()) {
-                if (!FILTERED_NBT.contains(key))
-                    nbt.put(key, TypeUtil.containValue(compound, key));
-            }
+        this.nbt.putAll(CompoundUtil.getMap(item));
 
         this.skullData = SkullData.readSkullTexture(item);
         this.damage = ItemDamage.from(item);
@@ -124,6 +120,7 @@ public class ItemPrefabImpl implements ItemPrefab {
     @Override
     @Nullable
     public ItemStack build(@NotNull Context context) {
+        Objects.requireNonNull(context, "Context cannot be null.");
         placeholders.addContext(context);
         return build();
     }
@@ -172,7 +169,7 @@ public class ItemPrefabImpl implements ItemPrefab {
 
         // NBT
         if (!nbt.isEmpty()) {
-            ICompound compound = ItemUtil.getCompound(item);
+            ICompound compound = CompoundUtil.getCompound(item);
 
             for (Map.Entry<String, NBTContainer> entry : nbt.entrySet()) {
                 String key = placeholders.parse(entry.getKey());

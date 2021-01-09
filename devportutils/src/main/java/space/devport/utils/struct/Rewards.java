@@ -10,7 +10,7 @@ import space.devport.utils.DevportPlugin;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.item.data.Amount;
 import space.devport.utils.item.ItemPrefab;
-import space.devport.utils.item.PrefabFactory;
+import space.devport.utils.item.impl.PrefabFactory;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;

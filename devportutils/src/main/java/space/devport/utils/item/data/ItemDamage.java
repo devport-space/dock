@@ -6,7 +6,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class ItemDamage {
 
@@ -19,17 +22,18 @@ public class ItemDamage {
         setDamage(damage);
     }
 
-    private ItemDamage(ItemDamage damage) {
+    private ItemDamage(@NotNull ItemDamage damage) {
+        Objects.requireNonNull(damage);
         setDamage(damage.getDamage());
     }
 
-    @Contract("null -> null")
-    public static ItemDamage of(ItemDamage damage) {
+    @Contract("null -> null;!null -> !null")
+    public static ItemDamage of(@Nullable ItemDamage damage) {
         return damage == null ? null : new ItemDamage(damage);
     }
 
-    @Nullable
-    public static ItemDamage from(ItemStack item) {
+    @Contract("null -> null")
+    public static ItemDamage from(@Nullable ItemStack item) {
         if (item == null)
             return null;
 
@@ -42,7 +46,7 @@ public class ItemDamage {
         return new ItemDamage(damageable.getDamage());
     }
 
-    @Nullable
+    @Contract("null -> null")
     public static ItemDamage fromString(@Nullable String str) {
 
         if (Strings.isNullOrEmpty(str))
@@ -55,19 +59,9 @@ public class ItemDamage {
         }
     }
 
-    public boolean hasDamage() {
-        return this.hasDamage;
-    }
-
-    public void setDamage(int damage) {
-        this.damage = damage;
-        this.hasDamage = damage > 0;
-    }
-
-    public ItemStack apply(ItemStack item) {
-
-        if (item == null)
-            return null;
+    @NotNull
+    public ItemStack apply(@NotNull ItemStack item) {
+        Objects.requireNonNull(item);
 
         ItemMeta meta = item.getItemMeta();
 
@@ -78,13 +72,24 @@ public class ItemDamage {
         return item;
     }
 
-    public ItemMeta apply(ItemMeta meta) {
+    //TODO: Support legacy damage. There is probably no Damageable interface down there.
+    @Contract("null -> null")
+    public ItemMeta apply(@Nullable ItemMeta meta) {
         if (!hasDamage() || !(meta instanceof Damageable))
             return meta;
 
         Damageable damageable = (Damageable) meta;
         damageable.setDamage(damage);
         return meta;
+    }
+
+    public boolean hasDamage() {
+        return this.hasDamage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+        this.hasDamage = damage > 0;
     }
 
     @Override

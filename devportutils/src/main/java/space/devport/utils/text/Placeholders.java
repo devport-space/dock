@@ -4,18 +4,13 @@ import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.message.Message;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,7 +25,7 @@ public class Placeholders {
 
     @Getter
     @Setter
-    private LinkedHashMap<String, String> placeholderCache = new LinkedHashMap<>();
+    private Map<String, String> placeholderCache = new LinkedHashMap<>();
 
     /**
      * Copy constructor.
@@ -54,34 +49,43 @@ public class Placeholders {
     }
 
     /**
-     * Copy placeholders and values from a format.
+     * Copy placeholders from another instance.
      *
-     * @param placeholders Parse format to copy placeholders from
-     * @return ParseFormat object
+     * @param placeholders {@link Placeholders} to copy from.
+     * @return If input Placeholders are {@code null}, nothing will be copied and this instance returned.
      */
-    public Placeholders copy(@NotNull Placeholders placeholders) {
+    @NotNull
+    public Placeholders copy(@Nullable Placeholders placeholders) {
+        if (placeholders == null)
+            return this;
+
+        // Copy dynamic parsers.
         placeholders.getDynamicPlaceholders().forEach(this.dynamicPlaceholders::put);
         this.parsers.addAll(placeholders.getParsers());
 
+        // Copy cache.
         placeholders.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
         this.context.add(placeholders.getContext());
         return this;
     }
 
     /**
-     * Parse a string using this format.
+     * Parse placeholders in a {@link String}.
      *
-     * @param string String to parse
-     * @return Parsed string
+     * @param string String to parse.
+     * @return Parsed {@link String}. Null if provided String is null, empty if it's empty.
      */
+    @Contract("null -> null")
     public String parse(@Nullable String string) {
 
         if (Strings.isNullOrEmpty(string))
             return string;
 
+        // Parse cache.
         for (String placeholder : placeholderCache.keySet())
             string = string.replaceAll("(?i)" + placeholder, placeholderCache.get(placeholder));
 
+        // Parse dynamic.
         string = parseDynamic(string);
         string = parseExternal(string);
         return string;
@@ -93,6 +97,7 @@ public class Placeholders {
         return message;
     }
 
+    @NotNull
     public List<String> parse(@NotNull List<String> list) {
         return list.stream()
                 .map(this::parse)

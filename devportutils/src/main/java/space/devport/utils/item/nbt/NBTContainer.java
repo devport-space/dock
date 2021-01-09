@@ -2,7 +2,10 @@ package space.devport.utils.item.nbt;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import space.devport.utils.version.api.ICompound;
+
+import java.util.Objects;
 
 public class NBTContainer implements Cloneable {
 
@@ -14,7 +17,8 @@ public class NBTContainer implements Cloneable {
         this.value = value;
     }
 
-    private NBTContainer(NBTContainer container) {
+    private NBTContainer(@NotNull NBTContainer container) {
+        Objects.requireNonNull(container);
         this.value = container.getValue();
     }
 
@@ -23,6 +27,7 @@ public class NBTContainer implements Cloneable {
     }
 
     @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
     public NBTContainer clone() {
         return new NBTContainer(this);
     }

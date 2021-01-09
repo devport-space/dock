@@ -1,4 +1,4 @@
-package space.devport.utils.item;
+package space.devport.utils.item.impl;
 
 import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Material;
@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.factory.IFactory;
+import space.devport.utils.item.ItemPrefab;
 
 public class PrefabFactory implements IFactory {
 

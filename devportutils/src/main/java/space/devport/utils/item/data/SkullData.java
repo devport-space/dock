@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.utils.text.Placeholders;
 
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 public class SkullData {
 
@@ -29,28 +30,30 @@ public class SkullData {
     @Getter
     private final transient Placeholders placeholders;
 
-    private SkullData(String identifier) {
+    private SkullData(@Nullable String identifier) {
         this.identifier = identifier;
         this.placeholders = new Placeholders();
     }
 
-    private SkullData(SkullData skullData) {
+    private SkullData(@NotNull SkullData skullData) {
+        Objects.requireNonNull(skullData);
+
         this.identifier = skullData.getIdentifier();
         this.placeholders = skullData.getPlaceholders();
     }
 
-    @Nullable
+    @NotNull
     public static SkullData of(@Nullable String identifier) {
-        return Strings.isNullOrEmpty(identifier) ? null : new SkullData(identifier);
+        return new SkullData(identifier);
     }
 
     @Contract("null -> null")
-    public static SkullData of(SkullData skullData) {
+    public static SkullData of(@Nullable SkullData skullData) {
         return skullData == null ? null : new SkullData(skullData);
     }
 
     @Nullable
-    public static SkullData readSkullTexture(ItemStack item) {
+    public static SkullData readSkullTexture(@Nullable ItemStack item) {
 
         if (item == null || item.getItemMeta() == null || !(item.getItemMeta() instanceof SkullMeta))
             return null;
@@ -58,8 +61,8 @@ public class SkullData {
         return SkullData.of(SkullUtils.getSkinValue(item.getItemMeta()));
     }
 
-    @Nullable
-    public static SkullData readSkullTexture(Block block) {
+    @Contract("null -> null")
+    public static SkullData readSkullTexture(@Nullable Block block) {
         return block == null ? null : of(base64fromBlock(block));
     }
 
@@ -75,7 +78,9 @@ public class SkullData {
     }
 
     @Nullable
-    private static String base64FromBlockState(Skull skull) {
+    private static String base64FromBlockState(@NotNull Skull skull) {
+        Objects.requireNonNull(skull);
+
         try {
             if (blockProfileField == null) {
                 blockProfileField = skull.getClass().getDeclaredField("profile");
@@ -98,29 +103,29 @@ public class SkullData {
         }
     }
 
-    public ItemStack apply(ItemStack item) {
+    @Contract("null -> null;!null -> !null")
+    public ItemStack apply(@Nullable ItemStack item) {
 
-        if (item == null || item.getItemMeta() == null || !(item.getItemMeta() instanceof SkullMeta)) {
+        if (item == null || Strings.isNullOrEmpty(identifier) ||
+                item.getItemMeta() == null || !(item.getItemMeta() instanceof SkullMeta)) {
             return item;
         }
 
         SkullMeta skullMeta = (SkullMeta) item.getItemMeta();
-
-        if (identifier == null)
-            return item;
 
         skullMeta = SkullUtils.applySkin(skullMeta, this.placeholders.parse(identifier));
         item.setItemMeta(skullMeta);
         return item;
     }
 
-    public SkullData parseWith(Placeholders placeholders) {
+    @NotNull
+    public SkullData parseWith(@NotNull Placeholders placeholders) {
         this.placeholders.copy(placeholders);
         return this;
     }
 
     @Override
     public String toString() {
-        return identifier == null ? "" : identifier;
+        return String.valueOf(identifier);
     }
 }

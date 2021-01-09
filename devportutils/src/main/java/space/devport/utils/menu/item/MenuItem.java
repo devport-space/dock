@@ -6,7 +6,7 @@ import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.ItemPrefab;
-import space.devport.utils.item.PrefabFactory;
+import space.devport.utils.item.impl.PrefabFactory;
 import space.devport.utils.menu.events.ItemClick;
 import space.devport.utils.struct.Rewards;
 

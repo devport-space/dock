@@ -11,7 +11,7 @@ import java.util.Map;
  * A utility class to help solve NBT tag storage.
  */
 @UtilityClass
-public class TypeUtil {
+class TypeUtil {
 
     public final Map<Byte, Class<?>> BASE_CLASS_MAP = new HashMap<Byte, Class<?>>() {{
         put((byte) 1, Byte.class);
@@ -138,21 +138,21 @@ public class TypeUtil {
             applier.apply(compound, key, value);
     }
 
-    public <T> T getValue(ICompound compound, String key, Class<T> clazz) {
+    public <T> T extract(ICompound compound, String key, Class<T> clazz) {
         return clazz.cast(APPLIERS.get(clazz).query(compound, key));
     }
 
     /*
      * Get a value from compound and contain it inside an NBTContainer.
      */
-    public NBTContainer containValue(ICompound compound, String key) {
+    public NBTContainer contain(ICompound compound, String key) {
         byte id = compound.getId(key);
         Class<?> clazz = BASE_CLASS_MAP.get(id);
 
         if (clazz == null)
             return null;
 
-        Object value = getValue(compound, key, clazz);
+        Object value = extract(compound, key, clazz);
         return new NBTContainer(value);
     }
 }

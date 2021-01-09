@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.ItemPrefab;
-import space.devport.utils.item.PrefabFactory;
+import space.devport.utils.item.impl.PrefabFactory;
 import space.devport.utils.item.data.Amount;
 import space.devport.utils.item.data.ItemDamage;
 import space.devport.utils.item.data.SkullData;

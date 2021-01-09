@@ -22,7 +22,7 @@ import space.devport.utils.configuration.Configuration;
 import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.factory.IFactory;
 import space.devport.utils.holograms.HologramManager;
-import space.devport.utils.item.PrefabFactory;
+import space.devport.utils.item.impl.PrefabFactory;
 import space.devport.utils.logging.ConsoleOutput;
 import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.logging.DevportLogger;

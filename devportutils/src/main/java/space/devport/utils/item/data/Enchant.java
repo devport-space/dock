@@ -2,13 +2,17 @@ package space.devport.utils.item.data;
 
 import com.cryptomorin.xseries.XEnchantment;
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -17,29 +21,48 @@ import java.util.Set;
 public class Enchant {
 
     @Getter
+    @NonNull
     public final XEnchantment enchantment;
     @Getter
+    @NonNull
     public final Amount level;
 
-    public Enchant(XEnchantment enchantment, Amount level) {
+    public Enchant(@NotNull XEnchantment enchantment, @NotNull Amount level) {
+        Objects.requireNonNull(enchantment, "Enchant enchantment cannot be null.");
+        Objects.requireNonNull(level, "Enchant level cannot be null.");
+
         this.enchantment = enchantment;
         this.level = level;
     }
 
-    public Enchant(Enchantment enchantment, Amount level) {
-        this(XEnchantment.matchXEnchantment(enchantment), level);
-    }
-
-    public Enchant(XEnchantment enchantment, int level) {
+    public Enchant(@NotNull XEnchantment enchantment, int level) {
         this.enchantment = enchantment;
         this.level = new Amount(level);
     }
 
-    public Enchant(Enchantment enchantment, int level) {
-        this(XEnchantment.matchXEnchantment(enchantment), level);
+    @NotNull
+    public static Set<Enchant> from(@Nullable ItemMeta meta) {
+        Set<Enchant> enchants = new HashSet<>();
+        if (meta == null)
+            return enchants;
+
+        for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
+
+            if (entry.getKey() == null || entry.getValue() == null)
+                continue;
+
+            XEnchantment enchantment = XEnchantment.matchXEnchantment(entry.getKey());
+            Enchant enchant = new Enchant(enchantment, entry.getValue());
+            enchants.add(enchant);
+        }
+        return enchants;
     }
 
-    public static Set<Enchant> from(ItemStack item) {
+    @NotNull
+    public static Set<Enchant> from(@Nullable ItemStack item) {
+        if (item == null)
+            return new HashSet<>();
+
         ItemMeta meta = item.getItemMeta();
 
         if (meta == null)
@@ -48,17 +71,19 @@ public class Enchant {
         return from(meta);
     }
 
-    public static Set<Enchant> from(ItemMeta meta) {
-        Set<Enchant> enchants = new HashSet<>();
-        for (Map.Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
-            XEnchantment enchantment = XEnchantment.matchXEnchantment(entry.getKey());
-            Enchant enchant = new Enchant(enchantment, entry.getValue());
-            enchants.add(enchant);
-        }
-        return enchants;
+    @Contract("null,_ -> null")
+    public static Enchant of(Enchantment enchantment, int level) {
+        return enchantment == null ? null : new Enchant(XEnchantment.matchXEnchantment(enchantment), level);
+    }
+
+    @Contract("null,_ -> null")
+    public static Enchant of(Enchantment enchantment, Amount level) {
+        return enchantment == null ? null : new Enchant(XEnchantment.matchXEnchantment(enchantment), level);
     }
 
     public void apply(@NotNull ItemStack item) {
+        Objects.requireNonNull(item, "ItemStack cannot be null.");
+
         ItemMeta meta = item.getItemMeta();
 
         if (meta == null)
@@ -67,7 +92,10 @@ public class Enchant {
         apply(meta);
     }
 
-    public void apply(@NotNull ItemMeta meta) {
+    public void apply(@Nullable ItemMeta meta) {
+        if (meta == null)
+            return;
+
         Enchantment enchantment = this.enchantment.parseEnchantment();
 
         if (enchantment == null)
@@ -76,11 +104,11 @@ public class Enchant {
         meta.addEnchant(enchantment, level.getInt(), true);
     }
 
-    public boolean compare(Enchantment enchantment) {
-        return this.enchantment == XEnchantment.matchXEnchantment(enchantment);
+    public boolean compare(@Nullable Enchantment enchantment) {
+        return enchantment == null || this.enchantment == XEnchantment.matchXEnchantment(enchantment);
     }
 
-    public boolean compare(XEnchantment xEnchantment) {
+    public boolean compare(@Nullable XEnchantment xEnchantment) {
         return this.enchantment == xEnchantment;
     }
 }
