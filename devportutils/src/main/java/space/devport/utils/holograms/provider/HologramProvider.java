@@ -44,7 +44,7 @@ public abstract class HologramProvider {
                 addHologram(id, location);
         }
 
-        log.info("Loaded " + registeredHolograms.size() + " hologram(s)...");
+        log.info(String.format("Loaded %d hologram(s)...", registeredHolograms.size()));
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this::purgeNonexistent, 40);
     }
@@ -68,6 +68,7 @@ public abstract class HologramProvider {
             storage.getFileConfiguration().set(id, locationString);
         }
 
+        log.info(String.format("Saved %s hologram(s)...", registeredHolograms.size()));
         storage.save();
     }
 
