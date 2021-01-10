@@ -13,8 +13,9 @@ import space.devport.utils.holograms.provider.impl.HolographicDisplays;
 import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.utility.DependencyUtil;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Log
 public class HologramManager extends DevportManager {
@@ -155,7 +156,7 @@ public class HologramManager extends DevportManager {
         }
     }
 
-    public List<String> getHolograms() {
-        return checkHooked() ? hologramProvider.getHolograms() : new ArrayList<>();
+    public Set<String> getHolograms() {
+        return checkHooked() ? hologramProvider.getHolograms() : new HashSet<>();
     }
 }

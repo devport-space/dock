@@ -11,17 +11,14 @@ import space.devport.utils.configuration.Configuration;
 import space.devport.utils.utility.FastUUID;
 import space.devport.utils.utility.LocationUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Log
 public abstract class HologramProvider {
 
     protected final DevportPlugin plugin;
 
-    protected final List<String> registeredHolograms = new ArrayList<>();
+    protected final Set<String> registeredHolograms = new HashSet<>();
 
     @Getter
     private final Configuration storage;
@@ -82,9 +79,9 @@ public abstract class HologramProvider {
         this.registeredHolograms.removeIf(id -> !exists(id));
     }
 
-    public List<String> getHolograms() {
+    public Set<String> getHolograms() {
         purgeNonexistent();
-        return Collections.unmodifiableList(registeredHolograms);
+        return Collections.unmodifiableSet(registeredHolograms);
     }
 
     public abstract boolean exists(String id);
