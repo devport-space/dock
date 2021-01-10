@@ -297,6 +297,10 @@ public abstract class DevportPlugin extends JavaPlugin {
         }
     }
 
+    public void registerListener(Listener listener) {
+        getPluginManager().registerEvents(listener, this);
+    }
+
     public void addListener(DevportListener listener) {
         this.listeners.add(listener);
         log.log(DebugLevel.DEBUG, "Added listener " + listener.getClass().getName());
