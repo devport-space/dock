@@ -3,6 +3,7 @@ package space.devport.utils;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Material;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.configuration.Configuration;
@@ -14,6 +15,7 @@ import space.devport.utils.menu.MenuBuilder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Log
 public class CustomisationManager extends DevportManager {
@@ -28,16 +30,6 @@ public class CustomisationManager extends DevportManager {
         super(plugin);
     }
 
-    @NotNull
-    public MenuBuilder getMenu(String name) {
-        return loadedMenus.containsKey(name) ? loadedMenus.get(name) : new MenuBuilder(plugin);
-    }
-
-    @Nullable
-    public ItemPrefab getItem(String name) {
-        return loadedItems.get(name);
-    }
-
     @Override
     public void preEnable() {
         load();
@@ -49,7 +41,6 @@ public class CustomisationManager extends DevportManager {
     }
 
     public void load() {
-
         customisation.load();
 
         log.log(DebugLevel.DEBUG, "Loading menus...");
@@ -81,6 +72,34 @@ public class CustomisationManager extends DevportManager {
 
         if (!this.loadedItems.isEmpty())
             log.info("Loaded " + this.loadedItems.size() + " item preset(s)...");
+    }
+
+    @Nullable
+    public MenuBuilder getMenu(String name) {
+        return loadedMenus.get(name);
+    }
+
+    @Contract("null,_ -> param2;_,!null -> !null")
+    public MenuBuilder getMenu(String name, MenuBuilder defaultValue) {
+        return loadedMenus.getOrDefault(name, defaultValue);
+    }
+
+    public MenuBuilder getMenu(String name, @NotNull Supplier<MenuBuilder> defaultSupplier) {
+        return loadedMenus.containsKey(name) ? loadedMenus.get(name) : defaultSupplier.get();
+    }
+
+    @Nullable
+    public ItemPrefab getItem(String name) {
+        return loadedItems.get(name);
+    }
+
+    @Contract("null,null -> null;_,!null -> !null")
+    public ItemPrefab getItem(String name, ItemPrefab defaultValue) {
+        return loadedItems.getOrDefault(name, defaultValue);
+    }
+
+    public ItemPrefab getItem(String name, @NotNull Supplier<ItemPrefab> defaultSupplier) {
+        return loadedItems.containsKey(name) ? loadedItems.get(name) : defaultSupplier.get();
     }
 
     public Map<String, MenuBuilder> getMenus() {
