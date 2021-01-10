@@ -34,11 +34,11 @@ public class Placeholders implements Cloneable {
 
     // Dynamic parsers reference an exact %placeholder%.
     @Getter
-    private final Map<String, Function<Object, String>> dynamicParsers = new HashMap<>();
+    private final Map<String, Function<Object, String>> objectParsers = new HashMap<>();
 
     // General parsers don't care and do whatever they want with the given string and context object.
     @Getter
-    private final Set<BiFunction<Object, String, String>> parsers = new HashSet<>();
+    private final Set<BiFunction<Object, String, String>> generalParsers = new HashSet<>();
 
     private final Context context = new Context();
 
@@ -82,7 +82,7 @@ public class Placeholders implements Cloneable {
             return string;
 
         // Run additional parsers as the don't need to have %x%.
-        if (!parsers.isEmpty())
+        if (!generalParsers.isEmpty())
             string = parseExternal(string);
 
         if (!string.contains(placeholderSign))
@@ -93,7 +93,7 @@ public class Placeholders implements Cloneable {
             string = string.replaceAll("(?i)" + placeholder, placeholderCache.get(placeholder));
 
         // Parse dynamic.
-        if (!dynamicParsers.isEmpty())
+        if (!objectParsers.isEmpty())
             string = parseDynamic(string);
 
         return string;
@@ -114,7 +114,7 @@ public class Placeholders implements Cloneable {
 
     @NotNull
     public String parseExternal(String text) {
-        for (BiFunction<Object, String, String> parser : parsers) {
+        for (BiFunction<Object, String, String> parser : generalParsers) {
             for (Object context : this.context.getValues()) {
                 String result = parser.apply(context, text);
                 if (result != null)
@@ -128,7 +128,7 @@ public class Placeholders implements Cloneable {
         Objects.requireNonNull(parser, "Parser cannot be null.");
         Objects.requireNonNull(clazz, "Class cannot be null.");
 
-        this.parsers.add((o, str) -> {
+        this.generalParsers.add((o, str) -> {
             if (o != null && !Strings.isNullOrEmpty(str) && clazz.isAssignableFrom(o.getClass())) {
                 T t = clazz.cast(o);
                 str = parser.parse(str, t);
@@ -143,7 +143,7 @@ public class Placeholders implements Cloneable {
         Objects.requireNonNull(parser, "Parser cannot be null.");
         Objects.requireNonNull(clazz, "Class cannot be null.");
 
-        this.dynamicParsers.put(placeholder, o -> {
+        this.objectParsers.put(placeholder, o -> {
             if (o != null && clazz.isAssignableFrom(o.getClass())) {
                 T t = clazz.cast(o);
                 return String.valueOf(parser.extractValue(t));
@@ -158,7 +158,7 @@ public class Placeholders implements Cloneable {
         if (!Strings.isNullOrEmpty(text)) {
 
             String txt = text.toLowerCase();
-            for (Map.Entry<String, Function<Object, String>> entry : dynamicParsers.entrySet()) {
+            for (Map.Entry<String, Function<Object, String>> entry : objectParsers.entrySet()) {
 
                 // No more placeholders to parse.
                 if (!txt.contains(placeholderSign))
@@ -194,8 +194,8 @@ public class Placeholders implements Cloneable {
             return this;
 
         // Copy dynamic parsers.
-        placeholders.getDynamicParsers().forEach(this.dynamicParsers::put);
-        this.parsers.addAll(placeholders.getParsers());
+        placeholders.getObjectParsers().forEach(this.objectParsers::put);
+        this.generalParsers.addAll(placeholders.getGeneralParsers());
 
         // Copy cache.
         placeholders.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
