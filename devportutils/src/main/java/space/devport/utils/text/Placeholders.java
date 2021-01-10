@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * @author Devport Team
  */
 @NoArgsConstructor
-public class Placeholders {
+public class Placeholders implements Cloneable {
 
     @Getter
     @Setter
@@ -226,6 +226,12 @@ public class Placeholders {
      */
     public Set<String> getPlaceholders() {
         return placeholderCache.keySet();
+    }
+
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public Placeholders clone() {
+        return new Placeholders(this);
     }
 
     @Override

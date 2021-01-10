@@ -10,10 +10,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.commands.build.BuildableMainCommand;
 import space.devport.utils.commands.CommandManager;
 import space.devport.utils.commands.MainCommand;
@@ -49,6 +51,8 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     private final Set<IFactory> factories = new HashSet<>();
 
+    private final Set<DevportListener> listeners = new HashSet<>();
+
     @Getter
     private final Map<Class<? extends DevportManager>, DevportManager> managers = new LinkedHashMap<>();
 
@@ -83,6 +87,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         // Load usage flags
         this.usageFlags.addAll(Arrays.asList(usageFlags()));
 
+        // Setup logger
         this.devportLogger = new DevportLogger(getClass().getPackage().getName());
         this.factories.add(devportLogger);
         devportLogger.setup(new ConsoleOutput(this));
@@ -136,7 +141,6 @@ public abstract class DevportPlugin extends JavaPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
 
-        // Print header
         log.info(String.format("Starting up %s %s", getDescription().getName(), getDescription().getVersion()));
         log.info(String.format("Running on %s %s", ServerType.getCurrentServerType().getName(), ServerVersion.getCurrentVersion().toString()));
         log.info(String.format("%s~~~~~~~~~~~~ &7%s %s~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor()));
@@ -158,6 +162,7 @@ public abstract class DevportPlugin extends JavaPlugin {
             this.prefix = getColor() + configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
+        // Fill global placeholders with some default parsers and values.
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName())
@@ -165,10 +170,14 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::preEnable);
 
-        // Call plugin enable
+        // Call plugin specific actions.
         onPluginEnable();
 
         callManagerAction(DevportManager::afterEnable);
+
+        // Register listeners that are set to.
+        registerListeners();
+        log.info(String.format("Registered %d listener(s)...", listeners.size()));
 
         log.info(String.format("%s~~~~~~~~~~~~ &7/////// %s~~~~~~~~~~~~", getColor(), getColor()));
         log.info(String.format("Done... startup took &f%s&7ms.", (System.currentTimeMillis() - start)));
@@ -186,12 +195,14 @@ public abstract class DevportPlugin extends JavaPlugin {
         });
     }
 
-    public void reload(CommandSender sender) {
+    public void reload(@Nullable CommandSender sender) {
         long start = System.currentTimeMillis();
 
+        // Add reload requester to receive Log information.
         if (!(sender instanceof ConsoleCommandSender))
             devportLogger.addListener(sender);
 
+        // Reload configuration if we want to.
         if (use(UsageFlag.CONFIGURATION)) {
             configuration.load();
 
@@ -208,6 +219,7 @@ public abstract class DevportPlugin extends JavaPlugin {
             this.prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
 
+        // Reassign placeholder values.
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName());
@@ -218,6 +230,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         callManagerAction(DevportManager::afterReload);
 
+        // Remove requester from log output and send him a done message.
         devportLogger.removeListener(sender);
 
         if (use(UsageFlag.LANGUAGE))
@@ -230,25 +243,28 @@ public abstract class DevportPlugin extends JavaPlugin {
     public void onDisable() {
         onPluginDisable();
 
-        // Clean managers
+        // Unregister listeners.
+        unregisterListeners();
+        this.listeners.clear();
+
+        // Clean managers.
         callManagerAction(DevportManager::onDisable);
         this.managers.clear();
 
-        // Destroy factories
+        // Destroy factories.
         this.factories.forEach(IFactory::destroy);
         this.factories.clear();
     }
 
-    public void registerManager(DevportManager devportManager) {
+    public void registerManager(@NotNull DevportManager devportManager) {
+        Objects.requireNonNull(devportManager, "Cannot register a null DevportManager.");
         this.managers.put(devportManager.getClass(), devportManager);
-
         devportManager.onLoad();
     }
 
     public boolean isRegistered(Class<? extends DevportManager> clazz) {
         return this.managers.containsKey(clazz);
     }
-
 
     public <T extends DevportManager> T getManager(Class<T> clazz) {
         DevportManager manager = this.managers.get(clazz);
@@ -281,8 +297,31 @@ public abstract class DevportPlugin extends JavaPlugin {
         }
     }
 
-    public void registerListener(Listener listener) {
-        getPluginManager().registerEvents(listener, this);
+    public void addListener(DevportListener listener) {
+        this.listeners.add(listener);
+        log.log(DebugLevel.DEBUG, "Added listener " + listener.getClass().getName());
+    }
+
+    public boolean removeListener(Class<? extends DevportListener> clazz) {
+        return this.listeners.removeIf(l -> l.getClass().equals(clazz));
+    }
+
+    public void clearListeners() {
+        this.listeners.clear();
+    }
+
+    public void registerListeners() {
+        this.listeners.forEach(devportListener -> {
+            if (devportListener.isRegister() && !devportListener.isRegistered())
+                devportListener.register();
+        });
+    }
+
+    public void unregisterListeners() {
+        this.listeners.forEach(devportListener -> {
+            if (devportListener.isUnregister())
+                devportListener.unregister();
+        });
     }
 
     public MainCommand registerMainCommand(MainCommand mainCommand) {
@@ -339,5 +378,10 @@ public abstract class DevportPlugin extends JavaPlugin {
 
     public Placeholders getGlobalPlaceholders() {
         return globalPlaceholders;
+    }
+
+    // Obtain a copy of Global Placeholders.
+    public Placeholders obtainPlaceholders() {
+        return globalPlaceholders.clone();
     }
 }
