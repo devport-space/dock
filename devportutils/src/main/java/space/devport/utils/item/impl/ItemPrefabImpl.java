@@ -154,7 +154,7 @@ class ItemPrefabImpl implements ItemPrefab {
         meta.setDisplayName(name);
 
         // Lore
-        List<String> lore = this.lore.parseWith(placeholders).parse().color().getMessage();
+        List<String> lore = this.lore.parseWith(placeholders).parse().color().getContent();
         this.lore.pull();
 
         meta.setLore(lore);

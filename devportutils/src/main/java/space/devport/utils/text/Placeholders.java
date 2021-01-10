@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.struct.Context;
 import space.devport.utils.text.message.Message;
+import space.devport.utils.text.parser.ObjectParser;
+import space.devport.utils.text.parser.GeneralParser;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -24,49 +26,47 @@ import java.util.stream.Collectors;
 public class Placeholders implements Cloneable {
 
     @Getter
+    private String placeholderSign = "%";
+
+    @Getter
     @Setter
     private Map<String, String> placeholderCache = new LinkedHashMap<>();
 
-    /**
-     * Copy constructor.
-     *
-     * @param placeholders Parse format to copy
-     */
-    public Placeholders(@NotNull Placeholders placeholders) {
+    // Dynamic parsers reference an exact %placeholder%.
+    @Getter
+    private final Map<String, Function<Object, String>> dynamicParsers = new HashMap<>();
+
+    // General parsers don't care and do whatever they want with the given string and context object.
+    @Getter
+    private final Set<BiFunction<Object, String, String>> parsers = new HashSet<>();
+
+    private final Context context = new Context();
+
+    private Placeholders(@NotNull Placeholders placeholders) {
         this.copy(placeholders);
     }
 
-    /**
-     * Constructor with placeholders and values.
-     *
-     * @param placeholders Placeholder array
-     * @param values       Value array
-     */
-    @Deprecated
-    public Placeholders(@NotNull String[] placeholders, @NotNull Object[] values) {
-        for (int i = 0; i < placeholders.length; i++)
-            placeholderCache.put(placeholders[i], values[i].toString());
+    public static Placeholders of(Placeholders placeholders) {
+        return new Placeholders(placeholders);
     }
 
     /**
-     * Copy placeholders from another instance.
+     * Fill a single placeholder value.
      *
-     * @param placeholders {@link Placeholders} to copy from.
-     * @return If input Placeholders are {@code null}, nothing will be copied and this instance returned.
+     * @param placeholder Placeholder to replace
+     * @param value       Value to fill in
+     * @return ParseFormat object
      */
     @NotNull
-    public Placeholders copy(@Nullable Placeholders placeholders) {
-        if (placeholders == null)
-            return this;
+    public Placeholders add(@NotNull String placeholder, @Nullable Object value) {
+        Objects.requireNonNull(placeholder, "Placeholder cannot be null.");
 
-        // Copy dynamic parsers.
-        placeholders.getDynamicPlaceholders().forEach(this.dynamicPlaceholders::put);
-        this.parsers.addAll(placeholders.getParsers());
-
-        // Copy cache.
-        placeholders.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
-        this.context.add(placeholders.getContext());
+        placeholderCache.put(ensureSigns(placeholder), String.valueOf(value));
         return this;
+    }
+
+    private String ensureSigns(String str) {
+        return str.startsWith(placeholderSign) && str.endsWith(placeholderSign) ? str : String.format("%s%s%s", placeholderSign, str, placeholderSign);
     }
 
     /**
@@ -81,13 +81,21 @@ public class Placeholders implements Cloneable {
         if (Strings.isNullOrEmpty(string))
             return string;
 
+        // Run additional parsers as the don't need to have %x%.
+        if (!parsers.isEmpty())
+            string = parseExternal(string);
+
+        if (!string.contains(placeholderSign))
+            return string;
+
         // Parse cache.
         for (String placeholder : placeholderCache.keySet())
             string = string.replaceAll("(?i)" + placeholder, placeholderCache.get(placeholder));
 
         // Parse dynamic.
-        string = parseDynamic(string);
-        string = parseExternal(string);
+        if (!dynamicParsers.isEmpty())
+            string = parseDynamic(string);
+
         return string;
     }
 
@@ -104,56 +112,6 @@ public class Placeholders implements Cloneable {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Fill a single placeholder value.
-     *
-     * @param placeholder Placeholder to replace
-     * @param value       Value to fill in
-     * @return ParseFormat object
-     */
-    public Placeholders add(@NotNull String placeholder, @Nullable Object value) {
-        if (value != null)
-            placeholderCache.put(placeholder, value.toString());
-        return this;
-    }
-
-    private final Context context = new Context();
-
-    @Getter
-    private final Map<String, Function<Object, String>> dynamicPlaceholders = new HashMap<>();
-
-    public Context getContext() {
-        return this.context;
-    }
-
-    public Placeholders setContext(Context context) {
-        this.context.set(context);
-        return this;
-    }
-
-    public Placeholders addContext(Context context) {
-        this.context.add(context);
-        return this;
-    }
-
-    public Placeholders addContext(Object object) {
-        this.context.add(object);
-        return this;
-    }
-
-    public Placeholders addContext(Object... objects) {
-        Arrays.asList(objects).forEach(this.context::add);
-        return this;
-    }
-
-    public Placeholders clearContext() {
-        this.context.clear();
-        return this;
-    }
-
-    @Getter
-    private final Set<BiFunction<Object, String, String>> parsers = new HashSet<>();
-
     @NotNull
     public String parseExternal(String text) {
         for (BiFunction<Object, String, String> parser : parsers) {
@@ -166,10 +124,13 @@ public class Placeholders implements Cloneable {
         return text;
     }
 
-    public <T> Placeholders addParser(PlaceholderParser<T> parser, Class<T> type) {
+    public <T> Placeholders addParser(@NotNull GeneralParser<T> parser, @NotNull Class<T> clazz) {
+        Objects.requireNonNull(parser, "Parser cannot be null.");
+        Objects.requireNonNull(clazz, "Class cannot be null.");
+
         this.parsers.add((o, str) -> {
-            if (o != null && !Strings.isNullOrEmpty(str) && type.isAssignableFrom(o.getClass())) {
-                T t = type.cast(o);
+            if (o != null && !Strings.isNullOrEmpty(str) && clazz.isAssignableFrom(o.getClass())) {
+                T t = clazz.cast(o);
                 str = parser.parse(str, t);
             }
             return str;
@@ -177,36 +138,69 @@ public class Placeholders implements Cloneable {
         return this;
     }
 
-    public <T> Placeholders addDynamicPlaceholder(String placeholder, DynamicParser<T> parser, Class<T> type) {
-        this.dynamicPlaceholders.put(placeholder, o -> {
-            if (o != null && type.isAssignableFrom(o.getClass())) {
-                T t = type.cast(o);
-                return parser.extractValue(t);
+    public <T> Placeholders addDynamicPlaceholder(@NotNull String placeholder, @NotNull ObjectParser<T> parser, @NotNull Class<T> clazz) {
+        Objects.requireNonNull(placeholder, "Placeholder cannot be null.");
+        Objects.requireNonNull(parser, "Parser cannot be null.");
+        Objects.requireNonNull(clazz, "Class cannot be null.");
+
+        this.dynamicParsers.put(placeholder, o -> {
+            if (o != null && clazz.isAssignableFrom(o.getClass())) {
+                T t = clazz.cast(o);
+                return String.valueOf(parser.extractValue(t));
             }
             return null;
         });
         return this;
     }
 
-    @NotNull
-    public String parseDynamic(String text) {
-        for (Map.Entry<String, Function<Object, String>> entry : dynamicPlaceholders.entrySet()) {
-            if (!text.toLowerCase().contains(entry.getKey().toLowerCase())) {
-                continue;
+    @Contract("null -> null;!null -> !null")
+    public String parseDynamic(@Nullable String text) {
+        if (!Strings.isNullOrEmpty(text)) {
+
+            String txt = text.toLowerCase();
+            for (Map.Entry<String, Function<Object, String>> entry : dynamicParsers.entrySet()) {
+
+                // No more placeholders to parse.
+                if (!txt.contains(placeholderSign))
+                    break;
+
+                if (!txt.contains(entry.getKey().toLowerCase()))
+                    continue;
+
+                String value = null;
+                for (Object context : this.context.getValues()) {
+                    String ctxValue = entry.getValue().apply(context);
+                    if (ctxValue != null)
+                        value = ctxValue;
+                }
+
+                if (value == null) continue;
+
+                text = text.replaceAll("(?i)" + entry.getKey(), value);
             }
-
-            String value = null;
-            for (Object context : this.context.getValues()) {
-                String ctxValue = entry.getValue().apply(context);
-                if (ctxValue != null)
-                    value = ctxValue;
-            }
-
-            if (value == null) continue;
-
-            text = text.replaceAll("(?i)" + entry.getKey(), value);
         }
         return text;
+    }
+
+    /**
+     * Copy placeholders from another instance.
+     *
+     * @param placeholders {@link Placeholders} to copy from.
+     * @return If input Placeholders are {@code null}, nothing will be copied and this instance returned.
+     */
+    @NotNull
+    public Placeholders copy(@Nullable Placeholders placeholders) {
+        if (placeholders == null)
+            return this;
+
+        // Copy dynamic parsers.
+        placeholders.getDynamicParsers().forEach(this.dynamicParsers::put);
+        this.parsers.addAll(placeholders.getParsers());
+
+        // Copy cache.
+        placeholders.getPlaceholderCache().forEach((key, value) -> placeholderCache.put(key, value));
+        this.context.add(placeholders.getContext());
+        return this;
     }
 
     /**
@@ -226,6 +220,47 @@ public class Placeholders implements Cloneable {
      */
     public Set<String> getPlaceholders() {
         return placeholderCache.keySet();
+    }
+
+    @NotNull
+    public Context getContext() {
+        return this.context;
+    }
+
+    @NotNull
+    public Placeholders setContext(Context context) {
+        this.context.set(context);
+        return this;
+    }
+
+    @NotNull
+    public Placeholders addContext(Context context) {
+        this.context.add(context);
+        return this;
+    }
+
+    @NotNull
+    public Placeholders addContext(Object object) {
+        this.context.add(object);
+        return this;
+    }
+
+    @NotNull
+    public Placeholders addContext(Object... objects) {
+        Arrays.asList(objects).forEach(this.context::add);
+        return this;
+    }
+
+    @NotNull
+    public Placeholders clearContext() {
+        this.context.clear();
+        return this;
+    }
+
+    @NotNull
+    public Placeholders withSign(@NotNull String sign) {
+        this.placeholderSign = Objects.requireNonNull(sign);
+        return this;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package space.devport.utils.utility;
 
 import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
 public enum TimeElement {
 
@@ -17,11 +18,8 @@ public enum TimeElement {
         this.seconds = seconds;
     }
 
-    public static TimeElement fromString(String str) {
-        try {
-            return TimeElement.valueOf(str.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
+    @Nullable
+    public static TimeElement fromString(@Nullable String str) {
+        return ParseUtil.parseEnum(str, TimeElement.class);
     }
 }

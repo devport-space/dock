@@ -1,5 +1,6 @@
 package space.devport.utils.struct;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,12 +11,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+@NoArgsConstructor
 public class Context {
 
     private final Map<Class<?>, Object> values = new HashMap<>();
-
-    public Context() {
-    }
 
     public Context(Object... objects) {
         add(objects);
@@ -27,6 +26,10 @@ public class Context {
 
     public Context(Context context) {
         add(context);
+    }
+
+    public boolean has(@NotNull Class<?> clazz) {
+        return values.containsKey(clazz);
     }
 
     /**
@@ -45,13 +48,17 @@ public class Context {
         return null;
     }
 
+    public Context set(Context context) {
+        clear();
+        return add(context);
+    }
+
     public Context add(Context context) {
         return add(context.getValues());
     }
 
-    public Context set(Context context) {
-        this.values.clear();
-        add(context);
+    public Context add(Object object) {
+        this.values.put(object.getClass(), object);
         return this;
     }
 
@@ -60,19 +67,10 @@ public class Context {
         return this;
     }
 
-    public Context add(Object object) {
-        this.values.put(object.getClass(), object);
-        return this;
-    }
-
     public Context add(Object... objects) {
         for (Object o : objects)
             this.values.put(o.getClass(), o);
         return this;
-    }
-
-    public void clear() {
-        this.values.clear();
     }
 
     public Set<Object> getValues() {
@@ -85,11 +83,15 @@ public class Context {
         return add(offlinePlayer);
     }
 
+    public void clear() {
+        this.values.clear();
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(getClass().getSimpleName() + "[");
-        for (Object o : getValues())
-            builder.append(", ").append(o.getClass().getSimpleName()).append(":").append(o.toString());
+        for (Object o : values.values())
+            builder.append(", ").append(o.getClass().getSimpleName()).append(":").append(o);
         return builder.append("]").toString();
     }
 }

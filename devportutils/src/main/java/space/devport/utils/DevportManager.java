@@ -5,7 +5,7 @@ package space.devport.utils;
  */
 public abstract class DevportManager {
 
-    protected DevportPlugin plugin;
+    protected final DevportPlugin plugin;
 
     public DevportManager(DevportPlugin plugin) {
         this.plugin = plugin;

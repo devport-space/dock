@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
+import space.devport.utils.utility.DependencyUtil;
 
 @Log
 public class EconomyManager extends DevportManager {
@@ -25,7 +26,7 @@ public class EconomyManager extends DevportManager {
 
     private void setupEconomy() {
 
-        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+        if (DependencyUtil.isInstalled("Vault")) {
             if (economy != null)
                 this.economy = null;
             return;
@@ -45,6 +46,6 @@ public class EconomyManager extends DevportManager {
             return;
 
         this.economy = rsp.getProvider();
-        log.info("Found Vault, using economy.");
+        log.info("Found Vault, using it's economy.");
     }
 }

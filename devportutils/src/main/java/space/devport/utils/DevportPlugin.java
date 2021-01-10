@@ -188,7 +188,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         Bukkit.getScheduler().runTask(this, () -> {
 
             if (DependencyUtil.isEnabled("PlaceholderAPI")) {
-                globalPlaceholders.addParser((str, player) -> PlaceholderAPI.setPlaceholders(player, str), Player.class);
+                globalPlaceholders.addParser((str, player) -> PlaceholderAPI.setPlaceholders(player, str), OfflinePlayer.class);
             }
 
             callManagerAction(DevportManager::afterDependencyLoad);

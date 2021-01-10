@@ -60,6 +60,6 @@ public enum CommandResult {
             this.message = plugin.getManager(LanguageManager.class).get(path);
             this.defaultMessage = false;
         }
-        return new Message(message);
+        return Message.of(message);
     }
 }

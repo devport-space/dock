@@ -66,7 +66,7 @@ public class Rewards implements Cloneable {
         this.inform = new CachedMessage(rewards.getInform());
         this.broadcast = new CachedMessage(rewards.getBroadcast());
         this.commands = new ArrayList<>(rewards.getCommands());
-        this.placeholders = new Placeholders(rewards.getPlaceholders());
+        this.placeholders = Placeholders.of(rewards.getPlaceholders());
         this.plugin = rewards.getPlugin();
     }
 
@@ -260,8 +260,8 @@ public class Rewards implements Cloneable {
         return this;
     }
 
-    public Rewards placeholders(Placeholders placeholders) {
-        this.placeholders = new Placeholders(placeholders);
+    public Rewards parseWith(Placeholders placeholders) {
+        this.placeholders = Placeholders.of(placeholders);
         return this;
     }
 }

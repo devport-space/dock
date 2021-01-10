@@ -161,6 +161,7 @@ public class ParseUtil {
         return parseVector(str, defaultValue, null);
     }
 
+    //TODO: Parse vectors with negative numbers.
     @Contract("null,null,_ -> null")
     public Vector parseVector(String str, @Nullable Vector defaultValue, @Nullable ExceptionCallback callback) {
 

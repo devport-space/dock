@@ -24,8 +24,8 @@ public class CachedMessage extends Message {
         if (message instanceof CachedMessage) {
             clear();
             this.original.addAll(((CachedMessage) message).getOriginal());
-            this.message.addAll(message.getMessage());
-        } else set(message.getMessage());
+            this.content.addAll(message.getContent());
+        } else set(message.getContent());
     }
 
     public CachedMessage(@Nullable String... message) {
@@ -41,7 +41,7 @@ public class CachedMessage extends Message {
     }
 
     @Override
-    public CachedMessage set(@Nullable Collection<String> message) {
+    public @NotNull CachedMessage set(@Nullable Collection<String> message) {
 
         if (message == null) {
             clear();
@@ -51,12 +51,12 @@ public class CachedMessage extends Message {
         List<String> newContent = new ArrayList<>(message);
         clear();
         this.original.addAll(newContent);
-        this.message.addAll(original);
+        this.content.addAll(original);
         return this;
     }
 
     public CachedMessage setMessage(List<String> list) {
-        this.message = list;
+        this.content = list;
         return this;
     }
 
@@ -64,10 +64,10 @@ public class CachedMessage extends Message {
     public CachedMessage insert(List<String> toAdd) {
 
         List<String> msg = new ArrayList<>(toAdd);
-        msg.addAll(this.message);
+        msg.addAll(this.content);
 
-        this.message.clear();
-        this.message.addAll(msg);
+        this.content.clear();
+        this.content.addAll(msg);
 
         List<String> org = new ArrayList<>(toAdd);
         org.addAll(this.original);
@@ -83,7 +83,7 @@ public class CachedMessage extends Message {
     @Override
     public CachedMessage append(List<String> toAdd) {
         this.original.addAll(toAdd);
-        this.message.addAll(toAdd);
+        this.content.addAll(toAdd);
         return this;
     }
 
@@ -100,12 +100,12 @@ public class CachedMessage extends Message {
 
     // Push the working message into original
     public CachedMessage push() {
-        set(message);
+        set(content);
         return this;
     }
 
     public void clear() {
         this.original.clear();
-        this.message.clear();
+        this.content.clear();
     }
 }

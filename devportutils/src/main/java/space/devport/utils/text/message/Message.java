@@ -11,24 +11,18 @@ import space.devport.utils.struct.Context;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/**
- * Class to handle Messages.
- *
- * @author Devport Team
- **/
-@NoArgsConstructor
-public class Message {
 
-    protected List<String> message = new ArrayList<>();
+//TODO: Create a common interface instead of extending this class directly in subclasses.
+@NoArgsConstructor
+public class Message implements Cloneable {
+
+    protected List<String> content = new LinkedList<>();
 
     @Getter
     protected transient Placeholders placeholders = new Placeholders();
@@ -36,29 +30,31 @@ public class Message {
     /**
      * Copy constructor.
      *
-     * @param message Message to copy
+     * @param message Message to copy.
      */
-    public Message(@Nullable Message message) {
-        set(message);
-        this.placeholders = message == null ? new Placeholders() : new Placeholders(message.getPlaceholders());
+    private Message(@Nullable Message message) {
+        copy(message);
+
+        if (message != null)
+            this.placeholders = message.getPlaceholders().clone();
     }
 
     /**
      * Array constructor.
      *
-     * @param message Array to construct with
+     * @param content Array to construct with
      */
-    public Message(@Nullable String... message) {
-        set(message);
+    public Message(@Nullable String... content) {
+        set(content);
     }
 
     /**
      * List constructor.
      *
-     * @param message List to construct with
+     * @param content List to construct with
      */
-    public Message(@Nullable List<String> message) {
-        set(message);
+    public Message(@Nullable List<String> content) {
+        set(content);
     }
 
     /**
@@ -70,52 +66,23 @@ public class Message {
         set(line);
     }
 
-    public Message setPlaceholders(Placeholders placeholders) {
-        this.placeholders = placeholders;
-        return this;
-    }
-
-    public Message parse(Object... objects) {
-        return context(objects).parse();
-    }
-
-    // Parse placeholders
-    public Message parse() {
-        this.message = this.message.stream().map(l -> placeholders.parse(l)).collect(Collectors.toList());
-        return this;
-    }
-
-    public Message parseWith(Placeholders placeholders) {
-        this.placeholders.copy(placeholders);
-        return this;
-    }
-
-    public Message context(Object... objects) {
-        this.placeholders.addContext(objects);
-        return this;
-    }
-
-    public Message context(Context context) {
-        this.placeholders.addContext(context);
-        return this;
+    @NotNull
+    public static Message of(Message message) {
+        return new Message(message);
     }
 
     /**
-     * Set the message.
-     * If the input is null, sets message to a blank one.
+     * Set this {@link Message} content.
+     * <p>
+     * If the input is null, use an empty list.
      *
-     * @param message Message to set to in a List
-     * @return MessageBuilder object
+     * @param message {@code Collection<String>} to use.
+     * @return This {@link Message} instance.
      */
+    @NotNull
     public Message set(@Nullable Collection<String> message) {
-        this.message = message == null ? new ArrayList<>() : new ArrayList<>(message);
+        this.content = message == null ? new ArrayList<>() : new ArrayList<>(message);
         return this;
-    }
-
-    public Message set(@Nullable Message message) {
-        if (message == null)
-            return set((Collection<String>) null);
-        return set(message.getMessage());
     }
 
     /**
@@ -135,7 +102,14 @@ public class Message {
      * @return MessageBuilder object
      */
     public Message set(@Nullable String... message) {
-        return set(new ArrayList<>(Arrays.asList(message)));
+        return set(Arrays.asList(message));
+    }
+
+    @NotNull
+    public Message copy(@Nullable Message message) {
+        if (message == null)
+            return set(new LinkedList<>());
+        return set(message.getContent());
     }
 
     /**
@@ -144,7 +118,7 @@ public class Message {
      * @return boolean
      */
     public boolean isEmpty() {
-        return message == null || message.isEmpty();
+        return content == null || content.isEmpty();
     }
 
     /**
@@ -155,12 +129,32 @@ public class Message {
      * @return MessageBuilder object
      */
     public Message replace(@Nullable String placeholder, @Nullable Object value) {
-        if (placeholder == null || value == null || message == null)
+        if (placeholder == null || value == null || isEmpty())
             return this;
 
-        message = message.stream()
-                .map(line -> !line.isEmpty() ? line.replaceAll("(?i)" + placeholder, value.toString()) : "")
+        content = content.stream()
+                .map(line -> !line.isEmpty() ? line.replaceAll("(?i)" + placeholder, String.valueOf(value)) : "")
                 .collect(Collectors.toList());
+        return this;
+    }
+
+    public Message setPlaceholders(Placeholders placeholders) {
+        this.placeholders = placeholders;
+        return this;
+    }
+
+    public Message parseWith(Placeholders placeholders) {
+        this.placeholders.copy(placeholders);
+        return this;
+    }
+
+    public Message context(Object... objects) {
+        this.placeholders.addContext(objects);
+        return this;
+    }
+
+    public Message context(Context context) {
+        this.placeholders.addContext(context);
         return this;
     }
 
@@ -171,13 +165,13 @@ public class Message {
         if (isEmpty())
             return this;
 
-        this.message.set(0, str + this.message.get(0));
+        this.content.set(0, str + this.content.get(0));
         return this;
     }
 
     public Message insert(List<String> toAdd) {
         toAdd = new ArrayList<>(toAdd);
-        toAdd.addAll(message);
+        toAdd.addAll(content);
         return set(toAdd);
     }
 
@@ -187,11 +181,11 @@ public class Message {
     }
 
     public Message insert(Message toAdd) {
-        return insert(toAdd.getMessage());
+        return insert(toAdd.getContent());
     }
 
     public Message append(List<String> toAdd) {
-        message.addAll(new ArrayList<>(toAdd));
+        content.addAll(new ArrayList<>(toAdd));
         return this;
     }
 
@@ -200,7 +194,17 @@ public class Message {
     }
 
     public Message append(Message message) {
-        return append(message.getMessage());
+        return append(message.getContent());
+    }
+
+    public Message parse(Object... objects) {
+        return context(objects).parse();
+    }
+
+    // Parse placeholders
+    public Message parse() {
+        this.content = this.content.stream().map(l -> placeholders.parse(l)).collect(Collectors.toList());
+        return this;
     }
 
     /**
@@ -209,12 +213,12 @@ public class Message {
      * @return MessageBuilder object
      */
     public Message color() {
-        message = StringUtil.color(message);
+        content = StringUtil.color(content);
         return this;
     }
 
     public Message color(char colorChar) {
-        message = StringUtil.color(message, colorChar);
+        content = StringUtil.color(content, colorChar);
         return this;
     }
 
@@ -228,7 +232,7 @@ public class Message {
     @Contract("null -> null")
     @Nullable
     public String toString(@Nullable String delimiter) {
-        return StringUtil.listToString(message, delimiter);
+        return StringUtil.listToString(content, delimiter);
     }
 
     /**
@@ -241,7 +245,7 @@ public class Message {
      */
     @Override
     public String toString() {
-        return StringUtil.listToString(message, "\n");
+        return StringUtil.listToString(content, "\n");
     }
 
     /*
@@ -315,24 +319,30 @@ public class Message {
     }
 
     public Message map(Function<String, String> action) {
-        this.message = this.message.stream().map(action).collect(Collectors.toList());
+        this.content = this.content.stream().map(action).collect(Collectors.toList());
         return this;
     }
 
     public Message forEach(Consumer<String> action) {
-        this.message.forEach(action);
+        this.content.forEach(action);
         return this;
     }
 
     public Message filter(Predicate<String> action) {
-        this.message.removeIf(action);
+        this.content.removeIf(action);
         return this;
     }
 
     /*
      * Returns a copy of the contained message.
      */
-    public List<String> getMessage() {
-        return new ArrayList<>(message);
+    public List<String> getContent() {
+        return new ArrayList<>(content);
+    }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public Message clone() {
+        return new Message(this);
     }
 }

@@ -71,7 +71,7 @@ public class MenuBuilder {
         for (MatrixItem matrixItem : builder.getItemMatrix().values())
             itemMatrix.put(matrixItem.getCharacter(), new MatrixItem(matrixItem));
 
-        this.placeholders = new Placeholders(builder.getPlaceholders());
+        this.placeholders = builder.getPlaceholders().clone();
         this.plugin = builder.getPlugin();
     }
 
@@ -186,8 +186,8 @@ public class MenuBuilder {
         return this;
     }
 
-    public MenuBuilder placeholders(Placeholders format) {
-        this.placeholders = new Placeholders(format);
+    public MenuBuilder placeholders(Placeholders placeholders) {
+        this.placeholders = Placeholders.of(placeholders);
         return this;
     }
 

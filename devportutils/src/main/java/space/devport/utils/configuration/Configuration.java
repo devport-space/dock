@@ -338,7 +338,7 @@ public class Configuration {
     @Nullable
     public final List<String> getColoredList(@Nullable String path) {
         Message msg = getMessage(path);
-        return msg == null ? null : msg.color().getMessage();
+        return msg == null ? null : msg.color().getContent();
     }
 
     /**
@@ -350,7 +350,7 @@ public class Configuration {
      */
     @NotNull
     public final List<String> getColoredList(@Nullable String path, @NotNull List<String> defaultList) {
-        return getMessage(path, new Message(defaultList)).color().getMessage();
+        return getMessage(path, new Message(defaultList)).color().getContent();
     }
 
     /**
@@ -779,7 +779,7 @@ public class Configuration {
             section.set(SubPath.ITEM_NAME.toString(), prefab.getName().toString());
 
         if (!prefab.getLore().isEmpty())
-            section.set(SubPath.ITEM_LORE.toString(), prefab.getLore().getMessage());
+            section.set(SubPath.ITEM_LORE.toString(), prefab.getLore().getContent());
 
         if (!prefab.getEnchants().isEmpty()) {
             List<String> enchants = new ArrayList<>();
@@ -815,10 +815,10 @@ public class Configuration {
         if (message.isEmpty())
             fileConfiguration.set(path, "");
         else {
-            if (message.getMessage().size() > 1) {
-                fileConfiguration.set(path, message.getMessage());
+            if (message.getContent().size() > 1) {
+                fileConfiguration.set(path, message.getContent());
             } else
-                fileConfiguration.set(path, message.getMessage().get(0));
+                fileConfiguration.set(path, message.getContent().get(0));
         }
 
         if (autoSave)
@@ -937,9 +937,9 @@ public class Configuration {
         if (!rewards.getMoney().isEmpty())
             section.set("money", rewards.getMoney().toString());
         if (!rewards.getInform().isEmpty())
-            section.set("inform", rewards.getInform().getMessage());
+            section.set("inform", rewards.getInform().getContent());
         if (!rewards.getBroadcast().isEmpty())
-            section.set("broadcast", rewards.getBroadcast().getMessage());
+            section.set("broadcast", rewards.getBroadcast().getContent());
         if (!rewards.getCommands().isEmpty())
             section.set("commands", rewards.getCommands());
 

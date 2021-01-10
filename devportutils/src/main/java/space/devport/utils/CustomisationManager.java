@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import space.devport.utils.configuration.Configuration;
 import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.item.impl.PrefabFactory;
@@ -18,14 +19,13 @@ import java.util.Map;
 public class CustomisationManager extends DevportManager {
 
     @Getter
-    private final Configuration customisation;
+    private final Configuration customisation = new Configuration(plugin, "customisation");
 
     private final Map<String, MenuBuilder> loadedMenus = new HashMap<>();
     private final Map<String, ItemPrefab> loadedItems = new HashMap<>();
 
     public CustomisationManager(DevportPlugin plugin) {
         super(plugin);
-        this.customisation = new Configuration(plugin, "customisation");
     }
 
     @NotNull
@@ -33,9 +33,9 @@ public class CustomisationManager extends DevportManager {
         return loadedMenus.containsKey(name) ? loadedMenus.get(name) : new MenuBuilder(plugin);
     }
 
-    @NotNull
+    @Nullable
     public ItemPrefab getItem(String name) {
-        return loadedItems.containsKey(name) ? loadedItems.get(name) : PrefabFactory.createNew(Material.AIR);
+        return loadedItems.get(name);
     }
 
     @Override

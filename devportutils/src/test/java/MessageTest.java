@@ -22,7 +22,7 @@ public class MessageTest {
         CachedMessage cachedMessage = new CachedMessage("Message with a %placeholder%");
         cachedMessage.parseWith(new Placeholders().add("%placeholder%", "Placeholder!"));
 
-        List<String> result = cachedMessage.parse().getMessage();
+        List<String> result = cachedMessage.parse().getContent();
         cachedMessage.pull();
 
         assertEquals("Message with a Placeholder!", result.get(0));

@@ -83,7 +83,7 @@ public abstract class AbstractCommand {
     // This is called from outside and sends the message automatically once it gets a response.
     public void runCommand(CommandSender sender, String label, String[] args) {
 
-        Placeholders commandPlaceholders = new Placeholders(plugin.getGlobalPlaceholders())
+        Placeholders commandPlaceholders = plugin.obtainPlaceholders()
                 .add("%label%", label)
                 .add("%usage%", getUsage().color().toString().replaceAll("(?i)\\Q%label%\\E", label));
 
