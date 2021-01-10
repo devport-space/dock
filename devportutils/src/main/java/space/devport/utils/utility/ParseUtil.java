@@ -10,6 +10,7 @@ import space.devport.utils.callbacks.CallbackContent;
 import space.devport.utils.callbacks.ExceptionCallback;
 import space.devport.utils.item.data.Amount;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 @UtilityClass
@@ -190,18 +191,140 @@ public class ParseUtil {
                 z == null ? 0 : z.getDouble());
     }
 
-    public <T> T getOrDefault(@NotNull Supplier<T> supplier, T defaultValue) {
-        return getOrDefault(supplier, defaultValue, null);
+    /**
+     * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return a default value instead.
+     * Run attached {@link ExceptionCallback} when an Exception is thrown in the supplier.
+     * <p>
+     * This is here just for styling and easier exception handling.
+     *
+     * @param <T>          Type signature
+     * @param supplier     {@code Supplier<T>} supplier to run.
+     * @param defaultValue Default value to return if an exception was thrown.
+     * @param callback     {@link ExceptionCallback} to run on failure.
+     * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
+     */
+    public <T> T parse(@NotNull Supplier<T> supplier, @Nullable T defaultValue, @Nullable ExceptionCallback callback) {
+        Objects.requireNonNull(supplier);
+
+        try {
+            return supplier.get();
+        } catch (Exception e) {
+            if (callback != null)
+                callback.call(CallbackContent.createNew(e));
+            return defaultValue;
+        }
     }
 
-    public <T> T getOrDefault(Supplier<T> supplier, T defaultValue, @Nullable ExceptionCallback callback) {
+    /**
+     * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return a default value instead.
+     * <p>
+     * This is here just for styling and easier exception handling.
+     *
+     * @param <T>          Type signature
+     * @param supplier     {@code Supplier<T>} supplier to run.
+     * @param defaultValue Default value to return if an exception was thrown.
+     * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
+     */
+    public <T> T parse(@NotNull Supplier<T> supplier, T defaultValue) {
+        return parse(supplier, defaultValue, null);
+    }
+
+    /**
+     * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return {@code null} instead.
+     * Run attached {@link ExceptionCallback} when an Exception is thrown in the supplier.
+     * <p>
+     * This is here just for styling and easier exception handling.
+     *
+     * @param <T>      Type signature
+     * @param supplier {@code Supplier<T>} supplier to run.
+     * @param callback {@link ExceptionCallback} to run on failure.
+     * @return Supplied value via {@code Supplier<T>} or {@code null}.
+     */
+    public <T> T parse(@NotNull Supplier<T> supplier, ExceptionCallback callback) {
+        return parse(supplier, null, callback);
+    }
+
+    /**
+     * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return a default value instead.
+     * Run attached {@link ExceptionCallback} when an Exception is thrown in the supplier.
+     * <p>
+     * This is here just for styling and easier exception handling.
+     *
+     * @param <T>      Type signature
+     * @param supplier {@code Supplier<T>} supplier to run.
+     * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
+     */
+    public <T> T parse(@NotNull Supplier<T> supplier) {
+        return parse(supplier, null, null);
+    }
+
+    /**
+     * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return a default value instead.
+     * Run attached {@link ExceptionCallback} when an Exception is thrown in the supplier.
+     * <p>
+     * This is here just for styling and easier exception handling.
+     * <p>
+     * If the default value is not null, this can never return {@code null}.
+     *
+     * @param <T>          Type signature
+     * @param supplier     {@code Supplier<T>} supplier to run.
+     * @param defaultValue Default value to return if an exception was thrown.
+     * @param callback     {@link ExceptionCallback} to run on failure.
+     * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
+     */
+    public <T> T parseNotNull(@NotNull Supplier<T> supplier, @Nullable T defaultValue, @Nullable ExceptionCallback callback) {
+        Objects.requireNonNull(supplier);
+
         try {
             T t = supplier.get();
             return t == null ? defaultValue : t;
         } catch (Exception e) {
             if (callback != null)
-                callback.call(CallbackContent.createNew(e, "input"));
+                callback.call(CallbackContent.createNew(e));
             return defaultValue;
         }
+    }
+
+    /**
+     * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return a default value instead.
+     * <p>
+     * This is here just for styling and easier exception handling.
+     *
+     * @param <T>          Type signature
+     * @param supplier     {@code Supplier<T>} supplier to run.
+     * @param defaultValue Default value to return if an exception was thrown.
+     * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
+     */
+    public <T> T parseNotNull(@NotNull Supplier<T> supplier, T defaultValue) {
+        return parseNotNull(supplier, defaultValue, null);
+    }
+
+    /**
+     * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return {@code null} instead.
+     * Run attached {@link ExceptionCallback} when an Exception is thrown in the supplier.
+     * <p>
+     * This is here just for styling and easier exception handling.
+     *
+     * @param <T>      Type signature
+     * @param supplier {@code Supplier<T>} supplier to run.
+     * @param callback {@link ExceptionCallback} to run on failure.
+     * @return Supplied value via {@code Supplier<T>} or {@code null}.
+     */
+    public <T> T parseNotNull(@NotNull Supplier<T> supplier, ExceptionCallback callback) {
+        return parseNotNull(supplier, null, callback);
+    }
+
+    /**
+     * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return a default value instead.
+     * Run attached {@link ExceptionCallback} when an Exception is thrown in the supplier.
+     * <p>
+     * This is here just for styling and easier exception handling.
+     *
+     * @param <T>      Type signature
+     * @param supplier {@code Supplier<T>} supplier to run.
+     * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
+     */
+    public <T> T parseNotNull(@NotNull Supplier<T> supplier) {
+        return parseNotNull(supplier, null, null);
     }
 }

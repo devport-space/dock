@@ -8,7 +8,6 @@ public class CallbackContent {
     private final String input;
     @Getter
     private final Throwable throwable;
-    @Getter
     private final String variable;
 
     private CallbackContent(Throwable throwable, String variable, String input) {
@@ -27,9 +26,18 @@ public class CallbackContent {
         return new CallbackContent(throwable, variable, null);
     }
 
+    public static CallbackContent createNew(Throwable throwable) {
+        return new CallbackContent(throwable, null, null);
+    }
+
     @NotNull
     public String getInput() {
-        return input == null ? "null" : input;
+        return String.valueOf(input);
+    }
+
+    @NotNull
+    public String getVariable() {
+        return String.valueOf(variable);
     }
 
     public void printStackTrace() {

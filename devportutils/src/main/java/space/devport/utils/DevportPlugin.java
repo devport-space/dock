@@ -166,7 +166,7 @@ public abstract class DevportPlugin extends JavaPlugin {
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName())
-                .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.getOrDefault(player::getName, "null")), OfflinePlayer.class);
+                .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.parseNotNull(player::getName, "null")), OfflinePlayer.class);
 
         callManagerAction(DevportManager::preEnable);
 

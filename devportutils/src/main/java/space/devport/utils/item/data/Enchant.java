@@ -3,12 +3,14 @@ package space.devport.utils.item.data;
 import com.cryptomorin.xseries.XEnchantment;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.java.Log;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.utility.ParseUtil;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -18,6 +20,7 @@ import java.util.Set;
 /**
  * Enchantment and level wrapper for simplified enchant manipulation.
  */
+@Log
 public class Enchant {
 
     @Getter
@@ -51,7 +54,11 @@ public class Enchant {
             if (entry.getKey() == null || entry.getValue() == null)
                 continue;
 
-            XEnchantment enchantment = XEnchantment.matchXEnchantment(entry.getKey());
+            XEnchantment enchantment = ParseUtil.parse(() -> XEnchantment.matchXEnchantment(entry.getKey()));
+
+            if (enchantment == null)
+                continue; // Enchantment is not supported.
+
             Enchant enchant = new Enchant(enchantment, entry.getValue());
             enchants.add(enchant);
         }
