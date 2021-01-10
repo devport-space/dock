@@ -222,6 +222,11 @@ public class Message implements Cloneable {
         return this;
     }
 
+    // Parse, color and convert to String.
+    public String build() {
+        return parse().color().toString();
+    }
+
     /**
      * Parse message to string.
      * Multiple lines are separated by given delimiter, or default.
