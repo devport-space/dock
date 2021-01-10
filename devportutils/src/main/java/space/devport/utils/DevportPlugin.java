@@ -9,8 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -193,6 +191,10 @@ public abstract class DevportPlugin extends JavaPlugin {
 
             callManagerAction(DevportManager::afterDependencyLoad);
         });
+    }
+
+    public void reload() {
+        reload(null);
     }
 
     public void reload(@Nullable CommandSender sender) {
