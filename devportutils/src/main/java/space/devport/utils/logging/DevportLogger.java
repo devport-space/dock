@@ -24,15 +24,6 @@ public class DevportLogger implements IFactory {
         this.parentLogger = Logger.getLogger(loggerKey);
     }
 
-    @Override
-    public void destroy() {
-        parentLogger.removeHandler(devportLogHandler);
-        parentLogger.setUseParentHandlers(true);
-
-        this.consoleOutput = null;
-        this.devportLogHandler = null;
-    }
-
     public void setup(ConsoleOutput consoleOutput) {
         this.consoleOutput = consoleOutput;
 
@@ -41,6 +32,15 @@ public class DevportLogger implements IFactory {
         setLevel(Level.INFO);
         this.devportLogHandler = new DevportLogHandler(consoleOutput);
         parentLogger.addHandler(devportLogHandler);
+    }
+
+    @Override
+    public void destroy() {
+        parentLogger.removeHandler(devportLogHandler);
+        parentLogger.setUseParentHandlers(true);
+
+        this.consoleOutput = null;
+        this.devportLogHandler = null;
     }
 
     public void setLevel(Level level) {

@@ -56,7 +56,7 @@ public class HologramManager extends DevportManager {
 
     public void attemptHook() {
 
-        if (hologramProvider != null) return;
+        if (hooked) return;
 
         if (DependencyUtil.isEnabled("Holograms")) {
             hologramProvider = new Holograms(plugin);
