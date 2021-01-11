@@ -138,8 +138,6 @@ public class LanguageManager extends DevportManager {
             return message;
 
         message.prefix("%prefix%");
-        message.parseWith(plugin.getGlobalPlaceholders());
-
         return message;
     }
 
