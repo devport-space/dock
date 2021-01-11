@@ -1,6 +1,7 @@
 package space.devport.utils.item.nbt;
 
 import lombok.experimental.UtilityClass;
+import net.minecraft.server.v1_16_R3.Items;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,7 @@ import java.util.*;
 public class CompoundUtil {
 
     // Some ItemStack parameters are already saved inside other variables.
-    // These NBT keys will be ignored in loading so they don't affect those.
+    // These keys will be ignored in "filtered" methods.
     public static final List<String> VANILLA_KEYS = Arrays.asList("Damage", "Enchantments", "display", "HideFlags");
 
     /**
@@ -29,6 +30,11 @@ public class CompoundUtil {
         return item == null ? null : CompoundFactory.of(item);
     }
 
+    private Collection<String> filterKeys(Collection<String> c) {
+        c.removeIf(VANILLA_KEYS::contains);
+        return c;
+    }
+
     /**
      * Get NBT keys stored on {@link ItemStack}.
      *
@@ -37,8 +43,26 @@ public class CompoundUtil {
      * @see ItemStack
      * @see ICompound
      */
-    public Set<String> getKeys(ItemStack item) {
+    public Collection<String> getKeys(ItemStack item) {
         return getCompound(item).getKeys();
+    }
+
+    public Collection<String> getKeysFiltered(ItemStack item) {
+        return filterKeys(getKeys(item));
+    }
+
+    /**
+     * Check if {@link ItemStack} has any NBT keys.
+     *
+     * @param item {@link ItemStack} to check.
+     * @return True if {@link ItemStack} has any NBT keys.
+     */
+    public boolean has(ItemStack item) {
+        return !getCompound(item).getKeys().isEmpty();
+    }
+
+    public boolean hasFiltered(ItemStack item) {
+        return !filterKeys(getCompound(item).getKeys()).isEmpty();
     }
 
     /**
@@ -87,6 +111,24 @@ public class CompoundUtil {
         return hasValue(compound, key, value);
     }
 
+    public NBTContainer getValue(ItemStack item, String key) {
+        ICompound compound = getCompound(item);
+        return compound == null ? null : TypeUtil.contain(compound, key);
+    }
+
+    @Contract("null,_,_ -> null")
+    public <T> T getValue(@Nullable ItemStack item, @NotNull String key, @NotNull Class<T> clazz) {
+        return getValue(getCompound(item), key, clazz);
+    }
+
+    @Contract("null,_,_ -> null")
+    public <T> T getValue(@Nullable ICompound compound, @NotNull String key, @NotNull Class<T> clazz) {
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(key);
+
+        return compound == null ? null : TypeUtil.extract(compound, key, clazz);
+    }
+
     /*
      * Add NBT to item.
      */
@@ -112,44 +154,41 @@ public class CompoundUtil {
         return compound.finish();
     }
 
+    public ItemStack clearFiltered(ItemStack item) {
+        ICompound compound = getCompound(item);
+        for (String key : filterKeys(compound.getKeys()))
+            compound.remove(key);
+        return compound.finish();
+    }
+
     /**
      * Parse NBT from {@link ICompound} into a {@link Map} of {@link String} and {@link NBTContainer}.
      *
-     * @param compound      {@link ICompound} to parse from.
-     * @param ignoreVanilla True to ignore vanilla NBT keys defined in VANILLA_KEYS.
+     * @param compound {@link ICompound} to parse from.
      * @return {@code Map<String, NBTContainer>} of parsed values.
      * If {@link ICompound} is null, return an empty map.
      */
     @NotNull
-    public Map<String, NBTContainer> getMap(@Nullable ICompound compound, boolean ignoreVanilla) {
+    public Map<String, NBTContainer> getMap(@Nullable ICompound compound) {
         Map<String, NBTContainer> nbt = new HashMap<>();
         if (compound != null)
             for (String key : compound.getKeys()) {
-                if (!ignoreVanilla || !VANILLA_KEYS.contains(key))
-                    nbt.put(key, TypeUtil.contain(compound, key));
+                nbt.put(key, TypeUtil.contain(compound, key));
+            }
+        return nbt;
+    }
+
+    public Map<String, NBTContainer> getMapFiltered(ICompound compound) {
+        Map<String, NBTContainer> nbt = new HashMap<>();
+        if (compound != null)
+            for (String key : compound.getKeys()) {
+                nbt.put(key, TypeUtil.contain(compound, key));
             }
         return nbt;
     }
 
     /**
-     * Parse NBT from {@link ICompound} into a {@link Map} of {@link String} and {@link NBTContainer}.
-     * <p>
-     * Equivalent to {@link #getMap(ICompound, boolean)} with ignoreVanilla set to false.
-     *
-     * @param compound {@link ICompound} to parse from.
-     * @return {@code Map<String, NBTContainer>} of parsed values.
-     * If {@link ICompound} is null, return an empty map.
-     * @see #getMap(ICompound, boolean)
-     */
-    @NotNull
-    public Map<String, NBTContainer> getMap(@Nullable ICompound compound) {
-        return getMap(compound, false);
-    }
-
-    /**
      * Parse NBT from {@link ItemStack} into a {@link Map} of {@link String} and {@link NBTContainer}.
-     * <p>
-     * Equivalent to {@link #getMap(ItemStack, boolean)} with ignoreVanilla set to false.
      *
      * @param item {@link ItemStack} to parse from.
      * @return {@code Map<String, NBTContainer>} of parsed values.
@@ -158,21 +197,19 @@ public class CompoundUtil {
      */
     @NotNull
     public Map<String, NBTContainer> getMap(@Nullable ItemStack item) {
-        return getMap(item, false);
+        return getMap(getCompound(item));
     }
 
     /**
      * Parse NBT from {@link ItemStack} into a {@link Map} of {@link String} and {@link NBTContainer}.
      *
-     * @param item          {@link ItemStack} to parse from.
-     * @param ignoreVanilla True to ignore vanilla NBT keys defined in VANILLA_KEYS.
+     * @param item {@link ItemStack} to parse from.
      * @return {@code Map<String, NBTContainer>} of parsed values.
      * If {@link ItemStack} is null, return an empty map.
-     * @see #getMap(ICompound)
+     * @see #getMapFiltered(ICompound)
      */
     @NotNull
-    public Map<String, NBTContainer> getMap(@Nullable ItemStack item, boolean ignoreVanilla) {
-        ICompound compound = getCompound(item);
-        return compound == null ? new HashMap<>() : getMap(compound, ignoreVanilla);
+    public Map<String, NBTContainer> getMapFiltered(@Nullable ItemStack item) {
+        return getMapFiltered(getCompound(item));
     }
 }
