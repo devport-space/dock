@@ -47,7 +47,7 @@ public interface ItemPrefab extends Cloneable {
      * Set the type of the Prefab.
      *
      * @param material Material to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withType(@NotNull XMaterial material);
 
@@ -55,7 +55,7 @@ public interface ItemPrefab extends Cloneable {
      * Set the amount of the Prefab.
      *
      * @param amount Amount to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withAmount(@NotNull Amount amount);
 
@@ -63,7 +63,7 @@ public interface ItemPrefab extends Cloneable {
      * Set the amount of the Prefab,
      *
      * @param value Fixed amount to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab withAmount(double value) {
         return withAmount(new Amount(value));
@@ -74,7 +74,7 @@ public interface ItemPrefab extends Cloneable {
      *
      * @param low  Low value to use
      * @param high High value to use
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab withAmount(double low, double high) {
         return withAmount(new Amount(low, high));
@@ -84,7 +84,7 @@ public interface ItemPrefab extends Cloneable {
      * Set the name of the Prefab.
      *
      * @param name Message name to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withName(@Nullable Message name);
 
@@ -92,7 +92,7 @@ public interface ItemPrefab extends Cloneable {
      * Set the name of the Prefab.
      *
      * @param name String name to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab withName(@Nullable String name) {
         return withName(name == null ? new CachedMessage() : new CachedMessage(name));
@@ -102,7 +102,7 @@ public interface ItemPrefab extends Cloneable {
      * Set the lore of the Prefab.
      *
      * @param lore Message lore to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withLore(@Nullable Message lore);
 
@@ -110,7 +110,7 @@ public interface ItemPrefab extends Cloneable {
      * Set the lore of the Prefab.
      *
      * @param lore {@code Collection<String>} to set as lore.
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab withLore(@Nullable Collection<String> lore) {
         return withLore(lore == null ? new CachedMessage() : new CachedMessage(lore));
@@ -120,7 +120,7 @@ public interface ItemPrefab extends Cloneable {
      * Set the lore of the Prefab.
      *
      * @param lore String[] to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab withLore(@Nullable String... lore) {
         return withLore(lore == null ? new CachedMessage() : new CachedMessage(lore));
@@ -130,7 +130,7 @@ public interface ItemPrefab extends Cloneable {
      * Append to the lore of the Prefab.
      *
      * @param lore Message lore to append
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab appendLore(@NotNull Message lore);
 
@@ -138,7 +138,7 @@ public interface ItemPrefab extends Cloneable {
      * Append to the lore of the Prefab.
      *
      * @param lore String[] lore to append
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab appendLore(@NotNull String... lore) {
         return appendLore(new Message(lore));
@@ -148,7 +148,7 @@ public interface ItemPrefab extends Cloneable {
      * Add enchant to Prefab.
      *
      * @param enchant Enchant to add
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab addEnchant(@NotNull Enchant enchant);
 
@@ -157,7 +157,7 @@ public interface ItemPrefab extends Cloneable {
      *
      * @param enchantment Enchantment to add
      * @param level       Enchantment level
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab addEnchant(@NotNull XEnchantment enchantment, int level) {
         return addEnchant(new Enchant(enchantment, level));
@@ -167,7 +167,7 @@ public interface ItemPrefab extends Cloneable {
      * Set enchants to Prefab.
      *
      * @param enchants Enchants to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withEnchants(@NotNull Collection<Enchant> enchants);
 
@@ -175,7 +175,7 @@ public interface ItemPrefab extends Cloneable {
      * Add flags to Prefab.
      *
      * @param flags Flags to add
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab addFlags(@NotNull ItemFlag... flags);
 
@@ -183,7 +183,7 @@ public interface ItemPrefab extends Cloneable {
      * Set flags of the Prefab.
      *
      * @param flags Flags to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withFlags(@NotNull ItemFlag... flags);
 
@@ -192,7 +192,7 @@ public interface ItemPrefab extends Cloneable {
      *
      * @param key       String key
      * @param container Contained value to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab addNBT(@NotNull String key, @NotNull NBTContainer container);
 
@@ -202,7 +202,7 @@ public interface ItemPrefab extends Cloneable {
      * @param <T>   Type signature.
      * @param key   String key
      * @param value Value to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     <T> @NotNull ItemPrefab addNBT(@NotNull String key, @NotNull T value);
 
@@ -210,7 +210,7 @@ public interface ItemPrefab extends Cloneable {
      * Add NBT to Prefab.
      *
      * @param nbt Nbt map to add
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab addNBT(@NotNull Map<String, NBTContainer> nbt);
 
@@ -218,7 +218,7 @@ public interface ItemPrefab extends Cloneable {
      * Set NBT to Prefab.
      *
      * @param nbt NBT map to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withNBT(@NotNull Map<String, NBTContainer> nbt);
 
@@ -226,7 +226,7 @@ public interface ItemPrefab extends Cloneable {
      * Set SkullData to Prefab.
      *
      * @param skullData SkullData to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withSkullData(@Nullable SkullData skullData);
 
@@ -235,7 +235,7 @@ public interface ItemPrefab extends Cloneable {
      * Equivalent to #withSkullData(SkullData.fromString(identifier))
      *
      * @param identifier Identifier to use
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab withSkullData(@NotNull String identifier) {
         return withSkullData(SkullData.of(identifier));
@@ -245,7 +245,7 @@ public interface ItemPrefab extends Cloneable {
      * Set Damage to Prefab.
      *
      * @param damage ItemDamage to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withDamage(@Nullable ItemDamage damage);
 
@@ -254,7 +254,7 @@ public interface ItemPrefab extends Cloneable {
      * Equivalent to #withDamage(new ItemDamage(damage))
      *
      * @param damage Integer damage to set
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab withDamage(int damage) {
         return withDamage(new ItemDamage(damage));
@@ -264,7 +264,7 @@ public interface ItemPrefab extends Cloneable {
      * Set glow to Prefab.
      * Equivalent to #withGlow(true)
      *
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab withGlow() {
         return withGlow(true);
@@ -274,7 +274,7 @@ public interface ItemPrefab extends Cloneable {
      * Set glow to Prefab.
      *
      * @param b Boolean, true to glow, false to not
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab withGlow(boolean b);
 
@@ -282,7 +282,7 @@ public interface ItemPrefab extends Cloneable {
      * Set Placeholders to parse with.
      *
      * @param placeholders Placeholders to use
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab parseWith(@NotNull Placeholders placeholders);
 
@@ -291,7 +291,7 @@ public interface ItemPrefab extends Cloneable {
      * PrefabBuilders are applied after the ItemStack is built.
      *
      * @param builder PrefabBuilder to add
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab addBuilder(@NotNull PrefabBuilder builder);
 
@@ -299,14 +299,14 @@ public interface ItemPrefab extends Cloneable {
      * Remove enchant from Prefab.
      *
      * @param enchantment Enchantment to remove
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab removeEnchant(@NotNull XEnchantment enchantment);
 
     /**
      * Clear enchants from Prefab.
      *
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab clearEnchants();
 
@@ -314,14 +314,14 @@ public interface ItemPrefab extends Cloneable {
      * Remove flag from Prefab.
      *
      * @param flag Flag to remove
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab removeFlag(ItemFlag flag);
 
     /**
      * Clear flags from Prefab.
      *
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab clearFlags();
 
@@ -329,14 +329,14 @@ public interface ItemPrefab extends Cloneable {
      * Remove NBT from Prefab.
      *
      * @param key NBT key of the entry to remove
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab removeNBT(String key);
 
     /**
      * Clear NBT from Prefab.
      *
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     @NotNull ItemPrefab clearNBT();
 
@@ -344,7 +344,7 @@ public interface ItemPrefab extends Cloneable {
      * Remove glow from Prefab.
      * Equivalent to #withGlow(false)
      *
-     * @return Edited ItemPrefab.
+     * @return This ItemPrefab.
      */
     default @NotNull ItemPrefab clearGlow() {
         return withGlow(false);
