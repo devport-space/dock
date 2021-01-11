@@ -59,12 +59,12 @@ public abstract class AbstractPrefab implements ItemPrefab {
 
     private final Set<PrefabBuilder> builders = new HashSet<>();
 
-    AbstractPrefab(DevportPlugin plugin, @NotNull XMaterial material) {
+    public AbstractPrefab(DevportPlugin plugin, @NotNull XMaterial material) {
         this.material = material;
         this.plugin = plugin;
     }
 
-    AbstractPrefab(@NotNull ItemPrefab prefab) {
+    public AbstractPrefab(@NotNull ItemPrefab prefab) {
         Objects.requireNonNull(prefab, "ItemPrefab cannot be null.");
 
         this.plugin = prefab.getPlugin();
@@ -87,7 +87,7 @@ public abstract class AbstractPrefab implements ItemPrefab {
         this.placeholders.copy(prefab.getPlaceholders());
     }
 
-    AbstractPrefab(DevportPlugin plugin, @NotNull ItemStack item) {
+    public AbstractPrefab(DevportPlugin plugin, @NotNull ItemStack item) {
         Objects.requireNonNull(item, "ItemStack cannot be null.");
 
         this.plugin = plugin;
