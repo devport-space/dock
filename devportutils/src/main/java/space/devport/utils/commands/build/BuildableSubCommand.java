@@ -1,5 +1,6 @@
 package space.devport.utils.commands.build;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.commands.CommandExecutor;
@@ -44,13 +45,13 @@ public class BuildableSubCommand extends SubCommand {
     }
 
     @Override
-    public BuildableSubCommand withExecutor(CommandExecutor executor) {
+    public @NotNull BuildableSubCommand withExecutor(CommandExecutor executor) {
         super.withExecutor(executor);
         return this;
     }
 
     @Override
-    public BuildableSubCommand withParent(MainCommand parent) {
+    public @NotNull BuildableSubCommand withParent(@NotNull MainCommand parent) {
         super.withParent(parent);
         return this;
     }

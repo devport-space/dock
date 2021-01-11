@@ -18,7 +18,6 @@ import space.devport.utils.text.message.Message;
 import space.devport.utils.utility.ParseUtil;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
@@ -37,6 +36,8 @@ public abstract class AbstractCommand {
     protected final LanguageManager language;
 
     private CommandExecutor executor;
+
+    private CompletionProvider completionProvider;
 
     public AbstractCommand(DevportPlugin plugin, String name) {
         this.name = name;
@@ -137,7 +138,7 @@ public abstract class AbstractCommand {
 
         CommandResult result;
         if (executor != null)
-            result = executor.execute(sender, label, args);
+            result = executor.perform(sender, label, args);
         else
             result = perform(sender, label, args);
 
@@ -146,10 +147,22 @@ public abstract class AbstractCommand {
                 .send(sender);
     }
 
+    @Nullable
+    public List<String> getCompletion(CommandSender sender, String[] args) {
+        if (completionProvider != null)
+            return completionProvider.provide(sender, args);
+        else
+            return requestTabComplete(sender, args);
+    }
+
+    @Nullable
     public abstract List<String> requestTabComplete(CommandSender sender, String[] args);
 
-    @NotNull
-    protected List<String> filterSuggestions(@NotNull List<String> input, String arg) {
+    @Nullable
+    protected List<String> filterSuggestions(@Nullable List<String> input, String arg) {
+        if (input == null)
+            return null;
+
         Collections.sort(input);
 
         if (Strings.isNullOrEmpty(arg))
@@ -248,8 +261,15 @@ public abstract class AbstractCommand {
         return permission + "." + this.getName().toLowerCase();
     }
 
-    public AbstractCommand withExecutor(CommandExecutor executor) {
+    @NotNull
+    public AbstractCommand withExecutor(@Nullable CommandExecutor executor) {
         this.executor = executor;
+        return this;
+    }
+
+    @NotNull
+    public AbstractCommand withCompletionProvider(@Nullable CompletionProvider completionProvider) {
+        this.completionProvider = completionProvider;
         return this;
     }
 

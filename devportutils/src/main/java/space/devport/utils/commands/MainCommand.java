@@ -90,7 +90,7 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     @Override
-    public List<String> requestTabComplete(CommandSender sender, String[] args) {
+    public @Nullable List<String> requestTabComplete(CommandSender sender, String[] args) {
 
         if (args.length == 1) {
             List<String> subCommands = getSubCommands().stream()
@@ -169,35 +169,48 @@ public abstract class MainCommand extends AbstractCommand {
         this.subCommands.forEach(SubCommand::addLanguage);
     }
 
-    public MainCommand withFooter(Message footer) {
+    @NotNull
+    public MainCommand withFooter(@Nullable Message footer) {
         this.footer = footer;
         return this;
     }
 
-    public MainCommand withHeader(Message header) {
+    @NotNull
+    public MainCommand withHeader(@Nullable Message header) {
         this.header = header;
         return this;
     }
 
-    public MainCommand withExtraEntry(String key, Message entry) {
+    @NotNull
+    public MainCommand withExtraEntry(@NotNull String key, @NotNull Message entry) {
         this.extraEntries.put(key, entry);
         return this;
     }
 
-    public MainCommand withLineFormat(String lineFormat) {
+    @NotNull
+    public MainCommand withLineFormat(@Nullable String lineFormat) {
         this.lineFormat = lineFormat;
         return this;
     }
 
-    public MainCommand withSubCommand(SubCommand subCommand) {
+    @NotNull
+    public MainCommand withSubCommand(@NotNull SubCommand subCommand) {
+        Objects.requireNonNull(subCommand, "Cannot add null as sub command.");
+
         this.subCommands.add(subCommand);
         subCommand.withParent(this);
         return this;
     }
 
     @Override
-    public MainCommand withExecutor(CommandExecutor executor) {
+    public @NotNull MainCommand withExecutor(@Nullable CommandExecutor executor) {
         super.withExecutor(executor);
+        return this;
+    }
+
+    @Override
+    public @NotNull MainCommand withCompletionProvider(@Nullable CompletionProvider completionProvider) {
+        super.withCompletionProvider(completionProvider);
         return this;
     }
 }

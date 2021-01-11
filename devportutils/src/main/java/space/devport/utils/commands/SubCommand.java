@@ -43,7 +43,7 @@ public abstract class SubCommand extends AbstractCommand {
         return new Message(getDefaultUsage());
     }
 
-    @NotNull
+    @Nullable
     public List<String> requestTabComplete(CommandSender sender, String[] args) {
         return new ArrayList<>();
     }
@@ -57,9 +57,22 @@ public abstract class SubCommand extends AbstractCommand {
         }
     }
 
-    public SubCommand withParent(MainCommand parent) {
+    @NotNull
+    public SubCommand withParent(@NotNull MainCommand parent) {
         this.parent = parent;
         this.preconditions.permissions(craftPermission());
+        return this;
+    }
+
+    @Override
+    public @NotNull SubCommand withExecutor(@Nullable CommandExecutor executor) {
+        super.withExecutor(executor);
+        return this;
+    }
+
+    @Override
+    public @NotNull SubCommand withCompletionProvider(@Nullable CompletionProvider completionProvider) {
+        super.withCompletionProvider(completionProvider);
         return this;
     }
 }

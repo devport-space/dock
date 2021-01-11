@@ -3,8 +3,8 @@ package space.devport.utils.commands;
 import com.google.common.base.Strings;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.*;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +55,7 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         for (MainCommand mainCommand : registeredCommands) {
             if (label.equalsIgnoreCase(mainCommand.getName()) || mainCommand.getAliases().contains(label))
-                return mainCommand.requestTabComplete(sender, args);
+                return mainCommand.getCompletion(sender, args);
         }
         return new ArrayList<>();
     }
