@@ -27,6 +27,11 @@ public class NBTContainer implements Cloneable {
     }
 
     @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
+
+    @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public NBTContainer clone() {
         return new NBTContainer(this);
