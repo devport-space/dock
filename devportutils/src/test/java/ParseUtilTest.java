@@ -5,8 +5,7 @@ import space.devport.utils.utility.ParseUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ParseUtilTest {
 
@@ -58,16 +57,19 @@ public class ParseUtilTest {
     public void parseUtilShouldCallbackProperly() {
         AtomicBoolean callback = new AtomicBoolean();
 
-        int a = ParseUtil.parseInteger("aaa", e -> callback.set(true));
+        int a = ParseUtil.parseInteger("aaa", -1, e -> callback.set(true));
 
         assertTrue(callback.getAndSet(false));
+        assertEquals(-1, a);
 
         double b = ParseUtil.parseDouble("aaaaa", e -> callback.set(true));
 
         assertTrue(callback.getAndSet(false));
+        assertEquals(0, b, 0);
 
         TestEnum c = ParseUtil.parseEnum("three", TestEnum.class, (ExceptionCallback) e -> callback.set(true));
 
         assertTrue(callback.get());
+        assertNull(c);
     }
 }
