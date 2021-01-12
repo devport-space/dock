@@ -8,7 +8,7 @@ public class DevportLogHandler extends Handler {
     // Delete the root package of the plugin to make the path shorter.
     // It still shows what we need.
     private final static String PACKAGE = DevportLogHandler.class.getPackage().getName()
-            .replace(".utils.logging", "");
+            .replace("utils.logging", "");
 
     private final ConsoleOutput consoleOutput;
 
