@@ -141,7 +141,10 @@ public abstract class DevportPlugin extends JavaPlugin {
         long start = System.currentTimeMillis();
 
         log.info(String.format("Starting up %s %s", getDescription().getName(), getDescription().getVersion()));
-        log.info(String.format("Running on %s %s", ServerType.getCurrentServerType().getName(), ServerVersion.getCurrentVersion().toString()));
+        log.info(String.format("Running on %s %s (NMS: %s)",
+                ServerType.getCurrentServerType().getName(),
+                ServerVersion.getCurrentVersion().toString(),
+                ServerVersion.getNmsVersion()));
         log.info(String.format("%s~~~~~~~~~~~~ &7%s %s~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor()));
 
         if (use(UsageFlag.CONFIGURATION)) {
