@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Log
-public class MenuBuilder {
+public class MenuBuilder implements Cloneable {
 
     @Getter
     private String name;
@@ -259,5 +259,11 @@ public class MenuBuilder {
 
     public MenuItem getItem(int slot) {
         return items.getOrDefault(slot, null);
+    }
+
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public MenuBuilder clone() {
+        return new MenuBuilder(this);
     }
 }

@@ -74,30 +74,34 @@ public class CustomisationManager extends DevportManager {
 
     @Nullable
     public MenuBuilder getMenu(String name) {
-        return loadedMenus.get(name);
+        return getMenu(name, (MenuBuilder) null);
     }
 
     @Contract("null,_ -> param2;_,!null -> !null")
     public MenuBuilder getMenu(String name, MenuBuilder defaultValue) {
-        return loadedMenus.getOrDefault(name, defaultValue);
+        if (loadedMenus.containsKey(name))
+            return loadedMenus.get(name).clone();
+        return defaultValue;
     }
 
     public MenuBuilder getMenu(String name, @NotNull Supplier<MenuBuilder> defaultSupplier) {
-        return loadedMenus.containsKey(name) ? loadedMenus.get(name) : defaultSupplier.get();
+        return loadedMenus.containsKey(name) ? loadedMenus.get(name).clone() : defaultSupplier.get();
     }
 
     @Nullable
     public ItemPrefab getItem(String name) {
-        return loadedItems.get(name);
+        return getItem(name, (ItemPrefab) null);
     }
 
     @Contract("null,null -> null;_,!null -> !null")
     public ItemPrefab getItem(String name, ItemPrefab defaultValue) {
-        return loadedItems.getOrDefault(name, defaultValue);
+        if (loadedItems.containsKey(name))
+            return loadedItems.get(name).clone();
+        return defaultValue;
     }
 
     public ItemPrefab getItem(String name, @NotNull Supplier<ItemPrefab> defaultSupplier) {
-        return loadedItems.containsKey(name) ? loadedItems.get(name) : defaultSupplier.get();
+        return loadedItems.containsKey(name) ? loadedItems.get(name).clone() : defaultSupplier.get();
     }
 
     public Map<String, MenuBuilder> getMenus() {

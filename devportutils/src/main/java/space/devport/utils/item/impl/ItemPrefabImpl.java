@@ -21,7 +21,7 @@ class ItemPrefabImpl extends AbstractPrefab {
     }
 
     @Override
-    public AbstractPrefab clone() {
+    public @NotNull AbstractPrefab clone() {
         return new ItemPrefabImpl(this);
     }
 }

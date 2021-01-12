@@ -497,4 +497,6 @@ public interface ItemPrefab extends Cloneable {
      * @return Placeholders instance
      */
     @NotNull Placeholders getPlaceholders();
+
+    @NotNull ItemPrefab clone();
 }
