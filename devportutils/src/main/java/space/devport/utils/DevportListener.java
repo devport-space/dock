@@ -31,7 +31,7 @@ public class DevportListener implements Listener {
 
     public void register() {
         this.registered = true;
-        plugin.addListener(this);
+        plugin.registerListener(this);
         log.log(DebugLevel.DEBUG, "Registered listener " + getClass().getName());
     }
 

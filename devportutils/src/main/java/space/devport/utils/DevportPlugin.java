@@ -39,6 +39,7 @@ import space.devport.utils.version.CompoundFactory;
 import space.devport.utils.version.VersionManager;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @Log
@@ -175,7 +176,6 @@ public abstract class DevportPlugin extends JavaPlugin {
 
         // Register listeners that are set to.
         registerListeners();
-        log.info(String.format("Registered %d listener(s)...", listeners.size()));
 
         log.info(String.format("%s~~~~~~~~~~~~ &7/////// %s~~~~~~~~~~~~", getColor(), getColor()));
         log.info(String.format("Done... startup took &f%s&7ms.", (System.currentTimeMillis() - start)));
@@ -317,10 +317,15 @@ public abstract class DevportPlugin extends JavaPlugin {
     }
 
     public void registerListeners() {
+        AtomicInteger count = new AtomicInteger();
         this.listeners.forEach(devportListener -> {
-            if (devportListener.isRegister() && !devportListener.isRegistered())
+            if (devportListener.isRegister() && !devportListener.isRegistered()) {
                 devportListener.register();
+                count.incrementAndGet();
+            }
         });
+        if (count.get() > 0)
+            log.info(String.format("Registered %d listener(s)...", count.get()));
     }
 
     public void unregisterListeners() {
