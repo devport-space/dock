@@ -152,7 +152,9 @@ public class MenuBuilder implements Cloneable {
         // Fill items
 
         for (Map.Entry<Integer, MenuItem> item : this.items.entrySet()) {
-            inventory.setItem(item.getKey(), item.getValue().getPrefab().build());
+            ItemPrefab prefab = item.getValue().getPrefab();
+            prefab.getPlaceholders().copy(placeholders);
+            inventory.setItem(item.getKey(), prefab.build());
         }
 
         Menu menu = new Menu(name, this);
