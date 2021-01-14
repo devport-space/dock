@@ -1,6 +1,7 @@
 package space.devport.utils.holograms.provider.impl;
 
 import com.Zrips.CMI.CMI;
+import com.Zrips.CMI.Containers.CMILocation;
 import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 import com.Zrips.CMI.Modules.Holograms.HologramManager;
 import org.bukkit.Location;
@@ -27,25 +28,30 @@ public class CMIHolograms extends HologramProvider {
 
     @Override
     public Location getLocation(String id) {
-        if (!exists(id)) return null;
-
         CMIHologram hologram = hologramManager.getByName(id);
-        return hologram != null ? hologram.getLoc().clone() : null;
+        return hologram == null ? null : hologram.getLocation().getBukkitLoc().clone();
     }
 
     @Override
     public void createHologram(String id, Location location, List<String> content) {
-        CMIHologram hologram = new CMIHologram(id, location);
+        CMILocation cmiLocation = new CMILocation(location);
+        CMIHologram hologram = new CMIHologram(id, cmiLocation);
+
         registeredHolograms.add(id);
+
+        hologram.setSaveToFile(true);
         hologram.setLines(content);
         hologramManager.addHologram(hologram);
         hologram.update();
+
         hologramManager.save();
     }
 
     @Override
     public void createItemHologram(String id, Location location, ItemStack item) {
-        CMIHologram hologram = new CMIHologram(id, location);
+        CMILocation cmiLocation = new CMILocation(location);
+        CMIHologram hologram = new CMIHologram(id, cmiLocation);
+
         registeredHolograms.add(id);
         hologram.setLines(Collections.singletonList(String.format("SICON:%s", item.getType().toString())));
         hologramManager.addHologram(hologram);
@@ -60,7 +66,8 @@ public class CMIHolograms extends HologramProvider {
 
     @Override
     public void createAnimatedItem(String id, Location location, ItemStack item, int delay) {
-        CMIHologram hologram = new CMIHologram(id, location);
+        CMILocation cmiLocation = new CMILocation(location);
+        CMIHologram hologram = new CMIHologram(id, cmiLocation);
         registeredHolograms.add(id);
         hologram.setLines(Collections.singletonList(String.format("ICON:%s", item.getType().toString())));
         hologramManager.addHologram(hologram);
@@ -88,7 +95,7 @@ public class CMIHolograms extends HologramProvider {
     @Override
     public void updateItemHologram(String id, ItemStack item) {
         if (!exists(id)) return;
-        Location location = hologramManager.getByName(id).getLoc();
+        Location location = hologramManager.getByName(id).getLocation().getBukkitLoc();
         deleteHologram(id);
         createItemHologram(location, item);
     }
@@ -108,7 +115,7 @@ public class CMIHolograms extends HologramProvider {
     @Override
     public void updateAnimatedItem(String id, ItemStack item, int delay) {
         if (!exists(id)) return;
-        Location location = hologramManager.getByName(id).getLoc();
+        Location location = hologramManager.getByName(id).getLocation().getBukkitLoc();
         deleteHologram(id);
         createAnimatedItem(location, item, delay);
     }

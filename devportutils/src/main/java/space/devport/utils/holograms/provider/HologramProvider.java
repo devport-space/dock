@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.configuration.Configuration;
+import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.utility.FastUUID;
 import space.devport.utils.utility.LocationUtil;
 
@@ -55,9 +56,14 @@ public abstract class HologramProvider {
         purgeNonexistent();
 
         for (String id : registeredHolograms) {
-            String locationString = LocationUtil.composeString(getLocation(id));
+            String locationString = LocationUtil.composeString(getLocation(id),
+                    e -> log.warning("Failed to parse location from " + e.getInput()));
 
-            if (Strings.isNullOrEmpty(locationString)) {
+            if (locationString == null) {
+                continue;
+            }
+
+            if (locationString.isEmpty()) {
                 log.warning("Could not save hologram " + id + ", it's location is invalid.");
                 continue;
             }
