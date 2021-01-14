@@ -218,6 +218,13 @@ public class GsonHelper {
 
         Path path = Paths.get(dataPath);
 
+        if (!path.toFile().getParentFile().exists()) {
+            if (!path.toFile().getParentFile().mkdirs()) {
+                log.severe("Could not save, could not create folder structure.");
+                return CompletableFuture.completedFuture(null);
+            }
+        }
+
         AsynchronousFileChannel channel;
         try {
             channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
