@@ -3,7 +3,6 @@ package space.devport.utils.text.message;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import sun.misc.Cache;
 
 import java.util.ArrayList;
 import java.util.Arrays;
