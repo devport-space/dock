@@ -60,12 +60,11 @@ public class MenuBuilder implements Cloneable {
         this.plugin = plugin;
     }
 
-    public MenuBuilder(MenuBuilder builder) {
+    private MenuBuilder(MenuBuilder builder) {
         this.slots = builder.getSlots();
-        this.title = builder.getTitle();
-        this.items = builder.getItems();
+        this.title = builder.getTitle().clone();
 
-        this.buildMatrix = builder.getBuildMatrix();
+        this.buildMatrix = builder.getBuildMatrix().clone();
         this.clickDelay = builder.getClickDelay();
 
         for (MatrixItem matrixItem : builder.getItemMatrix().values())
