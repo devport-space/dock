@@ -3,7 +3,6 @@ package space.devport.utils.economy;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import space.devport.utils.DevportManager;
 import space.devport.utils.DevportPlugin;
@@ -20,32 +19,41 @@ public class EconomyManager extends DevportManager {
     }
 
     @Override
+    public void preEnable() {
+        setupEconomy();
+    }
+
+    @Override
     public void afterDependencyLoad() {
         setupEconomy();
     }
 
+    public boolean isHooked() {
+        return economy != null;
+    }
+
     private void setupEconomy() {
 
-        if (DependencyUtil.isInstalled("Vault")) {
-            if (economy != null)
+        if (DependencyUtil.isInstalled("Vault") && economy != null) {
+            return;
+        }
+
+        if (!DependencyUtil.isInstalled("Vault")) {
+            if (economy != null) {
                 this.economy = null;
+                log.warning("Vault has been uninstalled.");
+            }
             return;
         }
 
         RegisteredServiceProvider<Economy> rsp = plugin.getServer().getServicesManager().getRegistration(Economy.class);
 
         if (rsp == null) {
-            if (economy != null)
-                this.economy = null;
-
-            log.info("Found Vault, but no economy manager.");
+            log.info("Found &eVault&7, but no economy manager.");
             return;
         }
 
-        if (economy != null)
-            return;
-
         this.economy = rsp.getProvider();
-        log.info("Found Vault, using it's economy.");
+        log.info("Found &eVault&7, using it's economy.");
     }
 }
