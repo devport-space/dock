@@ -112,12 +112,12 @@ public abstract class MainCommand extends AbstractCommand {
 
     private Message constructHelp(CommandSender sender, String label) {
 
-        Message help = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Header") : Message.of(header)).parseWith(plugin.getGlobalPlaceholders());
+        Message help = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Header") : Message.of(header)).parseWith(plugin.obtainPlaceholders());
 
         String lineFormat = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Sub-Command-Line").color().toString() : getLineFormat());
 
         Placeholders commandParams = new Placeholders()
-                .copy(plugin.getGlobalPlaceholders())
+                .copy(plugin.obtainPlaceholders())
                 .add("%label%", label);
 
         String usage = getUsage().parseWith(commandParams).color().toString();

@@ -9,6 +9,7 @@ import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.menu.item.MatrixItem;
 import space.devport.utils.menu.item.MenuItem;
 import space.devport.utils.text.Placeholders;
+import space.devport.utils.text.StringUtil;
 import space.devport.utils.text.message.CachedMessage;
 
 import java.util.HashMap;
@@ -96,7 +97,7 @@ public class MenuBuilder implements Cloneable {
 
         // Title
 
-        String title = placeholders.parse(this.title.color().toString());
+        String title = StringUtil.color(placeholders.parse(this.title.toString()));
         this.title.pull();
 
         if (title.length() > 32) {

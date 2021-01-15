@@ -10,6 +10,8 @@ import space.devport.utils.callbacks.CallbackContent;
 import space.devport.utils.callbacks.ExceptionCallback;
 import space.devport.utils.item.data.Amount;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -326,5 +328,14 @@ public class ParseUtil {
      */
     public <T> T parseNotNull(@NotNull Supplier<T> supplier) {
         return parseNotNull(supplier, null, null);
+    }
+
+    public double roundDouble(double value, int places) {
+        if (places < 0)
+            throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }

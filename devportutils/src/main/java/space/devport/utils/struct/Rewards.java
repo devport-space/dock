@@ -16,6 +16,7 @@ import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
 import space.devport.utils.utility.DependencyUtil;
+import space.devport.utils.utility.ParseUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class Rewards implements Cloneable {
     // Reward a player
     public void give(@Nullable Player player, boolean... broadcast) {
 
-        placeholders.copy(plugin.getGlobalPlaceholders());
+        placeholders.copy(plugin.obtainPlaceholders());
 
         if (player != null) {
             placeholders.addContext(new Context().fromPlayer(player));

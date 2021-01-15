@@ -31,6 +31,10 @@ public class Amount {
     @Setter
     private boolean fixed;
 
+    @Getter
+    @Setter
+    private int decimalPlaces = 2;
+
     /**
      * Constructor with a low and high.
      *
@@ -92,7 +96,7 @@ public class Amount {
     }
 
     public double getDouble() {
-        return fixed ? fixedValue : (random.nextDouble() * highValue) + lowValue;
+        return ParseUtil.roundDouble(fixed ? fixedValue : (random.nextDouble() * highValue) + lowValue, decimalPlaces);
     }
 
     public String toString() {

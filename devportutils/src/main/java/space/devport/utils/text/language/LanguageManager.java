@@ -118,7 +118,7 @@ public class LanguageManager extends DevportManager {
     @NotNull
     public Message get(@Nullable String path) {
         Message message = Message.of(cache.get(path));
-        message.parseWith(plugin.getGlobalPlaceholders());
+        message.parseWith(plugin.obtainPlaceholders());
         return message;
     }
 
