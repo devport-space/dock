@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import lombok.Getter;
 import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,18 +27,24 @@ import java.util.concurrent.CompletionException;
 @Log
 public class GsonHelper {
 
-    private final Gson gson;
+    private Gson gson;
+
+    @Getter
+    private final GsonBuilder builder;
 
     public GsonHelper(boolean prettyPrinting) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        if (prettyPrinting)
-            gsonBuilder.setPrettyPrinting();
+        this.builder = new GsonBuilder();
 
-        this.gson = gsonBuilder.create();
+        if (prettyPrinting)
+            builder.setPrettyPrinting();
     }
 
     public GsonHelper() {
         this(false);
+    }
+
+    public void build() {
+        this.gson = builder.create();
     }
 
     public static <T> Type mapList(@NotNull Class<T> innerType) {
