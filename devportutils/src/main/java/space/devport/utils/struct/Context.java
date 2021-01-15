@@ -58,18 +58,19 @@ public class Context {
     }
 
     public Context add(Object object) {
-        this.values.put(object.getClass(), object);
+        if (object != null)
+            this.values.put(object.getClass(), object);
         return this;
     }
 
     public Context add(Collection<Object> objects) {
-        objects.forEach(o -> values.put(o.getClass(), o));
+        objects.forEach(this::add);
         return this;
     }
 
     public Context add(Object... objects) {
         for (Object o : objects)
-            this.values.put(o.getClass(), o);
+            add(o);
         return this;
     }
 
