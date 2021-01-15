@@ -3,6 +3,7 @@ package space.devport.utils.struct;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import me.realized.tokenmanager.TokenManagerPlugin;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -86,10 +87,10 @@ public class Rewards implements Cloneable {
             placeholders.addContext(new Context().fromPlayer(player));
 
             // Tokens - TokenManager
-            giveTokens(player);
+            placeholders.add("%rewards_tokens%", giveTokens(player));
 
             // Money - Vault
-            giveMoney(player);
+            placeholders.add("%rewards_money%", giveMoney(player));
 
             // Items
             giveItems(player);
@@ -112,20 +113,30 @@ public class Rewards implements Cloneable {
         broadcast.pull();
     }
 
-    public void giveTokens(@Nullable Player player) {
-        if (player == null) return;
+    public double giveTokens(@Nullable Player player) {
+        if (player == null)
+            return 0;
 
         int tokens = this.tokens.getInt();
-        if (tokens != 0 && DependencyUtil.isEnabled("TokenManager"))
-            TokenManagerPlugin.getInstance().addTokens(player, tokens);
+        if (tokens != 0 && DependencyUtil.isEnabled("TokenManager")) {
+            if (TokenManagerPlugin.getInstance().addTokens(player, tokens))
+                return tokens;
+        }
+        return 0;
     }
 
-    public void giveMoney(@Nullable Player player) {
-        if (player == null) return;
+    public double giveMoney(@Nullable Player player) {
+        if (player == null)
+            return 0;
 
         double money = this.money.getDouble();
-        if (money != 0 && DependencyUtil.isEnabled("Vault") && plugin.isRegistered(EconomyManager.class))
-            plugin.getManager(EconomyManager.class).getEconomy().depositPlayer(player, money);
+        if (money != 0 && DependencyUtil.isEnabled("Vault") && plugin.isRegistered(EconomyManager.class)) {
+            EconomyResponse response = plugin.getManager(EconomyManager.class).getEconomy().depositPlayer(player, money);
+            if (response.transactionSuccess()) {
+                return money;
+            }
+        }
+        return 0;
     }
 
     public void giveItems(@Nullable Player player) {
