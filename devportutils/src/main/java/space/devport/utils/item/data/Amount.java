@@ -10,7 +10,7 @@ import space.devport.utils.utility.ParseUtil;
 import java.util.Random;
 
 @Log
-public class Amount {
+public class Amount implements Cloneable {
 
     private final transient Random random = new Random();
 
@@ -105,5 +105,11 @@ public class Amount {
 
     public boolean isEmpty() {
         return fixed ? fixedValue == 0 : lowValue == 0 && highValue == 0;
+    }
+
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public Amount clone() {
+        return new Amount(this);
     }
 }

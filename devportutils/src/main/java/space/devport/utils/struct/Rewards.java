@@ -62,9 +62,14 @@ public class Rewards implements Cloneable {
     public Rewards(Rewards rewards) {
         if (rewards == null) return;
 
-        this.tokens = rewards.getTokens();
-        this.money = rewards.getMoney();
-        this.items = new ArrayList<>(rewards.getItems());
+        if (rewards.getTokens() != null)
+            this.tokens = rewards.getTokens().clone();
+        if (rewards.getMoney() != null)
+            this.money = rewards.getMoney().clone();
+
+        for (ItemPrefab prefab : rewards.getItems())
+            addItem(prefab.clone());
+
         this.inform = new CachedMessage(rewards.getInform());
         this.broadcast = new CachedMessage(rewards.getBroadcast());
         this.commands = new ArrayList<>(rewards.getCommands());
