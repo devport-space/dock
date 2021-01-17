@@ -167,7 +167,7 @@ public class StringUtil {
     public String join(String delimiter, Object... params) {
         return Arrays.stream(params)
                 .map(String::valueOf)
-                .filter(Strings::isNullOrEmpty)
+                .filter(string -> !Strings.isNullOrEmpty(string))
                 .collect(Collectors.joining(delimiter));
     }
 }
