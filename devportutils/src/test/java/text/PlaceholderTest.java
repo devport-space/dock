@@ -1,3 +1,5 @@
+package text;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;

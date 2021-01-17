@@ -16,7 +16,7 @@ import space.devport.utils.text.StringUtil;
 @UtilityClass
 public class LocationUtil {
 
-    public final String LOCATION_DELIMITER = ";";
+    public static final String LOCATION_DELIMITER = ";";
 
     /**
      * Parses a location to string using the default location delimiter.
@@ -53,14 +53,14 @@ public class LocationUtil {
     public String composeString(Location location, String delimiter, @Nullable ExceptionCallback callback) {
 
         if (delimiter == null) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(new IllegalArgumentException("Delimiter cannot be null."), "delimiter"));
+            CallbackContent.createNew(new IllegalArgumentException("Delimiter cannot be null."), "delimiter")
+                    .callOrThrow(callback);
             return null;
         }
 
         if (location == null) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(new IllegalArgumentException("Location cannot be null."), "location"));
+            CallbackContent.createNew(new IllegalArgumentException("Location cannot be null."), "location")
+                    .callOrThrow(callback);
             return null;
         }
 
@@ -116,22 +116,23 @@ public class LocationUtil {
     public Location parseLocation(@Nullable String str, @Nullable String delimiter, boolean useWorld, ExceptionCallback callback) {
 
         if (Strings.isNullOrEmpty(str)) {
-            callback.call(CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null."),
-                    "input", str));
+            CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null."), "input", str)
+                    .callOrThrow(callback);
             return null;
         }
 
         if (Strings.isNullOrEmpty(delimiter)) {
-            callback.call(CallbackContent.createNew(new IllegalArgumentException("Delimiter cannot be null."),
-                    "delimiter", delimiter));
+            CallbackContent.createNew(new IllegalArgumentException("Delimiter cannot be null."), "delimiter", delimiter)
+                    .callOrThrow(callback);
             return null;
         }
 
         String[] arr = str.split(delimiter);
 
         if (arr.length < 4) {
-            callback.call(CallbackContent.createNew(new IllegalArgumentException("Not enough arguments."),
-                    "input", str));
+            CallbackContent.createNew(new IllegalArgumentException("Not enough arguments."),
+                    "input", str)
+                    .callOrThrow(callback);
             return null;
         }
 
@@ -141,7 +142,7 @@ public class LocationUtil {
                     Double.parseDouble(arr[2]),
                     Double.parseDouble(arr[3]));
         } catch (NumberFormatException | NullPointerException e) {
-            callback.call(CallbackContent.createNew(e, "input", str));
+            CallbackContent.createNew(e, "input", str).callOrThrow(callback);
         }
 
         return null;

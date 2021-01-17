@@ -1,3 +1,5 @@
+package util;
+
 import org.bukkit.util.Vector;
 import org.junit.Test;
 import space.devport.utils.callbacks.ExceptionCallback;

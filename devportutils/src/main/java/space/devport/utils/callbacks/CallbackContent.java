@@ -2,6 +2,8 @@ package space.devport.utils.callbacks;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import space.devport.utils.callbacks.exception.CallbackException;
 
 public class CallbackContent {
 
@@ -28,6 +30,24 @@ public class CallbackContent {
 
     public static CallbackContent createNew(Throwable throwable) {
         return new CallbackContent(throwable, null, null);
+    }
+
+    public void callOrThrow(@Nullable ExceptionCallback callback) {
+        if (callback == null)
+            try {
+                throw new CallbackException(this);
+            } catch (CallbackException e) {
+                e.printStackTrace();
+            }
+        else callback.call(this);
+    }
+
+    public String getInputRaw() {
+        return input;
+    }
+
+    public String getVariableRaw() {
+        return variable;
     }
 
     @NotNull

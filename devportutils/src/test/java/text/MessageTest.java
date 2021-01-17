@@ -1,3 +1,5 @@
+package text;
+
 import org.junit.Test;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
