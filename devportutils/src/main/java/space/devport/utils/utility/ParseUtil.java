@@ -49,8 +49,7 @@ public class ParseUtil {
         try {
             return E.valueOf(clazz, input.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException e) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(e, "input", input));
+            CallbackContent.createNew(e, "input", input).callOrThrow(callback);
             return defaultValue;
         }
     }
@@ -71,9 +70,8 @@ public class ParseUtil {
     public static Object parseNumber(String input, @Nullable ExceptionCallback callback) {
 
         if (Strings.isNullOrEmpty(input)) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."),
-                        "input", input));
+            CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."), "input", input)
+                    .callOrThrow(callback);
             return input;
         }
 
@@ -124,8 +122,7 @@ public class ParseUtil {
         try {
             return Double.parseDouble(str.trim());
         } catch (NumberFormatException | NullPointerException e) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(e, "input", str));
+            CallbackContent.createNew(e, "input", str).callOrThrow(callback);
             return defaultValue;
         }
     }
@@ -148,8 +145,7 @@ public class ParseUtil {
         try {
             return Integer.parseInt(str.trim());
         } catch (NumberFormatException | NullPointerException e) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(e, "input", str));
+            CallbackContent.createNew(e, "input", str).callOrThrow(callback);
             return defaultValue;
         }
     }
@@ -169,18 +165,16 @@ public class ParseUtil {
     public Vector parseVector(String str, @Nullable Vector defaultValue, @Nullable ExceptionCallback callback) {
 
         if (Strings.isNullOrEmpty(str)) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."),
-                        "input", str));
+            CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."), "input", str)
+                    .callOrThrow(callback);
             return defaultValue;
         }
 
         String[] arr = str.split(";");
 
         if (arr.length != 3) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(new IllegalArgumentException("Not enough arguments."),
-                        "input", str));
+            CallbackContent.createNew(new IllegalArgumentException("Not enough arguments."), "input", str)
+                    .callOrThrow(callback);
             return defaultValue;
         }
 
@@ -211,8 +205,7 @@ public class ParseUtil {
         try {
             return supplier.get();
         } catch (Exception e) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(e));
+            CallbackContent.createNew(e).callOrThrow(callback);
             return defaultValue;
         }
     }
@@ -281,8 +274,7 @@ public class ParseUtil {
             T t = supplier.get();
             return t == null ? defaultValue : t;
         } catch (Exception e) {
-            if (callback != null)
-                callback.call(CallbackContent.createNew(e));
+            CallbackContent.createNew(e).callOrThrow(callback);
             return defaultValue;
         }
     }
@@ -331,11 +323,16 @@ public class ParseUtil {
     }
 
     public double roundDouble(double value, int places) {
-        if (places < 0)
-            throw new IllegalArgumentException();
+        return roundDouble(value, places, null);
+    }
 
-        BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
+    public double roundDouble(double value, int places, @Nullable ExceptionCallback callback) {
+        if (places < 0) {
+            CallbackContent.createNew(new IllegalArgumentException("Decimal places cannot be null.")).callOrThrow(callback);
+            return value;
+        }
+
+        BigDecimal decimal = BigDecimal.valueOf(value);
+        return decimal.setScale(places, RoundingMode.HALF_UP).doubleValue();
     }
 }
