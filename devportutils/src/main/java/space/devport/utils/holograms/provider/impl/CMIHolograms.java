@@ -37,7 +37,7 @@ public class CMIHolograms extends HologramProvider {
         CMILocation cmiLocation = new CMILocation(location);
         CMIHologram hologram = new CMIHologram(id, cmiLocation);
 
-        registeredHolograms.add(id);
+        super.addHologram(id, location);
 
         hologram.setSaveToFile(true);
         hologram.setLines(content);
@@ -52,7 +52,7 @@ public class CMIHolograms extends HologramProvider {
         CMILocation cmiLocation = new CMILocation(location);
         CMIHologram hologram = new CMIHologram(id, cmiLocation);
 
-        registeredHolograms.add(id);
+        super.addHologram(id, location);
         hologram.setLines(Collections.singletonList(String.format("SICON:%s", item.getType().toString())));
         hologramManager.addHologram(hologram);
         hologram.update();
@@ -68,7 +68,7 @@ public class CMIHolograms extends HologramProvider {
     public void createAnimatedItem(String id, Location location, ItemStack item, int delay) {
         CMILocation cmiLocation = new CMILocation(location);
         CMIHologram hologram = new CMIHologram(id, cmiLocation);
-        registeredHolograms.add(id);
+        super.addHologram(id, location);
         hologram.setLines(Collections.singletonList(String.format("ICON:%s", item.getType().toString())));
         hologramManager.addHologram(hologram);
         hologram.update();
@@ -79,7 +79,7 @@ public class CMIHolograms extends HologramProvider {
     public void deleteHologram(String id) {
         if (!exists(id)) return;
 
-        registeredHolograms.remove(id);
+        super.removeHologram(id);
         hologramManager.removeHolo(hologramManager.getByName(id));
         hologramManager.save();
     }

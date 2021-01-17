@@ -42,7 +42,9 @@ public class Holograms extends HologramProvider {
 
     @Override
     public Location getLocation(String id) {
-        if (!registeredHolograms.contains(id)) return null;
+        if (!super.hasHologram(id))
+            return null;
+
         Hologram hologram = hologramManager.getHologram(id);
         return hologram != null ? hologram.getLocation().clone() : null;
     }
@@ -50,7 +52,8 @@ public class Holograms extends HologramProvider {
     @Override
     public void createHologram(String id, Location location, List<String> content) {
         Hologram hologram = new Hologram(id, location, true);
-        registeredHolograms.add(id);
+        super.addHologram(id, location);
+
         for (String s : content) {
             hologram.addLine(new TextLine(hologram, s));
         }
@@ -61,7 +64,7 @@ public class Holograms extends HologramProvider {
     @Override
     public void createItemHologram(String id, Location location, ItemStack item) {
         Hologram hologram = new Hologram(id, location, true);
-        registeredHolograms.add(id);
+        super.addHologram(id, location);
         hologram.addLine(new ItemLine(hologram, item));
         hologramManager.addActiveHologram(hologram);
         hologram.spawn();
@@ -70,7 +73,7 @@ public class Holograms extends HologramProvider {
     @Override
     public void createAnimatedHologram(String id, Location location, List<String> content, int delay) {
         Hologram hologram = new Hologram(id, location, true);
-        registeredHolograms.add(id);
+        super.addHologram(id, location);
         hologram.addLine(new AnimatedTextLine(hologram, new TextAnimation(content), delay));
         hologramManager.addActiveHologram(hologram);
         hologram.spawn();
@@ -79,7 +82,7 @@ public class Holograms extends HologramProvider {
     @Override
     public void createAnimatedItem(String id, Location location, ItemStack item, int delay) {
         Hologram hologram = new Hologram(id, location, true);
-        registeredHolograms.add(id);
+        super.addHologram(id, location);
         hologram.addLine(new AnimatedItemLine(hologram, new ItemAnimation(item), delay));
         hologramManager.addActiveHologram(hologram);
         hologram.spawn();
@@ -87,15 +90,15 @@ public class Holograms extends HologramProvider {
 
     @Override
     public void deleteHologram(String id) {
-        if (!registeredHolograms.contains(id) || hologramManager.getHologram(id) == null) return;
+        if (!super.hasHologram(id) || hologramManager.getHologram(id) == null) return;
 
-        registeredHolograms.remove(id);
+        super.removeHologram(id);
         hologramManager.deleteHologram(hologramManager.getHologram(id));
     }
 
     @Override
     public void updateHologram(String id, List<String> newContent) {
-        if (!registeredHolograms.contains(id)) return;
+        if (!super.hasHologram(id)) return;
 
         Location location = hologramManager.getHologram(id).getLocation();
         deleteHologram(id);
@@ -104,14 +107,14 @@ public class Holograms extends HologramProvider {
 
     @Override
     public void moveHologram(String id, Location newLocation) {
-        if (!registeredHolograms.contains(id)) return;
+        if (!super.hasHologram(id)) return;
 
         hologramManager.getHologram(id).teleport(newLocation);
     }
 
     @Override
     public void updateItemHologram(String id, ItemStack item) {
-        if (!registeredHolograms.contains(id)) return;
+        if (!super.hasHologram(id)) return;
 
         Location location = hologramManager.getHologram(id).getLocation();
         deleteHologram(id);
@@ -120,7 +123,7 @@ public class Holograms extends HologramProvider {
 
     @Override
     public void updateAnimatedHologram(String id, List<String> newContent, int delay) {
-        if (!registeredHolograms.contains(id)) return;
+        if (!super.hasHologram(id)) return;
 
         Location location = hologramManager.getHologram(id).getLocation();
         deleteHologram(id);
@@ -129,7 +132,7 @@ public class Holograms extends HologramProvider {
 
     @Override
     public void updateAnimatedItem(String id, ItemStack item, int delay) {
-        if (!registeredHolograms.contains(id)) return;
+        if (!super.hasHologram(id)) return;
 
         Location location = hologramManager.getHologram(id).getLocation();
         deleteHologram(id);

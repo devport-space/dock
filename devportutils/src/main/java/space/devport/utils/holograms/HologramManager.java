@@ -23,9 +23,6 @@ public class HologramManager extends DevportManager {
     @Getter
     private HologramProvider hologramProvider = null;
 
-    @Getter
-    private boolean hooked = false;
-
     public HologramManager(DevportPlugin plugin) {
         super(plugin);
     }
@@ -38,6 +35,10 @@ public class HologramManager extends DevportManager {
     @Override
     public void afterDependencyLoad() {
         attemptHook();
+    }
+
+    public boolean isHooked() {
+        return hologramProvider != null;
     }
 
     @Override
@@ -57,29 +58,32 @@ public class HologramManager extends DevportManager {
 
     public void attemptHook() {
 
-        if (hooked) return;
+        if (hologramProvider != null)
+            return;
 
         if (DependencyUtil.isEnabled("Holograms")) {
             hologramProvider = new Holograms(plugin);
-            log.info("Using &aHolograms &7as the HologramsProvider.");
+            logUsing("Holograms");
         } else if (DependencyUtil.isEnabled("HolographicDisplays")) {
             hologramProvider = new HolographicDisplays(plugin);
-            log.info("Using &aHolographicDisplays &7as the HologramsProvider.");
+            logUsing("HolographicDisplays");
         } else if (DependencyUtil.isEnabled("CMI")) {
             hologramProvider = new CMIHolograms(plugin);
-            log.info("Using &aCMI &7as the HologramsProvider.");
+            logUsing("CMI");
         }
 
-        hooked = hologramProvider != null;
-
-        if (!hooked)
-            log.info("Found no HologramsProvider installed.");
+        if (!isHooked())
+            log.info("Found no holograms provider installed.");
         else hologramProvider.load();
     }
 
+    private void logUsing(String name) {
+        log.info(String.format("Using &a%s &7for holograms.", name));
+    }
+
     private boolean checkHooked() {
-        if (!hooked) {
-            log.log(DebugLevel.DEBUG, "There was a request for a hologram provider, but it's not registered.");
+        if (!isHooked()) {
+            log.log(DebugLevel.DEBUG, "There was a request for a holograms provider, but there's none registered.");
             return false;
         } else return true;
     }
@@ -150,9 +154,9 @@ public class HologramManager extends DevportManager {
         }
     }
 
-    public void removeAll() {
+    public void deleteAll() {
         if (checkHooked()) {
-            hologramProvider.removeAll();
+            hologramProvider.deleteAll();
         }
     }
 

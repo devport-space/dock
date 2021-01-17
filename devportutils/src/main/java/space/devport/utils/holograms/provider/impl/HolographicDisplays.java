@@ -33,9 +33,14 @@ public class HolographicDisplays extends HologramProvider {
 
     @Override
     public void addHologram(String id, Location location) {
+        Hologram hologram = HologramsAPI.getHolograms(plugin).stream()
+                .filter(h -> h.getLocation().equals(location))
+                .findAny().orElse(null);
+
+        if (hologram == null)
+            return;
+
         super.addHologram(id, location);
-        Hologram hologram = HologramsAPI.getHolograms(plugin).stream().filter(h -> h.getLocation().equals(location)).findAny().orElse(null);
-        if (hologram == null) return;
         holograms.put(id, hologram);
     }
 
@@ -46,7 +51,8 @@ public class HolographicDisplays extends HologramProvider {
     @Override
     public void createHologram(String id, Location location, List<String> content) {
         Hologram hologram = HologramsAPI.createHologram(plugin, location);
-        registeredHolograms.add(id);
+
+        super.addHologram(id, location);
         holograms.put(id, hologram);
 
         for (String s : content) {
@@ -57,7 +63,8 @@ public class HolographicDisplays extends HologramProvider {
     @Override
     public void createItemHologram(String id, Location location, ItemStack item) {
         Hologram hologram = HologramsAPI.createHologram(plugin, location);
-        registeredHolograms.add(id);
+
+        super.addHologram(id, location);
         holograms.put(id, hologram);
 
         hologram.appendItemLine(item);

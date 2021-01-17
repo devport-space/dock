@@ -1,6 +1,5 @@
 package space.devport.utils.holograms.provider;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
@@ -8,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.configuration.Configuration;
-import space.devport.utils.logging.DebugLevel;
 import space.devport.utils.utility.FastUUID;
 import space.devport.utils.utility.LocationUtil;
 
@@ -19,7 +17,8 @@ public abstract class HologramProvider {
 
     protected final DevportPlugin plugin;
 
-    protected final Set<String> registeredHolograms = new HashSet<>();
+    // Holograms that we registered. Saved into holograms.yml
+    private final Set<String> registeredHolograms = new HashSet<>();
 
     @Getter
     private final Configuration storage;
@@ -47,10 +46,6 @@ public abstract class HologramProvider {
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this::purgeNonexistent, 40);
     }
 
-    public void addHologram(String id, Location location) {
-        this.registeredHolograms.add(id);
-    }
-
     public void save() {
         storage.clear();
         purgeNonexistent();
@@ -75,11 +70,28 @@ public abstract class HologramProvider {
         storage.save();
     }
 
+    public void addHologram(String id, Location location) {
+        if (exists(id))
+            this.registeredHolograms.add(id);
+    }
+
+    public void removeHologram(String id) {
+        registeredHolograms.remove(id);
+    }
+
+    public boolean hasHologram(String id) {
+        return registeredHolograms.contains(id);
+    }
+
+    public void deleteAll() {
+        for (String id : getHolograms()) {
+            deleteHologram(id);
+        }
+    }
+
     private String nextId() {
         return FastUUID.toString(UUID.randomUUID()).split("-")[0];
     }
-
-    public abstract Location getLocation(String id);
 
     private void purgeNonexistent() {
         this.registeredHolograms.removeIf(id -> !exists(id));
@@ -89,6 +101,8 @@ public abstract class HologramProvider {
         purgeNonexistent();
         return Collections.unmodifiableSet(registeredHolograms);
     }
+
+    public abstract Location getLocation(String id);
 
     public abstract boolean exists(String id);
 
@@ -127,10 +141,4 @@ public abstract class HologramProvider {
     public abstract void updateAnimatedHologram(String id, List<String> newContent, int delay);
 
     public abstract void updateAnimatedItem(String id, ItemStack item, int delay);
-
-    public void removeAll() {
-        for (String id : getHolograms()) {
-            deleteHologram(id);
-        }
-    }
 }
