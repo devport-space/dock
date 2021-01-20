@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.callbacks.ExceptionCallback;
 import space.devport.utils.utility.ParseUtil;
 
 import java.util.HashSet;
@@ -46,6 +47,7 @@ public class Enchant {
     @NotNull
     public static Set<Enchant> from(@Nullable ItemMeta meta) {
         Set<Enchant> enchants = new HashSet<>();
+
         if (meta == null)
             return enchants;
 
@@ -54,10 +56,10 @@ public class Enchant {
             if (entry.getKey() == null || entry.getValue() == null)
                 continue;
 
-            XEnchantment enchantment = ParseUtil.parse(() -> XEnchantment.matchXEnchantment(entry.getKey()));
+            XEnchantment enchantment = parseEnchantment(entry.getKey());
 
             if (enchantment == null)
-                continue; // Enchantment is not supported.
+                continue;
 
             Enchant enchant = new Enchant(enchantment, entry.getValue());
             enchants.add(enchant);
@@ -78,14 +80,26 @@ public class Enchant {
         return from(meta);
     }
 
+    private static XEnchantment parseEnchantment(Enchantment enchantment) {
+        return enchantment == null ? null : ParseUtil.parseHandled(() -> XEnchantment.matchXEnchantment(enchantment), ExceptionCallback.IGNORE);
+    }
+
+    public static Enchant of(XEnchantment xEnchantment, int level) {
+        return xEnchantment == null ? null : new Enchant(xEnchantment, level);
+    }
+
+    public static Enchant of(XEnchantment xEnchantment, Amount amount) {
+        return xEnchantment == null ? null : new Enchant(xEnchantment, amount);
+    }
+
     @Contract("null,_ -> null")
     public static Enchant of(Enchantment enchantment, int level) {
-        return enchantment == null ? null : new Enchant(XEnchantment.matchXEnchantment(enchantment), level);
+        return of(parseEnchantment(enchantment), level);
     }
 
     @Contract("null,_ -> null")
     public static Enchant of(Enchantment enchantment, Amount level) {
-        return enchantment == null ? null : new Enchant(XEnchantment.matchXEnchantment(enchantment), level);
+        return of(parseEnchantment(enchantment), level);
     }
 
     public void apply(@NotNull ItemStack item) {

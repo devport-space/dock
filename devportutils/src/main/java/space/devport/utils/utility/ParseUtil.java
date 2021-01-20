@@ -21,17 +21,17 @@ public class ParseUtil {
     @Nullable
     @Contract("null,_ -> null")
     public <E extends Enum<E>> E parseEnum(String input, Class<E> clazz) {
-        return parseEnum(input, clazz, null, null);
+        return parseEnumHandled(input, clazz, null, null);
     }
 
     @Contract("null,_,_ -> null")
-    public <E extends Enum<E>> E parseEnum(String input, Class<E> clazz, @Nullable ExceptionCallback callback) {
-        return parseEnum(input, clazz, null, callback);
+    public <E extends Enum<E>> E parseEnumHandled(String input, Class<E> clazz, @Nullable ExceptionCallback callback) {
+        return parseEnumHandled(input, clazz, null, callback);
     }
 
     @Contract("null,_,_ -> param3")
     public <E extends Enum<E>> E parseEnum(String input, Class<E> clazz, E defaultValue) {
-        return parseEnum(input, clazz, defaultValue, null);
+        return parseEnumHandled(input, clazz, defaultValue, null);
     }
 
     /**
@@ -45,7 +45,7 @@ public class ParseUtil {
      * @return Parsed enum of {@code <E>} or defaultValue.
      */
     @Contract("null,_,null,_ -> null")
-    public <E extends Enum<E>> E parseEnum(String input, Class<E> clazz, @Nullable E defaultValue, @Nullable ExceptionCallback callback) {
+    public <E extends Enum<E>> E parseEnumHandled(String input, Class<E> clazz, @Nullable E defaultValue, @Nullable ExceptionCallback callback) {
         try {
             return E.valueOf(clazz, input.toUpperCase());
         } catch (IllegalArgumentException | NullPointerException e) {
@@ -56,7 +56,7 @@ public class ParseUtil {
 
     @Contract("null -> null")
     public static Object parseNumber(String str) {
-        return parseNumber(str, null);
+        return parseNumberHandled(str, null);
     }
 
     /**
@@ -67,7 +67,7 @@ public class ParseUtil {
      * @return Parsed object or input if the input is {@code null} or empty.
      */
     @Contract("null,_ -> null")
-    public static Object parseNumber(String input, @Nullable ExceptionCallback callback) {
+    public static Object parseNumberHandled(String input, @Nullable ExceptionCallback callback) {
 
         if (Strings.isNullOrEmpty(input)) {
             CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."), "input", input)
@@ -105,20 +105,20 @@ public class ParseUtil {
     }
 
     public double parseDouble(String str) {
-        return parseDouble(str, 0, null);
+        return parseDoubleHandled(str, 0, null);
     }
 
-    public double parseDouble(String str, @Nullable ExceptionCallback callback) {
-        return parseDouble(str, 0, callback);
+    public double parseDoubleHandled(String str, @Nullable ExceptionCallback callback) {
+        return parseDoubleHandled(str, 0, callback);
     }
 
     @Contract("null,_ -> param2")
     public double parseDouble(String str, double defaultValue) {
-        return parseDouble(str, defaultValue, null);
+        return parseDoubleHandled(str, defaultValue, null);
     }
 
     @Contract("null,_,_ -> param2")
-    public double parseDouble(String str, double defaultValue, @Nullable ExceptionCallback callback) {
+    public double parseDoubleHandled(String str, double defaultValue, @Nullable ExceptionCallback callback) {
         try {
             return Double.parseDouble(str.trim());
         } catch (NumberFormatException | NullPointerException e) {
@@ -128,20 +128,20 @@ public class ParseUtil {
     }
 
     public int parseInteger(String str) {
-        return parseInteger(str, 0, null);
+        return parseIntegerHandled(str, 0, null);
     }
 
-    public int parseInteger(String str, @Nullable ExceptionCallback callback) {
-        return parseInteger(str, 0, callback);
+    public int parseIntegerHandled(String str, @Nullable ExceptionCallback callback) {
+        return parseIntegerHandled(str, 0, callback);
     }
 
     @Contract("null,_ -> param2")
     public int parseInteger(String str, int defaultValue) {
-        return parseInteger(str, defaultValue, null);
+        return parseIntegerHandled(str, defaultValue, null);
     }
 
     @Contract("null,_,_ -> param2")
-    public int parseInteger(String str, int defaultValue, @Nullable ExceptionCallback callback) {
+    public int parseIntegerHandled(String str, int defaultValue, @Nullable ExceptionCallback callback) {
         try {
             return Integer.parseInt(str.trim());
         } catch (NumberFormatException | NullPointerException e) {
@@ -152,17 +152,17 @@ public class ParseUtil {
 
     @Contract("null -> null")
     public Vector parseVector(String str) {
-        return parseVector(str, null, null);
+        return parseVectorHandled(str, null, null);
     }
 
     @Contract("null,null -> null")
     public Vector parseVector(String str, Vector defaultValue) {
-        return parseVector(str, defaultValue, null);
+        return parseVectorHandled(str, defaultValue, null);
     }
 
     //TODO: Parse vectors with negative numbers.
     @Contract("null,null,_ -> null")
-    public Vector parseVector(String str, @Nullable Vector defaultValue, @Nullable ExceptionCallback callback) {
+    public Vector parseVectorHandled(String str, @Nullable Vector defaultValue, @Nullable ExceptionCallback callback) {
 
         if (Strings.isNullOrEmpty(str)) {
             CallbackContent.createNew(new IllegalArgumentException("Input string cannot be null or empty."), "input", str)
@@ -199,7 +199,7 @@ public class ParseUtil {
      * @param callback     {@link ExceptionCallback} to run on failure.
      * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
      */
-    public <T> T parse(@NotNull Supplier<T> supplier, @Nullable T defaultValue, @Nullable ExceptionCallback callback) {
+    public <T> T parseHandled(@NotNull Supplier<T> supplier, @Nullable T defaultValue, @Nullable ExceptionCallback callback) {
         Objects.requireNonNull(supplier);
 
         try {
@@ -221,7 +221,7 @@ public class ParseUtil {
      * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
      */
     public <T> T parse(@NotNull Supplier<T> supplier, T defaultValue) {
-        return parse(supplier, defaultValue, null);
+        return parseHandled(supplier, defaultValue, null);
     }
 
     /**
@@ -235,8 +235,8 @@ public class ParseUtil {
      * @param callback {@link ExceptionCallback} to run on failure.
      * @return Supplied value via {@code Supplier<T>} or {@code null}.
      */
-    public <T> T parse(@NotNull Supplier<T> supplier, ExceptionCallback callback) {
-        return parse(supplier, null, callback);
+    public <T> T parseHandled(@NotNull Supplier<T> supplier, ExceptionCallback callback) {
+        return parseHandled(supplier, null, callback);
     }
 
     /**
@@ -250,7 +250,7 @@ public class ParseUtil {
      * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
      */
     public <T> T parse(@NotNull Supplier<T> supplier) {
-        return parse(supplier, null, null);
+        return parseHandled(supplier, null, null);
     }
 
     /**
@@ -267,7 +267,7 @@ public class ParseUtil {
      * @param callback     {@link ExceptionCallback} to run on failure.
      * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
      */
-    public <T> T parseNotNull(@NotNull Supplier<T> supplier, @Nullable T defaultValue, @Nullable ExceptionCallback callback) {
+    public <T> T parseNotNullHandled(@NotNull Supplier<T> supplier, @Nullable T defaultValue, @Nullable ExceptionCallback callback) {
         Objects.requireNonNull(supplier);
 
         try {
@@ -290,7 +290,7 @@ public class ParseUtil {
      * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
      */
     public <T> T parseNotNull(@NotNull Supplier<T> supplier, T defaultValue) {
-        return parseNotNull(supplier, defaultValue, null);
+        return parseNotNullHandled(supplier, defaultValue, null);
     }
 
     /**
@@ -304,8 +304,8 @@ public class ParseUtil {
      * @param callback {@link ExceptionCallback} to run on failure.
      * @return Supplied value via {@code Supplier<T>} or {@code null}.
      */
-    public <T> T parseNotNull(@NotNull Supplier<T> supplier, ExceptionCallback callback) {
-        return parseNotNull(supplier, null, callback);
+    public <T> T parseNotNullHandled(@NotNull Supplier<T> supplier, ExceptionCallback callback) {
+        return parseNotNullHandled(supplier, null, callback);
     }
 
     /**
@@ -319,14 +319,14 @@ public class ParseUtil {
      * @return Supplied value via {@code Supplier<T>} or defaultValue specified.
      */
     public <T> T parseNotNull(@NotNull Supplier<T> supplier) {
-        return parseNotNull(supplier, null, null);
+        return parseNotNullHandled(supplier, null, null);
     }
 
     public double roundDouble(double value, int places) {
-        return roundDouble(value, places, null);
+        return roundDoubleHandled(value, places, null);
     }
 
-    public double roundDouble(double value, int places, @Nullable ExceptionCallback callback) {
+    public double roundDoubleHandled(double value, int places, @Nullable ExceptionCallback callback) {
         if (places < 0) {
             CallbackContent.createNew(new IllegalArgumentException("Decimal places cannot be null.")).callOrThrow(callback);
             return value;

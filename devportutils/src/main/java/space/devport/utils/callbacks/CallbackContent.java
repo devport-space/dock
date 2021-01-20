@@ -4,10 +4,11 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.callbacks.exception.CallbackException;
+import space.devport.utils.text.StringUtil;
 
 public class CallbackContent {
 
-    private final String input;
+    private final Object input;
     @Getter
     private final Throwable throwable;
     private final String variable;
@@ -42,7 +43,7 @@ public class CallbackContent {
         else callback.call(this);
     }
 
-    public String getInputRaw() {
+    public Object getInputRaw() {
         return input;
     }
 
@@ -52,7 +53,7 @@ public class CallbackContent {
 
     @NotNull
     public String getInput() {
-        return String.valueOf(input);
+        return StringUtil.valueOfEmpty(input);
     }
 
     @NotNull

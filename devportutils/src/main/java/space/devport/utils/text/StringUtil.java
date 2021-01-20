@@ -170,4 +170,9 @@ public class StringUtil {
                 .filter(string -> !Strings.isNullOrEmpty(string))
                 .collect(Collectors.joining(delimiter));
     }
+
+    public String valueOfEmpty(Object obj) {
+        String str = String.valueOf(obj);
+        return str.isEmpty() ? "'empty'" : str;
+    }
 }
