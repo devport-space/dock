@@ -237,7 +237,7 @@ public class Message implements Cloneable {
     @Contract("null -> null")
     @Nullable
     public String toString(@Nullable String delimiter) {
-        return StringUtil.listToString(content, delimiter);
+        return StringUtil.join(content, delimiter);
     }
 
     /**
@@ -250,7 +250,7 @@ public class Message implements Cloneable {
      */
     @Override
     public String toString() {
-        return StringUtil.listToString(content, "\n");
+        return StringUtil.join(content, "\n");
     }
 
     /*

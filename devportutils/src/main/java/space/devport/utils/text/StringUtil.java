@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Utility class for String operations.
  *
- * @author Devport Team
+ * @author qwz
  */
 @UtilityClass
 public class StringUtil {
@@ -30,13 +30,14 @@ public class StringUtil {
     public final List<ChatColor> DISTINCT_CHAT_COLORS = Arrays.asList(ChatColor.AQUA, ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.DARK_BLUE,
             ChatColor.DARK_GREEN, ChatColor.DARK_PURPLE, ChatColor.DARK_RED, ChatColor.GOLD, ChatColor.GREEN, ChatColor.RED, ChatColor.YELLOW);
 
+    /**
+     * Obtain a random distinct color from {@code DISTINCT_CHAT_COLORS}.
+     *
+     * @return Random {@link ChatColor}.
+     */
     public ChatColor getRandomColor() {
         int rand = new Random().nextInt(DISTINCT_CHAT_COLORS.size());
         return DISTINCT_CHAT_COLORS.get(rand);
-    }
-
-    public void compilePattern() {
-        hexPattern = Pattern.compile(HEX_PATTERN);
     }
 
     @Contract("null -> null;!null -> !null")
@@ -68,10 +69,28 @@ public class StringUtil {
         return msg == null ? null : hexColor(msg, colorChar);
     }
 
-    @Nullable
+    /**
+     * Compile hex pattern for {@link #hexColor(String, char)}.
+     */
+    public void compileHexPattern() {
+        hexPattern = Pattern.compile(HEX_PATTERN);
+    }
+
+    /**
+     * Parse hex colors according to stored format.
+     *
+     * @param string    String to parse.
+     * @param colorChar Color character to use.
+     * @return Colored string.
+     */
+    @Contract("null,_ -> null")
     public String hexColor(String string, char colorChar) {
 
-        if (string == null) return null;
+        if (string == null)
+            return null;
+
+        if (string.isEmpty())
+            return string;
 
         if (hexPattern != null || ServerVersion.isCurrentAbove(ServerVersion.v1_16)) {
             Matcher matcher = hexPattern.matcher(string);
@@ -89,49 +108,51 @@ public class StringUtil {
     /**
      * Colors a list of strings with Bukkit color codes.
      *
-     * @param list Default list of strings
+     * @param collection Default list of strings
      * @return List of strings with Bukkit color codes
      */
     @Nullable
-    public List<String> color(@Nullable List<String> list) {
-        return color(list, '&');
+    public List<String> color(@Nullable Collection<String> collection) {
+        return color(collection, '&');
     }
 
     /**
      * Colors a list of strings with Bukkit color codes.
      *
-     * @param list      Default list of strings
-     * @param colorChar Color character to parse colors with
+     * @param collection Default list of strings
+     * @param colorChar  Color character to parse colors with
      * @return List of strings with Bukkit color codes
      */
     @Nullable
-    public List<String> color(@Nullable List<String> list, char colorChar) {
-        return list == null ? null : list.stream().map(line -> color(line, colorChar)).collect(Collectors.toList());
+    public List<String> color(@Nullable Collection<String> collection, char colorChar) {
+        return collection == null ? null : collection.stream()
+                .map(line -> color(line, colorChar))
+                .collect(Collectors.toList());
     }
 
     /**
      * Joins a list of strings in a single, multi-line parsed string.
      * Uses default line delimiter stored in DefaultValue.java
      *
-     * @param list List of strings to join together
+     * @param collection List of strings to join together
      * @return String with line separators.
      */
     @Nullable
-    public String listToString(@Nullable List<String> list) {
-        return listToString(list, LIST_DELIMITER);
+    public String join(@Nullable Collection<String> collection) {
+        return join(collection, LIST_DELIMITER);
     }
 
     /**
      * Joins a list of strings in a single, multi-line parsed string.
      *
-     * @param list      List of strings to join together
-     * @param delimiter Line delimiter to use
+     * @param collection List of strings to join together
+     * @param delimiter  Line delimiter to use
      * @return String with line separators.
      */
     @Contract("null,_ -> null;_,null -> null")
     @Nullable
-    public String listToString(@Nullable List<String> list, @Nullable String delimiter) {
-        return list == null || delimiter == null ? null : String.join(delimiter, list);
+    public String join(@Nullable Collection<String> collection, @Nullable String delimiter) {
+        return collection == null || delimiter == null ? null : String.join(delimiter, collection);
     }
 
     /**
@@ -143,10 +164,10 @@ public class StringUtil {
      */
     @NotNull
     public List<String> listFromString(@Nullable String string, @NotNull String delimiter) {
-        List<String> list = new ArrayList<>();
+        List<String> collection = new ArrayList<>();
         if (!Strings.isNullOrEmpty(string) && string.contains(delimiter))
-            Collections.addAll(list, string.split(delimiter));
-        return list;
+            Collections.addAll(collection, string.split(delimiter));
+        return collection;
     }
 
     /**
@@ -156,12 +177,21 @@ public class StringUtil {
      * @return Parsed list
      */
     @NotNull
-    public List<String> listFromString(@Nullable String string) {
+    public Collection<String> listFromString(@Nullable String string) {
         return listFromString(string, LIST_DELIMITER);
     }
 
-    public List<String> replace(List<String> list, String key, Object value) {
-        return list.stream().map(l -> l.replace(key, value.toString())).collect(Collectors.toList());
+    public List<String> replace(Collection<String> collection, String key, Object value) {
+        return collection.stream()
+                .map(l -> l.replace(key, value.toString()))
+                .collect(Collectors.toList());
+    }
+
+    public String join(Object... params) {
+        return Arrays.stream(params)
+                .map(String::valueOf)
+                .filter(string -> !Strings.isNullOrEmpty(string))
+                .collect(Collectors.joining(LIST_DELIMITER));
     }
 
     public String join(String delimiter, Object... params) {

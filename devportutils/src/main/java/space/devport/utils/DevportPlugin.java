@@ -154,7 +154,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
             if (configuration.getFileConfiguration().contains("hex-pattern"))
                 StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
-            StringUtil.compilePattern();
+            StringUtil.compileHexPattern();
 
             if (configuration.getFileConfiguration().getBoolean("debug-enabled", false))
                 devportLogger.setLevel(DebugLevel.DEBUG);
@@ -213,7 +213,7 @@ public abstract class DevportPlugin extends JavaPlugin {
 
             if (configuration.getFileConfiguration().contains("hex-pattern")) {
                 StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
-                StringUtil.compilePattern();
+                StringUtil.compileHexPattern();
             }
 
             if (configuration.getFileConfiguration().getBoolean("debug-enabled", false))
