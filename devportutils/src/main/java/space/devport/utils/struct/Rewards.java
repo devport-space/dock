@@ -84,8 +84,20 @@ public class Rewards implements Cloneable {
         sendBroadcast();
     }
 
+    public void give() {
+        give(null, true);
+    }
+
+    public void give(boolean broadcast) {
+        give(null, broadcast);
+    }
+
+    public void give(Player player) {
+        give(player, true);
+    }
+
     // Reward a player
-    public void give(@Nullable Player player, boolean... broadcast) {
+    public void give(@Nullable Player player, boolean broadcast) {
 
         placeholders.copy(plugin.obtainPlaceholders());
 
@@ -106,7 +118,7 @@ public class Rewards implements Cloneable {
             inform.pull();
         }
 
-        if (broadcast.length < 1 || broadcast[0])
+        if (broadcast)
             sendBroadcast();
 
         parseCommands(player);
