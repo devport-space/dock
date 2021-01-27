@@ -83,7 +83,8 @@ public class ThreadUtil {
         Thread thread = new Thread(() -> {
             try {
                 Thread.sleep(delay);
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
+                return;
             }
 
             task.run();
