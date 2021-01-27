@@ -156,7 +156,9 @@ public abstract class AbstractCommand {
     }
 
     @Nullable
-    public abstract List<String> requestTabComplete(CommandSender sender, String[] args);
+    public List<String> requestTabComplete(CommandSender sender, String[] args) {
+        return getCompletion(sender, args);
+    }
 
     @Nullable
     protected List<String> filterSuggestions(@Nullable List<String> input, String arg) {

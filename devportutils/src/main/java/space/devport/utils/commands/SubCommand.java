@@ -10,9 +10,6 @@ import space.devport.utils.commands.struct.ArgumentRange;
 import space.devport.utils.commands.struct.CommandResult;
 import space.devport.utils.text.message.Message;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class SubCommand extends AbstractCommand {
 
     @Getter
@@ -41,11 +38,6 @@ public abstract class SubCommand extends AbstractCommand {
         if (plugin.use(UsageFlag.LANGUAGE))
             return this.getParent() != null ? language.get("Commands.Help." + this.getParent().getName() + "." + getName() + ".Usage") : new Message();
         return new Message(getDefaultUsage());
-    }
-
-    @Nullable
-    public List<String> requestTabComplete(CommandSender sender, String[] args) {
-        return new ArrayList<>();
     }
 
     public void addLanguage() {
