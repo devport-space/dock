@@ -78,4 +78,21 @@ public class ThreadUtil {
     public Thread createDelayedRepeatingTask(Runnable task, long delay, long interval) {
         return createDelayedRepeatingTask(task, delay, interval, null);
     }
+
+    public Thread createDelayedTask(Runnable task, long delay, @Nullable String name) {
+        Thread thread = new Thread(() -> {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException ignored) {
+            }
+
+            task.run();
+        });
+        if (name != null) thread.setName(name);
+        return thread;
+    }
+
+    public Thread createDelayedTask(Runnable task, long delay) {
+        return createDelayedTask(task, delay, null);
+    }
 }
