@@ -12,6 +12,7 @@ import space.devport.utils.economy.EconomyManager;
 import space.devport.utils.item.data.Amount;
 import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.item.impl.PrefabFactory;
+import space.devport.utils.text.Placeholder;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 import space.devport.utils.text.message.Message;
@@ -21,13 +22,14 @@ import space.devport.utils.utility.ParseUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
 /**
  * Class to handle various player and server rewards.
  *
  * @author Wertik1206
  */
-public class Rewards implements Cloneable {
+public class Rewards implements Cloneable, Placeholder {
 
     @Getter
     private Amount tokens = new Amount(0);
@@ -291,6 +293,12 @@ public class Rewards implements Cloneable {
 
     public Rewards parseWith(Placeholders placeholders) {
         this.placeholders = Placeholders.of(placeholders);
+        return this;
+    }
+
+    @Override
+    public Rewards applyPlaceholders(Consumer<Placeholders> modifier) {
+        modifier.accept(placeholders);
         return this;
     }
 }
