@@ -297,6 +297,12 @@ public class Rewards implements Cloneable, Placeholder {
     }
 
     @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public Rewards clone() {
+        return new Rewards(this);
+    }
+
+    @Override
     public Rewards applyPlaceholders(Consumer<Placeholders> modifier) {
         modifier.accept(placeholders);
         return this;
