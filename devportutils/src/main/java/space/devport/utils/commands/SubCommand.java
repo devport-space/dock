@@ -7,7 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
 import space.devport.utils.commands.struct.ArgumentRange;
+import space.devport.utils.commands.struct.CommandExecutor;
 import space.devport.utils.commands.struct.CommandResult;
+import space.devport.utils.commands.struct.CompletionProvider;
 import space.devport.utils.text.message.Message;
 
 public abstract class SubCommand extends AbstractCommand {
@@ -29,9 +31,6 @@ public abstract class SubCommand extends AbstractCommand {
 
     @Override
     public abstract @Nullable String getDefaultDescription();
-
-    @Override
-    public abstract @Nullable ArgumentRange getRange();
 
     @Override
     public @NotNull Message getUsage() {
@@ -65,6 +64,24 @@ public abstract class SubCommand extends AbstractCommand {
     @Override
     public @NotNull SubCommand withCompletionProvider(@Nullable CompletionProvider completionProvider) {
         super.withCompletionProvider(completionProvider);
+        return this;
+    }
+
+    @Override
+    public @NotNull SubCommand withRange(ArgumentRange range) {
+        super.withRange(range);
+        return this;
+    }
+
+    @Override
+    public @NotNull SubCommand withRange(int min, int max) {
+        super.withRange(min, max);
+        return this;
+    }
+
+    @Override
+    public @NotNull SubCommand withRange(int wanted) {
+        super.withRange(wanted);
         return this;
     }
 }

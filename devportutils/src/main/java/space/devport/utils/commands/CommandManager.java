@@ -57,7 +57,7 @@ public class CommandManager extends DevportManager implements CommandExecutor, T
             if (label.equalsIgnoreCase(mainCommand.getName()) || mainCommand.getAliases().contains(label))
                 return mainCommand.getCompletion(sender, args);
         }
-        return new ArrayList<>();
+        return null;
     }
 
     private void runCommand(CommandSender sender, String label, String[] args) {

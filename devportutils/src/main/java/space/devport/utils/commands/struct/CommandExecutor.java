@@ -1,8 +1,7 @@
-package space.devport.utils.commands;
+package space.devport.utils.commands.struct;
 
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import space.devport.utils.commands.struct.CommandResult;
 
 public interface CommandExecutor {
 

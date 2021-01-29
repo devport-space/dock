@@ -7,7 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
 import space.devport.utils.commands.struct.ArgumentRange;
+import space.devport.utils.commands.struct.CommandExecutor;
 import space.devport.utils.commands.struct.CommandResult;
+import space.devport.utils.commands.struct.CompletionProvider;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.Message;
 
@@ -53,11 +55,6 @@ public abstract class MainCommand extends AbstractCommand {
     @Override
     public boolean checkRange() {
         return false;
-    }
-
-    @Override
-    public @NotNull ArgumentRange getRange() {
-        return new ArgumentRange(0);
     }
 
     @Override
@@ -107,7 +104,7 @@ public abstract class MainCommand extends AbstractCommand {
                 return filterSuggestions(subCommand.getCompletion(sender, newArgs), newArgs.length > 0 ? newArgs[newArgs.length - 1] : "");
             }
         }
-        return new ArrayList<>();
+        return null;
     }
 
     private Message constructHelp(CommandSender sender, String label) {
@@ -211,6 +208,24 @@ public abstract class MainCommand extends AbstractCommand {
     @Override
     public @NotNull MainCommand withCompletionProvider(@Nullable CompletionProvider completionProvider) {
         super.withCompletionProvider(completionProvider);
+        return this;
+    }
+
+    @Override
+    public @NotNull MainCommand withRange(ArgumentRange range) {
+        super.withRange(range);
+        return this;
+    }
+
+    @Override
+    public @NotNull MainCommand withRange(int min, int max) {
+        super.withRange(min, max);
+        return this;
+    }
+
+    @Override
+    public @NotNull MainCommand withRange(int wanted) {
+        super.withRange(wanted);
         return this;
     }
 }

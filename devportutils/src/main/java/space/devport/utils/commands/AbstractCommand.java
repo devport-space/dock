@@ -2,16 +2,13 @@ package space.devport.utils.commands;
 
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.UsageFlag;
-import space.devport.utils.commands.struct.ArgumentRange;
-import space.devport.utils.commands.struct.CommandResult;
-import space.devport.utils.commands.struct.Preconditions;
+import space.devport.utils.commands.struct.*;
 import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.language.LanguageManager;
 import space.devport.utils.text.message.Message;
@@ -22,18 +19,20 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
 
+    protected final DevportPlugin plugin;
+
+    protected final LanguageManager language;
+
     @Getter
     private final String name;
 
     @Getter
-    @Setter
-    protected Preconditions preconditions;
+    protected Preconditions preconditions = new Preconditions();
+
+    @Getter
+    protected ArgumentRange range = new ArgumentRange(0);
 
     private String[] aliases = new String[]{};
-
-    protected final DevportPlugin plugin;
-
-    protected final LanguageManager language;
 
     private CommandExecutor executor;
 
@@ -41,7 +40,6 @@ public abstract class AbstractCommand {
 
     public AbstractCommand(DevportPlugin plugin, String name) {
         this.name = name;
-        this.preconditions = new Preconditions();
 
         this.plugin = plugin;
         this.language = plugin.getManager(LanguageManager.class);
@@ -50,9 +48,6 @@ public abstract class AbstractCommand {
     // This should be overridden by commands and performs the wanted action itself.
     @NotNull
     protected abstract CommandResult perform(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args);
-
-    @Nullable
-    public abstract ArgumentRange getRange();
 
     /*
      * Usage and description here are only taken as defaults, they're added to language by their name.
@@ -246,12 +241,14 @@ public abstract class AbstractCommand {
                 .anyMatch(alias -> alias.equalsIgnoreCase(argument));
     }
 
+    // Set permissions, if none provided, craft them.
     protected void setPermissions(String... permissions) {
         if (permissions.length == 0) {
             this.preconditions.permissions(craftPermission());
         } else this.preconditions.permissions(permissions);
     }
 
+    // Craft a permission, <plugin>.<main>.<sub>
     protected String craftPermission() {
         String permission = plugin.getDescription().getName().toLowerCase();
 
@@ -273,6 +270,22 @@ public abstract class AbstractCommand {
     public AbstractCommand withCompletionProvider(@Nullable CompletionProvider completionProvider) {
         this.completionProvider = completionProvider;
         return this;
+    }
+
+    @NotNull
+    public AbstractCommand withRange(ArgumentRange range) {
+        this.range = range;
+        return this;
+    }
+
+    @NotNull
+    public AbstractCommand withRange(int min, int max) {
+        return withRange(new ArgumentRange(min, max));
+    }
+
+    @NotNull
+    public AbstractCommand withRange(int wanted) {
+        return withRange(new ArgumentRange(wanted));
     }
 
     @Override

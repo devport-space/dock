@@ -1,4 +1,4 @@
-package space.devport.utils.commands;
+package space.devport.utils.commands.struct;
 
 import org.jetbrains.annotations.Nullable;
 
