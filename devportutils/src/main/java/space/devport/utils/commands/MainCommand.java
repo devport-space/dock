@@ -90,7 +90,7 @@ public abstract class MainCommand extends AbstractCommand {
     }
 
     @Override
-    public @Nullable List<String> requestTabComplete(CommandSender sender, String[] args) {
+    public @Nullable List<String> requestTabComplete(@NotNull CommandSender sender, String[] args) {
 
         if (args.length == 1) {
             List<String> subCommands = getSubCommands().stream()
@@ -104,7 +104,7 @@ public abstract class MainCommand extends AbstractCommand {
 
             if (subCommand != null) {
                 String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
-                return filterSuggestions(subCommand.requestTabComplete(sender, newArgs), newArgs.length > 0 ? newArgs[newArgs.length - 1] : "");
+                return filterSuggestions(subCommand.getCompletion(sender, newArgs), newArgs.length > 0 ? newArgs[newArgs.length - 1] : "");
             }
         }
         return new ArrayList<>();

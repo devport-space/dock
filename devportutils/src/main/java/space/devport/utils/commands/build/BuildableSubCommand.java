@@ -1,6 +1,5 @@
 package space.devport.utils.commands.build;
 
-import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
@@ -8,8 +7,6 @@ import space.devport.utils.commands.CommandExecutor;
 import space.devport.utils.commands.MainCommand;
 import space.devport.utils.commands.SubCommand;
 import space.devport.utils.commands.struct.ArgumentRange;
-
-import java.util.List;
 
 public class BuildableSubCommand extends SubCommand {
 
@@ -20,11 +17,6 @@ public class BuildableSubCommand extends SubCommand {
     public BuildableSubCommand(DevportPlugin plugin, String name) {
         super(plugin, name);
         this.defaultUsage = String.format("/%%label%% %s", getName());
-    }
-
-    @Override
-    public @Nullable List<String> requestTabComplete(CommandSender sender, String[] args) {
-        return getCompletion(sender, args);
     }
 
     @Override

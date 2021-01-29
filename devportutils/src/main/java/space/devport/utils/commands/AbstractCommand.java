@@ -148,7 +148,7 @@ public abstract class AbstractCommand {
     }
 
     @Nullable
-    public List<String> getCompletion(CommandSender sender, String[] args) {
+    public List<String> getCompletion(@NotNull CommandSender sender, String[] args) {
         if (completionProvider != null)
             return completionProvider.provide(sender, args);
         else
@@ -156,8 +156,8 @@ public abstract class AbstractCommand {
     }
 
     @Nullable
-    public List<String> requestTabComplete(CommandSender sender, String[] args) {
-        return getCompletion(sender, args);
+    public List<String> requestTabComplete(@NotNull CommandSender sender, String[] args) {
+        return null;
     }
 
     @Nullable
