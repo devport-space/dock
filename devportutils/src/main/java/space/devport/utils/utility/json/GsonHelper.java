@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.callbacks.CallbackContent;
+import space.devport.utils.callbacks.ExceptionCallback;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -157,7 +159,7 @@ public class GsonHelper {
     }
 
     /**
-     * Asynchronously load and parse list from a json file.
+     * Asynchronously load and parse list from json.
      *
      * @param <T>        Type signature of list key.
      * @param innerClazz Class defining {@code <T>}.
@@ -184,7 +186,7 @@ public class GsonHelper {
     }
 
     /**
-     * Asynchronously load and parse a map from json file.
+     * Asynchronously load and parse a map from json.
      *
      * @param <K>        Type signature of map key.
      * @param <V>        Type signature of map value.
@@ -213,15 +215,55 @@ public class GsonHelper {
     }
 
     /**
+     * Synchronously save data to json.
+     *
+     * @param <T>      Type signature of input.
+     * @param input    Input to save.
+     * @param dataPath Path to save to.
+     */
+    public <T> void saveSync(@NotNull final String dataPath, @NotNull final T input) {
+        saveSync(dataPath, input, null);
+    }
+
+    /**
+     * Synchronously save data to json.
+     *
+     * @param <T>      Type signature of input.
+     * @param input    Input to save.
+     * @param dataPath Path to save to.
+     * @param callback {@link ExceptionCallback} callback to run when an exception is thrown.
+     */
+    public <T> void saveSync(@NotNull final String dataPath, @NotNull final T input, @Nullable ExceptionCallback callback) {
+        Path path = Paths.get(dataPath);
+
+        if (!path.toFile().getParentFile().exists()) {
+            if (!path.toFile().getParentFile().mkdirs()) {
+                log.severe("Could not save, could not create folder structure.");
+                return;
+            }
+        }
+
+        final Type type = map(input.getClass());
+
+        String jsonString = gson.toJson(input, type).trim();
+        try {
+            Files.write(path, jsonString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            CallbackContent.createNew(e).callOrThrow(callback);
+        }
+    }
+
+    /**
      * Asynchronously save data to json.
      *
      * @param <T>      Type signature of input.
      * @param input    Input to save.
      * @param dataPath Path to save to.
      * @return CompletableFuture supplying the bytes written.
+     * Note: calling #join() on this future will hang the main thread.
      */
     @NotNull
-    public <T> CompletableFuture<Void> save(@NotNull final T input, @NotNull final String dataPath) {
+    public <T> CompletableFuture<Void> save(@NotNull final String dataPath, @NotNull final T input) {
 
         Path path = Paths.get(dataPath);
 
