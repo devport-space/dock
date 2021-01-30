@@ -221,8 +221,8 @@ public class GsonHelper {
      * @param input    Input to save.
      * @param dataPath Path to save to.
      */
-    public <T> void saveSync(@NotNull final String dataPath, @NotNull final T input) {
-        saveSync(dataPath, input, null);
+    public <T> boolean save(@NotNull final String dataPath, @NotNull final T input) {
+        return save(dataPath, input, null);
     }
 
     /**
@@ -233,13 +233,13 @@ public class GsonHelper {
      * @param dataPath Path to save to.
      * @param callback {@link ExceptionCallback} callback to run when an exception is thrown.
      */
-    public <T> void saveSync(@NotNull final String dataPath, @NotNull final T input, @Nullable ExceptionCallback callback) {
+    public <T> boolean save(@NotNull final String dataPath, @NotNull final T input, @Nullable ExceptionCallback callback) {
         Path path = Paths.get(dataPath);
 
         if (!path.toFile().getParentFile().exists()) {
             if (!path.toFile().getParentFile().mkdirs()) {
                 log.severe("Could not save, could not create folder structure.");
-                return;
+                return false;
             }
         }
 
@@ -248,8 +248,10 @@ public class GsonHelper {
         String jsonString = gson.toJson(input, type).trim();
         try {
             Files.write(path, jsonString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            return true;
         } catch (IOException e) {
             CallbackContent.createNew(e).callOrThrow(callback);
+            return false;
         }
     }
 
@@ -263,7 +265,7 @@ public class GsonHelper {
      * Note: calling #join() on this future will hang the main thread.
      */
     @NotNull
-    public <T> CompletableFuture<Void> save(@NotNull final String dataPath, @NotNull final T input) {
+    public <T> CompletableFuture<Void> saveAsync(@NotNull final String dataPath, @NotNull final T input) {
 
         Path path = Paths.get(dataPath);
 
