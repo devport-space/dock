@@ -6,7 +6,6 @@ import space.devport.utils.DevportPlugin;
 import space.devport.utils.item.ItemPrefab;
 import space.devport.utils.item.data.Amount;
 import space.devport.utils.struct.Rewards;
-import space.devport.utils.text.Placeholders;
 import space.devport.utils.text.message.CachedMessage;
 
 import java.lang.reflect.Type;
