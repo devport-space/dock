@@ -8,8 +8,11 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.utils.DevportPlugin;
 import space.devport.utils.callbacks.CallbackContent;
 import space.devport.utils.callbacks.ExceptionCallback;
+import space.devport.utils.struct.Rewards;
+import space.devport.utils.utility.json.serialisation.RewardsJsonAdapter;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -29,20 +32,23 @@ import java.util.concurrent.CompletionException;
 @Log
 public class GsonHelper {
 
+    @Getter
+    private final GsonBuilder builder = new GsonBuilder();
+
     private Gson gson;
 
-    @Getter
-    private final GsonBuilder builder;
-
-    public GsonHelper(boolean prettyPrinting) {
-        this.builder = new GsonBuilder();
-
-        if (prettyPrinting)
-            builder.setPrettyPrinting();
+    public GsonHelper() {
+        build();
     }
 
-    public GsonHelper() {
-        this(false);
+    /**
+     * Construct a GsonHelper and register json adapters.
+     *
+     * @param plugin DevportPlugin reference.
+     */
+    public GsonHelper(DevportPlugin plugin) {
+        this();
+        builder.registerTypeHierarchyAdapter(Rewards.class, new RewardsJsonAdapter(plugin));
     }
 
     public void build() {

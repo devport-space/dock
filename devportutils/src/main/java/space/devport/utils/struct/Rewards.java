@@ -6,6 +6,7 @@ import me.realized.tokenmanager.TokenManagerPlugin;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import space.devport.utils.DevportPlugin;
 import space.devport.utils.economy.EconomyManager;
@@ -55,17 +56,28 @@ public class Rewards implements Cloneable, Placeholder {
     private final transient Random random = new Random();
 
     @Getter
-    private transient DevportPlugin plugin;
+    private final transient DevportPlugin plugin;
 
     public Rewards(DevportPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public Rewards(Rewards rewards) {
-        if (rewards == null) return;
+    public Rewards(DevportPlugin plugin, Amount tokens, Amount money, List<ItemPrefab> items, CachedMessage inform, CachedMessage broadcast, List<String> commands) {
+        this(plugin);
+        this.tokens = tokens;
+        this.money = money;
+        this.items = items;
+        this.inform = inform;
+        this.broadcast = broadcast;
+        this.commands = commands;
+    }
+
+    private Rewards(Rewards rewards) {
+        this(rewards.getPlugin());
 
         if (rewards.getTokens() != null)
             this.tokens = rewards.getTokens().clone();
+
         if (rewards.getMoney() != null)
             this.money = rewards.getMoney().clone();
 
@@ -76,7 +88,11 @@ public class Rewards implements Cloneable, Placeholder {
         this.broadcast = new CachedMessage(rewards.getBroadcast());
         this.commands = new ArrayList<>(rewards.getCommands());
         this.placeholders = Placeholders.of(rewards.getPlaceholders());
-        this.plugin = rewards.getPlugin();
+    }
+
+    @Contract("null -> null")
+    public static Rewards of(Rewards rewards) {
+        return rewards == null ? null : new Rewards(rewards);
     }
 
     public void giveAll() {
