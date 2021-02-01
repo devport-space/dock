@@ -97,7 +97,7 @@ public class MenuBuilder implements Cloneable {
 
         // Title
 
-        String title = StringUtil.color(placeholders.parse(this.title.toString()));
+        String title = StringUtil.color(placeholders.parse(this.title.parse().toString()));
         this.title.pull();
 
         if (title.length() > 32) {
