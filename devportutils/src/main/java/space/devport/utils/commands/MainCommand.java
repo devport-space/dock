@@ -22,10 +22,10 @@ public abstract class MainCommand extends AbstractCommand {
     private final List<SubCommand> subCommands = new ArrayList<>();
 
     @Getter
-    private Message footer;
+    private Message header;
 
     @Getter
-    private Message header;
+    private Message footer;
 
     @Getter
     private final Map<String, Message> extraEntries = new LinkedHashMap<>();
@@ -107,14 +107,21 @@ public abstract class MainCommand extends AbstractCommand {
         return null;
     }
 
+    private Message fetchLanguage(String path, Message def) {
+        return plugin.use(UsageFlag.LANGUAGE) ? language.get(path) : def;
+    }
+
+    private String fetchLanguage(String path, String def) {
+        return plugin.use(UsageFlag.LANGUAGE) ? language.get(path).toString() : def;
+    }
+
     private Message constructHelp(CommandSender sender, String label) {
 
-        Message help = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Header") : Message.of(header)).parseWith(plugin.obtainPlaceholders());
+        Message help = fetchLanguage("Commands.Help.Header", header).parseWith(plugin.obtainPlaceholders());
 
-        String lineFormat = (plugin.use(UsageFlag.LANGUAGE) ? language.get("Commands.Help.Sub-Command-Line").color().toString() : getLineFormat());
+        String lineFormat = fetchLanguage("Commands.Help.Sub-Command-Line", getLineFormat());
 
-        Placeholders commandParams = new Placeholders()
-                .copy(plugin.obtainPlaceholders())
+        Placeholders commandParams = plugin.obtainPlaceholders()
                 .add("%label%", label);
 
         String usage = getUsage().parseWith(commandParams).color().toString();
@@ -126,8 +133,13 @@ public abstract class MainCommand extends AbstractCommand {
         if (!getUsage().isEmpty() || !getDescription().isEmpty())
             help.append(commandParams.parse(lineFormat));
 
-        this.extraEntries.forEach((key, entry) -> help.append(entry));
+        // Extra entries
+        extraEntries.forEach((key, entry) -> {
+            Message msg = fetchLanguage(String.format("Commands.Help.Extra.%s", key), entry);
+            help.append(msg);
+        });
 
+        // Sub commands
         for (SubCommand subCommand : this.subCommands) {
             if (subCommand.getUsage().isEmpty() && subCommand.getDescription().isEmpty())
                 continue;
@@ -142,6 +154,9 @@ public abstract class MainCommand extends AbstractCommand {
                     .add("%description%", description);
             help.append(commandParams.parse(lineFormat));
         }
+
+        // Footer
+        Message footer = fetchLanguage("Commands.Help.Footer", this.footer);
 
         if (!footer.isEmpty())
             help.append(footer);
@@ -158,12 +173,12 @@ public abstract class MainCommand extends AbstractCommand {
                 language.addDefault("Commands.Help." + getName() + ".Description", getDefaultDescription());
 
             language.addDefault("Commands.Help.Header", header.toString());
-            this.extraEntries.forEach((key, entry) -> language.addDefault("Commands.Help.Extra." + key, entry.toString()));
+            extraEntries.forEach((key, entry) -> language.addDefault("Commands.Help.Extra." + key, entry.toString()));
             language.addDefault("Commands.Help.Footer", footer.toString());
             language.addDefault("Commands.Help.Line-Format", lineFormat);
         }
 
-        this.subCommands.forEach(SubCommand::addLanguage);
+        subCommands.forEach(SubCommand::addLanguage);
     }
 
     @NotNull
