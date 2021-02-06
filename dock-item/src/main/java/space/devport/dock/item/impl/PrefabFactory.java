@@ -23,7 +23,7 @@ public class PrefabFactory {
      */
     @Contract("null -> null")
     public static ItemPrefab createNew(XMaterial material) {
-        return material == null ? null : new ItemPrefabBaseImpl(material);
+        return material == null ? null : new ItemPrefabImpl(material);
     }
 
     /**
@@ -35,7 +35,7 @@ public class PrefabFactory {
      */
     @Contract("null -> null")
     public static ItemPrefab createNew(Material material) {
-        return material == null ? null : new ItemPrefabBaseImpl(XMaterial.matchXMaterial(material));
+        return material == null ? null : new ItemPrefabImpl(XMaterial.matchXMaterial(material));
     }
 
     /**
@@ -47,7 +47,7 @@ public class PrefabFactory {
      */
     @Contract("null -> null")
     public static ItemPrefab of(ItemPrefab prefab) {
-        return prefab == null ? null : new ItemPrefabBaseImpl(prefab);
+        return prefab == null ? null : new ItemPrefabImpl(prefab);
     }
 
     /**
@@ -59,6 +59,6 @@ public class PrefabFactory {
      */
     @Contract("null -> null")
     public static ItemPrefab of(ItemStack item) {
-        return item == null ? null : new ItemPrefabBaseImpl(item);
+        return item == null ? null : new ItemPrefabImpl(item);
     }
 }
