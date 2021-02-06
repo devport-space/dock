@@ -1,8 +1,8 @@
-package space.devport.dock.utility.time;
+package space.devport.dock.util.time;
 
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.utility.ParseUtil;
+import space.devport.dock.util.ParseUtil;
 
 public enum TimeElement {
 

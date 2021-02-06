@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.struct.Context;
 import space.devport.dock.text.placeholders.Placeholders;
-import space.devport.dock.utility.StringUtil;
+import space.devport.dock.util.StringUtil;
 
 import java.util.*;
 import java.util.function.Consumer;

@@ -1,4 +1,4 @@
-package space.devport.dock.utility;
+package space.devport.dock.util;
 
 import com.google.common.base.Strings;
 import lombok.experimental.UtilityClass;
@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.utility.reflection.ServerVersion;
+import space.devport.dock.util.reflection.ServerVersion;
 
 import java.util.*;
 import java.util.regex.Matcher;

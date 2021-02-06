@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.menu.events.ItemClick;
 import space.devport.dock.menu.events.MenuCloseEvent;
 import space.devport.dock.menu.events.MenuOpenEvent;
@@ -43,9 +43,9 @@ public class Menu implements MenuListener {
     @Getter
     private boolean open = false;
 
-    private final DockedPlugin dockedPlugin;
+    private final IDockedPlugin dockedPlugin;
 
-    public Menu(String name, DockedPlugin plugin) {
+    public Menu(String name, IDockedPlugin plugin) {
         this(name, new MenuBuilder(plugin));
     }
 
@@ -57,7 +57,7 @@ public class Menu implements MenuListener {
 
         this.items = builder.getItems();
         this.inventory = builder.getInventory();
-        dockedPlugin = builder.getPlugin();
+        this.dockedPlugin = builder.getPlugin();
     }
 
     // Open the gui for a player

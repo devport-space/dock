@@ -1,7 +1,7 @@
 package util;
 
 import org.junit.Test;
-import space.devport.dock.utility.StringUtil;
+import space.devport.dock.util.StringUtil;
 
 import static org.junit.Assert.assertEquals;
 

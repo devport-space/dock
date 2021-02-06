@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.callbacks.exception.CallbackException;
-import space.devport.dock.utility.StringUtil;
+import space.devport.dock.util.StringUtil;
 
 public class CallbackContent {
 

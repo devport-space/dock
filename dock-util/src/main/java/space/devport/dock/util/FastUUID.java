@@ -1,4 +1,4 @@
-package space.devport.dock.utility;
+package space.devport.dock.util;
 
 import java.util.Arrays;
 import java.util.UUID;

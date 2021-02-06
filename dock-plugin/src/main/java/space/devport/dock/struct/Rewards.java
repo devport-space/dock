@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.DockedPlugin;
 import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.economy.EconomyManager;
 import space.devport.dock.item.data.Amount;
@@ -18,7 +17,7 @@ import space.devport.dock.text.placeholders.Placeholder;
 import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.message.CachedMessage;
 import space.devport.dock.text.message.Message;
-import space.devport.dock.utility.DependencyUtil;
+import space.devport.dock.util.DependencyUtil;
 
 import java.util.ArrayList;
 import java.util.List;

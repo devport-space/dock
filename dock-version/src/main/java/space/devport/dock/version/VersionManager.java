@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import space.devport.dock.DockedManager;
 import space.devport.dock.api.IDockedPlugin;
-import space.devport.dock.utility.reflection.Reflection;
-import space.devport.dock.utility.reflection.ServerVersion;
+import space.devport.dock.util.reflection.Reflection;
+import space.devport.dock.util.reflection.ServerVersion;
 import space.devport.dock.version.api.ICompoundFactory;
 import space.devport.dock.version.api.IVersionUtility;
 

@@ -12,7 +12,7 @@ import space.devport.dock.commands.struct.*;
 import space.devport.dock.text.language.LanguageManager;
 import space.devport.dock.text.message.Message;
 import space.devport.dock.text.placeholders.Placeholders;
-import space.devport.dock.utility.ParseUtil;
+import space.devport.dock.util.ParseUtil;
 
 import java.util.*;
 import java.util.function.Consumer;

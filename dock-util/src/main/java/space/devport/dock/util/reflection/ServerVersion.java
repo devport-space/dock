@@ -1,4 +1,4 @@
-package space.devport.dock.utility.reflection;
+package space.devport.dock.util.reflection;
 
 import com.google.common.base.Strings;
 import lombok.Setter;

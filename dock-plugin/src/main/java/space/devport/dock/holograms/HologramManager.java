@@ -10,7 +10,7 @@ import space.devport.dock.holograms.provider.HologramProvider;
 import space.devport.dock.holograms.provider.impl.CMIHolograms;
 import space.devport.dock.holograms.provider.impl.Holograms;
 import space.devport.dock.holograms.provider.impl.HolographicDisplays;
-import space.devport.dock.utility.DependencyUtil;
+import space.devport.dock.util.DependencyUtil;
 
 import java.util.HashSet;
 import java.util.List;

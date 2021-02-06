@@ -20,7 +20,7 @@ import space.devport.dock.struct.Context;
 import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.message.CachedMessage;
 import space.devport.dock.text.message.Message;
-import space.devport.dock.utility.ParseUtil;
+import space.devport.dock.util.ParseUtil;
 import space.devport.dock.version.api.ICompound;
 
 import java.util.*;

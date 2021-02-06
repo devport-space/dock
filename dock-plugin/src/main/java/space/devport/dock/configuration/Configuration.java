@@ -25,9 +25,9 @@ import space.devport.dock.menu.item.MenuItem;
 import space.devport.dock.region.Region;
 import space.devport.dock.struct.Conditions;
 import space.devport.dock.struct.Rewards;
-import space.devport.dock.utility.StringUtil;
+import space.devport.dock.util.StringUtil;
 import space.devport.dock.text.message.Message;
-import space.devport.dock.utility.LocationUtil;
+import space.devport.dock.util.LocationUtil;
 
 import java.io.File;
 import java.io.IOException;

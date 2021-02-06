@@ -1,9 +1,7 @@
 package util;
 
-import org.bukkit.util.Vector;
 import org.junit.Test;
-import space.devport.dock.callbacks.ExceptionCallback;
-import space.devport.dock.utility.ParseUtil;
+import space.devport.dock.util.ParseUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,9 +32,9 @@ public class ParseUtilTest {
         assertEquals(TestEnum.ONE, c);
 
         // Parse Vectors
-        Vector d = ParseUtil.parseVector("1;1;1");
+        // Vector d = ParseUtil.parseVector("1;1;1"); // method temporarily removed
 
-        assertEquals(new Vector(1, 1, 1), d);
+        // assertEquals(new Vector(1, 1, 1), d);
     }
 
     @Test
@@ -69,7 +67,7 @@ public class ParseUtilTest {
         assertTrue(callback.getAndSet(false));
         assertEquals(0, b, 0);
 
-        TestEnum c = ParseUtil.parseEnumHandled("three", TestEnum.class, (ExceptionCallback) e -> callback.set(true));
+        TestEnum c = ParseUtil.parseEnumHandled("three", TestEnum.class, e -> callback.set(true));
 
         assertTrue(callback.get());
         assertNull(c);

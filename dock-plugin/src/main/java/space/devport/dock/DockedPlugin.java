@@ -27,12 +27,12 @@ import space.devport.dock.logging.DockedLogger;
 import space.devport.dock.menu.MenuManager;
 import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.language.LanguageManager;
-import space.devport.dock.utility.DependencyUtil;
-import space.devport.dock.utility.ParseUtil;
-import space.devport.dock.utility.StringUtil;
-import space.devport.dock.utility.reflection.Reflection;
-import space.devport.dock.utility.reflection.ServerType;
-import space.devport.dock.utility.reflection.ServerVersion;
+import space.devport.dock.util.DependencyUtil;
+import space.devport.dock.util.ParseUtil;
+import space.devport.dock.util.StringUtil;
+import space.devport.dock.util.reflection.Reflection;
+import space.devport.dock.util.reflection.ServerType;
+import space.devport.dock.util.reflection.ServerVersion;
 import space.devport.dock.version.compound.CompoundFactory;
 import space.devport.dock.version.VersionManager;
 

@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import space.devport.dock.utility.StringUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -56,11 +55,11 @@ public class DockedAppender extends AppenderSkeleton {
 
     private void sendRaw(String msg) {
         if (console == null) {
-            Bukkit.getLogger().info(StringUtil.stripColor(msg));
+            Bukkit.getLogger().info(LoggerUtil.stripColor(msg));
             return;
         }
 
-        String message = StringUtil.color(msg);
+        String message = LoggerUtil.color(msg);
 
         if (message != null) {
             console.sendMessage(message);

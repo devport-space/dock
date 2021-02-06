@@ -5,11 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import space.devport.dock.DockedPlugin;
 import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.configuration.Configuration;
-import space.devport.dock.utility.FastUUID;
-import space.devport.dock.utility.LocationUtil;
+import space.devport.dock.util.FastUUID;
+import space.devport.dock.util.LocationUtil;
 
 import java.util.*;
 

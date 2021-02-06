@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.utility.ParseUtil;
+import space.devport.dock.util.ParseUtil;
 
 import java.util.Random;
 

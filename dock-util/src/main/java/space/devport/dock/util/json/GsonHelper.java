@@ -1,4 +1,4 @@
-package space.devport.dock.utility.json;
+package space.devport.dock.util.json;
 
 import space.devport.dock.callbacks.CallbackContent;
 import space.devport.dock.callbacks.ExceptionCallback;

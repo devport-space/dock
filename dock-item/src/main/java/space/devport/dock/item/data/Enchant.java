@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.callbacks.ExceptionCallback;
-import space.devport.dock.utility.ParseUtil;
+import space.devport.dock.util.ParseUtil;
 
 import java.util.HashSet;
 import java.util.Map;

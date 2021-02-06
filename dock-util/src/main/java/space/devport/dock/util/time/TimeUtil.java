@@ -1,4 +1,4 @@
-package space.devport.dock.utility.time;
+package space.devport.dock.util.time;
 
 import lombok.experimental.UtilityClass;
 

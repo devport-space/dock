@@ -4,14 +4,13 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
-import space.devport.dock.DockedPlugin;
 import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.item.ItemPrefab;
 import space.devport.dock.menu.item.MatrixItem;
 import space.devport.dock.menu.item.MenuItem;
 import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.message.CachedMessage;
-import space.devport.dock.utility.StringUtil;
+import space.devport.dock.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
