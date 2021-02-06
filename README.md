@@ -1,19 +1,25 @@
-# DevportUtils
+# dock
+
 Devport spigot utility core.
 
 ## Maven
 
 ```xml
-<repository>
-  <id>devport<id>
-  <url>https://nexus.pvpcraft.cz/repository/devport/</url>
-</repository>
 
-<dependency>
-  <groupId>space.devport.utils</groupId>
-  <artifactId>devportutils</artifactId>
-  <version>LATEST</version>
-</dependency>
+<repositories>
+    <repository>
+        <id>devport</id>
+        <url>https://nexus.pvpcraft.cz/repository/devport/</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>space.devport.dock</groupId>
+        <artifactId>dock</artifactId>
+        <version>LATEST</version>
+    </dependency>
+</dependencies>
 ```
 
 ## Features
@@ -28,7 +34,8 @@ Full language system.
 
 ### Holograms
 
-Hooks into one of the available installed Hologram providers (CMI, Holograms, HolographicDisplays) and provide holograms with a simple API.
+Hooks into one of the available installed Hologram providers (CMI, Holograms, HolographicDisplays) and provide holograms
+with a simple API.
 
 ### Menus
 
