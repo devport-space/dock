@@ -5,20 +5,20 @@ Devport spigot utility core.
 ## Maven
 
 ```xml
-<repositories>
-    <repository>
-        <id>devport</id>
-        <url>https://nexus.pvpcraft.cz/repository/devport/</url>
-    </repository>
-</repositories>
 
-<dependencies>
-    <dependency>
-        <groupId>space.devport.dock</groupId>
-        <artifactId>dock</artifactId>
-        <version>LATEST</version>
-    </dependency>
-</dependencies>
+<repository>
+    <id>devport</id>
+    <url>https://nexus.pvpcraft.cz/repository/devport/</url>
+</repository>
+```
+
+```xml
+
+<dependency>
+    <groupId>space.devport.dock</groupId>
+    <artifactId>dock-parent</artifactId>
+    <version>LATEST</version>
+</dependency>
 ```
 
 ## Features
