@@ -57,7 +57,16 @@ public class VersionManager extends DockedManager {
 
     @Override
     public void onLoad() {
-        load();
+        initialize();
+    }
+
+    public void initialize() {
+        String version = ServerVersion.getNmsVersion();
+
+        if (load(version))
+            log.info("Loaded version dependent modules for {}", version);
+        else
+            log.error("Could not load version dependent modules for {}. Some features might not work.", version);
     }
 
     /**
@@ -93,14 +102,5 @@ public class VersionManager extends DockedManager {
     private boolean load(String packageVersion) {
         return load(packageVersion, "CompoundFactory", ICompoundFactory.class, factory -> this.compoundFactory = factory) &&
                 load(packageVersion, "VersionUtility", IVersionUtility.class, versionUtility -> this.versionUtility = versionUtility);
-    }
-
-    private void load() {
-        String version = ServerVersion.getNmsVersion();
-
-        if (load(version))
-            log.info("Loaded version dependent modules for {}", version);
-        else
-            log.error("Could not load version dependent modules for {}. Some features might not work.", version);
     }
 }
