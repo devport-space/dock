@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,9 +16,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DockedAppender extends AppenderSkeleton {
-
-    @Getter
-    private boolean bukkit = true;
 
     @Setter
     private ConsoleCommandSender console;
@@ -57,8 +55,10 @@ public class DockedAppender extends AppenderSkeleton {
     }
 
     private void sendRaw(String msg) {
-        if (!bukkit || console == null)
+        if (console == null) {
+            Bukkit.getLogger().info(StringUtil.stripColor(msg));
             return;
+        }
 
         String message = StringUtil.color(msg);
 
@@ -89,9 +89,6 @@ public class DockedAppender extends AppenderSkeleton {
     }
 
     public void toListeners(String message) {
-        if (!bukkit)
-            return;
-
         if (message != null)
             listeners.forEach(c -> c.sendMessage(message));
     }
@@ -102,7 +99,6 @@ public class DockedAppender extends AppenderSkeleton {
 
     public void setPlugin(JavaPlugin plugin) {
         this.console = plugin.getServer().getConsoleSender();
-        this.bukkit = true;
     }
 
     @Override
