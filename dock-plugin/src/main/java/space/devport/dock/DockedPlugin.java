@@ -23,7 +23,6 @@ import space.devport.dock.commands.build.BuildableSubCommand;
 import space.devport.dock.configuration.Configuration;
 import space.devport.dock.economy.EconomyManager;
 import space.devport.dock.holograms.HologramManager;
-import space.devport.dock.item.impl.PrefabFactory;
 import space.devport.dock.logging.DockedLogger;
 import space.devport.dock.menu.MenuManager;
 import space.devport.dock.text.placeholders.Placeholders;
@@ -90,8 +89,6 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
         // Load version
         ServerVersion.loadServerVersion();
         ServerType.loadServerType();
-
-        factories.add(new PrefabFactory(this));
 
         if (use(UsageFlag.NMS)) {
             VersionManager versionManager = new VersionManager(this);

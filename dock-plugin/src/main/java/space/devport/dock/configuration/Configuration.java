@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.DockedPlugin;
 import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.item.ItemPrefab;
 import space.devport.dock.item.impl.PrefabFactory;
