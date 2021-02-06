@@ -5,7 +5,6 @@ Devport spigot utility core.
 ## Maven
 
 ```xml
-
 <repositories>
     <repository>
         <id>devport</id>
