@@ -34,7 +34,6 @@ public abstract class ItemPrefabBase implements ItemPrefab {
     static {
         try {
             CompoundUtil.has(null); // random call to cause an error
-            new NBTContainer(null);
             COMPOUND_FACTORY_LOADED = true;
         } catch (NoClassDefFoundError e) {
             COMPOUND_FACTORY_LOADED = false;
