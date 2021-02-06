@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.item.data.Amount;
 import space.devport.dock.item.data.Enchant;
 import space.devport.dock.item.data.ItemDamage;
@@ -483,13 +483,6 @@ public interface ItemPrefab extends Cloneable {
      * @return Glow value
      */
     boolean isGlow();
-
-    /**
-     * Get plugin instance.
-     *
-     * @return DevportPlugin instance
-     */
-    @NotNull DockedPlugin getPlugin();
 
     /**
      * Get placeholders used for parsing.

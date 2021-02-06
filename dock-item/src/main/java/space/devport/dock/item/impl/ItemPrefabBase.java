@@ -1,4 +1,4 @@
-package space.devport.dock.item;
+package space.devport.dock.item.impl;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
@@ -8,7 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.DockedPlugin;
+import space.devport.dock.item.ItemPrefab;
+import space.devport.dock.item.PrefabBuilder;
 import space.devport.dock.item.data.Amount;
 import space.devport.dock.item.data.Enchant;
 import space.devport.dock.item.data.ItemDamage;
@@ -25,7 +26,7 @@ import space.devport.dock.version.api.ICompound;
 import java.util.*;
 
 @Slf4j
-public abstract class AbstractPrefab implements ItemPrefab {
+public abstract class ItemPrefabBase implements ItemPrefab {
 
     private static boolean COMPOUND_FACTORY_LOADED;
 
@@ -47,8 +48,6 @@ public abstract class AbstractPrefab implements ItemPrefab {
         }
         return true;
     }
-
-    private final DockedPlugin plugin;
 
     // Item data
 
@@ -80,15 +79,12 @@ public abstract class AbstractPrefab implements ItemPrefab {
 
     private final Set<PrefabBuilder> builders = new HashSet<>();
 
-    public AbstractPrefab(DockedPlugin plugin, @NotNull XMaterial material) {
+    public ItemPrefabBase(@NotNull XMaterial material) {
         this.material = material;
-        this.plugin = plugin;
     }
 
-    public AbstractPrefab(@NotNull ItemPrefab prefab) {
+    public ItemPrefabBase(@NotNull ItemPrefab prefab) {
         Objects.requireNonNull(prefab, "ItemPrefab cannot be null.");
-
-        this.plugin = prefab.getPlugin();
 
         this.material = prefab.getMaterial();
         this.amount = new Amount(prefab.getAmount());
@@ -108,10 +104,8 @@ public abstract class AbstractPrefab implements ItemPrefab {
         this.placeholders.copy(prefab.getPlaceholders());
     }
 
-    public AbstractPrefab(DockedPlugin plugin, @NotNull ItemStack item) {
+    public ItemPrefabBase(@NotNull ItemStack item) {
         Objects.requireNonNull(item, "ItemStack cannot be null.");
-
-        this.plugin = plugin;
 
         this.material = XMaterial.matchXMaterial(item.getType());
         this.amount = new Amount(item.getAmount());
@@ -135,7 +129,7 @@ public abstract class AbstractPrefab implements ItemPrefab {
     }
 
     @Override
-    public abstract @NotNull AbstractPrefab clone();
+    public abstract @NotNull ItemPrefabBase clone();
 
     @Override
     @Nullable
@@ -469,11 +463,6 @@ public abstract class AbstractPrefab implements ItemPrefab {
     @Override
     public boolean isGlow() {
         return glow;
-    }
-
-    @Override
-    public @NotNull DockedPlugin getPlugin() {
-        return plugin;
     }
 
     @Override

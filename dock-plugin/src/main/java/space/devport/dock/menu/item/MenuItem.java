@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
-import space.devport.dock.DockedPlugin;
 import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.item.ItemPrefab;
 import space.devport.dock.item.impl.PrefabFactory;

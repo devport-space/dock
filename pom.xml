@@ -32,6 +32,7 @@
         <module>dock-plugin-api</module>
         <module>dock-version</module>
         <module>dock-text</module>
+        <module>dock-item</module>
     </modules>
 
     <packaging>pom</packaging>

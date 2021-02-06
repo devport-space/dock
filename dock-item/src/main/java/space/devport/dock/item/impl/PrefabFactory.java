@@ -4,35 +4,14 @@ import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
-import space.devport.dock.DockedPlugin;
-import space.devport.dock.api.IDockedFactory;
 import space.devport.dock.item.ItemPrefab;
 
-public class PrefabFactory implements IDockedFactory {
-
-    private static DockedPlugin plugin;
+public class PrefabFactory {
 
     /**
-     * Initialize a new PrefabFactory.
-     *
-     * @param plugin DevportPlugin reference.
-     * @throws IllegalStateException if it's already initialized.
+     * Ensure no one initializes the factory.
      */
-    public PrefabFactory(DockedPlugin plugin) {
-        if (PrefabFactory.plugin != null)
-            throw new IllegalStateException("PrefabFactory already initialized.");
-
-        PrefabFactory.plugin = plugin;
-    }
-
-    @Override
-    public void destroy() {
-        plugin = null;
-    }
-
-    private static void checkInitialized() throws IllegalStateException {
-        if (plugin == null)
-            throw new IllegalStateException("PrefabFactory is not initialized.");
+    private PrefabFactory() {
     }
 
     /**
@@ -44,8 +23,7 @@ public class PrefabFactory implements IDockedFactory {
      */
     @Contract("null -> null")
     public static ItemPrefab createNew(XMaterial material) {
-        checkInitialized();
-        return material == null ? null : new ItemPrefabImpl(plugin, material);
+        return material == null ? null : new ItemPrefabBaseImpl(material);
     }
 
     /**
@@ -57,8 +35,7 @@ public class PrefabFactory implements IDockedFactory {
      */
     @Contract("null -> null")
     public static ItemPrefab createNew(Material material) {
-        checkInitialized();
-        return material == null ? null : new ItemPrefabImpl(plugin, XMaterial.matchXMaterial(material));
+        return material == null ? null : new ItemPrefabBaseImpl(XMaterial.matchXMaterial(material));
     }
 
     /**
@@ -70,8 +47,7 @@ public class PrefabFactory implements IDockedFactory {
      */
     @Contract("null -> null")
     public static ItemPrefab of(ItemPrefab prefab) {
-        checkInitialized();
-        return prefab == null ? null : new ItemPrefabImpl(prefab);
+        return prefab == null ? null : new ItemPrefabBaseImpl(prefab);
     }
 
     /**
@@ -83,7 +59,6 @@ public class PrefabFactory implements IDockedFactory {
      */
     @Contract("null -> null")
     public static ItemPrefab of(ItemStack item) {
-        checkInitialized();
-        return item == null ? null : new ItemPrefabImpl(plugin, item);
+        return item == null ? null : new ItemPrefabBaseImpl(item);
     }
 }
