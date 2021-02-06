@@ -6,11 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.UsageFlag;
-import space.devport.dock.commands.struct.ArgumentRange;
-import space.devport.dock.commands.struct.CommandExecutor;
-import space.devport.dock.commands.struct.CommandResult;
-import space.devport.dock.commands.struct.CompletionProvider;
+import space.devport.dock.commands.struct.*;
 import space.devport.dock.text.message.Message;
+
+import java.util.function.Consumer;
 
 public abstract class SubCommand extends AbstractCommand {
 
@@ -51,7 +50,7 @@ public abstract class SubCommand extends AbstractCommand {
     @NotNull
     public SubCommand withParent(@NotNull MainCommand parent) {
         this.parent = parent;
-        this.preconditions.permissions(craftPermission());
+        getPreconditions().permissions(craftPermission());
         return this;
     }
 
@@ -82,6 +81,12 @@ public abstract class SubCommand extends AbstractCommand {
     @Override
     public @NotNull SubCommand withRange(int wanted) {
         super.withRange(wanted);
+        return this;
+    }
+
+    @Override
+    public @NotNull SubCommand modifyPreconditions(Consumer<Preconditions> modifier) {
+        super.modifyPreconditions(modifier);
         return this;
     }
 }

@@ -6,14 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.UsageFlag;
-import space.devport.dock.commands.struct.ArgumentRange;
-import space.devport.dock.commands.struct.CommandExecutor;
-import space.devport.dock.commands.struct.CommandResult;
-import space.devport.dock.commands.struct.CompletionProvider;
+import space.devport.dock.commands.struct.*;
 import space.devport.dock.text.message.Message;
 import space.devport.dock.text.placeholders.Placeholders;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class MainCommand extends AbstractCommand {
@@ -241,6 +239,12 @@ public abstract class MainCommand extends AbstractCommand {
     @Override
     public @NotNull MainCommand withRange(int wanted) {
         super.withRange(wanted);
+        return this;
+    }
+
+    @Override
+    public @NotNull MainCommand modifyPreconditions(Consumer<Preconditions> modifier) {
+        super.modifyPreconditions(modifier);
         return this;
     }
 }

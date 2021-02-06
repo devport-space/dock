@@ -15,6 +15,7 @@ import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.utility.ParseUtil;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
@@ -27,7 +28,7 @@ public abstract class AbstractCommand {
     private final String name;
 
     @Getter
-    protected Preconditions preconditions = new Preconditions();
+    private final Preconditions preconditions = new Preconditions();
 
     @Getter
     protected ArgumentRange range = new ArgumentRange(0);
@@ -286,6 +287,12 @@ public abstract class AbstractCommand {
     @NotNull
     public AbstractCommand withRange(int wanted) {
         return withRange(new ArgumentRange(wanted));
+    }
+
+    @NotNull
+    public AbstractCommand modifyPreconditions(Consumer<Preconditions> modifier) {
+        modifier.accept(preconditions);
+        return this;
     }
 
     @Override

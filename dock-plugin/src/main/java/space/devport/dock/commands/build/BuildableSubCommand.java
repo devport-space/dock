@@ -5,6 +5,11 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.commands.SubCommand;
 
+/**
+ * BuildableSubCommand provides setters and getters for command elements that are normally solved through abstraction.
+ *
+ * @author qwz
+ */
 public class BuildableSubCommand extends SubCommand {
 
     private String defaultUsage;
