@@ -9,12 +9,13 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.economy.EconomyManager;
 import space.devport.dock.item.data.Amount;
 import space.devport.dock.item.ItemPrefab;
 import space.devport.dock.item.impl.PrefabFactory;
-import space.devport.dock.text.Placeholder;
-import space.devport.dock.text.Placeholders;
+import space.devport.dock.text.placeholders.Placeholder;
+import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.message.CachedMessage;
 import space.devport.dock.text.message.Message;
 import space.devport.dock.utility.DependencyUtil;
@@ -55,13 +56,13 @@ public class Rewards implements Cloneable, Placeholder {
     private final transient Random random = new Random();
 
     @Getter
-    private final transient DockedPlugin plugin;
+    private final transient IDockedPlugin plugin;
 
-    public Rewards(DockedPlugin plugin) {
+    public Rewards(IDockedPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public Rewards(DockedPlugin plugin, Amount tokens, Amount money, List<ItemPrefab> items, CachedMessage inform, CachedMessage broadcast, List<String> commands) {
+    public Rewards(IDockedPlugin plugin, Amount tokens, Amount money, List<ItemPrefab> items, CachedMessage inform, CachedMessage broadcast, List<String> commands) {
         this(plugin);
         this.tokens = tokens;
         this.money = money;
@@ -227,12 +228,12 @@ public class Rewards implements Cloneable, Placeholder {
 
     // Execute command as console
     private void executeConsole(String cmd) {
-        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim()));
+        Bukkit.getScheduler().runTask(plugin.getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd.trim()));
     }
 
     // Execute command as player
     private void executePlayer(String cmd, Player player) {
-        Bukkit.getScheduler().runTask(plugin, () -> player.performCommand(cmd.trim()));
+        Bukkit.getScheduler().runTask(plugin.getPlugin(), () -> player.performCommand(cmd.trim()));
     }
 
     // Execute as player with op

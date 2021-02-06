@@ -8,7 +8,7 @@ import org.bukkit.command.*;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.DockedModule;
+import space.devport.dock.DockedManager;
 import space.devport.dock.DockedPlugin;
 
 import java.lang.reflect.Constructor;
@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public class CommandManager extends DockedModule implements CommandExecutor, TabCompleter {
+public class CommandManager extends DockedManager implements CommandExecutor, TabCompleter {
 
     private final List<MainCommand> registeredCommands = new ArrayList<>();
     private final CommandMap commandMap;
@@ -91,7 +91,7 @@ public class CommandManager extends DockedModule implements CommandExecutor, Tab
         // Register commands
         for (MainCommand mainCommand : this.registeredCommands) {
 
-            PluginCommand command = plugin.getCommand(mainCommand.getName());
+            PluginCommand command = plugin.getPlugin().getCommand(mainCommand.getName());
 
             if (command == null) {
                 log.debug(String.format("Command %s is not in plugin.yml, injecting.", mainCommand.getName()));
@@ -99,7 +99,7 @@ public class CommandManager extends DockedModule implements CommandExecutor, Tab
                 try {
                     Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
                     constructor.setAccessible(true);
-                    command = constructor.newInstance(mainCommand.getName(), plugin);
+                    command = constructor.newInstance(mainCommand.getName(), plugin.getPlugin());
                     constructor.setAccessible(false);
                 } catch (Exception e) {
                     log.error(String.format("Could not inject command %s", mainCommand.getName()));

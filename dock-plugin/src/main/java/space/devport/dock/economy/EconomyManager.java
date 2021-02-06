@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import space.devport.dock.DockedModule;
+import space.devport.dock.DockedManager;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.utility.DependencyUtil;
 
 @Slf4j
-public class EconomyManager extends DockedModule {
+public class EconomyManager extends DockedManager {
 
     @Getter
     private Economy economy;

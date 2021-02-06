@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import space.devport.dock.DockedModule;
+import space.devport.dock.DockedManager;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.holograms.provider.HologramProvider;
 import space.devport.dock.holograms.provider.impl.CMIHolograms;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 @Slf4j
-public class HologramManager extends DockedModule {
+public class HologramManager extends DockedManager {
 
     @Getter
     private HologramProvider hologramProvider = null;

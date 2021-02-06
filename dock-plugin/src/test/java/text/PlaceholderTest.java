@@ -3,7 +3,7 @@ package text;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;
-import space.devport.dock.text.Placeholders;
+import space.devport.dock.text.placeholders.Placeholders;
 
 import java.util.Arrays;
 import java.util.List;

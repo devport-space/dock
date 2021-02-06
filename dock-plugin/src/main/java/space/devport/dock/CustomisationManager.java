@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 @Slf4j
-public class CustomisationManager extends DockedModule {
+public class CustomisationManager extends DockedManager {
 
     @Getter
     private final Configuration customisation = new Configuration(plugin, "customisation");

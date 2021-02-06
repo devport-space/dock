@@ -10,8 +10,8 @@ import space.devport.dock.commands.struct.ArgumentRange;
 import space.devport.dock.commands.struct.CommandExecutor;
 import space.devport.dock.commands.struct.CommandResult;
 import space.devport.dock.commands.struct.CompletionProvider;
-import space.devport.dock.text.Placeholders;
 import space.devport.dock.text.message.Message;
+import space.devport.dock.text.placeholders.Placeholders;
 
 import java.util.*;
 import java.util.stream.Collectors;

@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.bukkit.command.CommandSender;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.UsageFlag;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.text.language.LanguageManager;
 import space.devport.dock.text.message.Message;
 
@@ -55,7 +56,7 @@ public enum CommandResult {
         getMessage(plugin).send(sender);
     }
 
-    public Message getMessage(DockedPlugin plugin) {
+    public Message getMessage(IDockedPlugin plugin) {
         if (defaultMessage && message == null && plugin.use(UsageFlag.LANGUAGE)) {
             this.message = plugin.getManager(LanguageManager.class).get(path);
             this.defaultMessage = false;

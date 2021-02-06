@@ -9,9 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.UsageFlag;
 import space.devport.dock.commands.struct.*;
-import space.devport.dock.text.Placeholders;
 import space.devport.dock.text.language.LanguageManager;
 import space.devport.dock.text.message.Message;
+import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.utility.ParseUtil;
 
 import java.util.*;

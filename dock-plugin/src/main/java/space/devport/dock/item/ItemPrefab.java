@@ -11,11 +11,11 @@ import space.devport.dock.item.data.Amount;
 import space.devport.dock.item.data.Enchant;
 import space.devport.dock.item.data.ItemDamage;
 import space.devport.dock.item.data.SkullData;
-import space.devport.dock.item.nbt.NBTContainer;
 import space.devport.dock.struct.Context;
-import space.devport.dock.text.Placeholders;
 import space.devport.dock.text.message.CachedMessage;
 import space.devport.dock.text.message.Message;
+import space.devport.dock.text.placeholders.Placeholders;
+import space.devport.dock.version.compound.NBTContainer;
 
 import java.util.Collection;
 import java.util.Map;

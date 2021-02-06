@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.item.ItemPrefab;
 import space.devport.dock.item.impl.PrefabFactory;
 import space.devport.dock.item.data.Amount;
@@ -25,7 +26,7 @@ import space.devport.dock.menu.item.MenuItem;
 import space.devport.dock.region.Region;
 import space.devport.dock.struct.Conditions;
 import space.devport.dock.struct.Rewards;
-import space.devport.dock.text.StringUtil;
+import space.devport.dock.utility.StringUtil;
 import space.devport.dock.text.message.Message;
 import space.devport.dock.utility.LocationUtil;
 
@@ -44,13 +45,13 @@ public class Configuration {
     private final String path;
 
     @Getter
+    private final IDockedPlugin plugin;
+
+    @Getter
     private File file;
 
     @Getter
     private FileConfiguration fileConfiguration;
-
-    @Getter
-    private final DockedPlugin plugin;
 
     @Getter
     @Setter
@@ -66,7 +67,7 @@ public class Configuration {
      * @see Configuration#load()
      * @see Configuration#load(boolean)
      */
-    public Configuration(@NotNull DockedPlugin plugin, @NotNull String path) {
+    public Configuration(@NotNull IDockedPlugin plugin, @NotNull String path) {
         this(plugin, createFile(path));
     }
 
@@ -80,7 +81,7 @@ public class Configuration {
      * @see Configuration#load()
      * @see Configuration#load(boolean)
      */
-    public Configuration(DockedPlugin plugin, @NotNull File file) {
+    public Configuration(IDockedPlugin plugin, @NotNull File file) {
         this.plugin = plugin;
         this.file = file;
         this.path = file.getPath();
@@ -101,7 +102,7 @@ public class Configuration {
                 log.error("Could not create " + path);
 
         try {
-            plugin.saveResource(path, false);
+            plugin.getPlugin().saveResource(path, false);
             log.debug("Created new " + path);
         } catch (Exception e) {
             try {

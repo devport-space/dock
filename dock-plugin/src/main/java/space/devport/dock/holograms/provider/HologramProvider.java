@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.configuration.Configuration;
 import space.devport.dock.utility.FastUUID;
 import space.devport.dock.utility.LocationUtil;
@@ -15,7 +16,7 @@ import java.util.*;
 @Slf4j
 public abstract class HologramProvider {
 
-    protected final DockedPlugin plugin;
+    protected final IDockedPlugin plugin;
 
     // Holograms that we registered. Saved into holograms.yml
     private final Set<String> registeredHolograms = new HashSet<>();
@@ -23,7 +24,7 @@ public abstract class HologramProvider {
     @Getter
     private final Configuration storage;
 
-    public HologramProvider(DockedPlugin plugin) {
+    public HologramProvider(IDockedPlugin plugin) {
         this.plugin = plugin;
         this.storage = new Configuration(plugin, "holograms");
     }
@@ -43,7 +44,7 @@ public abstract class HologramProvider {
 
         log.info(String.format("Loaded %d hologram(s)...", registeredHolograms.size()));
 
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this::purgeNonexistent, 40);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin.getPlugin(), this::purgeNonexistent, 40);
     }
 
     public void save() {

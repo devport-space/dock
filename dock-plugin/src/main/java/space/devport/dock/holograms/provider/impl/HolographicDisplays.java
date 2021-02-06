@@ -5,6 +5,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.holograms.provider.HologramProvider;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ public class HolographicDisplays extends HologramProvider {
     // We need a separate cache, because HoloDisplay API is retarded.
     private final Map<String, Hologram> holograms = new HashMap<>();
 
-    public HolographicDisplays(DockedPlugin plugin) {
+    public HolographicDisplays(IDockedPlugin plugin) {
         super(plugin);
     }
 
@@ -33,7 +34,7 @@ public class HolographicDisplays extends HologramProvider {
 
     @Override
     public void addHologram(String id, Location location) {
-        Hologram hologram = HologramsAPI.getHolograms(plugin).stream()
+        Hologram hologram = HologramsAPI.getHolograms(plugin.getPlugin()).stream()
                 .filter(h -> h.getLocation().equals(location))
                 .findAny().orElse(null);
 
@@ -50,7 +51,7 @@ public class HolographicDisplays extends HologramProvider {
 
     @Override
     public void createHologram(String id, Location location, List<String> content) {
-        Hologram hologram = HologramsAPI.createHologram(plugin, location);
+        Hologram hologram = HologramsAPI.createHologram(plugin.getPlugin(), location);
 
         super.addHologram(id, location);
         holograms.put(id, hologram);
@@ -62,7 +63,7 @@ public class HolographicDisplays extends HologramProvider {
 
     @Override
     public void createItemHologram(String id, Location location, ItemStack item) {
-        Hologram hologram = HologramsAPI.createHologram(plugin, location);
+        Hologram hologram = HologramsAPI.createHologram(plugin.getPlugin(), location);
 
         super.addHologram(id, location);
         holograms.put(id, hologram);

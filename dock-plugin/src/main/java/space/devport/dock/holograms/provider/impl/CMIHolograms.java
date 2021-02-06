@@ -7,6 +7,7 @@ import com.Zrips.CMI.Modules.Holograms.HologramManager;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.holograms.provider.HologramProvider;
 
 import java.util.Collections;
@@ -16,7 +17,7 @@ public class CMIHolograms extends HologramProvider {
 
     public final HologramManager hologramManager;
 
-    public CMIHolograms(DockedPlugin plugin) {
+    public CMIHolograms(IDockedPlugin plugin) {
         super(plugin);
         this.hologramManager = CMI.getInstance().getHologramManager();
     }

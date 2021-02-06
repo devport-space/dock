@@ -5,12 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.item.ItemPrefab;
 import space.devport.dock.menu.item.MatrixItem;
 import space.devport.dock.menu.item.MenuItem;
-import space.devport.dock.text.Placeholders;
-import space.devport.dock.text.StringUtil;
+import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.message.CachedMessage;
+import space.devport.dock.utility.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,14 +51,14 @@ public class MenuBuilder implements Cloneable {
     private final HashMap<Character, MatrixItem> itemMatrix = new HashMap<>();
 
     @Getter
-    private final DockedPlugin plugin;
+    private final IDockedPlugin plugin;
 
     public MenuBuilder(String name, MenuBuilder builder) {
         this(builder);
         this.name = name;
     }
 
-    public MenuBuilder(DockedPlugin plugin) {
+    public MenuBuilder(IDockedPlugin plugin) {
         this.plugin = plugin;
     }
 

@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.holograms.provider.HologramProvider;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class Holograms extends HologramProvider {
 
     private final HologramManager hologramManager;
 
-    public Holograms(DockedPlugin plugin) {
+    public Holograms(IDockedPlugin plugin) {
         super(plugin);
 
         Plugin hologramsPlugin = plugin.getPluginManager().getPlugin("Holograms");

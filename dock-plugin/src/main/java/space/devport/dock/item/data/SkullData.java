@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.text.Placeholders;
+import space.devport.dock.text.placeholders.Placeholders;
 
 import java.lang.reflect.Field;
 import java.util.Objects;

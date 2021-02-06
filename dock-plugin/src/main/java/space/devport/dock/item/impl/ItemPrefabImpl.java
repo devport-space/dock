@@ -4,6 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.item.AbstractPrefab;
 import space.devport.dock.item.ItemPrefab;
 
 class ItemPrefabImpl extends AbstractPrefab {

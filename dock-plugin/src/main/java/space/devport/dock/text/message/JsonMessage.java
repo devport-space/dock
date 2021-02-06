@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.struct.Context;
-import space.devport.dock.text.Placeholders;
-import space.devport.dock.text.StringUtil;
+import space.devport.dock.text.placeholders.Placeholders;
+import space.devport.dock.utility.StringUtil;
 import space.devport.dock.utility.reflection.ServerVersion;
 import space.devport.dock.version.VersionManager;
 

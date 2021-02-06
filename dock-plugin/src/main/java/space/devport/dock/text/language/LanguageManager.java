@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.DockedModule;
+import space.devport.dock.DockedManager;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.commands.struct.CommandResult;
 import space.devport.dock.configuration.Configuration;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public class LanguageManager extends DockedModule {
+public class LanguageManager extends DockedManager {
 
     @Getter
     private final Map<String, Message> cache = new HashMap<>();
@@ -109,7 +109,7 @@ public class LanguageManager extends DockedModule {
     /**
      * Get a new {@link Message} instance from path.
      * <p>
-     * Sets the message to parse with the global plugin {@link space.devport.dock.text.Placeholders}.
+     * Sets the message to parse with the global plugin {@link space.devport.dock.text.placeholders.Placeholders}.
      *
      * @param path Path of the message to get.
      * @return {@link Message} instance, empty if path is invalid.
@@ -125,7 +125,7 @@ public class LanguageManager extends DockedModule {
     /**
      * Get a new {@link Message} instance from path and prefix it with %prefix%.
      * <p>
-     * Sets the message to parse with the global plugin {@link space.devport.dock.text.Placeholders}.
+     * Sets the message to parse with the global plugin {@link space.devport.dock.text.placeholders.Placeholders}.
      *
      * @param path Path of the message to get.
      * @return Message instance, empty (without prefix) if path is invalid.

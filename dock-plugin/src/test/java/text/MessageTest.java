@@ -1,7 +1,7 @@
 package text;
 
 import org.junit.Test;
-import space.devport.dock.text.Placeholders;
+import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.message.CachedMessage;
 import space.devport.dock.text.message.Message;
 

@@ -15,26 +15,26 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import space.devport.dock.api.*;
 import space.devport.dock.commands.build.BuildableMainCommand;
 import space.devport.dock.commands.CommandManager;
 import space.devport.dock.commands.MainCommand;
 import space.devport.dock.commands.build.BuildableSubCommand;
 import space.devport.dock.configuration.Configuration;
 import space.devport.dock.economy.EconomyManager;
-import space.devport.dock.factory.IFactory;
 import space.devport.dock.holograms.HologramManager;
 import space.devport.dock.item.impl.PrefabFactory;
 import space.devport.dock.logging.DockedLogger;
 import space.devport.dock.menu.MenuManager;
-import space.devport.dock.text.Placeholders;
-import space.devport.dock.text.StringUtil;
+import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.language.LanguageManager;
 import space.devport.dock.utility.DependencyUtil;
 import space.devport.dock.utility.ParseUtil;
+import space.devport.dock.utility.StringUtil;
 import space.devport.dock.utility.reflection.Reflection;
 import space.devport.dock.utility.reflection.ServerType;
 import space.devport.dock.utility.reflection.ServerVersion;
-import space.devport.dock.version.CompoundFactory;
+import space.devport.dock.version.compound.CompoundFactory;
 import space.devport.dock.version.VersionManager;
 
 import java.util.*;
@@ -42,19 +42,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 @Slf4j
-public abstract class DockedPlugin extends JavaPlugin {
+public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
 
     @Getter
     private DockedLogger dockedLogger;
 
-    private final Set<IFactory> factories = new HashSet<>();
+    private final Set<IDockedFactory> factories = new HashSet<>();
 
-    private final Set<DockedListener> listeners = new HashSet<>();
+    private final Set<IDockedListener> listeners = new HashSet<>();
 
-    @Getter
-    private final Map<Class<? extends DockedModule>, DockedModule> managers = new LinkedHashMap<>();
+    private final Map<Class<? extends IDockedManager>, IDockedManager> managers = new LinkedHashMap<>();
 
-    @Getter
     private final Set<UsageFlag> usageFlags = new HashSet<>();
 
     @Getter
@@ -87,8 +85,6 @@ public abstract class DockedPlugin extends JavaPlugin {
 
         // Setup logger
         this.dockedLogger = new DockedLogger(this);
-        factories.add(dockedLogger);
-
         dockedLogger.setup();
 
         // Load version
@@ -140,12 +136,12 @@ public abstract class DockedPlugin extends JavaPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
 
-        log.info(String.format("Starting up %s %s", getDescription().getName(), getDescription().getVersion()));
-        log.info(String.format("Running on %s %s (NMS: %s)",
+        log.info("Starting up {} {}", getDescription().getName(), getDescription().getVersion());
+        log.info("Running on {} {} (NMS: {})",
                 ServerType.getCurrentServerType().getName(),
                 ServerVersion.getCurrentVersion().toString(),
-                ServerVersion.getNmsVersion()));
-        log.info(String.format("%s~~~~~~~~~~~~ &7%s %s~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor()));
+                ServerVersion.getNmsVersion());
+        log.info("{}~~~~~~~~~~~~ &7{} {}~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor());
 
         if (use(UsageFlag.CONFIGURATION)) {
             this.configuration = new Configuration(this, "config");
@@ -170,18 +166,18 @@ public abstract class DockedPlugin extends JavaPlugin {
                 .add("%pluginName%", getDescription().getName())
                 .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.parseNotNull(player::getName, "null")), OfflinePlayer.class);
 
-        callManagerAction(DockedModule::preEnable);
+        callManagerAction(IDockedManager::preEnable);
 
         // Call plugin specific actions.
         onPluginEnable();
 
-        callManagerAction(DockedModule::afterEnable);
+        callManagerAction(IDockedManager::afterEnable);
 
         // Register listeners that are set to.
         registerListeners();
 
-        log.info(String.format("%s~~~~~~~~~~~~ &7/////// %s~~~~~~~~~~~~", getColor(), getColor()));
-        log.info(String.format("Done... startup took &f%s&7ms.", (System.currentTimeMillis() - start)));
+        log.info("{}~~~~~~~~~~~~ &7/////// {}~~~~~~~~~~~~", getColor(), getColor());
+        log.info("Done... startup took &f{}&7ms.", (System.currentTimeMillis() - start));
 
         // Set the prefix as the last thing, startup looks cooler without it.
         dockedLogger.setPrefix(prefix);
@@ -192,7 +188,7 @@ public abstract class DockedPlugin extends JavaPlugin {
                 globalPlaceholders.addParser((str, player) -> PlaceholderAPI.setPlaceholders(player, str), OfflinePlayer.class);
             }
 
-            callManagerAction(DockedModule::afterDependencyLoad);
+            callManagerAction(IDockedManager::afterDependencyLoad);
         });
     }
 
@@ -229,11 +225,11 @@ public abstract class DockedPlugin extends JavaPlugin {
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName());
 
-        callManagerAction(DockedModule::preReload);
+        callManagerAction(IDockedManager::preReload);
 
         onReload();
 
-        callManagerAction(DockedModule::afterReload);
+        callManagerAction(IDockedManager::afterReload);
 
         // Remove requester from log output and send him a done message.
         dockedLogger.removeListener(sender);
@@ -250,29 +246,32 @@ public abstract class DockedPlugin extends JavaPlugin {
 
         // Unregister listeners.
         unregisterListeners();
-        this.listeners.clear();
+        listeners.clear();
 
         // Clean managers.
-        callManagerAction(DockedModule::onDisable);
-        this.managers.clear();
+        callManagerAction(IDockedManager::onDisable);
+        managers.clear();
 
         // Destroy factories.
-        this.factories.forEach(IFactory::destroy);
-        this.factories.clear();
+        factories.forEach(IDockedFactory::destroy);
+        factories.clear();
+
+        dockedLogger.destroy();
     }
 
-    public void registerManager(@NotNull DockedModule dockedModule) {
-        Objects.requireNonNull(dockedModule, "Cannot register a null DevportManager.");
-        this.managers.put(dockedModule.getClass(), dockedModule);
-        dockedModule.onLoad();
+    public void registerManager(@NotNull IDockedManager dockedManager) {
+        Objects.requireNonNull(dockedManager, "Cannot register a null DevportManager.");
+
+        managers.put(dockedManager.getClass(), dockedManager);
+        dockedManager.onLoad();
     }
 
-    public boolean isRegistered(Class<? extends DockedModule> clazz) {
-        return this.managers.containsKey(clazz);
+    public boolean isRegistered(Class<? extends IDockedManager> clazz) {
+        return managers.containsKey(clazz);
     }
 
-    public <T extends DockedModule> T getManager(Class<T> clazz) {
-        DockedModule manager = this.managers.get(clazz);
+    public <T extends IDockedManager> T getManager(Class<T> clazz) {
+        IDockedManager manager = managers.get(clazz);
 
         if (manager == null) {
 
@@ -296,8 +295,8 @@ public abstract class DockedPlugin extends JavaPlugin {
         return clazz.cast(manager);
     }
 
-    public void callManagerAction(Consumer<DockedModule> action) {
-        for (DockedModule manager : this.managers.values()) {
+    private void callManagerAction(Consumer<IDockedManager> action) {
+        for (IDockedManager manager : managers.values()) {
             action.accept(manager);
         }
     }
@@ -306,12 +305,12 @@ public abstract class DockedPlugin extends JavaPlugin {
         getPluginManager().registerEvents(listener, this);
     }
 
-    public void addListener(DockedListener listener) {
-        this.listeners.add(listener);
-        log.debug("Added listener " + listener.getClass().getName());
+    public void addListener(IDockedListener listener) {
+        listeners.add(listener);
+        log.debug("Added listener {}", listener.getClass().getName());
     }
 
-    public boolean removeListener(Class<? extends DockedListener> clazz) {
+    public boolean removeListener(Class<? extends IDockedListener> clazz) {
         return this.listeners.removeIf(l -> l.getClass().equals(clazz));
     }
 
@@ -321,18 +320,18 @@ public abstract class DockedPlugin extends JavaPlugin {
 
     public void registerListeners() {
         AtomicInteger count = new AtomicInteger();
-        this.listeners.forEach(dockedListener -> {
+        listeners.forEach(dockedListener -> {
             if (dockedListener.isRegister() && !dockedListener.isRegistered()) {
                 dockedListener.register();
                 count.incrementAndGet();
             }
         });
         if (count.get() > 0)
-            log.info(String.format("Registered %d listener(s)...", count.get()));
+            log.info("Registered {} listener(s)...", count.get());
     }
 
     public void unregisterListeners() {
-        this.listeners.forEach(dockedListener -> {
+        listeners.forEach(dockedListener -> {
             if (dockedListener.isUnregister())
                 dockedListener.unregister();
         });
@@ -380,6 +379,11 @@ public abstract class DockedPlugin extends JavaPlugin {
         dependencies.addAll(getDescription().getDepend());
         dependencies.addAll(getDescription().getSoftDepend());
         return dependencies;
+    }
+
+    @Override
+    public JavaPlugin getPlugin() {
+        return this;
     }
 
     public ChatColor getPluginColor() {

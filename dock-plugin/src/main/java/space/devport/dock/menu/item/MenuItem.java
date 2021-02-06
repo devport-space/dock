@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.bukkit.util.Consumer;
 import org.jetbrains.annotations.NotNull;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.item.ItemPrefab;
 import space.devport.dock.item.impl.PrefabFactory;
 import space.devport.dock.menu.events.ItemClick;
@@ -41,7 +42,7 @@ public class MenuItem {
     @Setter
     private boolean clickable = true;
 
-    public MenuItem(DockedPlugin plugin, @NotNull ItemPrefab prefab, @NotNull String name, int slot) {
+    public MenuItem(IDockedPlugin plugin, @NotNull ItemPrefab prefab, @NotNull String name, int slot) {
         this.name = name;
 
         this.slot = slot;

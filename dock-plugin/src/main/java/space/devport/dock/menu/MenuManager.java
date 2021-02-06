@@ -8,14 +8,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
-import space.devport.dock.DockedModule;
+import space.devport.dock.DockedManager;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.menu.item.MenuItem;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class MenuManager extends DockedModule implements Listener {
+public class MenuManager extends DockedManager implements Listener {
 
     @Getter
     private final Set<Menu> registeredMenus = new HashSet<>();
@@ -26,7 +26,7 @@ public class MenuManager extends DockedModule implements Listener {
 
     @Override
     public void afterEnable() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        plugin.getServer().getPluginManager().registerEvents(this, plugin.getPlugin());
     }
 
     @Override
@@ -79,7 +79,7 @@ public class MenuManager extends DockedModule implements Listener {
                     public void run() {
                         finalItem.setClickable(true);
                     }
-                }.runTaskLaterAsynchronously(plugin, menu.getMenuBuilder().getClickDelay());
+                }.runTaskLaterAsynchronously(plugin.getPlugin(), menu.getMenuBuilder().getClickDelay());
             }
         }
 

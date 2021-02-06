@@ -5,10 +5,10 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import space.devport.dock.DockedPlugin;
-import space.devport.dock.factory.IFactory;
+import space.devport.dock.api.IDockedFactory;
 import space.devport.dock.item.ItemPrefab;
 
-public class PrefabFactory implements IFactory {
+public class PrefabFactory implements IDockedFactory {
 
     private static DockedPlugin plugin;
 
