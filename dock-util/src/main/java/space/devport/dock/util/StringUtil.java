@@ -66,7 +66,7 @@ public class StringUtil {
      */
     @Contract("null,_ -> null")
     public String color(String msg, char colorChar) {
-        return msg == null ? null : hexColor(msg, colorChar);
+        return Strings.isNullOrEmpty(msg) ? msg : hexColor(msg, colorChar);
     }
 
     /**
@@ -201,8 +201,12 @@ public class StringUtil {
                 .collect(Collectors.joining(delimiter));
     }
 
-    public String valueOfEmpty(Object obj) {
+    public String valueOfEmpty(Object obj, String ifEmpty) {
         String str = String.valueOf(obj);
-        return str.isEmpty() ? "'empty'" : str;
+        return str.isEmpty() ? ifEmpty : str;
+    }
+
+    public String valueOfEmpty(Object obj) {
+        return valueOfEmpty(obj, "(empty)");
     }
 }
