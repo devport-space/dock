@@ -128,7 +128,7 @@ public abstract class ItemPrefabBase implements ItemPrefab {
     }
 
     @Override
-    public abstract @NotNull ItemPrefabBase clone();
+    public abstract @NotNull ItemPrefab clone();
 
     @Override
     @Nullable
