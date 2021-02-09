@@ -35,6 +35,8 @@ public enum SubPath {
     MENU_ITEM_CANCEL_CLICK("cancel-click"),
     MENU_ITEM_SLOT("slot"),
 
+    MATRIX_ITEM_REPEAT("repeat"),
+
     /**
      * ITEM BUILDER
      */

@@ -21,6 +21,7 @@ import space.devport.dock.item.data.ItemDamage;
 import space.devport.dock.item.data.SkullData;
 import space.devport.dock.item.impl.PrefabFactory;
 import space.devport.dock.menu.MenuBuilder;
+import space.devport.dock.menu.item.MatrixItem;
 import space.devport.dock.menu.item.MenuItem;
 import space.devport.dock.region.Region;
 import space.devport.dock.struct.Conditions;
@@ -586,15 +587,22 @@ public class Configuration {
             for (String itemName : itemsSection.getKeys(false)) {
                 ConfigurationSection itemSection = section.getConfigurationSection(SubPath.MENU_ITEMS + "." + itemName);
 
-                if (itemSection == null) continue;
+                if (itemSection == null)
+                    continue;
 
                 MenuItem item = getMenuItem(path + "." + SubPath.MENU_ITEMS + "." + itemName);
 
-                if (item == null) continue;
+                if (item == null)
+                    continue;
+
+                MatrixItem matrixItem = new MatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, ' '), item);
+
+                if (itemSection.contains(SubPath.MATRIX_ITEM_REPEAT.toString()))
+                    matrixItem.setRepeat(itemSection.getBoolean(SubPath.MATRIX_ITEM_REPEAT.toString()));
 
                 // If it contains matrix-char
                 if (itemSection.contains(SubPath.MENU_MATRIX_CHAR.toString()))
-                    menuBuilder.addMatrixItem(getChar(itemSection.getCurrentPath() + "." + SubPath.MENU_MATRIX_CHAR, ' '), item);
+                    menuBuilder.addMatrixItem(matrixItem);
                 else
                     menuBuilder.setItem(item);
             }
