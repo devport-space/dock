@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedManager;
 import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.commands.struct.CommandResult;
 import space.devport.dock.configuration.Configuration;
 import space.devport.dock.text.message.Message;
@@ -36,7 +37,7 @@ public class LanguageManager extends DockedManager {
     @Setter
     private boolean setInternalDefaults = true;
 
-    public LanguageManager(DockedPlugin plugin) {
+    public LanguageManager(IDockedPlugin plugin) {
         super(plugin);
         this.language = new Configuration(plugin, "language");
     }

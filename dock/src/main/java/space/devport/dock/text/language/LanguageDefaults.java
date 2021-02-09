@@ -2,15 +2,15 @@ package space.devport.dock.text.language;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import space.devport.dock.DockedPlugin;
+import space.devport.dock.api.IDockedPlugin;
 
 @Slf4j
 public abstract class LanguageDefaults {
 
-    private final DockedPlugin plugin;
+    private final IDockedPlugin plugin;
     private LanguageManager languageManager;
 
-    public LanguageDefaults(DockedPlugin plugin) {
+    public LanguageDefaults(IDockedPlugin plugin) {
         this.plugin = plugin;
     }
 
