@@ -5,7 +5,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.version.compound.CompoundFactory;
 import space.devport.dock.version.api.ICompound;
 
 import java.util.*;
@@ -43,7 +42,8 @@ public class CompoundUtil {
      * @see ICompound
      */
     public Collection<String> getKeys(ItemStack item) {
-        return getCompound(item).getKeys();
+        ICompound compound = getCompound(item);
+        return compound == null ? Collections.emptySet() : compound.getKeys();
     }
 
     public Collection<String> getKeysFiltered(ItemStack item) {
@@ -57,11 +57,12 @@ public class CompoundUtil {
      * @return True if {@link ItemStack} has any NBT keys.
      */
     public boolean has(ItemStack item) {
-        return !getCompound(item).getKeys().isEmpty();
+        ICompound compound = getCompound(item);
+        return compound != null && !compound.getKeys().isEmpty();
     }
 
     public boolean hasFiltered(ItemStack item) {
-        return !filterKeys(getCompound(item).getKeys()).isEmpty();
+        return !filterKeys(getKeys(item)).isEmpty();
     }
 
     /**
@@ -72,7 +73,8 @@ public class CompoundUtil {
      * @return True if {@link ICompound} of item contains key.
      */
     public boolean hasKey(ItemStack item, String key) {
-        return getCompound(item).has(key);
+        ICompound compound = getCompound(item);
+        return compound != null && compound.has(key);
     }
 
     /**
@@ -87,6 +89,9 @@ public class CompoundUtil {
      * @see ICompound
      */
     public <T> boolean hasValue(ICompound compound, String key, T value) {
+        if (compound == null)
+            return false;
+
         Object result = TypeUtil.extract(compound, key, TypeUtil.BASE_CLASS_MAP.get(compound.getId(key)));
         return result.equals(value);
     }
@@ -133,6 +138,10 @@ public class CompoundUtil {
      */
     public <T> ItemStack setValue(ItemStack item, String key, T value) {
         ICompound compound = getCompound(item);
+
+        if (compound == null)
+            return item;
+
         TypeUtil.setValue(compound, key, value);
         return compound.finish();
     }
@@ -142,12 +151,20 @@ public class CompoundUtil {
      */
     public ItemStack remove(ItemStack item, String key) {
         ICompound compound = getCompound(item);
+
+        if (compound == null)
+            return item;
+
         compound.remove(key);
         return compound.finish();
     }
 
     public ItemStack clear(ItemStack item) {
         ICompound compound = getCompound(item);
+
+        if (compound == null)
+            return item;
+
         for (String key : compound.getKeys())
             compound.remove(key);
         return compound.finish();
@@ -155,6 +172,10 @@ public class CompoundUtil {
 
     public ItemStack clearFiltered(ItemStack item) {
         ICompound compound = getCompound(item);
+
+        if (compound == null)
+            return item;
+
         for (String key : filterKeys(compound.getKeys()))
             compound.remove(key);
         return compound.finish();
