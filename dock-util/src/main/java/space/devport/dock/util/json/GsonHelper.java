@@ -42,15 +42,15 @@ public class GsonHelper {
         this.gson = builder.create();
     }
 
-    public static <T> Type mapList(@NotNull Class<T> innerType) {
+    private <T> Type mapList(@NotNull Class<T> innerType) {
         return TypeToken.getParameterized(List.class, innerType).getType();
     }
 
-    public static <K, V> Type mapMap(@NotNull Class<K> keyType, @NotNull Class<V> valueType) {
+    private <K, V> Type mapMap(@NotNull Class<K> keyType, @NotNull Class<V> valueType) {
         return TypeToken.getParameterized(Map.class, keyType, valueType).getType();
     }
 
-    public static <T> Type map(@NotNull Class<T> clazz) {
+    private <T> Type map(@NotNull Class<T> clazz) {
         return new TypeToken<T>() {
         }.getType();
     }
