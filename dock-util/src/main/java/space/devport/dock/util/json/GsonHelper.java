@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
-@Slf4j
+@Log
 public class GsonHelper {
 
     @Getter
@@ -67,7 +67,7 @@ public class GsonHelper {
             channel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
             size = channel.size();
         } catch (IOException e) {
-            log.error("Could not open an asynchronous file channel.");
+            log.severe("Could not open an asynchronous file channel.");
             e.printStackTrace();
             return CompletableFuture.supplyAsync(() -> {
                 throw new CompletionException(e);
@@ -231,7 +231,7 @@ public class GsonHelper {
 
         if (!path.toFile().getParentFile().exists()) {
             if (!path.toFile().getParentFile().mkdirs()) {
-                log.error("Could not save, could not create folder structure.");
+                log.severe("Could not save, could not create folder structure.");
                 return false;
             }
         }
@@ -264,7 +264,7 @@ public class GsonHelper {
 
         if (!path.toFile().getParentFile().exists()) {
             if (!path.toFile().getParentFile().mkdirs()) {
-                log.error("Could not save, could not create folder structure.");
+                log.severe("Could not save, could not create folder structure.");
                 return CompletableFuture.completedFuture(null);
             }
         }
@@ -273,7 +273,7 @@ public class GsonHelper {
         try {
             channel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE);
         } catch (IOException e) {
-            log.error("Could not open an asynchronous file channel.");
+            log.severe("Could not open an asynchronous file channel.");
             e.printStackTrace();
             return CompletableFuture.supplyAsync(() -> {
                 throw new CompletionException(e);

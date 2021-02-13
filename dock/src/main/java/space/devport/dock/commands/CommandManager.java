@@ -1,7 +1,7 @@
 package space.devport.dock.commands;
 
 import com.google.common.base.Strings;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.*;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Slf4j
+@Log
 public class CommandManager extends DockedManager implements CommandExecutor, TabCompleter {
 
     private final List<MainCommand> registeredCommands = new ArrayList<>();
@@ -94,7 +94,7 @@ public class CommandManager extends DockedManager implements CommandExecutor, Ta
             PluginCommand command = plugin.getPlugin().getCommand(mainCommand.getName());
 
             if (command == null) {
-                log.debug(String.format("Command %s is not in plugin.yml, injecting.", mainCommand.getName()));
+                log.fine(() -> "Command " + mainCommand.getName() + " is not in plugin.yml, injecting.");
 
                 try {
                     Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
@@ -102,7 +102,7 @@ public class CommandManager extends DockedManager implements CommandExecutor, Ta
                     command = constructor.newInstance(mainCommand.getName(), plugin.getPlugin());
                     constructor.setAccessible(false);
                 } catch (Exception e) {
-                    log.error(String.format("Could not inject command %s", mainCommand.getName()));
+                    log.severe(() -> String.format("Could not inject command %s", mainCommand.getName()));
                     e.printStackTrace();
                     continue;
                 }
@@ -122,7 +122,7 @@ public class CommandManager extends DockedManager implements CommandExecutor, Ta
 
             mainCommand.addLanguage();
 
-            log.debug(String.format("Added command %s with aliases [%s]%s", command.getName(), String.join(", ", mainCommand.getAliases()), mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
+            log.fine(() -> String.format("Added command %s with aliases [%s]%s", mainCommand.getName(), String.join(", ", mainCommand.getAliases()), mainCommand.registerTabCompleter() ? " and with a tab completer." : ""));
         }
     }
 

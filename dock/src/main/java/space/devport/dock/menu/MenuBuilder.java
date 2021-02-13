@@ -1,7 +1,7 @@
 package space.devport.dock.menu;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import space.devport.dock.api.IDockedPlugin;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Slf4j
+@Log
 public class MenuBuilder implements Cloneable {
 
     @Getter
@@ -102,7 +102,7 @@ public class MenuBuilder implements Cloneable {
 
         if (title.length() > 32) {
             title = title.substring(0, 31);
-            log.warn("Inventory title " + this.title + " is too long, cutting to 32.");
+            log.warning("Inventory title " + this.title + " is too long, cutting to 32.");
         }
 
         inventory = Bukkit.createInventory(null, slots, title);
@@ -110,7 +110,7 @@ public class MenuBuilder implements Cloneable {
         // Build scheme
 
         if (buildMatrix.length == 0) {
-            log.error("Could not construct menu " + name + ", there's no matrix.");
+            log.severe("Could not construct menu " + name + ", there's no matrix.");
             return null;
         }
 

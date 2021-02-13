@@ -1,59 +1,66 @@
 package space.devport.dock.logging;
 
 import com.google.common.base.Strings;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DockedLogger {
 
     private final JavaPlugin plugin;
 
-    private DockedAppender appender;
+    private DockedConsoleHandler handler;
+
+    private Logger parentLogger;
 
     public DockedLogger(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void setup() {
-        this.appender = new DockedAppender(plugin);
+    public void setup(String loggerKey) {
+        this.handler = new DockedConsoleHandler(plugin);
+        this.parentLogger = Logger.getLogger(loggerKey);
 
-        Logger rootLogger = Logger.getRootLogger();
-        rootLogger.addAppender(appender);
-        rootLogger.setLevel(Level.INFO);
+        setLevel(LogLevel.INFO);
+        parentLogger.setUseParentHandlers(false);
+        parentLogger.addHandler(handler);
     }
 
     public void destroy() {
-        Logger.getRootLogger().removeAppender(appender);
-        this.appender = null;
+        parentLogger.removeHandler(handler);
+        parentLogger.setLevel(Level.INFO);
+
+        this.handler = null;
     }
 
-    public void setLevel(Level level) {
-        Logger.getRootLogger().setLevel(level);
+    public void setLevel(LogLevel level) {
+        parentLogger.setLevel(level.toLevel());
     }
 
     public void setLevel(String name) {
-        if (!Strings.isNullOrEmpty(name)) {
-            Level level = Level.toLevel(name, null);
+        if (Strings.isNullOrEmpty(name))
+            return;
 
-            if (level != null)
-                setLevel(level);
-        }
+        LogLevel logLevel = LogLevel.fromString(name, null);
+
+        if (logLevel != null)
+            setLevel(logLevel);
     }
 
     public void setPrefix(String prefix) {
-        if (appender != null)
-            appender.setPrefix(prefix);
+        if (handler != null)
+            handler.setPrefix(prefix);
     }
 
     public void addListener(CommandSender listener) {
-        if (appender != null)
-            appender.addListener(listener);
+        if (handler != null)
+            handler.addListener(listener);
     }
 
     public void removeListener(CommandSender listener) {
-        if (appender != null)
-            appender.removeListener(listener);
+        if (handler != null)
+            handler.removeListener(listener);
     }
 }

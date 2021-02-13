@@ -3,13 +3,13 @@ package space.devport.dock.item.data;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.util.ParseUtil;
 
 import java.util.Random;
 
-@Slf4j
+@Log
 public class Amount implements Cloneable {
 
     private final transient Random random = new Random();
@@ -80,14 +80,14 @@ public class Amount implements Cloneable {
             }
 
             double low = ParseUtil.parseDoubleHandled(arr[0],
-                    c -> log.warn("Failed to parse double from " + c.getInput() + ", using 0 as default."));
+                    c -> log.warning(() ->"Failed to parse double from " + c.getInput() + ", using 0 as default."));
             double high = ParseUtil.parseDoubleHandled(arr[1],
-                    c -> log.warn("Failed to parse double from " + c.getInput() + ", using 0 as default."));
+                    c -> log.warning(() ->"Failed to parse double from " + c.getInput() + ", using 0 as default."));
 
             return new Amount(low, high);
         } else {
             return new Amount(ParseUtil.parseDoubleHandled(str,
-                    c -> log.warn("Failed to parse double from " + c.getInput() + ", using 0 as default.")));
+                    c -> log.warning(() ->"Failed to parse double from " + c.getInput() + ", using 0 as default.")));
         }
     }
 

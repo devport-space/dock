@@ -1,9 +1,8 @@
 package space.devport.dock;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.apache.log4j.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -15,32 +14,35 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.api.*;
-import space.devport.dock.commands.build.BuildableMainCommand;
+import space.devport.dock.api.IDockedFactory;
+import space.devport.dock.api.IDockedListener;
+import space.devport.dock.api.IDockedManager;
+import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.commands.CommandManager;
 import space.devport.dock.commands.MainCommand;
+import space.devport.dock.commands.build.BuildableMainCommand;
 import space.devport.dock.commands.build.BuildableSubCommand;
 import space.devport.dock.configuration.Configuration;
 import space.devport.dock.economy.EconomyManager;
 import space.devport.dock.holograms.HologramManager;
 import space.devport.dock.logging.DockedLogger;
 import space.devport.dock.menu.MenuManager;
-import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.text.language.LanguageManager;
+import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.util.DependencyUtil;
 import space.devport.dock.util.ParseUtil;
 import space.devport.dock.util.StringUtil;
 import space.devport.dock.util.reflection.Reflection;
 import space.devport.dock.util.reflection.ServerType;
 import space.devport.dock.util.reflection.ServerVersion;
-import space.devport.dock.version.compound.CompoundFactory;
 import space.devport.dock.version.VersionManager;
+import space.devport.dock.version.compound.CompoundFactory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-@Slf4j
+@Log
 public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
 
     @Getter
@@ -84,7 +86,7 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
 
         // Setup logger
         this.dockedLogger = new DockedLogger(this);
-        dockedLogger.setup();
+        dockedLogger.setup(getClass().getPackage().getName());
 
         // Load version
         ServerVersion.loadServerVersion();
@@ -133,12 +135,10 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
 
-        log.info("Starting up {} {}", getDescription().getName(), getDescription().getVersion());
-        log.info("Running on {} {} (NMS: {})",
-                ServerType.getCurrentServerType().getName(),
-                ServerVersion.getCurrentVersion().toString(),
-                ServerVersion.getNmsVersion());
-        log.info("{}~~~~~~~~~~~~ &7{} {}~~~~~~~~~~~~", getColor(), getDescription().getName(), getColor());
+        log.info(() -> "Starting up " + getDescription().getName() + getDescription().getVersion());
+        log.info(() -> "Running on " + ServerType.getCurrentServerType().getName() +
+                ServerVersion.getCurrentVersion().toString() + " (NMS: " + ServerVersion.getNmsVersion() + ")");
+        log.info(() -> getColor() + "~~~~~~~~~~~~ &7" + getDescription().getName() + " " + getColor() + "~~~~~~~~~~~~");
 
         if (use(UsageFlag.CONFIGURATION)) {
             this.configuration = new Configuration(this, "config");
@@ -149,10 +149,7 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
                 StringUtil.HEX_PATTERN = configuration.getFileConfiguration().getString("hex-pattern");
             StringUtil.compileHexPattern();
 
-            if (configuration.getFileConfiguration().getBoolean("debug-enabled", false))
-                dockedLogger.setLevel(Level.DEBUG);
-            else
-                dockedLogger.setLevel(configuration.getFileConfiguration().getString("debug-level", "INFO"));
+            configureLogger();
 
             this.prefix = getColor() + configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
@@ -173,8 +170,8 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
         // Register listeners that are set to.
         registerListeners();
 
-        log.info("{}~~~~~~~~~~~~ &7/////// {}~~~~~~~~~~~~", getColor(), getColor());
-        log.info("Done... startup took &f{}&7ms.", (System.currentTimeMillis() - start));
+        log.info(() -> getColor() + "~~~~~~~~~~~~ &7/////// " + getColor() + "~~~~~~~~~~~~");
+        log.info(() -> "Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
 
         // Set the prefix as the last thing, startup looks cooler without it.
         dockedLogger.setPrefix(prefix);
@@ -209,10 +206,7 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
                 StringUtil.compileHexPattern();
             }
 
-            if (configuration.getFileConfiguration().getBoolean("debug-enabled", false))
-                dockedLogger.setLevel(Level.DEBUG);
-            else
-                dockedLogger.setLevel(configuration.getFileConfiguration().getString("debug-level", "INFO"));
+            configureLogger();
 
             this.prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
@@ -256,6 +250,10 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
         dockedLogger.destroy();
     }
 
+    private void configureLogger() {
+        dockedLogger.setLevel(configuration.getFileConfiguration().getString("log-level", "INFO"));
+    }
+
     public void registerManager(@NotNull IDockedManager dockedManager) {
         Objects.requireNonNull(dockedManager, "Cannot register a null DevportManager.");
 
@@ -275,17 +273,17 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
             T instancedManager = Reflection.obtainInstance(clazz, new Class[]{DockedPlugin.class}, new Object[]{this});
 
             if (instancedManager == null) {
-                log.error("Tried to access a manager " + clazz.getSimpleName() + " that's not and cannot be registered.");
+                log.severe("Tried to access a manager " + clazz.getSimpleName() + " that's not and cannot be registered.");
                 return null;
             }
 
-            // log.warn("Tried to access a manager " + clazz.getSimpleName() + " that was not registered. Registered and loaded it.");
+            // log.warning(() ->"Tried to access a manager " + clazz.getSimpleName() + " that was not registered. Registered and loaded it.");
             registerManager(instancedManager);
             return instancedManager;
         }
 
         if (!clazz.isAssignableFrom(manager.getClass())) {
-            log.error("A different manager that expected was stored. Failing to retrieve it gracefully.");
+            log.severe("A different manager that expected was stored. Failing to retrieve it gracefully.");
             return null;
         }
 
@@ -304,7 +302,7 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
 
     public void addListener(IDockedListener listener) {
         listeners.add(listener);
-        log.debug("Added listener {}", listener.getClass().getName());
+        log.fine(() -> "Added listener " + listener.getClass().getName());
     }
 
     public boolean removeListener(Class<? extends IDockedListener> clazz) {
@@ -323,8 +321,9 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
                 count.incrementAndGet();
             }
         });
+
         if (count.get() > 0)
-            log.info("Registered {} listener(s)...", count.get());
+            log.info(() -> "Registered " + count.get() + " listener(s)...");
     }
 
     public void unregisterListeners() {

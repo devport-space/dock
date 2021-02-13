@@ -3,7 +3,7 @@ package space.devport.dock.item.data;
 import com.cryptomorin.xseries.XEnchantment;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * Enchantment and level wrapper for simplified enchant manipulation.
  */
-@Slf4j
+@Log
 public class Enchant {
 
     @Getter

@@ -1,14 +1,14 @@
 package space.devport.dock.economy;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import space.devport.dock.DockedManager;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.util.DependencyUtil;
 
-@Slf4j
+@Log
 public class EconomyManager extends DockedManager {
 
     @Getter
@@ -41,7 +41,7 @@ public class EconomyManager extends DockedManager {
         if (!DependencyUtil.isInstalled("Vault")) {
             if (economy != null) {
                 this.economy = null;
-                log.warn("Vault has been uninstalled.");
+                log.warning(() ->"Vault has been uninstalled.");
             }
             return;
         }

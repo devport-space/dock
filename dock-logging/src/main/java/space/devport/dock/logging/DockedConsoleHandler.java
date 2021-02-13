@@ -2,19 +2,27 @@ package space.devport.dock.logging;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
-public class DockedAppender extends AppenderSkeleton {
+public class DockedConsoleHandler extends Handler {
+
+    private final static String NORMAL_PATTERN = "[%s - %s] %s%s";
+
+    private final static String DETAILED_PATTERN = "[%s - %s] [%s.%s] (%d) %s%s";
+
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     @Setter
     private ConsoleCommandSender console;
@@ -25,30 +33,35 @@ public class DockedAppender extends AppenderSkeleton {
     @Getter
     private final Set<CommandSender> listeners = new HashSet<>();
 
-    public DockedAppender(JavaPlugin plugin) {
-        super();
-        setPlugin(plugin);
+    @Getter
+    private final JavaPlugin plugin;
+
+    protected DockedConsoleHandler(JavaPlugin plugin) {
+        this.plugin = plugin;
+        this.console = plugin.getServer().getConsoleSender();
     }
 
     @Override
-    protected void append(LoggingEvent loggingEvent) {
-
-        LogLevel level = LogLevel.fromLevel(loggingEvent.getLevel(), LogLevel.INFO);
+    public void publish(LogRecord record) {
+        LogLevel level = LogLevel.fromLevel(record.getLevel(), LogLevel.INFO);
 
         String message;
-
-        // Add additional info when DEBUG or TRACE is provided.
-        // Note: This slows down the logging extremely.
-        if (loggingEvent.getLevel() == Level.DEBUG || loggingEvent.getLevel() == Level.TRACE)
-            message = String.format("%s[(%s) %s@%s:%s]: %s",
+        if (level.isDetailed()) {
+            message = String.format(DETAILED_PATTERN,
+                    LocalTime.from(Instant.ofEpochMilli(record.getMillis())).format(dateFormatter),
+                    record.getLevel().toString(),
+                    record.getSourceClassName(),
+                    record.getSourceMethodName(),
+                    record.getThreadID(),
                     level.getPrefix(),
-                    loggingEvent.getThreadName(),
-                    loggingEvent.getLocationInformation().getMethodName(),
-                    loggingEvent.getLocationInformation().getClassName(),
-                    loggingEvent.getLocationInformation().getLineNumber(),
-                    loggingEvent.getRenderedMessage());
-        else
-            message = level.getPrefix() + loggingEvent.getRenderedMessage();
+                    record.getMessage());
+        } else {
+            message = String.format(NORMAL_PATTERN,
+                    LocalTime.from(Instant.ofEpochMilli(record.getMillis())).format(dateFormatter),
+                    record.getLevel().toString(),
+                    level.getPrefix(),
+                    record.getMessage());
+        }
 
         sendRaw(message);
     }
@@ -56,6 +69,7 @@ public class DockedAppender extends AppenderSkeleton {
     private void sendRaw(String msg) {
         if (console == null) {
             Bukkit.getLogger().info(LoggerUtil.stripColor(msg));
+            toListeners(LoggerUtil.color(msg));
             return;
         }
 
@@ -65,6 +79,16 @@ public class DockedAppender extends AppenderSkeleton {
             console.sendMessage(message);
             toListeners(message);
         }
+    }
+
+    @Override
+    public void flush() {
+        // NO-OP
+    }
+
+    @Override
+    public void close() throws SecurityException {
+        // NO-OP
     }
 
     /**
@@ -94,18 +118,5 @@ public class DockedAppender extends AppenderSkeleton {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix == null ? "" : prefix;
-    }
-
-    public void setPlugin(JavaPlugin plugin) {
-        this.console = plugin.getServer().getConsoleSender();
-    }
-
-    @Override
-    public void close() {
-    }
-
-    @Override
-    public boolean requiresLayout() {
-        return false;
     }
 }

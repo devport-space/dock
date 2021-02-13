@@ -2,12 +2,12 @@ package space.devport.dock;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.bukkit.event.HandlerList;
 import space.devport.dock.api.IDockedListener;
 import space.devport.dock.api.IDockedPlugin;
 
-@Slf4j
+@Log
 public class DockedListener implements IDockedListener {
 
     protected final IDockedPlugin plugin;
@@ -32,12 +32,12 @@ public class DockedListener implements IDockedListener {
     public void register() {
         this.registered = true;
         plugin.registerListener(this);
-        log.debug("Registered listener {}", getClass().getName());
+        log.fine("Registered listener " + getClass().getName());
     }
 
     public void unregister() {
         this.registered = false;
         HandlerList.unregisterAll(this);
-        log.debug("Unregistered listener {}", getClass().getName());
+        log.fine("Unregistered listener " + getClass().getName());
     }
 }

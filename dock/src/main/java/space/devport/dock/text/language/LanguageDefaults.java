@@ -1,10 +1,10 @@
 package space.devport.dock.text.language;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import space.devport.dock.api.IDockedPlugin;
 
-@Slf4j
+@Log
 public abstract class LanguageDefaults {
 
     private final IDockedPlugin plugin;
@@ -21,7 +21,7 @@ public abstract class LanguageDefaults {
 
     public void register() {
         if (!plugin.isRegistered(LanguageManager.class)) {
-            log.warn("Attempted to register LanguageDefaults when Language is not used.");
+            log.warning(() ->"Attempted to register LanguageDefaults when Language is not used.");
             this.languageManager = null;
             return;
         }

@@ -1,7 +1,7 @@
 package space.devport.dock.version;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import space.devport.dock.DockedManager;
 import space.devport.dock.api.IDockedPlugin;
@@ -12,7 +12,7 @@ import space.devport.dock.version.api.IVersionUtility;
 
 import java.util.function.Consumer;
 
-@Slf4j
+@Log
 public class VersionManager extends DockedManager {
 
     @Getter
@@ -64,9 +64,9 @@ public class VersionManager extends DockedManager {
         String version = ServerVersion.getNmsVersion();
 
         if (load(version))
-            log.info("Loaded version dependent modules for {}", version);
+            log.info(() -> "Loaded version dependent modules for " + version);
         else
-            log.error("Could not load version dependent modules for {}. Some features might not work.", version);
+            log.severe(() -> "Could not load version dependent modules for " + version + ". Some features might not work.");
     }
 
     /**
@@ -84,7 +84,7 @@ public class VersionManager extends DockedManager {
             Class<?> clazz = Class.forName(path);
 
             if (!interfaceClazz.isAssignableFrom(clazz)) {
-                log.error("Subclass {} is not an implementation of {}, cannot use it.", subClassName, interfaceClazz.getSimpleName());
+                log.severe(() -> "Subclass " + subClassName + " is not an implementation of " + interfaceClazz.getSimpleName() + ", cannot use it.");
                 return false;
             }
 

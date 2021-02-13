@@ -5,7 +5,7 @@ import com.cryptomorin.xseries.XMaterial;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Slf4j
+@Log
 public class Configuration {
 
     @Getter
@@ -103,21 +103,21 @@ public class Configuration {
         // Ensure folder structure
         if (!file.getParentFile().exists() && !file.getParentFile().mkdirs())
             if (!silent)
-                log.error("Could not create {}...", path);
+                log.severe("Could not create " + path + "...");
 
         try {
             plugin.getPlugin().saveResource(path, false);
-            log.debug("Created {}...", path);
+            log.fine(() -> "Created " + path + "...");
         } catch (Exception e) {
             try {
                 if (!file.createNewFile()) {
                     if (!silent)
-                        log.error("Could not create {}...", file.getAbsolutePath());
+                        log.severe(() -> "Could not create " + file.getAbsolutePath() + "...");
                     return false;
                 }
             } catch (IOException e1) {
                 if (!silent)
-                    log.error("Could not create {}...", file.getAbsolutePath());
+                    log.severe(() -> "Could not create " + file.getAbsolutePath() + "...");
                 e1.printStackTrace();
                 return false;
             }
@@ -154,7 +154,7 @@ public class Configuration {
 
         this.fileConfiguration = YamlConfiguration.loadConfiguration(file);
         if (!silent)
-            log.info("Loaded {}...", path);
+            log.info(() -> "Loaded " + path + "...");
         return true;
     }
 
@@ -168,7 +168,7 @@ public class Configuration {
             fileConfiguration.save(file);
             return true;
         } catch (IOException | NullPointerException e) {
-            log.error("Could not save {}...", path);
+            log.severe(() -> "Could not save " + path + "...");
             e.printStackTrace();
             return false;
         }
@@ -193,7 +193,7 @@ public class Configuration {
             this.fileConfiguration.save(file);
             return true;
         } catch (IOException | NullPointerException e) {
-            log.error("Could not save {}...", path);
+            log.severe(() -> "Could not save " + path + "...");
             e.printStackTrace();
             return false;
         }
@@ -252,7 +252,7 @@ public class Configuration {
         if (file.delete()) {
             return true;
         } else {
-            log.error("Could not delete {}...", path);
+            log.severe(() -> "Could not delete " + path + "...");
             return false;
         }
     }
@@ -507,12 +507,12 @@ public class Configuration {
         Location max = LocationUtil.parseLocation(fileConfiguration.getString(path + "." + SubPath.REGION_MAX));
 
         if (min == null) {
-            log.error("Could not get a Region from {}, minimum location didn't load.", composePath(path));
+            log.severe(() -> "Could not get a Region from " + composePath(path) + ", minimum location didn't load.");
             return null;
         }
 
         if (max == null) {
-            log.error("Could not get a Region from {}, maximum location didn't load.", composePath(path));
+            log.severe(() -> "Could not get a Region from " + composePath(path) + ", maximum location didn't load.");
             return null;
         }
 
@@ -529,13 +529,13 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            log.error("Could not set Region to " + composePath(path) + ", path is invalid.");
+            log.severe(() -> "Could not set Region to " + composePath(path) + ", path is invalid.");
             return;
         }
 
         // Check region
         if (region == null) {
-            log.error("Could not set Region to " + composePath(path) + ", region is null.");
+            log.severe(() -> "Could not set Region to " + composePath(path) + ", region is null.");
             return;
         }
 
@@ -559,7 +559,7 @@ public class Configuration {
 
         // Check path
         if (Strings.isNullOrEmpty(path)) {
-            log.error("Could not get MenuBuilder from {}, path is invalid.", composePath(path));
+            log.severe(() -> "Could not get MenuBuilder from " + composePath(path) + ", path is invalid.");
             return null;
         }
 
@@ -568,7 +568,7 @@ public class Configuration {
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
         if (section == null) {
-            log.error("Could not get MenuBuilder from {}, path is invalid.", composePath(path));
+            log.severe(() -> "Could not get MenuBuilder from " + composePath(path) + ", path is invalid.");
             return null;
         }
 
@@ -621,14 +621,14 @@ public class Configuration {
     public MenuItem getMenuItem(@Nullable String path) {
 
         if (Strings.isNullOrEmpty(path)) {
-            log.error("Failed to load MenuItem at '{}', invalid path.", StringUtil.valueOfEmpty(path));
+            log.severe(() -> "Failed to load MenuItem at '" + StringUtil.valueOfEmpty(path) + "', invalid path.");
             return null;
         }
 
         ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
         if (section == null) {
-            log.error("Failed to load MenuItem at '{}', invalid configuration section.", composePath(path));
+            log.severe(() -> "Failed to load MenuItem at '" + composePath(path) + "', invalid configuration section.");
             return null;
         }
 
@@ -668,21 +668,21 @@ public class Configuration {
             ConfigurationSection section = fileConfiguration.getConfigurationSection(path);
 
             if (section == null) {
-                log.debug("Failed to load Prefab at '{}', invalid configuration section.", composePath(path));
+                log.fine(() -> "Failed to load Prefab at '" + composePath(path) + "', invalid configuration section.");
                 return defaultValue;
             }
 
             String type = section.getString(SubPath.ITEM_TYPE.toString());
 
             if (Strings.isNullOrEmpty(type)) {
-                log.warn("Failed to load Prefab at '{}', no material provided.", composePath(path));
+                log.warning(() -> "Failed to load Prefab at '" + composePath(path) + "', no material provided.");
                 return defaultValue;
             }
 
             XMaterial xMaterial = XMaterial.matchXMaterial(type.toUpperCase()).orElse(null);
 
             if (xMaterial == null) {
-                log.warn("Failed to load Prefab at '{}', could not parse material from '{}'.", composePath(path), StringUtil.valueOfEmpty(type));
+                log.warning(() -> "Failed to load Prefab at '" + composePath(path) + "', could not parse material from '" + StringUtil.valueOfEmpty(type) + "'.");
                 return defaultValue;
             }
 
@@ -711,18 +711,19 @@ public class Configuration {
             if (section.contains(SubPath.ITEM_ENCHANTS.toString())) {
                 List<String> dataList = section.getStringList(SubPath.ITEM_ENCHANTS.toString());
 
-                for (String dataString : dataList) {
+                for (final String data : dataList) {
                     int level = 1;
 
-                    if (dataString.contains(SubPath.ITEM_ENCHANT_DELIMITER.toString())) {
-                        level = Integer.parseInt(dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[1]);
-                        dataString = dataString.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
+                    String dataString = data;
+                    if (data.contains(SubPath.ITEM_ENCHANT_DELIMITER.toString())) {
+                        level = Integer.parseInt(data.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[1]);
+                        dataString = data.split(SubPath.ITEM_ENCHANT_DELIMITER.toString())[0];
                     }
 
                     XEnchantment xEnchantment = XEnchantment.matchXEnchantment(dataString).orElse(null);
 
                     if (xEnchantment == null) {
-                        log.warn("Failed to parse enchantment from '{}' at '{}'.", StringUtil.valueOfEmpty(dataString), composePath(path));
+                        log.warning(() -> "Failed to parse enchantment from '" + StringUtil.valueOfEmpty(data) + "' at '" + composePath(path) + "'.");
                         continue;
                     }
 
@@ -752,7 +753,7 @@ public class Configuration {
 
             return prefab;
         } catch (Exception e) {
-            log.error("Failed to load Prefab at '{}', due to: {}", composePath(path), e.getMessage());
+            log.severe(() -> "Failed to load Prefab at '" + composePath(path) + "', due to: " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -779,7 +780,7 @@ public class Configuration {
     public void setItem(@Nullable String path, @NotNull ItemPrefab prefab) {
 
         if (Strings.isNullOrEmpty(path)) {
-            log.error("Failed to set Prefab to '{}', provided path is invalid.", composePath(path));
+            log.severe(() -> "Failed to set Prefab to '" + composePath(path) + "', provided path is invalid.");
             return;
         }
 
@@ -826,7 +827,7 @@ public class Configuration {
 
     public void setMessage(@Nullable String path, @NotNull Message message) {
         if (Strings.isNullOrEmpty(path)) {
-            log.error("Failed to set Message to '{}', provided path is invalid.", composePath(path));
+            log.severe(() -> "Failed to set Message to '" + composePath(path) + "', provided path is invalid.");
             return;
         }
 
@@ -854,7 +855,7 @@ public class Configuration {
     public Amount getAmount(@Nullable String path, @NotNull Amount defaultValue) {
 
         if (Strings.isNullOrEmpty(path)) {
-            log.error("Failed to load Amount at '{}', provided path is invalid.", composePath(path));
+            log.severe(() -> "Failed to load Amount at '" + composePath(path) + "', provided path is invalid.");
             return defaultValue;
         }
 
@@ -891,7 +892,7 @@ public class Configuration {
     public Amount getAmount(@Nullable String path) {
 
         if (Strings.isNullOrEmpty(path)) {
-            log.error("Failed to load Amount at '{}', provided path is invalid.", composePath(path));
+            log.severe(() -> "Failed to load Amount at '" + composePath(path) + "', provided path is invalid.");
             return null;
         }
 

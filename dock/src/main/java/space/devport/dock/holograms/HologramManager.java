@@ -1,7 +1,7 @@
 package space.devport.dock.holograms;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import space.devport.dock.DockedManager;
@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Slf4j
+@Log
 public class HologramManager extends DockedManager {
 
     @Getter
@@ -72,17 +72,17 @@ public class HologramManager extends DockedManager {
         }
 
         if (!isHooked())
-            log.info("Found no holograms provider installed.");
+            log.info(() -> "Found no holograms provider installed.");
         else hologramProvider.load();
     }
 
     private void logUsing(String name) {
-        log.info(String.format("Using &a%s &7for holograms.", name));
+        log.info(() -> String.format("Using &a%s &7for holograms.", name));
     }
 
     private boolean checkHooked() {
         if (!isHooked()) {
-            log.debug("There was a request for a holograms provider, but there's none registered.");
+            log.finer(() -> "There was a request for a holograms provider, but there's none registered.");
             return false;
         } else return true;
     }

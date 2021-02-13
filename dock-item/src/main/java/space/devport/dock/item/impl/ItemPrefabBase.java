@@ -2,7 +2,7 @@ package space.devport.dock.item.impl;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -25,7 +25,7 @@ import space.devport.dock.version.api.ICompound;
 
 import java.util.*;
 
-@Slf4j
+@Log
 public abstract class ItemPrefabBase implements ItemPrefab {
 
     private static boolean COMPOUND_FACTORY_LOADED;
@@ -42,7 +42,7 @@ public abstract class ItemPrefabBase implements ItemPrefab {
 
     private static boolean checkCompoundLoaded() {
         if (!COMPOUND_FACTORY_LOADED) {
-            log.warn("Attempted to add NBT to ItemPrefab when NMS classes are not loaded.");
+            log.warning(() ->"Attempted to add NBT to ItemPrefab when NMS classes are not loaded.");
             return false;
         }
         return true;

@@ -34,6 +34,11 @@ public class MockWorld implements World {
         this.uuid = UUID.randomUUID();
     }
 
+    @Override
+    public long getGameTime() {
+        return 0;
+    }
+
     @NotNull
     @Override
     public Block getBlockAt(int i, int i1, int i2) {

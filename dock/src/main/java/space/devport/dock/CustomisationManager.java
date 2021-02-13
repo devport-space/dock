@@ -1,7 +1,7 @@
 package space.devport.dock;
 
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-@Slf4j
+@Log
 public class CustomisationManager extends DockedManager {
 
     @Getter
@@ -40,12 +40,12 @@ public class CustomisationManager extends DockedManager {
     public void load() {
         customisation.load();
 
-        log.debug("Loading menus...");
+        log.fine(() -> "Loading menus...");
         for (String name : customisation.section("menus").getKeys(false)) {
             MenuBuilder menuBuilder = customisation.getMenuBuilder("menus.".concat(name));
 
             if (menuBuilder == null) {
-                log.warn("Could not load menu preset " + name);
+                log.warning("Could not load menu preset " + name);
                 continue;
             }
 
@@ -55,12 +55,12 @@ public class CustomisationManager extends DockedManager {
         if (!this.loadedMenus.isEmpty())
             log.info("Loaded " + this.loadedMenus.size() + " menu preset(s)...");
 
-        log.debug("Loading items...");
+        log.fine(() -> "Loading items...");
         for (String name : customisation.section("items").getKeys(false)) {
             ItemPrefab itemBuilder = customisation.getItem("items.".concat(name));
 
             if (itemBuilder == null) {
-                log.warn("Could not load item preset " + name);
+                log.warning(() -> "Could not load item preset " + name);
                 continue;
             }
 
@@ -68,7 +68,7 @@ public class CustomisationManager extends DockedManager {
         }
 
         if (!this.loadedItems.isEmpty())
-            log.info("Loaded " + this.loadedItems.size() + " item preset(s)...");
+            log.info(() -> "Loaded " + this.loadedItems.size() + " item preset(s)...");
     }
 
     @Nullable

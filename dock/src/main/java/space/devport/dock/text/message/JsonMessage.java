@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ import space.devport.dock.version.VersionManager;
 
 import java.util.LinkedList;
 
-@Slf4j
+@Log
 public class JsonMessage extends Message {
 
     //TODO 1.16+ uses "contents" instead of values
@@ -264,7 +264,7 @@ public class JsonMessage extends Message {
     private void sendJson(@NotNull Player player, @NotNull String content) {
 
         if (ServerVersion.isCurrentBelow(ServerVersion.v1_8)) {
-            log.error("Json messages are not supported on versions below 1.8");
+            log.severe("Json messages are not supported on versions below 1.8");
             return;
         }
 
