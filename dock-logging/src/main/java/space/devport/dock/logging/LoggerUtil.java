@@ -21,7 +21,7 @@ public class LoggerUtil {
      * @return String with Bukkit color codes
      */
     @Contract("null -> null")
-    public String color(String msg) {
+    public String colorBukkit(String msg) {
         return msg == null ? null : ChatColor.translateAlternateColorCodes('&', msg);
     }
 }

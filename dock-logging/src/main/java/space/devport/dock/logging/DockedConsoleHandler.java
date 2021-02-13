@@ -1,16 +1,13 @@
 package space.devport.dock.logging;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Instant;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Handler;
@@ -18,14 +15,11 @@ import java.util.logging.LogRecord;
 
 public class DockedConsoleHandler extends Handler {
 
-    private final static String NORMAL_PATTERN = "[%s - %s] %s%s";
+    private final static String NORMAL_PATTERN = "%s&r%s%s";
 
-    private final static String DETAILED_PATTERN = "[%s - %s] [%s.%s] (%d) %s%s";
+    private final static String DETAILED_PATTERN = "%s&r[%s.%s] %s%s";
 
-    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
-    @Setter
-    private ConsoleCommandSender console;
+    private final ConsoleCommandSender console;
 
     @Getter
     private String prefix = "";
@@ -48,37 +42,34 @@ public class DockedConsoleHandler extends Handler {
         String message;
         if (level.isDetailed()) {
             message = String.format(DETAILED_PATTERN,
-                    LocalTime.from(Instant.ofEpochMilli(record.getMillis())).format(dateFormatter),
-                    record.getLevel().toString(),
+                    prefix,
                     record.getSourceClassName(),
                     record.getSourceMethodName(),
-                    record.getThreadID(),
                     level.getPrefix(),
                     record.getMessage());
         } else {
             message = String.format(NORMAL_PATTERN,
-                    LocalTime.from(Instant.ofEpochMilli(record.getMillis())).format(dateFormatter),
-                    record.getLevel().toString(),
+                    prefix,
                     level.getPrefix(),
                     record.getMessage());
         }
 
-        sendRaw(message);
+        sendRaw(record, message);
     }
 
-    private void sendRaw(String msg) {
-        if (console == null) {
-            Bukkit.getLogger().info(LoggerUtil.stripColor(msg));
-            toListeners(LoggerUtil.color(msg));
+    private void sendRaw(LogRecord record, String msg) {
+
+        if (Strings.isNullOrEmpty(msg))
             return;
-        }
 
-        String message = LoggerUtil.color(msg);
+        String message = LoggerUtil.colorBukkit(msg);
 
-        if (message != null) {
+        toListeners(message);
+
+        if (console == null)
+            Bukkit.getLogger().log(record.getLevel(), LoggerUtil.stripColor(msg));
+        else
             console.sendMessage(message);
-            toListeners(message);
-        }
     }
 
     @Override

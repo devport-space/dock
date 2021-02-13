@@ -135,8 +135,8 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
 
-        log.info(() -> "Starting up " + getDescription().getName() + getDescription().getVersion());
-        log.info(() -> "Running on " + ServerType.getCurrentServerType().getName() +
+        log.info(() -> "Starting up " + getDescription().getName() + " " + getDescription().getVersion());
+        log.info(() -> "Running on " + ServerType.getCurrentServerType().getName() + " " +
                 ServerVersion.getCurrentVersion().toString() + " (NMS: " + ServerVersion.getNmsVersion() + ")");
         log.info(() -> getColor() + "~~~~~~~~~~~~ &7" + getDescription().getName() + " " + getColor() + "~~~~~~~~~~~~");
 
@@ -209,6 +209,7 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
             configureLogger();
 
             this.prefix = configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
+            dockedLogger.setPrefix(prefix);
         }
 
         // Reassign placeholder values.
