@@ -5,6 +5,7 @@ import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import space.devport.dock.DockedManager;
 import space.devport.dock.api.IDockedPlugin;
+import space.devport.dock.api.IIndependentManager;
 import space.devport.dock.util.reflection.Reflection;
 import space.devport.dock.util.reflection.ServerVersion;
 import space.devport.dock.version.api.ICompoundFactory;
@@ -13,7 +14,7 @@ import space.devport.dock.version.api.IVersionUtility;
 import java.util.function.Consumer;
 
 @Log
-public class VersionManager extends DockedManager {
+public class VersionManager extends DockedManager implements IIndependentManager {
 
     @Getter
     private ICompoundFactory compoundFactory;
@@ -26,40 +27,25 @@ public class VersionManager extends DockedManager {
     }
 
     @Override
-    public void preEnable() {
-
-    }
-
-    @Override
-    public void afterEnable() {
-
-    }
-
-    @Override
-    public void preReload() {
-
-    }
-
-    @Override
-    public void afterReload() {
-
-    }
-
-    @Override
-    public void onDisable() {
-
-    }
-
-    @Override
-    public void afterDependencyLoad() {
-
-    }
-
-    @Override
     public void onLoad() {
         initialize();
     }
 
+    @Override
+    public void reload() {
+        // NO-OP, reloading the modules could be unsafe.
+    }
+
+    @Override
+    public void shutdown() {
+        this.compoundFactory = null;
+        this.versionUtility = null;
+    }
+
+    /**
+     * Initialize endpoint. Call this onLoad ideally.
+     */
+    @Override
     public void initialize() {
         String version = ServerVersion.getNmsVersion();
 
