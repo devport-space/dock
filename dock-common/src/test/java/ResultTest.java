@@ -126,12 +126,12 @@ public class ResultTest {
     }
 
     @Test
-    public void resultsShouldDiffer() {
+    public void emptyResultsShouldDiffer() {
         Result<String> resultOne = Result.empty();
-        Result<String> resultTwo = Result.of("Lve ya");
+        Result<String> resultTwo = Result.empty();
 
         resultOne.orElse("Fck you");
 
-        assertNotEquals("Fck you", resultTwo.get());
+        assertThrows(NoSuchElementException.class, resultTwo::get);
     }
 }
