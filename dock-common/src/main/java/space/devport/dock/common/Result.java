@@ -13,10 +13,11 @@ import java.util.function.Supplier;
 
 /**
  * Result holds the resulting value of an operation, or an exception that caused it's failure.
+ * <p>
+ * Note that the contents of a Result can be changed with it's calls.
+ * This is a change compared to Optional, which creates a new wrapper on some calls.
  */
 public class Result<T> {
-
-    private static final Result<?> EMPTY = new Result<>();
 
     private T value;
 
@@ -46,9 +47,7 @@ public class Result<T> {
      */
     @NotNull
     public static <T> Result<T> empty() {
-        @SuppressWarnings("unchecked")
-        Result<T> result = (Result<T>) EMPTY;
-        return result;
+        return new Result<>();
     }
 
     /**
@@ -229,10 +228,10 @@ public class Result<T> {
      * Attempt to retrieve the stored value.
      *
      * @return Held value.
-     * @throws NoSuchElementException if the {@link Result#isEmpty()} returns true.
-     * @throws RuntimeException       containing an underlying cause exception if {@link Result#isFailed()} returns true,.
+     * @throws NoSuchElementException if {@link Result#isEmpty()} returns true.
+     * @throws RuntimeException       containing an underlying cause exception, if {@link Result#isFailed()} returns true.
      */
-    @Nullable
+    @NotNull
     public T get() throws RuntimeException {
         if (isPresent())
             return value;

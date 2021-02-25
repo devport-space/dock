@@ -124,4 +124,14 @@ public class ResultTest {
         // Assert result
         assertEquals(MyEnum.ONE, myEnum);
     }
+
+    @Test
+    public void resultsShouldDiffer() {
+        Result<String> resultOne = Result.empty();
+        Result<String> resultTwo = Result.of("Lve ya");
+
+        resultOne.orElse("Fck you");
+
+        assertNotEquals("Fck you", resultTwo.get());
+    }
 }
