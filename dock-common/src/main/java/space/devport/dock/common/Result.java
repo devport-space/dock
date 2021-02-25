@@ -13,7 +13,7 @@ public class Result<T> {
 
     private T value;
 
-    private final Exception exception;
+    private Exception exception;
 
     private Result() {
         this.value = null;
@@ -115,6 +115,8 @@ public class Result<T> {
         return value != null;
     }
 
+    // isEmpty returns true if there is no value present.
+    // Note that both isEmpty and isFailed can return true on the same Result.
     public boolean isEmpty() {
         return value == null;
     }
@@ -138,6 +140,17 @@ public class Result<T> {
         return isPresent() ? value : defaultSupplier.get();
     }
 
+    // Throw stored exception and flush it.
+    public void throwException() throws Exception {
+        if (exception != null) {
+            // Store temporarily and throw after.
+            Exception exception = this.exception;
+            this.exception = null;
+
+            throw exception;
+        }
+    }
+
     public Optional<T> toOptional() {
         return Optional.ofNullable(value);
     }
@@ -147,7 +160,14 @@ public class Result<T> {
         return this::get;
     }
 
-    // Usage aka I <3 lambdas.
+    // A set of predefined reactions to reduce boilerplate.
+    public interface ResultReactions<T> {
+
+        // Process a result.
+        Result<T> intake(Result<T> result);
+    }
+
+    /*// Usage aka I <3 lambdas.
 
     // Sample producing methods.
 
@@ -166,13 +186,6 @@ public class Result<T> {
         return Result.supply(() -> Integer.parseInt(string));
     }
 
-    // A set of predefined reactions to reduce boilerplate.
-    private interface ResultReactions<T> {
-
-        // Process a result.
-        Result<T> intake(Result<T> result);
-    }
-
     {
         ResultReactions<Integer> reactions = result -> result
                 .ifFailed(e -> System.out.println("Failed to do this: " + e.getMessage()))
@@ -188,5 +201,5 @@ public class Result<T> {
                 .ifFailed(exception -> System.out.println("Failed to parse integer: " + exception.getMessage()))
                 // Supply a default
                 .orElseGet(parseIntegerWithSupply("b").orElse(10).toSupplier());
-    }
+    }*/
 }
