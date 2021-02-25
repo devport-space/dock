@@ -1,5 +1,9 @@
 package space.devport.dock.common;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -7,6 +11,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Result holds the resulting value of an operation, or an exception that caused it's failure.
+ */
 public class Result<T> {
 
     private static final Result<?> EMPTY = new Result<>();
@@ -26,21 +33,49 @@ public class Result<T> {
     }
 
     private Result(Exception exception) {
+        Objects.requireNonNull(exception, "Result exception cannot be null.");
         this.exception = exception;
         this.value = null;
     }
 
+    /**
+     * Create an empty Result, that will return true on {@link Result#isEmpty()}.
+     *
+     * @param <T> Result value type parameter.
+     * @return Empty Result.
+     */
+    @NotNull
     public static <T> Result<T> empty() {
         @SuppressWarnings("unchecked")
         Result<T> result = (Result<T>) EMPTY;
         return result;
     }
 
-    public static <T> Result<T> of(T value) {
+    /**
+     * Create a new Result with a value, that will return true on {@link Result#isPresent()},
+     * if the supplied value is not {@code null}.
+     *
+     * @param <T>   Result value type parameter.
+     * @param value Value that the Result should contain.
+     * @return A new Result.
+     */
+    @NotNull
+    public static <T> Result<T> of(@Nullable T value) {
         return value == null ? empty() : new Result<>(value);
     }
 
-    public static <T> Result<T> supply(Supplier<T> supplier) {
+    /**
+     * Create a new Result from supplier. If no exception was thrown, the Result will hold supplied value (or {@code null}).
+     * <p>
+     * If the supplier throws an exception, it will be reflected in the result.
+     *
+     * @param <T>      Result value type parameter.
+     * @param supplier Supplier to use.
+     * @return A new Result.
+     */
+    @NotNull
+    public static <T> Result<T> supply(@NotNull Supplier<T> supplier) {
+        Objects.requireNonNull(supplier, "Supplier cannot be null.");
         try {
             return Result.of(supplier.get());
         } catch (Exception exception) {
@@ -48,27 +83,66 @@ public class Result<T> {
         }
     }
 
-    public static <T> Result<T> ofException(Exception exception) {
+    /**
+     * Create a Result with an exception, that will return true on {@link Result#isFailed()}.
+     *
+     * @param <T>       Result value type parameter.
+     * @param exception Exception to use.
+     * @return A new Result.
+     */
+    @NotNull
+    public static <T> Result<T> ofException(@NotNull Exception exception) {
         return new Result<>(exception);
     }
 
+    /**
+     * Create a Result from an {@link Optional}.
+     * <p>
+     * If the Optional was empty, return an empty Result.
+     *
+     * @param <T>      Result value type parameter.
+     * @param optional {@link Optional} to parse from.
+     * @return A new Result.
+     */
+    @NotNull
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static <T> Result<T> ofOptional(Optional<T> optional) {
         return optional.map(Result::of).orElseGet(Result::empty);
     }
 
+    /**
+     * Immediately executes given {@link Consumer} if {@link Result#isPresent()} returns true.
+     *
+     * @param consumer Consumer to execute.
+     * @return This result.
+     */
+    @NotNull
     public Result<T> ifPresent(Consumer<T> consumer) {
         if (isPresent())
             consumer.accept(value);
         return this;
     }
 
+    /**
+     * Immediately executes given {@link Runnable} if {@link Result#isEmpty()} returns true.
+     *
+     * @param runnable Runnable to execute.
+     * @return This result.
+     */
+    @NotNull
     public Result<T> ifEmpty(Runnable runnable) {
         if (isEmpty())
             runnable.run();
         return this;
     }
 
+    /**
+     * Immediately executes given {@link Consumer} if {@link Result#isFailed()} returns true.
+     *
+     * @param failedConsumer Consumer to execute.
+     * @return This result.
+     */
+    @NotNull
     public Result<T> ifFailed(Consumer<Exception> failedConsumer) {
         if (isFailed())
             failedConsumer.accept(exception);
@@ -77,35 +151,60 @@ public class Result<T> {
 
     // Replace the value if it's not present.
 
+    /**
+     * Replace the held value, if {@link Result#isEmpty()} returns true.
+     *
+     * @param value Value to use.
+     * @return This result.
+     */
+    @NotNull
     public Result<T> orElse(T value) {
         if (isEmpty())
             this.value = value;
         return this;
     }
 
-    public Result<T> orElseGet(Supplier<T> supplier) {
-        return Result.supply(supplier);
+    /**
+     * Replace the held value with value from {@link Supplier}, if {@link Result#isEmpty()} returns true.
+     *
+     * @param supplier Supplier to provide the new value.
+     * @return This result.
+     */
+    @NotNull
+    public Result<T> orElseGet(@NotNull Supplier<T> supplier) {
+        Objects.requireNonNull(supplier, "Supplier cannot be null.");
+        try {
+            this.value = supplier.get();
+        } catch (Exception e) {
+            this.exception = e;
+        }
+        return this;
     }
 
+    @NotNull
     public <X extends Exception> Result<T> orElseThrow(Supplier<X> exceptionSupplier) throws X {
         if (!isPresent())
             throw exceptionSupplier.get();
         return this;
     }
 
+    @NotNull
     public <U> Result<U> map(Function<T, U> mapper) {
         return Result.of(mapper.apply(value));
     }
 
     // Apply a function to value.
+    @NotNull
     public Result<T> apply(Function<T, T> operator) {
         if (isPresent())
             this.value = operator.apply(value);
         return this;
     }
 
+    @NotNull
     public Result<T> executeReactions(ResultReactions<T> reactions) {
-        return reactions.intake(this);
+        reactions.intake(this);
+        return this;
     }
 
     // Terminal operations
@@ -126,17 +225,34 @@ public class Result<T> {
         return exception != null;
     }
 
-    public T get() throws NoSuchElementException {
+    /**
+     * Attempt to retrieve the stored value.
+     *
+     * @return Held value.
+     * @throws NoSuchElementException if the {@link Result#isEmpty()} returns true.
+     * @throws RuntimeException       containing an underlying cause exception if {@link Result#isFailed()} returns true,.
+     */
+    @Nullable
+    public T get() throws RuntimeException {
         if (isPresent())
             return value;
-        else throw new NoSuchElementException();
+        else {
+            if (exception != null)
+                // Wrap in a Runtime exception.
+                throw new RuntimeException(exception);
+            else
+                throw new NoSuchElementException();
+        }
     }
 
+    @Contract("!null -> !null")
     public T get(T defaultValue) {
         return isPresent() ? value : defaultValue;
     }
 
-    public T get(Supplier<T> defaultSupplier) {
+    @Nullable
+    public T get(@NotNull Supplier<T> defaultSupplier) {
+        Objects.requireNonNull(defaultSupplier, "Default value supplier cannot be null.");
         return isPresent() ? value : defaultSupplier.get();
     }
 
@@ -151,11 +267,13 @@ public class Result<T> {
         }
     }
 
+    @NotNull
     public Optional<T> toOptional() {
         return Optional.ofNullable(value);
     }
 
     // This is here purely for esthetics.
+    @NotNull
     public Supplier<T> toSupplier() {
         return this::get;
     }
@@ -164,42 +282,6 @@ public class Result<T> {
     public interface ResultReactions<T> {
 
         // Process a result.
-        Result<T> intake(Result<T> result);
+        void intake(Result<T> result);
     }
-
-    /*// Usage aka I <3 lambdas.
-
-    // Sample producing methods.
-
-    public static Result<Integer> parseInteger(String string) {
-        try {
-            // Return the result.
-            return Result.of(Integer.parseInt(string));
-        } catch (NumberFormatException exception) {
-            // Return an empty result with an exception.
-            return Result.ofException(exception);
-        }
-    }
-
-    public static Result<Integer> parseIntegerWithSupply(String string) {
-        // Or use the Result#supply with a supplier, that catches exceptions.
-        return Result.supply(() -> Integer.parseInt(string));
-    }
-
-    {
-        ResultReactions<Integer> reactions = result -> result
-                .ifFailed(e -> System.out.println("Failed to do this: " + e.getMessage()))
-                .ifEmpty(() -> System.out.println("Result has no value."));
-
-        // Define reactions in different cases.
-        parseIntegerWithSupply("a")
-                // Execute predefined reactions in the chain.
-                .executeReactions(reactions)
-                // If the value is present, verbose it out.
-                .ifPresent(value -> System.out.println("Parsed integer: " + value))
-                // If it failed with an exception, send an error or something.
-                .ifFailed(exception -> System.out.println("Failed to parse integer: " + exception.getMessage()))
-                // Supply a default
-                .orElseGet(parseIntegerWithSupply("b").orElse(10).toSupplier());
-    }*/
 }
