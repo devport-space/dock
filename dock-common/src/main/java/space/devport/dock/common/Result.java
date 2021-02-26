@@ -172,7 +172,7 @@ public class Result<T> {
      * @return This result.
      */
     @NotNull
-    public Result<T> orDefaultGet(@NotNull Supplier<T> supplier) {
+    public Result<T> orGetDefault(@NotNull Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "Supplier cannot be null.");
         try {
             this.value = supplier.get();
@@ -270,6 +270,14 @@ public class Result<T> {
             this.exception = null;
 
             throw exception;
+        }
+    }
+
+    // Print stacktrace of the stored exception and flush it.
+    public void printStacktrace() {
+        if (exception != null) {
+            exception.printStackTrace();
+            this.exception = null;
         }
     }
 
