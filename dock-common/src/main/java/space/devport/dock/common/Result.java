@@ -234,7 +234,7 @@ public class Result<T> {
      * @throws RuntimeException       containing an underlying cause exception, if {@link Result#isFailed()} returns true.
      */
     @NotNull
-    public T orElse() throws RuntimeException {
+    public T get() throws RuntimeException {
         if (isPresent())
             return value;
         else {
@@ -249,6 +249,11 @@ public class Result<T> {
     @Contract("!null -> !null")
     public T orElse(T defaultValue) {
         return isPresent() ? value : defaultValue;
+    }
+
+    @Nullable
+    public T orNull() {
+        return isPresent() ? value : null;
     }
 
     @Nullable
@@ -276,7 +281,7 @@ public class Result<T> {
     // This is here purely for esthetics.
     @NotNull
     public Supplier<T> toSupplier() {
-        return this::orElse;
+        return this::get;
     }
 
     // A set of predefined reactions to reduce boilerplate.
