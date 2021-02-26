@@ -157,7 +157,7 @@ public class Result<T> {
      * @return This result.
      */
     @NotNull
-    public Result<T> orElse(T value) {
+    public Result<T> orDefault(T value) {
         if (isEmpty())
             this.value = value;
         return this;
@@ -165,12 +165,14 @@ public class Result<T> {
 
     /**
      * Replace the held value with value from {@link Supplier}, if {@link Result#isEmpty()} returns true.
+     * <p>
+     * Note: Any exception thrown in the supplier is suppressed and cached.
      *
      * @param supplier Supplier to provide the new value.
      * @return This result.
      */
     @NotNull
-    public Result<T> orElseGet(@NotNull Supplier<T> supplier) {
+    public Result<T> orDefaultGet(@NotNull Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "Supplier cannot be null.");
         try {
             this.value = supplier.get();
@@ -181,7 +183,7 @@ public class Result<T> {
     }
 
     @NotNull
-    public <X extends Exception> Result<T> orElseThrow(Supplier<X> exceptionSupplier) throws X {
+    public <X extends Exception> Result<T> ifEmptyThrow(Supplier<X> exceptionSupplier) throws X {
         if (!isPresent())
             throw exceptionSupplier.get();
         return this;
@@ -232,7 +234,7 @@ public class Result<T> {
      * @throws RuntimeException       containing an underlying cause exception, if {@link Result#isFailed()} returns true.
      */
     @NotNull
-    public T get() throws RuntimeException {
+    public T orElse() throws RuntimeException {
         if (isPresent())
             return value;
         else {
@@ -245,12 +247,12 @@ public class Result<T> {
     }
 
     @Contract("!null -> !null")
-    public T get(T defaultValue) {
+    public T orElse(T defaultValue) {
         return isPresent() ? value : defaultValue;
     }
 
     @Nullable
-    public T get(@NotNull Supplier<T> defaultSupplier) {
+    public T orElseGet(@NotNull Supplier<T> defaultSupplier) {
         Objects.requireNonNull(defaultSupplier, "Default value supplier cannot be null.");
         return isPresent() ? value : defaultSupplier.get();
     }
@@ -274,7 +276,7 @@ public class Result<T> {
     // This is here purely for esthetics.
     @NotNull
     public Supplier<T> toSupplier() {
-        return this::get;
+        return this::orElse;
     }
 
     // A set of predefined reactions to reduce boilerplate.
