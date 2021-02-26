@@ -25,10 +25,16 @@ public class ResultTest {
         assertEquals(MyEnum.ONE, value);
     }
 
-    // #get() should throw an exception when no value is present and we attempt to get.
+    // #get() should throw the exception (nested inside RuntimeException) that happened during the value supply.
     @Test
     public void resultShouldThrowCorrectly() {
-        assertThrows(NoSuchElementException.class, () -> ParseUtil.parseEnum("INVALID", MyEnum.class).get());
+        assertThrows(RuntimeException.class, () -> ParseUtil.parseEnum("INVALID", MyEnum.class).get());
+    }
+
+    // #get() should throw NoSuchElementException when there's no value present
+    @Test
+    public void resultShouldThrowCorrectlyWhenEmpty() {
+        assertThrows(NoSuchElementException.class, () -> Result.empty().get());
     }
 
     @Test
@@ -140,13 +146,67 @@ public class ResultTest {
 
     @Test
     public void parseUtilUsage() {
+        // Basic enum parsing.
         MyEnum four = ParseUtil.parseEnum("FOUR", MyEnum.class).get();
 
         assertEquals(MyEnum.FOUR, four);
 
 
+        // Some Numbers or w/e.
         Object parsedInteger = ParseUtil.parseNumber("10").get();
 
         assertTrue(parsedInteger instanceof Integer);
+    }
+
+    @Test
+    public void resultShouldCombineCorrectly() {
+
+        // Basic combination, result should be correct.
+        Result<Double> resultOne = Result.of(10D);
+
+        Result<Double> resultTwo = Result.of(20D);
+
+        double sum = Result.combine(resultOne, resultTwo, Double::sum)
+                .orElse(0D);
+
+        assertEquals(30, sum, 0);
+
+
+        // When one of the results fail with exception, the final result should hold it.
+        Result<Double> resultThree = Result.of(30D);
+        Result<Double> exceptionalResult = Result.ofException(new IllegalArgumentException());
+
+        Result<Double> addition = Result.combine(resultThree, exceptionalResult, Double::sum);
+
+        assertThrows(RuntimeException.class, addition::throwException);
+
+
+        // Using chained combine.
+        Result<Double> resultFour = Result.of(30D)
+                .combine(Result.of(10D), Double::sum);
+
+        assertEquals(40D, resultFour.get(), 0);
+
+
+        // Chained combine with exception.
+        Result<Double> resultFive = Result.of(30D)
+                .combine(Result.ofException(new IllegalArgumentException()), Double::sum);
+
+        assertThrows(RuntimeException.class, resultFive::throwException);
+    }
+
+    @Test
+    public void resultShouldMapCorrectly() {
+        // Basic mapping.
+        Result<String> stringResult = Result.of("10");
+
+        Result<Double> doubleResult = stringResult.map(Double::parseDouble);
+        assertEquals(10D, doubleResult.get(), 0);
+
+        // Mapping should hold any exceptions that happened in the process.
+        Result<String> invalidResult = Result.of("A");
+
+        Result<Double> failedResult = invalidResult.map(Double::parseDouble);
+        assertThrows(RuntimeException.class, failedResult::throwException);
     }
 }

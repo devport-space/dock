@@ -3,7 +3,6 @@ package space.devport.dock.util;
 import com.google.common.base.Strings;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
-import space.devport.dock.callbacks.ExceptionCallback;
 import space.devport.dock.common.Result;
 
 import java.math.BigDecimal;
@@ -112,7 +111,6 @@ public class ParseUtil {
 
     /**
      * Attempt to run given {@code Supplier<T>}, if it fails with an exception, suppress it and return a default value instead.
-     * Run attached {@link ExceptionCallback} when an Exception is thrown in the supplier.
      * <p>
      * This is here just for styling and easier exception handling.
      *

@@ -15,7 +15,7 @@ public class LocationUtilTest {
         World mockWorld = new MockWorld("world");
         Location location = new Location(mockWorld, 10.0, 20.0, 30.0);
 
-        String locationString = LocationUtil.composeString(location);
+        String locationString = LocationUtil.composeString(location).orNull();
 
         assertEquals("world;10.0;20.0;30.0", locationString);
     }

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -110,6 +111,39 @@ public class Result<T> {
     }
 
     /**
+     * Combine two results into one.
+     * <p>
+     * Final Result will keep any exceptions thrown in the process of mapping values.
+     * <p>
+     * If any of the two results are empty, {@link Result#empty()} will be returned.
+     * <p>
+     * If an exception would be thrown in both of the results, the first one is kept.
+     *
+     * @param firstResult  First result to combine.
+     * @param secondResult Second result to combine.
+     * @param mapper       Mapper to convert values.
+     * @param <T>          Final Result value type.
+     * @param <U>          First combined Result value type.
+     * @param <V>          Second combined Result value type.
+     * @return A final Result.
+     */
+    @NotNull
+    public static <T, U, V> Result<T> combine(@NotNull Result<U> firstResult, @NotNull Result<V> secondResult, @NotNull BiFunction<U, V, T> mapper) {
+        if (firstResult.isValidEmpty() || secondResult.isValidEmpty())
+            return empty();
+
+        return Result.supply(() -> mapper.apply(firstResult.get(), secondResult.get()));
+    }
+
+    @NotNull
+    public <V, U> Result<U> combine(Result<V> result, BiFunction<T, V, U> mapper) {
+        if (isValidEmpty() || result.isValidEmpty())
+            return empty();
+
+        return Result.supply(() -> mapper.apply(get(), result.get()));
+    }
+
+    /**
      * Immediately executes given {@link Consumer} if {@link Result#isPresent()} returns true.
      *
      * @param consumer Consumer to execute.
@@ -191,7 +225,7 @@ public class Result<T> {
 
     @NotNull
     public <U> Result<U> map(Function<T, U> mapper) {
-        return Result.of(mapper.apply(value));
+        return Result.supply(() -> mapper.apply(value));
     }
 
     // Apply a function to value.
@@ -219,6 +253,11 @@ public class Result<T> {
     // Note that both isEmpty and isFailed can return true on the same Result.
     public boolean isEmpty() {
         return value == null;
+    }
+
+    // returns true if there is no value and no exception was caught.
+    public boolean isValidEmpty() {
+        return value == null && exception == null;
     }
 
     // isFailed returns true if an exception was supplied.
