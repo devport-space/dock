@@ -22,6 +22,11 @@
             <artifactId>dock-logging</artifactId>
             <version>4.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>space.devport.dock</groupId>
+            <artifactId>dock-common</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>

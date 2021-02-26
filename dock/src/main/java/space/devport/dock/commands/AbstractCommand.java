@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.UsageFlag;
 import space.devport.dock.commands.struct.*;
+import space.devport.dock.common.Result;
 import space.devport.dock.text.language.LanguageManager;
 import space.devport.dock.text.message.Message;
 import space.devport.dock.text.placeholders.Placeholders;
@@ -175,7 +176,7 @@ public abstract class AbstractCommand {
      * Attempt to parse the argument into an enum.
      * If something went wrong, fetch a message from LanguageManager by {@param errorMessageKey} and send it to the sender.
      */
-    protected <E extends Enum<E>> E parseEnum(@NotNull CommandSender sender, String arg, @NotNull Class<E> enumClazz, @NotNull String errorMessageKey) {
+    protected <E extends Enum<E>> Result<E> parseEnum(@NotNull CommandSender sender, String arg, @NotNull Class<E> enumClazz, @NotNull String errorMessageKey) {
         return parse(sender, arg, str -> ParseUtil.parseEnum(arg, enumClazz), errorMessageKey);
     }
 
@@ -184,7 +185,7 @@ public abstract class AbstractCommand {
      * If something went wrong, send {@param errorMessage} to the sender.
      * Replace placeholder '%param%' with attempted argument.
      */
-    protected <E extends Enum<E>> E parseEnum(@NotNull CommandSender sender, String arg, @NotNull Class<E> enumClazz, @NotNull Message errorMessage) {
+    protected <E extends Enum<E>> Result<E> parseEnum(@NotNull CommandSender sender, String arg, @NotNull Class<E> enumClazz, @NotNull Message errorMessage) {
         return parse(sender, arg, str -> ParseUtil.parseEnum(arg, enumClazz), errorMessage);
     }
 

@@ -1,5 +1,8 @@
+package util;
+
 import org.junit.Test;
 import space.devport.dock.common.Result;
+import space.devport.dock.util.ParseUtil;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,7 +33,7 @@ public class ResultTest {
 
     @Test
     public void resultShouldDefaultCorrectly() {
-        MyEnum value = ParseUtil.parseEnum("INVALID", MyEnum.class).get(MyEnum.ONE);
+        MyEnum value = ParseUtil.parseEnum("INVALID", MyEnum.class).orElse(MyEnum.ONE);
 
         assertEquals(MyEnum.ONE, value);
     }
@@ -110,7 +113,7 @@ public class ResultTest {
                 // If it failed with an exception, send an error or something.
                 .ifFailed(exception -> ifFailed.set(true))
                 // Supply a default
-                .get(ParseUtil.parseEnum("ONE", MyEnum.class).toSupplier());
+                .orElseGet(ParseUtil.parseEnum("ONE", MyEnum.class).toSupplier());
 
         // Reactions should get executed.
         assertTrue(ifFailedReactions.get());
@@ -130,8 +133,20 @@ public class ResultTest {
         Result<String> resultOne = Result.empty();
         Result<String> resultTwo = Result.empty();
 
-        resultOne.orElse("Fck you");
+        resultOne.orDefault("Fck you");
 
         assertThrows(NoSuchElementException.class, resultTwo::get);
+    }
+
+    @Test
+    public void parseUtilUsage() {
+        MyEnum four = ParseUtil.parseEnum("FOUR", MyEnum.class).get();
+
+        assertEquals(MyEnum.FOUR, four);
+
+
+        Object parsedInteger = ParseUtil.parseNumber("10").get();
+
+        assertTrue(parsedInteger instanceof Integer);
     }
 }
