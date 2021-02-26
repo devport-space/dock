@@ -129,7 +129,7 @@ public class Result<T> {
      */
     @NotNull
     public static <T, U, V> Result<T> combine(@NotNull Result<U> firstResult, @NotNull Result<V> secondResult, @NotNull BiFunction<U, V, T> mapper) {
-        if (firstResult.isValidEmpty() || secondResult.isValidEmpty())
+        if (firstResult.isEmptyValid() || secondResult.isEmptyValid())
             return empty();
 
         return Result.supply(() -> mapper.apply(firstResult.get(), secondResult.get()));
@@ -137,7 +137,7 @@ public class Result<T> {
 
     @NotNull
     public <V, U> Result<U> combine(Result<V> result, BiFunction<T, V, U> mapper) {
-        if (isValidEmpty() || result.isValidEmpty())
+        if (isEmptyValid() || result.isEmptyValid())
             return empty();
 
         return Result.supply(() -> mapper.apply(get(), result.get()));
@@ -169,6 +169,13 @@ public class Result<T> {
         return this;
     }
 
+    @NotNull
+    public Result<T> ifEmptyValid(Runnable runnable) {
+        if (isEmptyValid())
+            runnable.run();
+        return this;
+    }
+
     /**
      * Immediately executes given {@link Consumer} if {@link Result#isFailed()} returns true.
      *
@@ -192,8 +199,10 @@ public class Result<T> {
      */
     @NotNull
     public Result<T> orDefault(T value) {
-        if (isEmpty())
+        if (isEmpty()) {
             this.value = value;
+            this.exception = null;
+        }
         return this;
     }
 
@@ -208,16 +217,20 @@ public class Result<T> {
     @NotNull
     public Result<T> orGetDefault(@NotNull Supplier<T> supplier) {
         Objects.requireNonNull(supplier, "Supplier cannot be null.");
-        try {
-            this.value = supplier.get();
-        } catch (Exception e) {
-            this.exception = e;
+
+        if (isEmpty()) {
+            this.exception = null;
+            try {
+                this.value = supplier.get();
+            } catch (Exception e) {
+                this.exception = e;
+            }
         }
         return this;
     }
 
     @NotNull
-    public <X extends Exception> Result<T> ifEmptyThrow(Supplier<X> exceptionSupplier) throws X {
+    public <X extends Exception> Result<T> orThrow(Supplier<X> exceptionSupplier) throws X {
         if (!isPresent())
             throw exceptionSupplier.get();
         return this;
@@ -256,7 +269,7 @@ public class Result<T> {
     }
 
     // returns true if there is no value and no exception was caught.
-    public boolean isValidEmpty() {
+    public boolean isEmptyValid() {
         return value == null && exception == null;
     }
 
