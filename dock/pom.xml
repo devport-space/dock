@@ -132,7 +132,7 @@
         <dependency>
             <groupId>com.github.CryptoMorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>7.8.0</version>
+            <version>8.3.0</version>
         </dependency>
         <dependency>
             <groupId>space.devport.dock</groupId>
@@ -153,9 +153,15 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>me.realized.tokenmanager</groupId>
+            <groupId>com.github.Realizedd</groupId>
             <artifactId>TokenManager</artifactId>
-            <version>3.2.5</version>
+            <version>3.2.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -172,21 +178,21 @@
         </dependency>
         <dependency>
             <groupId>com.Zrips.CMI</groupId>
-            <artifactId>CMI</artifactId>
-            <version>8.7.12.2</version>
+            <artifactId>CMI-API</artifactId>
+            <version>8.7.8.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.10.9</version>
+            <version>2.10.10</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
