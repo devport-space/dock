@@ -1,7 +1,5 @@
 package space.devport.dock.util.json;
 
-import space.devport.dock.callbacks.CallbackContent;
-import space.devport.dock.callbacks.ExceptionCallback;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,7 +7,7 @@ import com.google.gson.reflect.TypeToken;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import space.devport.dock.common.Result;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -105,25 +103,24 @@ public class GsonHelper {
      * @param dataPath Path to load from.
      * @return Parsed output {@code null}.
      */
-    @Nullable
-    public <T> T load(@NotNull String dataPath, @NotNull Type type) {
+    @NotNull
+    public <T> Result<T> load(@NotNull String dataPath, @NotNull Type type) {
         Path path = Paths.get(dataPath);
 
         if (!Files.exists(path))
-            return null;
+            return Result.empty();
 
         String input;
         try {
             input = String.join("", Files.readAllLines(path));
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            return Result.ofException(e);
         }
 
         if (Strings.isNullOrEmpty(input))
-            return null;
+            return Result.empty();
 
-        return gson.fromJson(input, type);
+        return Result.of(gson.fromJson(input, type));
     }
 
     /**
@@ -214,25 +211,12 @@ public class GsonHelper {
      * @param input    Input to save.
      * @param dataPath Path to save to.
      */
-    public <T> boolean save(@NotNull final String dataPath, @NotNull final T input) {
-        return save(dataPath, input, null);
-    }
-
-    /**
-     * Synchronously save data to json.
-     *
-     * @param <T>      Type signature of input.
-     * @param input    Input to save.
-     * @param dataPath Path to save to.
-     * @param callback {@link ExceptionCallback} callback to run when an exception is thrown.
-     */
-    public <T> boolean save(@NotNull final String dataPath, @NotNull final T input, @Nullable ExceptionCallback callback) {
+    public <T> Result<Void> save(@NotNull final String dataPath, @NotNull final T input) {
         Path path = Paths.get(dataPath);
 
         if (!path.toFile().getParentFile().exists()) {
             if (!path.toFile().getParentFile().mkdirs()) {
-                log.severe("Could not save, could not create folder structure.");
-                return false;
+                return Result.ofException(new IllegalStateException("Could not save, could not create folder structure."));
             }
         }
 
@@ -241,10 +225,9 @@ public class GsonHelper {
         String jsonString = gson.toJson(input, type).trim();
         try {
             Files.write(path, jsonString.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            return true;
+            return Result.empty();
         } catch (IOException e) {
-            CallbackContent.createNew(e).callOrThrow(callback);
-            return false;
+            return Result.ofException(e);
         }
     }
 

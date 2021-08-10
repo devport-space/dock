@@ -6,7 +6,6 @@ import com.Zrips.CMI.Modules.Holograms.CMIHologram;
 import com.Zrips.CMI.Modules.Holograms.HologramManager;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
-import space.devport.dock.DockedPlugin;
 import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.holograms.provider.HologramProvider;
 
