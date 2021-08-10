@@ -158,7 +158,7 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
         globalPlaceholders.add("%prefix%", prefix)
                 .add("%version%", getDescription().getVersion())
                 .add("%pluginName%", getDescription().getName())
-                .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.parseNotNull(player::getName, "null")), OfflinePlayer.class);
+                .addParser((str, player) -> str.replaceAll("(?i)%player%", ParseUtil.parse(player::getName).orElse("null")), OfflinePlayer.class);
 
         callManagerAction(IDockedManager::preEnable);
 

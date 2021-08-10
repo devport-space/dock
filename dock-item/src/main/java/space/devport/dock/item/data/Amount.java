@@ -79,15 +79,19 @@ public class Amount implements Cloneable {
                 return null;
             }
 
-            double low = ParseUtil.parseDoubleHandled(arr[0],
-                    c -> log.warning(() ->"Failed to parse double from " + c.getInput() + ", using 0 as default."));
-            double high = ParseUtil.parseDoubleHandled(arr[1],
-                    c -> log.warning(() ->"Failed to parse double from " + c.getInput() + ", using 0 as default."));
+            double low = ParseUtil.parseDouble(arr[0])
+                    .ifEmpty(() -> log.warning(() -> "Failed to parse double from " + arr[0] + ", using 0 as default."))
+                    .orElse(0D);
+
+            double high = ParseUtil.parseDouble(arr[1])
+                    .ifEmpty(() -> log.warning(() -> "Failed to parse double from " + arr[0] + ", using 0 as default."))
+                    .orElse(0D);
 
             return new Amount(low, high);
         } else {
-            return new Amount(ParseUtil.parseDoubleHandled(str,
-                    c -> log.warning(() ->"Failed to parse double from " + c.getInput() + ", using 0 as default.")));
+            return new Amount(ParseUtil.parseDouble(str)
+                    .ifEmpty(() -> log.warning(() -> "Failed to parse double from " + str + ", using 0 as default."))
+                    .orElse(0D));
         }
     }
 

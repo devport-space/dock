@@ -21,6 +21,6 @@ public enum TimeElement {
 
     @Nullable
     public static TimeElement fromString(@Nullable String str) {
-        return ParseUtil.parseEnum(str, TimeElement.class);
+        return ParseUtil.parseEnum(str, TimeElement.class).orElse(null);
     }
 }

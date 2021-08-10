@@ -81,7 +81,7 @@ public class Enchant {
     }
 
     private static XEnchantment parseEnchantment(Enchantment enchantment) {
-        return enchantment == null ? null : ParseUtil.parseHandled(() -> XEnchantment.matchXEnchantment(enchantment), ExceptionCallback.IGNORE);
+        return enchantment == null ? null : ParseUtil.parse(() -> XEnchantment.matchXEnchantment(enchantment), ExceptionCallback.IGNORE);
     }
 
     public static Enchant of(XEnchantment xEnchantment, int level) {

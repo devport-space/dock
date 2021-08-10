@@ -34,11 +34,10 @@ public abstract class HologramProvider {
         storage.load();
 
         for (String id : storage.getFileConfiguration().getKeys(false)) {
-            Location location = LocationUtil.parseLocation(storage.getFileConfiguration().getString(id),
-                    e -> log.severe("Could not parse location from " + e.getInput() + ": " + e.getThrowable().getMessage()));
-
-            if (location != null)
-                addHologram(id, location);
+            String locationString = storage.getFileConfiguration().getString(id);
+            LocationUtil.parseLocation(locationString)
+                    .ifEmpty(() -> log.warning(() -> String.format("Failed to parse Location for hologram %s from %s", id, locationString)))
+                    .ifPresent(location -> addHologram(id, location));
         }
 
         log.info(String.format("Loaded %d hologram(s)...", registeredHolograms.size()));
@@ -51,19 +50,16 @@ public abstract class HologramProvider {
         purgeNonexistent();
 
         for (String id : registeredHolograms) {
-            String locationString = LocationUtil.composeString(getLocation(id),
-                    e -> log.warning(() ->"Failed to parse location from " + e.getInput()));
+            LocationUtil.composeString(getLocation(id))
+                    .ifEmpty(() -> log.warning(() -> String.format("Failed to compose location for hologram %s", id)))
+                    .ifPresent(locationString -> {
+                        if (locationString.isEmpty()) {
+                            log.warning(() -> "Could not save hologram " + id + ", it's location is invalid.");
+                            return;
+                        }
 
-            if (locationString == null) {
-                continue;
-            }
-
-            if (locationString.isEmpty()) {
-                log.warning(() ->"Could not save hologram " + id + ", it's location is invalid.");
-                continue;
-            }
-
-            storage.getFileConfiguration().set(id, locationString);
+                        storage.getFileConfiguration().set(id, locationString);
+                    });
         }
 
         log.info(String.format("Saved %s hologram(s)...", registeredHolograms.size()));

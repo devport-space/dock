@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import space.devport.dock.api.IDockedPlugin;
+import space.devport.dock.common.Result;
 import space.devport.dock.item.ItemPrefab;
 import space.devport.dock.item.data.Amount;
 import space.devport.dock.item.data.ItemDamage;
@@ -502,21 +503,14 @@ public class Configuration {
      * @return Region object.
      */
     @Nullable
-    public Region getRegion(@Nullable String path) {
-        Location min = LocationUtil.parseLocation(fileConfiguration.getString(path + "." + SubPath.REGION_MIN));
-        Location max = LocationUtil.parseLocation(fileConfiguration.getString(path + "." + SubPath.REGION_MAX));
+    public Result<Region> getRegion(@Nullable String path) {
+        Result<Location> minResult = LocationUtil.parseLocation(fileConfiguration.getString(path + "." + SubPath.REGION_MIN))
+                .ifEmpty(() -> log.severe(() -> "Could not get a Region from " + composePath(path) + ", minimum location didn't load."));
 
-        if (min == null) {
-            log.severe(() -> "Could not get a Region from " + composePath(path) + ", minimum location didn't load.");
-            return null;
-        }
+        Result<Location> maxResult = LocationUtil.parseLocation(fileConfiguration.getString(path + "." + SubPath.REGION_MAX))
+                .ifEmpty(() -> log.severe(() -> "Could not get a Region from " + composePath(path) + ", maximum location didn't load."));
 
-        if (max == null) {
-            log.severe(() -> "Could not get a Region from " + composePath(path) + ", maximum location didn't load.");
-            return null;
-        }
-
-        return new Region(min, max);
+        return Result.combine(minResult, maxResult, Region::new);
     }
 
     /**

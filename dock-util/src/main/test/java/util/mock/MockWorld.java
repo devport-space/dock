@@ -1,4 +1,4 @@
-package mock;
+package util.mock;
 
 import org.bukkit.*;
 import org.bukkit.block.Biome;
