@@ -10,7 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.callbacks.ExceptionCallback;
 import space.devport.dock.util.ParseUtil;
 
 import java.util.HashSet;
@@ -80,8 +79,10 @@ public class Enchant {
         return from(meta);
     }
 
-    private static XEnchantment parseEnchantment(Enchantment enchantment) {
-        return enchantment == null ? null : ParseUtil.parse(() -> XEnchantment.matchXEnchantment(enchantment), ExceptionCallback.IGNORE);
+    @SuppressWarnings("ConstantConditions")
+    @Nullable
+    private static XEnchantment parseEnchantment(@Nullable Enchantment enchantment) {
+        return ParseUtil.parse(() -> XEnchantment.matchXEnchantment(enchantment)).orNull();
     }
 
     public static Enchant of(XEnchantment xEnchantment, int level) {
