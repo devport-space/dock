@@ -235,7 +235,19 @@ public class MockWorld implements World {
 
     @NotNull
     @Override
+    public Item dropItem(@NotNull Location location, @NotNull ItemStack itemStack, @Nullable Consumer<Item> consumer) {
+        return null;
+    }
+
+    @NotNull
+    @Override
     public Item dropItemNaturally(@NotNull Location location, @NotNull ItemStack itemStack) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Item dropItemNaturally(@NotNull Location location, @NotNull ItemStack itemStack, @Nullable Consumer<Item> consumer) {
         return null;
     }
 
@@ -683,6 +695,11 @@ public class MockWorld implements World {
 
     @Override
     public double getHumidity(int i, int i1, int i2) {
+        return 0;
+    }
+
+    @Override
+    public int getMinHeight() {
         return 0;
     }
 

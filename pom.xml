@@ -13,6 +13,7 @@
 
     <modules>
         <module>version/api</module>
+        <module>version/v1_17_R1</module>
         <module>version/v1_16_R3</module>
         <module>version/v1_16_R2</module>
         <module>version/v1_16_R1</module>
@@ -39,11 +40,11 @@
     <packaging>pom</packaging>
 
     <distributionManagement>
-        <downloadUrl>https://nexus.pvpcraft.cz/repository/devport/</downloadUrl>
+        <downloadUrl>https://nexus.devport.space/repository/devport-public/</downloadUrl>
         <repository>
             <id>devport</id>
             <name>Devport Repository</name>
-            <url>https://nexus.pvpcraft.cz/repository/devport/</url>
+            <url>https://nexus.devport.space/repository/devport-public/</url>
             <uniqueVersion>false</uniqueVersion>
         </repository>
     </distributionManagement>
@@ -57,7 +58,7 @@
     <repositories>
         <repository>
             <id>devport</id>
-            <url>https://nexus.pvpcraft.cz/repository/devport/</url>
+            <url>https://nexus.devport.space/repository/devport-public/</url>
         </repository>
         <repository>
             <id>spigot-repo</id>
@@ -82,21 +83,21 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.16</version>
+            <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.jetbrains/annotations -->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>20.1.0</version>
+            <version>21.0.1</version>
             <scope>provided</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>30.1-jre</version>
+            <version>30.1.1-jre</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>

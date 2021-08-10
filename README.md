@@ -4,22 +4,7 @@ Devport spigot utility core.
 
 ## Maven
 
-```xml
-
-<repository>
-    <id>devport</id>
-    <url>https://nexus.pvpcraft.cz/repository/devport/</url>
-</repository>
-```
-
-```xml
-
-<dependency>
-    <groupId>space.devport.dock</groupId>
-    <artifactId>dock-parent</artifactId>
-    <version>LATEST</version>
-</dependency>
-```
+There's currently no official public maven repo.
 
 ## Features
 

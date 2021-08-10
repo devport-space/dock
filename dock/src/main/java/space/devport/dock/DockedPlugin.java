@@ -137,8 +137,8 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
 
         log.info(() -> "Starting up " + getDescription().getName() + " " + getDescription().getVersion());
         log.info(() -> "Running on " + ServerType.getCurrentServerType().getName() + " " +
-                ServerVersion.getCurrentVersion().toString() + " (NMS: " + ServerVersion.getNmsVersion() + ")");
-        log.info(() -> getColor() + "~~~~~~~~~~~~ &7" + getDescription().getName() + " " + getColor() + "~~~~~~~~~~~~");
+                ServerVersion.getCurrentVersion() + " (NMS: " + ServerVersion.getNmsVersion() + ")");
+        log.info(() -> getColor() + "~~~~~~~~~~~~ " + ChatColor.getByChar('7') + getDescription().getName() + " " + getColor() + "~~~~~~~~~~~~");
 
         if (use(UsageFlag.CONFIGURATION)) {
             this.configuration = new Configuration(this, "config");
@@ -170,8 +170,8 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
         // Register listeners that are set to.
         registerListeners();
 
-        log.info(() -> getColor() + "~~~~~~~~~~~~ &7/////// " + getColor() + "~~~~~~~~~~~~");
-        log.info(() -> "Done... startup took &f" + (System.currentTimeMillis() - start) + "&7ms.");
+        log.info(() -> getColor() + "~~~~~~~~~~~~ " + ChatColor.getByChar('7') + "/////// " + getColor() + "~~~~~~~~~~~~");
+        log.info(() -> "Done... startup took " + ChatColor.getByChar('f') + (System.currentTimeMillis() - start) + ChatColor.getByChar('7') + "ms.");
 
         // Set the prefix as the last thing, startup looks cooler without it.
         dockedLogger.setPrefix(prefix);
@@ -256,7 +256,7 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
     }
 
     public void registerManager(@NotNull IDockedManager dockedManager) {
-        Objects.requireNonNull(dockedManager, "Cannot register a null DevportManager.");
+        Objects.requireNonNull(dockedManager, "Cannot register a null manager.");
 
         managers.put(dockedManager.getClass(), dockedManager);
         dockedManager.onLoad();

@@ -37,6 +37,12 @@
         </dependency>
         <dependency>
             <groupId>space.devport.dock</groupId>
+            <artifactId>v1_17_R1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>space.devport.dock</groupId>
             <artifactId>v1_16_R3</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
