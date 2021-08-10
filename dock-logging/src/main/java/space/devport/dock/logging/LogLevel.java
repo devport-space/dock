@@ -7,7 +7,7 @@ import java.util.logging.Level;
 
 public enum LogLevel {
 
-    ERR(Level.SEVERE, "&4"),
+    ERROR(Level.SEVERE, "&4"),
     WARN(Level.WARNING, "&c"),
     INFO(Level.INFO, "&7"),
     FINE(Level.FINE, "&e", true),

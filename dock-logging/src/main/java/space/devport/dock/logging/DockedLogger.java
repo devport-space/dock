@@ -1,8 +1,8 @@
 package space.devport.dock.logging;
 
-import space.devport.dock.common.Strings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import space.devport.dock.common.Strings;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,10 +20,12 @@ public class DockedLogger {
     }
 
     public void setup(String loggerKey) {
-        this.handler = new DockedConsoleHandler(plugin);
         this.parentLogger = Logger.getLogger(loggerKey);
 
+        this.handler = new DockedConsoleHandler(plugin);
+
         setLevel(LogLevel.INFO);
+
         parentLogger.setUseParentHandlers(false);
         parentLogger.addHandler(handler);
     }

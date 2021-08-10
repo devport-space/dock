@@ -1,12 +1,12 @@
 package space.devport.dock.logging;
 
-import space.devport.dock.common.Strings;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import space.devport.dock.common.Strings;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -37,6 +37,11 @@ public class DockedConsoleHandler extends Handler {
 
     @Override
     public void publish(LogRecord record) {
+
+        if (record.getLevel().intValue() < getLevel().intValue()) {
+            return;
+        }
+
         LogLevel level = LogLevel.fromLevel(record.getLevel(), LogLevel.INFO);
 
         String message;

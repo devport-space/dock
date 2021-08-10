@@ -135,11 +135,6 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
     public void onEnable() {
         long start = System.currentTimeMillis();
 
-        log.info(() -> "Starting up " + getDescription().getName() + " " + getDescription().getVersion());
-        log.info(() -> "Running on " + ServerType.getCurrentServerType().getName() + " " +
-                ServerVersion.getCurrentVersion() + " (NMS: " + ServerVersion.getNmsVersion() + ")");
-        log.info(() -> getColor() + "~~~~~~~~~~~~ " + ChatColor.getByChar('7') + getDescription().getName() + " " + getColor() + "~~~~~~~~~~~~");
-
         if (use(UsageFlag.CONFIGURATION)) {
             this.configuration = new Configuration(this, "config");
 
@@ -153,6 +148,11 @@ public abstract class DockedPlugin extends JavaPlugin implements IDockedPlugin {
 
             this.prefix = getColor() + configuration.getColoredString("plugin-prefix", getDescription().getPrefix() != null ? getDescription().getPrefix() : "");
         }
+
+        log.info(() -> "Starting up " + getDescription().getName() + " " + getDescription().getVersion());
+        log.info(() -> "Running on " + ServerType.getCurrentServerType().getName() + " " +
+                ServerVersion.getCurrentVersion() + " (NMS: " + ServerVersion.getNmsVersion() + ")");
+        log.info(() -> getColor() + "~~~~~~~~~~~~ " + ChatColor.getByChar('7') + getDescription().getName() + " " + getColor() + "~~~~~~~~~~~~");
 
         // Fill global placeholders with some default parsers and values.
         globalPlaceholders.add("%prefix%", prefix)
