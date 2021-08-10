@@ -1,7 +1,7 @@
 package space.devport.dock.util;
 
 import org.jetbrains.annotations.NotNull;
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

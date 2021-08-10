@@ -1,6 +1,6 @@
 package space.devport.dock.logging;
 
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 

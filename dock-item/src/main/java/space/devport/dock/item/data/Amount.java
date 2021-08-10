@@ -1,6 +1,6 @@
 package space.devport.dock.item.data;
 
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;

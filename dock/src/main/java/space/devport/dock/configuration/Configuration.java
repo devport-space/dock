@@ -2,7 +2,7 @@ package space.devport.dock.configuration;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;

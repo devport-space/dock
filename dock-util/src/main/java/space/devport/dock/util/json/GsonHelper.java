@@ -1,6 +1,6 @@
 package space.devport.dock.util.json;
 
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;

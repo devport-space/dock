@@ -1,6 +1,6 @@
 package space.devport.dock.commands;
 
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;

@@ -1,6 +1,6 @@
 package space.devport.dock.text.placeholders;
 
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Contract;

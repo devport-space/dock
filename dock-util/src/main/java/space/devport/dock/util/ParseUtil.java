@@ -1,6 +1,6 @@
 package space.devport.dock.util;
 
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
 import space.devport.dock.common.Result;

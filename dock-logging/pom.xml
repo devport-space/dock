@@ -15,4 +15,12 @@
     </properties>
 
     <artifactId>dock-logging</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>space.devport.dock</groupId>
+            <artifactId>dock-common</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 </project>

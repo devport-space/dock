@@ -1,6 +1,6 @@
 package space.devport.dock.util.reflection;
 
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 

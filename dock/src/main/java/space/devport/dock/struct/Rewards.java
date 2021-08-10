@@ -1,6 +1,6 @@
 package space.devport.dock.struct;
 
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import lombok.Getter;
 import me.realized.tokenmanager.TokenManagerPlugin;
 import net.milkbowl.vault.economy.EconomyResponse;

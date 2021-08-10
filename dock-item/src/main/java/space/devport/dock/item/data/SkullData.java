@@ -1,7 +1,7 @@
 package space.devport.dock.item.data;
 
 import com.cryptomorin.xseries.SkullUtils;
-import com.google.common.base.Strings;
+import space.devport.dock.common.Strings;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import lombok.Getter;
