@@ -1,4 +1,4 @@
-package space.devport.dock.util.reflection;
+package space.devport.dock.util.server;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,8 +11,7 @@ public enum ServerType {
     iSPIGOT("ispigot"),
     PAPER("paper"),
     TACO("taco"),
-    qSPIGOT("qspigot"),
-    ;
+    qSPIGOT("qspigot");
 
     private static ServerType currentType;
 

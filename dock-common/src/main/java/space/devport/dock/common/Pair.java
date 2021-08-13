@@ -1,4 +1,4 @@
-package space.devport.dock.util;
+package space.devport.dock.common;
 
 import lombok.Data;
 

@@ -1,12 +1,12 @@
 package space.devport.dock.util;
 
-import space.devport.dock.common.Strings;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import space.devport.dock.util.reflection.ServerVersion;
+import space.devport.dock.common.Strings;
+import space.devport.dock.util.server.ServerVersion;
 
 import java.util.*;
 import java.util.regex.Matcher;

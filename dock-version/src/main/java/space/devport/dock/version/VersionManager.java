@@ -7,7 +7,7 @@ import space.devport.dock.DockedManager;
 import space.devport.dock.api.IDockedPlugin;
 import space.devport.dock.api.IIndependentManager;
 import space.devport.dock.util.reflection.Reflection;
-import space.devport.dock.util.reflection.ServerVersion;
+import space.devport.dock.util.server.ServerVersion;
 import space.devport.dock.version.api.ICompoundFactory;
 import space.devport.dock.version.api.IVersionUtility;
 

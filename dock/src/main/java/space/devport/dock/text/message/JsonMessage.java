@@ -14,7 +14,7 @@ import space.devport.dock.DockedPlugin;
 import space.devport.dock.struct.Context;
 import space.devport.dock.text.placeholders.Placeholders;
 import space.devport.dock.util.StringUtil;
-import space.devport.dock.util.reflection.ServerVersion;
+import space.devport.dock.util.server.ServerVersion;
 import space.devport.dock.version.VersionManager;
 
 import java.util.LinkedList;

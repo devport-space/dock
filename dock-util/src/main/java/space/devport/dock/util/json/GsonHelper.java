@@ -1,6 +1,5 @@
 package space.devport.dock.util.json;
 
-import space.devport.dock.common.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -8,6 +7,7 @@ import lombok.Getter;
 import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 import space.devport.dock.common.Result;
+import space.devport.dock.common.Strings;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

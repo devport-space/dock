@@ -1,8 +1,8 @@
-package space.devport.dock.util.reflection;
+package space.devport.dock.util.server;
 
-import space.devport.dock.common.Strings;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import space.devport.dock.common.Strings;
 
 public enum ServerVersion {
 
@@ -27,27 +27,29 @@ public enum ServerVersion {
 
     @Setter
     @NotNull
-    public static ServerVersion defaultVersion = v1_16;
+    public static ServerVersion defaultVersion = v1_17;
+
+    @Setter
+    @NotNull
+    public static String defaultNMSVersion = "v1_17_R1";
 
     public static String getNmsVersion() {
-        if (nmsVersion == null)
-            loadServerVersion();
-        return nmsVersion;
+        return Strings.isNullOrEmpty(nmsVersion) ? defaultNMSVersion : nmsVersion;
     }
 
     public static void loadServerVersion() {
         ServerVersion.nmsVersion = SpigotHelper.extractNMSVersion(false);
 
         if (Strings.isNullOrEmpty(nmsVersion))
-            nmsVersion = "v1_16_R3";
+            ServerVersion.nmsVersion = defaultNMSVersion;
 
-        String nmsVersion = SpigotHelper.extractNMSVersion(true);
+        String shortVersion = SpigotHelper.extractNMSVersion(true);
 
-        if (Strings.isNullOrEmpty(nmsVersion))
+        if (Strings.isNullOrEmpty(shortVersion))
             return;
 
         try {
-            ServerVersion.currentVersion = valueOf(nmsVersion);
+            ServerVersion.currentVersion = valueOf(shortVersion);
         } catch (IllegalArgumentException ignored) {
         }
     }
@@ -66,10 +68,10 @@ public enum ServerVersion {
     }
 
     public static boolean isCurrentAbove(ServerVersion version) {
-        return currentVersion.ordinal() >= version.ordinal();
+        return getCurrentVersion().isAbove(version);
     }
 
     public static boolean isCurrentBelow(ServerVersion version) {
-        return currentVersion.ordinal() <= version.ordinal();
+        return getCurrentVersion().isBelow(version);
     }
 }

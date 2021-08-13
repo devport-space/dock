@@ -1,9 +1,10 @@
 package space.devport.dock.util.reflection;
 
-import space.devport.dock.common.Strings;
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
+import space.devport.dock.common.Strings;
+import space.devport.dock.util.server.SpigotHelper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

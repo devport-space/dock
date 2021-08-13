@@ -33,8 +33,8 @@ import space.devport.dock.util.DependencyUtil;
 import space.devport.dock.util.ParseUtil;
 import space.devport.dock.util.StringUtil;
 import space.devport.dock.util.reflection.Reflection;
-import space.devport.dock.util.reflection.ServerType;
-import space.devport.dock.util.reflection.ServerVersion;
+import space.devport.dock.util.server.ServerType;
+import space.devport.dock.util.server.ServerVersion;
 import space.devport.dock.version.VersionManager;
 import space.devport.dock.version.compound.CompoundFactory;
 

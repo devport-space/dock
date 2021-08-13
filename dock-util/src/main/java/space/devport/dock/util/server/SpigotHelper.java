@@ -1,4 +1,4 @@
-package space.devport.dock.util.reflection;
+package space.devport.dock.util.server;
 
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
