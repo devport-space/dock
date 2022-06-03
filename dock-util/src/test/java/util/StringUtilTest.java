@@ -3,6 +3,8 @@ package util;
 import org.junit.Test;
 import space.devport.dock.util.StringUtil;
 
+import java.util.Locale;
+
 import static org.junit.Assert.assertEquals;
 
 public class StringUtilTest {
@@ -18,7 +20,7 @@ public class StringUtilTest {
 
         @Override
         public String toString() {
-            return String.format("%s with range %.1f", name, range);
+            return String.format(Locale.ENGLISH, "%s with range %.1f", name, range);
         }
     }
 

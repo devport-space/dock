@@ -3,14 +3,17 @@ package util.mock;
 import org.bukkit.*;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.boss.DragonBattle;
 import org.bukkit.entity.*;
+import org.bukkit.generator.BiomeProvider;
 import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Consumer;
@@ -19,10 +22,9 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.UUID;
 
+@SuppressWarnings({"ConstantConditions", "Contract"})
 public class MockWorld implements World {
 
     private final String name;
@@ -32,11 +34,6 @@ public class MockWorld implements World {
     public MockWorld(String name) {
         this.name = name;
         this.uuid = UUID.randomUUID();
-    }
-
-    @Override
-    public long getGameTime() {
-        return 0;
     }
 
     @NotNull
@@ -196,7 +193,7 @@ public class MockWorld implements World {
 
     @NotNull
     @Override
-    public Collection<Chunk> getForceLoadedChunks() {
+    public java.util.Collection<Chunk> getForceLoadedChunks() {
         return null;
     }
 
@@ -217,13 +214,13 @@ public class MockWorld implements World {
 
     @NotNull
     @Override
-    public Collection<Plugin> getPluginChunkTickets(int i, int i1) {
+    public java.util.Collection<Plugin> getPluginChunkTickets(int i, int i1) {
         return null;
     }
 
     @NotNull
     @Override
-    public Map<Plugin, Collection<Chunk>> getPluginChunkTickets() {
+    public java.util.Map<Plugin, java.util.Collection<Chunk>> getPluginChunkTickets() {
         return null;
     }
 
@@ -257,12 +254,6 @@ public class MockWorld implements World {
         return null;
     }
 
-    @NotNull
-    @Override
-    public <T extends AbstractArrow> T spawnArrow(@NotNull Location location, @NotNull Vector vector, float v, float v1, @NotNull Class<T> aClass) {
-        return null;
-    }
-
     @Override
     public boolean generateTree(@NotNull Location location, @NotNull TreeType treeType) {
         return false;
@@ -271,12 +262,6 @@ public class MockWorld implements World {
     @Override
     public boolean generateTree(@NotNull Location location, @NotNull TreeType treeType, @NotNull BlockChangeDelegate blockChangeDelegate) {
         return false;
-    }
-
-    @NotNull
-    @Override
-    public Entity spawnEntity(@NotNull Location location, @NotNull EntityType entityType) {
-        return null;
     }
 
     @NotNull
@@ -293,61 +278,154 @@ public class MockWorld implements World {
 
     @NotNull
     @Override
-    public List<Entity> getEntities() {
+    public Biome getBiome(@NotNull Location location) {
         return null;
     }
 
     @NotNull
     @Override
-    public List<LivingEntity> getLivingEntities() {
+    public Biome getBiome(int i, int i1, int i2) {
+        return null;
+    }
+
+    @Override
+    public void setBiome(@NotNull Location location, @NotNull Biome biome) {
+
+    }
+
+    @Override
+    public void setBiome(int i, int i1, int i2, @NotNull Biome biome) {
+
+    }
+
+    @NotNull
+    @Override
+    public BlockState getBlockState(@NotNull Location location) {
         return null;
     }
 
     @NotNull
     @Override
-    public <T extends Entity> Collection<T> getEntitiesByClass(@NotNull Class<T>... classes) {
+    public BlockState getBlockState(int i, int i1, int i2) {
         return null;
     }
 
     @NotNull
     @Override
-    public <T extends Entity> Collection<T> getEntitiesByClass(@NotNull Class<T> aClass) {
+    public BlockData getBlockData(@NotNull Location location) {
         return null;
     }
 
     @NotNull
     @Override
-    public Collection<Entity> getEntitiesByClasses(@NotNull Class<?>... classes) {
+    public BlockData getBlockData(int i, int i1, int i2) {
         return null;
     }
 
     @NotNull
     @Override
-    public List<Player> getPlayers() {
+    public Material getType(@NotNull Location location) {
         return null;
     }
 
     @NotNull
     @Override
-    public Collection<Entity> getNearbyEntities(@NotNull Location location, double v, double v1, double v2) {
+    public Material getType(int i, int i1, int i2) {
+        return null;
+    }
+
+    @Override
+    public void setBlockData(@NotNull Location location, @NotNull BlockData blockData) {
+
+    }
+
+    @Override
+    public void setBlockData(int i, int i1, int i2, @NotNull BlockData blockData) {
+
+    }
+
+    @Override
+    public void setType(@NotNull Location location, @NotNull Material material) {
+
+    }
+
+    @Override
+    public void setType(int i, int i1, int i2, @NotNull Material material) {
+
+    }
+
+    @NotNull
+    @Override
+    public Entity spawnEntity(@NotNull Location location, @NotNull EntityType entityType) {
         return null;
     }
 
     @NotNull
     @Override
-    public Collection<Entity> getNearbyEntities(@NotNull Location location, double v, double v1, double v2, @Nullable Predicate<Entity> predicate) {
+    public Entity spawnEntity(@NotNull Location location, @NotNull EntityType entityType, boolean b) {
+        return null;
+    }
+
+    @Override
+    public boolean generateTree(@NotNull Location location, @NotNull java.util.Random random, @NotNull TreeType treeType, @Nullable java.util.function.Predicate<BlockState> predicate) {
+        return false;
+    }
+
+    @Override
+    public boolean generateTree(@NotNull Location location, @NotNull java.util.Random random, @NotNull TreeType treeType, @Nullable Consumer<BlockState> consumer) {
+        return false;
+    }
+
+    @Override
+    public boolean generateTree(@NotNull Location location, @NotNull java.util.Random random, @NotNull TreeType treeType) {
+        return false;
+    }
+
+    @NotNull
+    @Override
+    public java.util.List<Entity> getEntities() {
         return null;
     }
 
     @NotNull
     @Override
-    public Collection<Entity> getNearbyEntities(@NotNull BoundingBox boundingBox) {
+    public java.util.List<LivingEntity> getLivingEntities() {
         return null;
     }
 
     @NotNull
     @Override
-    public Collection<Entity> getNearbyEntities(@NotNull BoundingBox boundingBox, @Nullable Predicate<Entity> predicate) {
+    public <T extends Entity> T spawn(@NotNull Location location, @NotNull Class<T> aClass, boolean b, @Nullable Consumer<T> consumer) throws IllegalArgumentException {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public <T extends Entity> T spawn(@NotNull Location location, @NotNull Class<T> aClass, @Nullable Consumer<T> consumer) throws IllegalArgumentException {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public <T extends Entity> T spawn(@NotNull Location location, @NotNull Class<T> aClass) throws IllegalArgumentException {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public java.util.List<Player> getPlayers() {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public java.util.Collection<Entity> getNearbyEntities(@NotNull Location location, double v, double v1, double v2) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public java.util.Collection<Entity> getNearbyEntities(@NotNull BoundingBox boundingBox) {
         return null;
     }
 
@@ -360,18 +438,6 @@ public class MockWorld implements World {
     @Nullable
     @Override
     public RayTraceResult rayTraceEntities(@NotNull Location location, @NotNull Vector vector, double v, double v1) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public RayTraceResult rayTraceEntities(@NotNull Location location, @NotNull Vector vector, double v, @Nullable Predicate<Entity> predicate) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public RayTraceResult rayTraceEntities(@NotNull Location location, @NotNull Vector vector, double v, double v1, @Nullable Predicate<Entity> predicate) {
         return null;
     }
 
@@ -390,24 +456,6 @@ public class MockWorld implements World {
     @Nullable
     @Override
     public RayTraceResult rayTraceBlocks(@NotNull Location location, @NotNull Vector vector, double v, @NotNull FluidCollisionMode fluidCollisionMode, boolean b) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public RayTraceResult rayTrace(@NotNull Location location, @NotNull Vector vector, double v, @NotNull FluidCollisionMode fluidCollisionMode, boolean b, double v1, @Nullable Predicate<Entity> predicate) {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @NotNull
-    @Override
-    public UUID getUID() {
         return null;
     }
 
@@ -450,6 +498,11 @@ public class MockWorld implements World {
     @Override
     public void setFullTime(long l) {
 
+    }
+
+    @Override
+    public long getGameTime() {
+        return 0;
     }
 
     @Override
@@ -547,17 +600,6 @@ public class MockWorld implements World {
         return false;
     }
 
-    @NotNull
-    @Override
-    public Environment getEnvironment() {
-        return null;
-    }
-
-    @Override
-    public long getSeed() {
-        return 0;
-    }
-
     @Override
     public boolean getPVP() {
         return false;
@@ -574,6 +616,12 @@ public class MockWorld implements World {
         return null;
     }
 
+    @Nullable
+    @Override
+    public BiomeProvider getBiomeProvider() {
+        return null;
+    }
+
     @Override
     public void save() {
 
@@ -581,24 +629,13 @@ public class MockWorld implements World {
 
     @NotNull
     @Override
-    public List<BlockPopulator> getPopulators() {
+    public java.util.List<BlockPopulator> getPopulators() {
         return null;
     }
 
     @NotNull
     @Override
-    public <T extends Entity> T spawn(@NotNull Location location, @NotNull Class<T> aClass) throws IllegalArgumentException {
-        return null;
-    }
-
-    @NotNull
-    @Override
-    public <T extends Entity> T spawn(@NotNull Location location, @NotNull Class<T> aClass, @Nullable Consumer<T> consumer) throws IllegalArgumentException {
-        return null;
-    }
-
-    @NotNull
-    @Override
+    @Deprecated
     public FallingBlock spawnFallingBlock(@NotNull Location location, @NotNull MaterialData materialData) throws IllegalArgumentException {
         return null;
     }
@@ -622,16 +659,6 @@ public class MockWorld implements World {
 
     @Override
     public void playEffect(@NotNull Location location, @NotNull Effect effect, int i, int i1) {
-
-    }
-
-    @Override
-    public <T> void playEffect(@NotNull Location location, @NotNull Effect effect, @Nullable T t) {
-
-    }
-
-    @Override
-    public <T> void playEffect(@NotNull Location location, @NotNull Effect effect, @Nullable T t, int i) {
 
     }
 
@@ -662,19 +689,8 @@ public class MockWorld implements World {
         return null;
     }
 
-    @NotNull
-    @Override
-    public Biome getBiome(int i, int i1, int i2) {
-        return null;
-    }
-
     @Override
     public void setBiome(int i, int i1, @NotNull Biome biome) {
-
-    }
-
-    @Override
-    public void setBiome(int i, int i1, int i2, @NotNull Biome biome) {
 
     }
 
@@ -699,13 +715,48 @@ public class MockWorld implements World {
     }
 
     @Override
-    public int getMinHeight() {
+    public int getLogicalHeight() {
         return 0;
     }
 
     @Override
-    public int getMaxHeight() {
-        return 0;
+    public boolean isNatural() {
+        return false;
+    }
+
+    @Override
+    public boolean isBedWorks() {
+        return false;
+    }
+
+    @Override
+    public boolean hasSkyLight() {
+        return false;
+    }
+
+    @Override
+    public boolean hasCeiling() {
+        return false;
+    }
+
+    @Override
+    public boolean isPiglinSafe() {
+        return false;
+    }
+
+    @Override
+    public boolean isRespawnAnchorWorks() {
+        return false;
+    }
+
+    @Override
+    public boolean hasRaids() {
+        return false;
+    }
+
+    @Override
+    public boolean isUltraWarm() {
+        return false;
     }
 
     @Override
@@ -746,7 +797,7 @@ public class MockWorld implements World {
 
     @NotNull
     @Override
-    public File getWorldFolder() {
+    public java.io.File getWorldFolder() {
         return null;
     }
 
@@ -812,12 +863,32 @@ public class MockWorld implements World {
     }
 
     @Override
+    public long getTicksPerWaterUndergroundCreatureSpawns() {
+        return 0;
+    }
+
+    @Override
+    public void setTicksPerWaterUndergroundCreatureSpawns(int i) {
+
+    }
+
+    @Override
     public long getTicksPerAmbientSpawns() {
         return 0;
     }
 
     @Override
     public void setTicksPerAmbientSpawns(int i) {
+
+    }
+
+    @Override
+    public long getTicksPerSpawns(@NotNull SpawnCategory spawnCategory) {
+        return 0;
+    }
+
+    @Override
+    public void setTicksPerSpawns(@NotNull SpawnCategory spawnCategory, int i) {
 
     }
 
@@ -852,6 +923,16 @@ public class MockWorld implements World {
     }
 
     @Override
+    public int getWaterUndergroundCreatureSpawnLimit() {
+        return 0;
+    }
+
+    @Override
+    public void setWaterUndergroundCreatureSpawnLimit(int i) {
+
+    }
+
+    @Override
     public int getWaterAmbientSpawnLimit() {
         return 0;
     }
@@ -872,12 +953,17 @@ public class MockWorld implements World {
     }
 
     @Override
-    public void playSound(@NotNull Location location, @NotNull Sound sound, float v, float v1) {
+    public int getSpawnLimit(@NotNull SpawnCategory spawnCategory) {
+        return 0;
+    }
+
+    @Override
+    public void setSpawnLimit(@NotNull SpawnCategory spawnCategory, int i) {
 
     }
 
     @Override
-    public void playSound(@NotNull Location location, @NotNull String s, float v, float v1) {
+    public void playSound(@NotNull Location location, @NotNull Sound sound, float v, float v1) {
 
     }
 
@@ -887,7 +973,12 @@ public class MockWorld implements World {
     }
 
     @Override
-    public void playSound(@NotNull Location location, @NotNull String s, @NotNull SoundCategory soundCategory, float v, float v1) {
+    public void playSound(@NotNull Entity entity, @NotNull Sound sound, float v, float v1) {
+
+    }
+
+    @Override
+    public void playSound(@NotNull Entity entity, @NotNull Sound sound, @NotNull SoundCategory soundCategory, float v, float v1) {
 
     }
 
@@ -895,22 +986,6 @@ public class MockWorld implements World {
     @Override
     public String[] getGameRules() {
         return new String[0];
-    }
-
-    @Nullable
-    @Override
-    public String getGameRuleValue(@Nullable String s) {
-        return null;
-    }
-
-    @Override
-    public boolean setGameRuleValue(@NotNull String s, @NotNull String s1) {
-        return false;
-    }
-
-    @Override
-    public boolean isGameRule(@NotNull String s) {
-        return false;
     }
 
     @Nullable
@@ -923,11 +998,6 @@ public class MockWorld implements World {
     @Override
     public <T> T getGameRuleDefault(@NotNull GameRule<T> gameRule) {
         return null;
-    }
-
-    @Override
-    public <T> boolean setGameRule(@NotNull GameRule<T> gameRule, @NotNull T t) {
-        return false;
     }
 
     @NotNull
@@ -947,32 +1017,12 @@ public class MockWorld implements World {
     }
 
     @Override
-    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, @Nullable T t) {
-
-    }
-
-    @Override
-    public <T> void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, @Nullable T t) {
-
-    }
-
-    @Override
     public void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, double v, double v1, double v2) {
 
     }
 
     @Override
     public void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5) {
-
-    }
-
-    @Override
-    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, double v, double v1, double v2, @Nullable T t) {
-
-    }
-
-    @Override
-    public <T> void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, @Nullable T t) {
 
     }
 
@@ -986,26 +1036,6 @@ public class MockWorld implements World {
 
     }
 
-    @Override
-    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, double v, double v1, double v2, double v3, @Nullable T t) {
-
-    }
-
-    @Override
-    public <T> void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6, @Nullable T t) {
-
-    }
-
-    @Override
-    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, double v, double v1, double v2, double v3, @Nullable T t, boolean b) {
-
-    }
-
-    @Override
-    public <T> void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6, @Nullable T t, boolean b) {
-
-    }
-
     @Nullable
     @Override
     public Location locateNearestStructure(@NotNull Location location, @NotNull StructureType structureType, int i, boolean b) {
@@ -1014,6 +1044,11 @@ public class MockWorld implements World {
 
     @Override
     public int getViewDistance() {
+        return 0;
+    }
+
+    @Override
+    public int getSimulationDistance() {
         return 0;
     }
 
@@ -1031,7 +1066,7 @@ public class MockWorld implements World {
 
     @NotNull
     @Override
-    public List<Raid> getRaids() {
+    public java.util.List<Raid> getRaids() {
         return null;
     }
 
@@ -1042,13 +1077,188 @@ public class MockWorld implements World {
     }
 
     @Override
+    public <T> void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6, @Nullable T t, boolean b) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, double v, double v1, double v2, double v3, @Nullable T t, boolean b) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, double v6, @Nullable T t) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, double v, double v1, double v2, double v3, @Nullable T t) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, double v3, double v4, double v5, @Nullable T t) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, double v, double v1, double v2, @Nullable T t) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(@NotNull Particle particle, double v, double v1, double v2, int i, @Nullable T t) {
+
+    }
+
+    @Override
+    public <T> void spawnParticle(@NotNull Particle particle, @NotNull Location location, int i, @Nullable T t) {
+
+    }
+
+    @Override
+    public <T> boolean setGameRule(@NotNull GameRule<T> gameRule, @NotNull T t) {
+        return false;
+    }
+
+    @Override
+    public boolean isGameRule(@NotNull String s) {
+        return false;
+    }
+
+    @Override
+    public boolean setGameRuleValue(@NotNull String s, @NotNull String s1) {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public String getGameRuleValue(@Nullable String s) {
+        return null;
+    }
+
+    @Override
+    public void playSound(@NotNull Location location, @NotNull String s, @NotNull SoundCategory soundCategory, float v, float v1) {
+
+    }
+
+    @Override
+    public void playSound(@NotNull Location location, @NotNull String s, float v, float v1) {
+
+    }
+
+    @Override
+    public <T> void playEffect(@NotNull Location location, @NotNull Effect effect, @Nullable T t, int i) {
+
+    }
+
+    @Override
+    public <T> void playEffect(@NotNull Location location, @NotNull Effect effect, @Nullable T t) {
+
+    }
+
+    @Nullable
+    @Override
+    public RayTraceResult rayTrace(@NotNull Location location, @NotNull Vector vector, double v, @NotNull FluidCollisionMode fluidCollisionMode, boolean b, double v1, @Nullable java.util.function.Predicate<Entity> predicate) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public RayTraceResult rayTraceEntities(@NotNull Location location, @NotNull Vector vector, double v, double v1, @Nullable java.util.function.Predicate<Entity> predicate) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public RayTraceResult rayTraceEntities(@NotNull Location location, @NotNull Vector vector, double v, @Nullable java.util.function.Predicate<Entity> predicate) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public java.util.Collection<Entity> getNearbyEntities(@NotNull BoundingBox boundingBox, @Nullable java.util.function.Predicate<Entity> predicate) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public java.util.Collection<Entity> getNearbyEntities(@NotNull Location location, double v, double v1, double v2, @Nullable java.util.function.Predicate<Entity> predicate) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public java.util.Collection<Entity> getEntitiesByClasses(@NotNull Class<?>... classes) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public <T extends Entity> java.util.Collection<T> getEntitiesByClass(@NotNull Class<T> aClass) {
+        return null;
+    }
+
+    @SafeVarargs
+    @NotNull
+    @Override
+    public final <T extends Entity> java.util.Collection<T> getEntitiesByClass(@NotNull Class<T>... classes) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public <T extends AbstractArrow> T spawnArrow(@NotNull Location location, @NotNull Vector vector, float v, float v1, @NotNull Class<T> aClass) {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public NamespacedKey getKey() {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return this.name;
+    }
+
+    @NotNull
+    @Override
+    public java.util.UUID getUID() {
+        return this.uuid;
+    }
+
+    @NotNull
+    @Override
+    public Environment getEnvironment() {
+        return null;
+    }
+
+    @Override
+    public long getSeed() {
+        return 0;
+    }
+
+    @Override
+    public int getMinHeight() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxHeight() {
+        return 0;
+    }
+
+    @Override
     public void setMetadata(@NotNull String s, @NotNull MetadataValue metadataValue) {
 
     }
 
     @NotNull
     @Override
-    public List<MetadataValue> getMetadata(@NotNull String s) {
+    public java.util.List<MetadataValue> getMetadata(@NotNull String s) {
         return null;
     }
 
@@ -1062,14 +1272,20 @@ public class MockWorld implements World {
 
     }
 
+    @NotNull
     @Override
-    public void sendPluginMessage(@NotNull Plugin plugin, @NotNull String s, @NotNull byte[] bytes) {
+    public PersistentDataContainer getPersistentDataContainer() {
+        return null;
+    }
+
+    @Override
+    public void sendPluginMessage(@NotNull Plugin plugin, @NotNull String s, byte @NotNull [] bytes) {
 
     }
 
     @NotNull
     @Override
-    public Set<String> getListeningPluginChannels() {
+    public java.util.Set<String> getListeningPluginChannels() {
         return null;
     }
 }
