@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack;
 import space.devport.dock.DockedManager;
 import space.devport.dock.DockedPlugin;
 import space.devport.dock.holograms.provider.HologramProvider;
-import space.devport.dock.holograms.provider.impl.CMIHolograms;
 import space.devport.dock.holograms.provider.impl.Holograms;
 import space.devport.dock.holograms.provider.impl.HolographicDisplays;
 import space.devport.dock.util.DependencyUtil;
@@ -66,9 +65,6 @@ public class HologramManager extends DockedManager {
         } else if (DependencyUtil.isEnabled("HolographicDisplays")) {
             hologramProvider = new HolographicDisplays(plugin);
             logUsing("HolographicDisplays");
-        } else if (DependencyUtil.isEnabled("CMI")) {
-            hologramProvider = new CMIHolograms(plugin);
-            logUsing("CMI");
         }
 
         if (!isHooked())
