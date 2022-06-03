@@ -16,7 +16,8 @@ public enum ServerVersion {
     v1_14,
     v1_15,
     v1_16,
-    v1_17;
+    v1_17,
+    v1_18;
 
     ServerVersion() {
     }
@@ -25,13 +26,11 @@ public enum ServerVersion {
 
     private static String nmsVersion;
 
-    @Setter
     @NotNull
-    public static ServerVersion defaultVersion = v1_17;
+    public static final ServerVersion defaultVersion = v1_18;
 
-    @Setter
     @NotNull
-    public static String defaultNMSVersion = "v1_17_R1";
+    public static final String defaultNMSVersion = "v1_18_R1";
 
     public static String getNmsVersion() {
         return Strings.isNullOrEmpty(nmsVersion) ? defaultNMSVersion : nmsVersion;
