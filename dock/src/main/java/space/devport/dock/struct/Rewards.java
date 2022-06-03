@@ -71,7 +71,7 @@ public class Rewards implements Cloneable, Placeholder {
         this.commands = commands;
     }
 
-    private Rewards(Rewards rewards) {
+    protected Rewards(Rewards rewards) {
         this(rewards.getPlugin());
 
         if (rewards.getTokens() != null)
