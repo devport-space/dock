@@ -41,17 +41,17 @@
     <packaging>pom</packaging>
 
     <distributionManagement>
-        <downloadUrl>https://nexus.devport.space/devport-releases/</downloadUrl>
+        <downloadUrl>https://nexus.devport.space/releases/</downloadUrl>
         <snapshotRepository>
             <id>devport-snapshots</id>
             <name>Devport Repository</name>
-            <url>https://nexus.devport.space/devport-snapshots/</url>
+            <url>https://nexus.devport.space/snapshots/</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
         <repository>
             <id>devport-releases</id>
             <name>Devport Repository</name>
-            <url>https://nexus.devport.space/devport-releases/</url>
+            <url>https://nexus.devport.space/releases/</url>
             <uniqueVersion>true</uniqueVersion>
         </repository>
     </distributionManagement>
