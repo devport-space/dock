@@ -7,7 +7,7 @@ Devport spigot utility core.
 ```xml
 <repository>
     <id>devport</id>
-    <url>https://nexus.devport.space/repository/devport-public/</url>
+    <url>https://nexus.devport.space/snapshots</url>
 </repository>
 ```
 
