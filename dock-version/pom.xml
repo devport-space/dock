@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dock-parent</artifactId>
         <groupId>space.devport.dock</groupId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,17 +16,17 @@
         <dependency>
             <groupId>space.devport.dock</groupId>
             <artifactId>dock-plugin-api</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>space.devport.dock</groupId>
             <artifactId>dock-util</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>space.devport.dock</groupId>
             <artifactId>dock-logging</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0</version>
         </dependency>
         <!-- Version modules -->
         <dependency>
