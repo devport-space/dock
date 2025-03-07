@@ -1,61 +1,51 @@
 package space.devport.dock.util;
 
 import lombok.experimental.UtilityClass;
-
-import java.util.StringTokenizer;
+import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
 public class VersionUtil {
 
-    public int[] canonicalVersion(String version) {
-
-        int[] canonicalVersion = new int[]{0, 0, 0, 0};
-        StringTokenizer tokenizer = new StringTokenizer(version, ".");
-
-        String token = tokenizer.nextToken();
-        canonicalVersion[0] = Integer.parseInt(token);
-        token = tokenizer.nextToken();
-        StringTokenizer subTokenizer;
-
-        if (!token.contains("_")) {
-            canonicalVersion[1] = Integer.parseInt(token);
-        } else {
-            subTokenizer = new StringTokenizer(token, "_");
-
-            canonicalVersion[1] = Integer.parseInt(subTokenizer.nextToken());
-            canonicalVersion[3] = Integer.parseInt(subTokenizer.nextToken());
-        }
-
-        if (tokenizer.hasMoreTokens()) {
-            token = tokenizer.nextToken();
-
-            if (!token.contains("_")) {
-                canonicalVersion[2] = Integer.parseInt(token);
-                if (tokenizer.hasMoreTokens()) {
-                    canonicalVersion[3] = Integer.parseInt(tokenizer.nextToken());
-                }
-            } else {
-                subTokenizer = new StringTokenizer(token, "_");
-
-                canonicalVersion[2] = Integer.parseInt(subTokenizer.nextToken());
-                canonicalVersion[3] = Integer.parseInt(subTokenizer.nextToken());
-            }
-        }
-        return canonicalVersion;
+    public static int compareVersions(@NotNull String version1, @NotNull String version2) {
+        return compareVersions(version1, version2, -1);
     }
 
-    public int compareVersions(String version1, String version2) {
+    // Compare simple semver
+    public static int compareVersions(@NotNull String version1, @NotNull String version2, int depth) {
+        // Compare major
+        String[] arr1 = version1.split("-")[0].split("\\.");
+        String[] arr2 = version2.split("-")[0].split("\\.");
 
-        int[] canonical1 = canonicalVersion(version1);
-        int[] canonical2 = canonicalVersion(version2);
+        int len = depth == -1 ? Math.max(arr1.length, arr2.length) : depth;
 
-        for (int n = 0; n < canonical1.length && n < canonical2.length; n++) {
-            if (canonical1[n] < canonical2[n])
+        for (int i = 0; i < len; i++) {
+
+            if (arr1.length < i) {
                 return -1;
-            else if (canonical1[n] > canonical2[n])
+            } else if (arr2.length < i) {
                 return 1;
-        }
+            }
 
+            int num1;
+            try {
+                num1 = Integer.parseInt(arr1[i]);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid version string '" + version1 + "'.");
+            }
+
+            int num2;
+            try {
+                num2 = Integer.parseInt(arr2[i]);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid version string '" + version1 + "'.");
+            }
+
+            if (num1 > num2) {
+                return 1;
+            } else if (num2 > num1) {
+                return -1;
+            }
+        }
         return 0;
     }
 }
